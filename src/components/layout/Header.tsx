@@ -57,13 +57,13 @@ const Header = () => {
 
         <div className="flex items-center space-x-4">
           <Link
-            href="/login"
+            href="/src/components/pages/Login"
             className="text-foreground/80 hover:text-foreground transition-colors hidden md:inline-block"
           >
             Log in
           </Link>
           <Link
-            href="/signup"
+            href="/src/components/pages/Signup"
             className="bg-primary text-primary-foreground px-4 py-2 rounded-full hover:bg-primary/90 transition-colors shadow-sm"
           >
             Get Started

@@ -1,5 +1,5 @@
 import React from "react";
-import AnimatedButton from "../ui/AnimatedButton";
+import AnimatedButton from "@/components/ui-custom/AnimatedButton";
 
 const Hero = () => {
   return (

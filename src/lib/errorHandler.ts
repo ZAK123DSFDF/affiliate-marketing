@@ -25,8 +25,6 @@ export function returnError(err: unknown): ErrorResponse {
 
       const friendlyNames: Record<string, string> = {
         email: "Email address",
-        username: "Username",
-        phone: "Phone number",
       };
 
       const friendlyName = friendlyNames[fieldName] || fieldName;

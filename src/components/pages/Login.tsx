@@ -189,7 +189,7 @@ const Login = () => {
             <div className="text-center text-sm">
               Don't have an account?{" "}
               <Link
-                href="/signup"
+                href="/src/components/pages/Signup"
                 className="font-medium text-primary underline-offset-4 hover:underline"
               >
                 Sign up

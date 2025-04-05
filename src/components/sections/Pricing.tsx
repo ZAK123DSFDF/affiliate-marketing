@@ -1,5 +1,5 @@
 import React from "react";
-import PriceCard from "../ui/PriceCard";
+import PriceCard from "@/components/ui-custom/PriceCard";
 
 const pricingPlans = [
   {

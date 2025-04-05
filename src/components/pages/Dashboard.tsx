@@ -43,7 +43,7 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import DashboardSidebar from "@/app/components/DashboardSidebar";
+import DashboardSidebar from "@/components/DashboardSidebar";
 
 const performanceData = [
   { month: "Jan", revenue: 1200, conversions: 12 },

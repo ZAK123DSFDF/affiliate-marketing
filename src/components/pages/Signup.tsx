@@ -202,7 +202,7 @@ const Signup = () => {
             <div className="text-center text-sm">
               Already have an account?{" "}
               <Link
-                href="/login"
+                href="/src/components/pages/Login"
                 className="font-medium text-primary underline-offset-4 hover:underline"
               >
                 Log in
