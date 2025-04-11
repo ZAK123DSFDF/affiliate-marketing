@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { usePathname } from "next/navigation";
 import {
   BarChart3,
   Home,
@@ -9,7 +12,6 @@ import {
   Layers,
   HelpCircle,
 } from "lucide-react";
-
 import {
   Sidebar,
   SidebarContent,
@@ -69,6 +71,8 @@ const items = [
 ];
 
 const DashboardSidebar = () => {
+  const pathname = usePathname();
+
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center justify-center py-4">
@@ -88,11 +92,11 @@ const DashboardSidebar = () => {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={location.pathname === item.url}
+                    isActive={pathname === item.url}
                     tooltip={item.title}
                   >
                     <Link href={item.url}>
-                      <item.icon />
+                      <item.icon className="w-5 h-5" />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -118,4 +122,5 @@ const DashboardSidebar = () => {
     </Sidebar>
   );
 };
+
 export default DashboardSidebar;
