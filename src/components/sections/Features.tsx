@@ -23,7 +23,7 @@ const Features = () => {
       ),
       title: "Custom Affiliate Links",
       description:
-        "Generate unique, branded affiliate links for your partners that seamlessly integrate with your SaaS platform.",
+        "Generate unique, branded Affiliates Affiliates for your partners that seamlessly integrate with your SaaS platform.",
     },
     {
       icon: (
@@ -46,7 +46,7 @@ const Features = () => {
       ),
       title: "Automated Payments",
       description:
-        "Set flexible commission structures and let our system handle automatic payouts to your affiliates.",
+        "Set flexible commission structures and let our system handle automatic payouts to your Affiliates.",
     },
     {
       icon: (
@@ -68,7 +68,7 @@ const Features = () => {
       ),
       title: "Real-time Analytics",
       description:
-        "Track performance with comprehensive dashboards showing conversions, revenue, and affiliate activity.",
+        "Track performance with comprehensive dashboards showing conversions, revenue, and Affiliates activity.",
     },
     {
       icon: (
@@ -116,7 +116,7 @@ const Features = () => {
       ),
       title: "Marketing Resources",
       description:
-        "Equip your affiliates with ready-to-use promotional assets that match your brand's identity.",
+        "Equip your Affiliates with ready-to-use promotional assets that match your brand's identity.",
     },
     {
       icon: (

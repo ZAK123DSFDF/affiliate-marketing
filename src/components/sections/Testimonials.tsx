@@ -4,21 +4,21 @@ import TestimonialCard from "@/components/ui-custom/TestimonialCard";
 const testimonials = [
   {
     quote:
-      "AffiliateSaaS transformed our partner program. What used to take hours of manual work each week now happens automatically. Our affiliate revenue has increased by 215% in just 6 months.",
+      "AffiliateSaaS transformed our partner program. What used to take hours of manual work each week now happens automatically. Our Affiliates revenue has increased by 215% in just 6 months.",
     author: "Sarah Johnson",
     role: "CMO",
     company: "TechFlow SaaS",
   },
   {
     quote:
-      "The elegant design and intuitive interface make managing our affiliates a breeze. It's the perfect blend of simplicity and powerful features that we couldn't find anywhere else.",
+      "The elegant design and intuitive interface make managing our Affiliates a breeze. It's the perfect blend of simplicity and powerful features that we couldn't find anywhere else.",
     author: "Michael Chen",
     role: "Head of Growth",
     company: "AnalyticsPro",
   },
   {
     quote:
-      "As someone who's tried every affiliate platform out there, I can confidently say this is the best solution for SaaS companies. The integration was smooth and our affiliates love the dashboard.",
+      "As someone who's tried every Affiliates platform out there, I can confidently say this is the best solution for SaaS companies. The integration was smooth and our Affiliates love the dashboard.",
     author: "Emma Williams",
     role: "Partnership Lead",
     company: "CloudSecurity",

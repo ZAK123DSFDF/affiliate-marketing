@@ -11,6 +11,7 @@ import {
   CreditCard,
   Layers,
   HelpCircle,
+  User,
 } from "lucide-react";
 import {
   Sidebar,
@@ -34,39 +35,29 @@ const items = [
     icon: BarChart3,
   },
   {
-    title: "Links",
-    url: "/links",
+    title: "Affiliates",
+    url: "/dashboard/affiliates",
     icon: LinkIcon,
   },
   {
-    title: "Referrals",
-    url: "/referrals",
+    title: "Payout",
+    url: "/dashboard/payout",
     icon: Users,
   },
   {
-    title: "Payments",
-    url: "/payments",
+    title: "Customization",
+    url: "/dashboard/customization",
     icon: CreditCard,
   },
   {
-    title: "Campaigns",
-    url: "/campaigns",
+    title: "Integration",
+    url: "/dashboard/integration",
     icon: Layers,
   },
   {
     title: "Settings",
-    url: "/settings",
+    url: "/dashboard/settings",
     icon: Settings,
-  },
-  {
-    title: "Help",
-    url: "/help",
-    icon: HelpCircle,
-  },
-  {
-    title: "Home",
-    url: "/",
-    icon: Home,
   },
 ];
 
@@ -85,7 +76,6 @@ const DashboardSidebar = () => {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Main Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -107,17 +97,20 @@ const DashboardSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="p-4">
-        <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10">
-          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-            JD
+        <Link href="/dashboard/profile">
+          <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+              JD
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">John Doe</p>
+              <p className="text-xs text-muted-foreground truncate">
+                john.doe@example.com
+              </p>
+            </div>
+            <User className="w-4 h-4 text-muted-foreground" />
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">John Doe</p>
-            <p className="text-xs text-muted-foreground truncate">
-              john.doe@example.com
-            </p>
-          </div>
-        </div>
+        </Link>
       </SidebarFooter>
     </Sidebar>
   );

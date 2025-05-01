@@ -6,19 +6,19 @@ const steps = [
     number: "01",
     title: "Set Up Your Program",
     description:
-      "Define your commission structure, customize your affiliate dashboard, and set up payment methods.",
+      "Define your commission structure, customize your Affiliates dashboard, and set up payment methods.",
     image:
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1470&auto=format&fit=crop",
-    alt: "Setting up affiliate program",
+    alt: "Setting up Affiliates program",
   },
   {
     number: "02",
     title: "Invite Affiliates",
     description:
-      "Invite partners through email or let them sign up through your custom affiliate portal.",
+      "Invite partners through email or let them sign up through your custom Affiliates portal.",
     image:
       "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1470&auto=format&fit=crop",
-    alt: "Inviting affiliates",
+    alt: "Inviting Affiliates",
   },
   {
     number: "03",
@@ -27,7 +27,7 @@ const steps = [
       "Monitor clicks, conversions, and revenue in real-time through our intuitive dashboard.",
     image:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1415&auto=format&fit=crop",
-    alt: "Tracking affiliate performance",
+    alt: "Tracking Affiliates performance",
   },
   {
     number: "04",
@@ -36,7 +36,7 @@ const steps = [
       "Let our system handle commission calculations and payments based on your schedule.",
     image:
       "https://images.unsplash.com/photo-1565514020179-026b92b2d169?q=80&w=1470&auto=format&fit=crop",
-    alt: "Automatic affiliate payouts",
+    alt: "Automatic Affiliates payouts",
   },
 ];
 
