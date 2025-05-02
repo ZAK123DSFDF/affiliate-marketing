@@ -3,33 +3,39 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
-  const host = request.headers.get("host")?.replace(/:\d+$/, ""); // Remove port
+  const host = request.headers.get("host")?.replace(/:\d+$/, "");
   const path = request.nextUrl.pathname.split("/")[1];
 
-  // 1. Handle numeric paths (/1234 → /affiliate)
+  // Skip API routes and static files
+  if (
+    request.nextUrl.pathname.startsWith("/_next") ||
+    request.nextUrl.pathname.startsWith("/api")
+  ) {
+    return NextResponse.next();
+  }
+
+  // 1. Handle numeric affiliate IDs (/1234 → /affiliate)
   if (/^\d+$/.test(path)) {
     url.pathname = `/affiliate`;
     return NextResponse.rewrite(url);
   }
 
-  // 2. Handle subdomains (affiliate1.example.com → /affiliate)
+  // 2. Handle Vercel deployment subdomains
   if (host) {
-    // For local development (affiliate1.localhost)
-    if (host.startsWith("affiliate") && host.endsWith("localhost")) {
+    // For Vercel deployments (affiliate1-[project].vercel.app)
+    if (host.includes("vercel.app")) {
       const subdomain = host.split(".")[0];
-      if (!["affiliate1", "affiliate2"].includes(subdomain)) {
-        return NextResponse.redirect(
-          new URL("/invalid-affiliate", request.url),
-        );
+      const affiliateSubdomain = subdomain.split("-")[0]; // affiliate1 from affiliate1-projectname
+
+      if (affiliateSubdomain.startsWith("affiliate")) {
+        url.pathname = `/affiliate`;
+        return NextResponse.rewrite(url);
       }
-      url.pathname = `/affiliate`;
-      return NextResponse.rewrite(url);
     }
 
-    // For production/network (affiliate1.yourdomain.com)
+    // For custom domains (affiliate1.yourdomain.com)
     const domainParts = host.split(".");
     if (domainParts.length > 2) {
-      // Has subdomain
       const subdomain = domainParts[0];
       if (subdomain.startsWith("affiliate")) {
         url.pathname = `/affiliate`;
@@ -38,12 +44,13 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Allow all other requests to proceed normally
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
     "/:path(\\d+)", // Numeric paths
-    "/((?!api|_next/static|_next/image|favicon.ico).*)", // All other routes
+    "/((?!_next/static|_next/image|favicon.ico).*)", // All except static files
   ],
 };
