@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
   // Rewrite if:
   // 1. There's a subdomain (domainParts.length >= 2)
   // 2. AND it's not the main domain (subdomain !== 'www' etc.)
-  if (domainParts.length >= 2 && subdomain) {
+  if (domainParts.length >= 3 && subdomain) {
     return NextResponse.rewrite(
       new URL(`/affiliate/${subdomain}`, request.url),
     );
