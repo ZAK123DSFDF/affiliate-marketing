@@ -5,13 +5,23 @@ export function middleware(request: NextRequest) {
   const host = request.headers.get("host");
   if (!host) return NextResponse.next();
 
-  // Extract subdomain (works for both 'abc.myapp.test' and 'abc.myapp.test:3000')
-  const [subdomain, ...domainParts] = host.replace(/:\d+$/, "").split(".");
+  // Handle Vercel deployment URLs
+  if (host.endsWith(".vercel.app")) {
+    const [subdomain] = host.split(".");
 
-  // Rewrite if:
-  // 1. There's a subdomain (domainParts.length >= 2)
-  // 2. AND it's not the main domain (subdomain !== 'www' etc.)
-  if (domainParts.length >= 3 && subdomain) {
+    // Extract affiliate ID (from "affiliate-marketing-nu" → "marketing-nu")
+    const affiliateId = subdomain.replace(/^[^-]+-/, ""); // Remove prefix
+
+    if (affiliateId) {
+      return NextResponse.rewrite(
+        new URL(`/affiliate/${affiliateId}`, request.url),
+      );
+    }
+  }
+
+  // Handle custom domains (keep your existing logic)
+  const [subdomain, ...domainParts] = host.replace(/:\d+$/, "").split(".");
+  if (domainParts.length >= 2 && subdomain) {
     return NextResponse.rewrite(
       new URL(`/affiliate/${subdomain}`, request.url),
     );
