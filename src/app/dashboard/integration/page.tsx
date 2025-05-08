@@ -1,9 +1,10 @@
 import React from "react";
+import ConnectStripeButton from "@/components/pages/Dashboard/Integration/Integration";
 
 const integrationPage = () => {
   return (
     <>
-      <div>integrationPage</div>
+      <ConnectStripeButton />
     </>
   );
 };
