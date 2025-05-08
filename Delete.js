@@ -1,6 +1,4 @@
-const stripe = require("stripe")(
-  "sk_test_51REW2mRE6SeqN11Bh6ATQ86XnnfFr07MG7mqlwr8zq4kPzYiIwKbo1dq0bC2167b9CjzXSxEVyKRLkp5HbJfSRhM00S1rcEedc",
-);
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // Wrap in an async function since top-level await isn't allowed in CommonJS
 (async () => {
