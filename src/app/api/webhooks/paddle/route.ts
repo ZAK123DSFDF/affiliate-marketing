@@ -53,7 +53,6 @@ export async function POST(request: NextRequest) {
           email: "zaksubscription@gmail.com",
           name: "zak",
           age: 28,
-          paymentProvider: "paddle",
         });
         console.log("New subscription:", payload.data.id);
         break;
@@ -62,7 +61,6 @@ export async function POST(request: NextRequest) {
           email: "zaktransaction@gmail.com",
           name: "zak",
           age: 28,
-          paymentProvider: "paddle",
         });
         console.log("Payment completed:", payload.data.id);
         break;

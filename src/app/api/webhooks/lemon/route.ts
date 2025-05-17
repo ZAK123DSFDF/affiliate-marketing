@@ -41,7 +41,6 @@ export async function POST(request: NextRequest) {
         email: "zakorder@gmail.com",
         name: "zak",
         age: 28,
-        paymentProvider: "lemon_squeezy",
       });
       console.log("💰 New order:", orderId);
       // Call your internal API or database here

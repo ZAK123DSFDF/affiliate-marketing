@@ -32,7 +32,6 @@ export async function POST(req: NextRequest) {
         email: "zak@gmail.com",
         name: "zak",
         age: 28,
-        paymentProvider: "stripe",
       });
 
       console.log("✅ PaymentIntent succeeded:", paymentIntent.id);
@@ -48,7 +47,6 @@ export async function POST(req: NextRequest) {
         email: "zakcheckout@gmail.com",
         name: "zak",
         age: 28,
-        paymentProvider: "stripe",
       });
       break;
     }

@@ -9,7 +9,6 @@ async function main() {
     name: "John Doe",
     age: 30,
     email: "john@example.com",
-    paymentProvider: "stripe",
   });
   console.log("Added John");
 
@@ -18,7 +17,6 @@ async function main() {
     name: "Jane Smith",
     age: 28,
     email: "jane@example.com",
-    paymentProvider: "stripe",
   });
   console.log("Added Jane");
 
