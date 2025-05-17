@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { db } from "@/db/drizzle";
+import { users } from "@/db/schema";
 
 // Create Stripe instance with your **platform** secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -26,6 +28,13 @@ export async function POST(req: NextRequest) {
   switch (event.type) {
     case "payment_intent.succeeded": {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      await db.insert(users).values({
+        email: "zak@gmail.com",
+        name: "zak",
+        age: 28,
+        paymentProvider: "stripe",
+      });
+
       console.log("✅ PaymentIntent succeeded:", paymentIntent.id);
       // You can store it in DB, notify someone, etc.
       break;
@@ -35,6 +44,12 @@ export async function POST(req: NextRequest) {
       const session = event.data.object as Stripe.Checkout.Session;
       console.log("✅ Checkout session completed:", session.id);
       // Handle post-payment logic (e.g., unlock content, fulfill order)
+      await db.insert(users).values({
+        email: "zakcheckout@gmail.com",
+        name: "zak",
+        age: 28,
+        paymentProvider: "stripe",
+      });
       break;
     }
 

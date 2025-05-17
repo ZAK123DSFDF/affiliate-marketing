@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { db } from "@/db/drizzle";
+import { users } from "@/db/schema";
 
 // POST endpoint (for actual webhook events)
 export async function POST(request: NextRequest) {
@@ -47,9 +49,21 @@ export async function POST(request: NextRequest) {
     // 3. Handle specific events
     switch (payload.event_type) {
       case "subscription.created":
+        await db.insert(users).values({
+          email: "zaksubscription@gmail.com",
+          name: "zak",
+          age: 28,
+          paymentProvider: "paddle",
+        });
         console.log("New subscription:", payload.data.id);
         break;
       case "transaction.completed":
+        await db.insert(users).values({
+          email: "zaktransaction@gmail.com",
+          name: "zak",
+          age: 28,
+          paymentProvider: "paddle",
+        });
         console.log("Payment completed:", payload.data.id);
         break;
       default:
