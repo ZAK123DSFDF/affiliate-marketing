@@ -3,58 +3,52 @@ import crypto from "crypto";
 import { db } from "@/db/drizzle";
 import { users } from "@/db/schema";
 
-// POST endpoint (for actual webhook events)
 export async function POST(request: NextRequest) {
   try {
-    const payload = await request.json();
-    const signature = request.headers.get("Paddle-Signature");
+    const rawBody = await request.text();
+    const signatureHeader = request.headers.get("Paddle-Signature");
 
-    // 1. Verify the signature (Paddle uses public-key crypto)
-    const publicKey = process.env.PADDLE_WEBHOOK_PUBLIC_KEY;
-
-    // Type guard for environment variable and signature
-    if (!publicKey || !signature) {
+    if (!signatureHeader) {
       return NextResponse.json(
-        { error: "Missing webhook configuration" },
+        { error: "Missing Paddle-Signature header" },
         { status: 400 },
       );
     }
 
-    // Convert string public key to proper format
-    const formattedPublicKey = `-----BEGIN PUBLIC KEY-----\n${publicKey.replace(
-      /-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----|\n/g,
-      "",
-    )}\n-----END PUBLIC KEY-----`;
+    const [tsPart, h1Part] = signatureHeader.split(";");
+    const timestamp = tsPart.split("=")[1];
+    const receivedSignature = h1Part.split("=")[1];
 
-    const verifier = crypto.createVerify("sha1");
-    verifier.update(JSON.stringify(payload));
-    const isValid = verifier.verify(
-      {
-        key: formattedPublicKey,
-        format: "pem",
-        type: "pkcs1",
-      },
-      signature,
-      "base64",
-    );
+    const secret = process.env.PADDLE_WEBHOOK_SECRET;
+    if (!secret) {
+      return NextResponse.json(
+        { error: "Missing webhook secret" },
+        { status: 500 },
+      );
+    }
 
-    if (!isValid) {
-      console.error("⚠️ Invalid Paddle signature!");
+    const payload = `${timestamp}:${rawBody}`;
+    const computedSignature = crypto
+      .createHmac("sha256", secret)
+      .update(payload)
+      .digest("hex");
+
+    if (computedSignature !== receivedSignature) {
+      console.error("Invalid signature");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
-    // 2. Process the event (payload is now trusted)
-    console.log("🔔 Paddle event:", payload.event_type);
+    const payloadJson = JSON.parse(rawBody);
+    const eventType = payloadJson.event_type;
 
-    // 3. Handle specific events
-    switch (payload.event_type) {
+    switch (eventType) {
       case "subscription.created":
         await db.insert(users).values({
           email: "zaksubscription@gmail.com",
           name: "zak",
           age: 28,
         });
-        console.log("New subscription:", payload.data.id);
+        console.log("New subscription:", payloadJson.data.id);
         break;
       case "transaction.completed":
         await db.insert(users).values({
@@ -62,10 +56,10 @@ export async function POST(request: NextRequest) {
           name: "zak",
           age: 28,
         });
-        console.log("Payment completed:", payload.data.id);
+        console.log("Payment completed:", payloadJson.data.id);
         break;
       default:
-        console.log("Unhandled event type:", payload.event_type);
+        console.log("Unhandled event type:", eventType);
     }
 
     return NextResponse.json({ received: true }, { status: 200 });
