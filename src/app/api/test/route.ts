@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import { db } from "@/db/drizzle";
 import { users } from "@/db/schema";
 
-export async function GET() {
+export async function POST() {
+  console.log("received incoming message");
   try {
     // Test user insertion
     await db.insert(users).values({
@@ -27,4 +28,13 @@ export async function GET() {
       { status: 500 },
     );
   }
+  // console.log("this works");
+  // await db.insert(users).values({
+  //   email: "test-" + Date.now() + "@gmail.com",
+  //   name: "test-" + Date.now(),
+  //   age: 28,
+  // });
+  // return NextResponse.json({
+  //   success: true,
+  // });
 }
