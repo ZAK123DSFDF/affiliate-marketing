@@ -11,6 +11,7 @@
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
     "@neondatabase/serverless": "^1.0.0",
+    "@paddle/paddle-node-sdk": "^2.7.1",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@paypal/paypal-server-sdk": "^1.0.0",
     "@paypal/react-paypal-js": "^8.8.3",
