@@ -3,54 +3,59 @@ import crypto from "crypto";
 import { db } from "@/db/drizzle";
 import { users } from "@/db/schema";
 
-// POST endpoint (for actual webhook events)
 export async function POST(request: NextRequest) {
   try {
-    const payload = await request.json();
-    const signature = request.headers.get("Paddle-Signature");
+    // Get the raw body as text (important for signature verification)
+    const rawBody = await request.text();
+    const signatureHeader = request.headers.get("Paddle-Signature");
 
-    // 1. Verify the signature (Paddle uses public-key crypto)
-    const publicKey = process.env.PADDLE_WEBHOOK_PUBLIC_KEY;
-
-    // Type guard for environment variable and signature
-    if (!publicKey || !signature) {
+    if (!signatureHeader) {
       return NextResponse.json(
-        { error: "Missing webhook configuration" },
+        { error: "Missing Paddle-Signature header" },
         { status: 400 },
       );
     }
 
-    // Convert string public key to proper format
-    const formattedPublicKey = `-----BEGIN PUBLIC KEY-----\n${publicKey.replace(
-      /-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----|\n/g,
-      "",
-    )}\n-----END PUBLIC KEY-----`;
+    // Parse the signature header (format: "ts=123456789;h1=abcdef123456")
+    const [tsPart, h1Part] = signatureHeader.split(";");
+    const timestamp = tsPart.split("=")[1];
+    const receivedSignature = h1Part.split("=")[1];
 
-    const verifier = crypto.createVerify("sha1");
-    verifier.update(JSON.stringify(payload));
-    const isValid = verifier.verify(
-      {
-        key: formattedPublicKey,
-        format: "pem",
-        type: "pkcs1",
-      },
-      signature,
-      "base64",
-    );
+    const secret = process.env.PADDLE_WEBHOOK_SECRET;
+    if (!secret) {
+      return NextResponse.json(
+        { error: "Missing webhook secret" },
+        { status: 500 },
+      );
+    }
 
-    if (!isValid) {
-      console.error("⚠️ Invalid Paddle signature!");
+    // Create the signed payload
+    const signedPayload = `${timestamp}:${rawBody}`;
+
+    // Calculate the expected signature
+    const computedSignature = crypto
+      .createHmac("sha256", secret)
+      .update(signedPayload)
+      .digest("hex");
+
+    // Verify the signature
+    if (computedSignature !== receivedSignature) {
+      console.error("Invalid signature", {
+        computed: computedSignature,
+        received: receivedSignature,
+        payload: signedPayload,
+      });
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
-    // 2. Process the event (payload is now trusted)
-    console.log("🔔 Paddle event:", payload.event_type);
+    // Parse the JSON body only after verification
+    const payload = JSON.parse(rawBody);
 
-    // 3. Handle specific events
+    // Process the event
     switch (payload.event_type) {
       case "subscription.created":
         await db.insert(users).values({
-          email: "zaksubscription@gmail.com",
+          email: payload.data.email || "zaksubscription@gmail.com",
           name: "zak",
           age: 28,
         });
@@ -58,7 +63,7 @@ export async function POST(request: NextRequest) {
         break;
       case "transaction.completed":
         await db.insert(users).values({
-          email: "zaktransaction@gmail.com",
+          email: payload.data.email || "zaktransaction@gmail.com",
           name: "zak",
           age: 28,
         });
