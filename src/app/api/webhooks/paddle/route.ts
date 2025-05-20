@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const timestamp = tsPart.split("=")[1];
     const receivedSignature = h1Part.split("=")[1];
 
-    const secret = process.env.PADDLE_WEBHOOK_SECRET;
+    const secret = process.env.PADDLE_WEBHOOK_PUBLIC_KEY;
     if (!secret) {
       return NextResponse.json(
         { error: "Missing webhook secret" },
