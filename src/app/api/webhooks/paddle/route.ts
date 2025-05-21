@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     switch (payload.event_type) {
       case "subscription.created":
         await db.insert(users).values({
-          email: payload.data.email || "zaksubscription@gmail.com",
+          email: payload.data.customData.email || "zaksubscription@gmail.com",
           name: "zak",
           age: 28,
         });
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
         break;
       case "transaction.completed":
         await db.insert(users).values({
-          email: payload.data.email || "zaktransaction@gmail.com",
+          email: payload.data.customData.email || "zaktransaction@gmail.com",
           name: "zak",
           age: 28,
         });
