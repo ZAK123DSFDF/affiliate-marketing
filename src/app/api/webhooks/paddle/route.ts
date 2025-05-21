@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         console.log("Unhandled event type:", payload.event_type);
     }
 
-    return NextResponse.json({ received: true }, { status: 200 });
+    return NextResponse.json({ received: true, payload }, { status: 200 });
   } catch (err) {
     console.error("Error processing Paddle webhook:", err);
     return NextResponse.json(
