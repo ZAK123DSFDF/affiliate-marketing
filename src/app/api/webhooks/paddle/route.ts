@@ -4,96 +4,85 @@ import prisma from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
   try {
-    // Get the raw body as text (must be raw, unprocessed body)
+    // Get the raw body as text (important for signature verification)
     const rawBody = await request.text();
-    const signatureHeader = request.headers.get("paddle-signature");
-
-    // Debugging logs (remove in production)
-    console.log("Raw body received:", rawBody);
-    console.log("Signature header:", signatureHeader);
+    const signatureHeader = request.headers.get("Paddle-Signature");
 
     if (!signatureHeader) {
-      console.error("Missing signature header");
       return NextResponse.json(
         { error: "Missing Paddle-Signature header" },
         { status: 400 },
       );
     }
 
-    // Parse signature (more robust parsing)
-    const signatureParts = signatureHeader.split(";").reduce(
-      (acc, part) => {
-        const [key, value] = part.split("=");
-        return { ...acc, [key]: value };
-      },
-      {} as Record<string, string>,
-    );
+    // Parse the signature header (format: "ts=123456789;h1=abcdef123456")
+    const [tsPart, h1Part] = signatureHeader.split(";");
+    const timestamp = tsPart.split("=")[1];
+    const receivedSignature = h1Part.split("=")[1];
 
-    const timestamp = signatureParts.ts;
-    const receivedSignature = signatureParts.h1;
-
-    if (!timestamp || !receivedSignature) {
-      console.error("Malformed signature header:", signatureHeader);
-      return NextResponse.json(
-        { error: "Invalid signature format" },
-        { status: 400 },
-      );
-    }
-
-    const secret = process.env.PADDLE_WEBHOOK_SECRET_KEY; // Note: Should be SECRET not PUBLIC
+    const secret = process.env.PADDLE_WEBHOOK_PUBLIC_KEY;
     if (!secret) {
-      console.error("Webhook secret not configured");
       return NextResponse.json(
-        { error: "Server configuration error" },
+        { error: "Missing webhook secret" },
         { status: 500 },
       );
     }
 
-    // Create signed payload
+    // Create the signed payload
     const signedPayload = `${timestamp}:${rawBody}`;
-    console.log("Signed payload:", signedPayload);
 
-    // Calculate expected signature
+    // Calculate the expected signature
     const computedSignature = crypto
       .createHmac("sha256", secret)
       .update(signedPayload)
       .digest("hex");
 
-    console.log("Computed signature:", computedSignature);
-    console.log("Received signature:", receivedSignature);
-
-    // Verify signature (constant-time comparison)
-    const signatureValid = crypto.timingSafeEqual(
-      Buffer.from(computedSignature),
-      Buffer.from(receivedSignature),
-    );
-
-    if (!signatureValid) {
-      console.error("Signature verification failed", {
-        computedLength: computedSignature.length,
-        receivedLength: receivedSignature.length,
-        rawBodyLength: rawBody.length,
+    // Verify the signature
+    if (computedSignature !== receivedSignature) {
+      console.error("Invalid signature", {
+        computed: computedSignature,
+        received: receivedSignature,
+        payload: signedPayload,
       });
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
-    // Parse and process payload
+    // Parse the JSON body only after verification
     const payload = JSON.parse(rawBody);
-    console.log("Webhook payload:", JSON.stringify(payload, null, 2));
 
-    // Process events
+    // Process the event
     switch (payload.event_type) {
       case "subscription.created":
+        // await prisma.user.create({
+        //   data: {
+        //     email:
+        //       payload.data.custom_data.email || "zaksubscription@gmail.com",
+        //     name: payload.data.custom_data.name || "zak",
+        //     age: 28,
+        //     paymentProvider: "paddle",
+        //   },
+        // });
+        console.log("New subscription:", payload.data.id);
+        break;
       case "transaction.completed":
-        console.log(`Event ${payload.event_type}`, payload.data.id);
+        // await prisma.user.create({
+        //   data: {
+        //     email:
+        //       payload.data.custom_data.email || "zaksubscription@gmail.com",
+        //     name: payload.data.custom_data.name || "zak",
+        //     age: 28,
+        //     paymentProvider: "paddle",
+        //   },
+        // });
+        console.log("Payment completed:", payload.data.id);
         break;
       default:
         console.log("Unhandled event type:", payload.event_type);
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ received: true, payload }, { status: 200 });
   } catch (err) {
-    console.error("Webhook processing error:", err);
+    console.error("Error processing Paddle webhook:", err);
     return NextResponse.json(
       { error: "Webhook processing failed" },
       { status: 400 },
