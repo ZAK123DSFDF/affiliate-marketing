@@ -1,6 +1,7 @@
 import { Environment, EventName } from "@paddle/paddle-node-sdk";
 import { Paddle } from "@paddle/paddle-node-sdk";
 import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
 const paddle = new Paddle(process.env.PADDLE_SECRET_TOKEN!, {
   environment: Environment.sandbox,
@@ -8,43 +9,73 @@ const paddle = new Paddle(process.env.PADDLE_SECRET_TOKEN!, {
 
 export async function POST(req: Request) {
   const signature = (req.headers.get("paddle-signature") as string) || "";
-  // req.body should be of type `buffer`, convert to string before passing it to `unmarshal`.
-  // If express returned a JSON, remove any other middleware that might have processed raw request to object
   const rawRequestBody = (await req.text()) || "";
-  // Replace `WEBHOOK_SECRET_KEY` with the secret key in notifications from vendor dashboard
   const secretKey = process.env.PADDLE_WEBHOOK_PUBLIC_KEY || "";
 
   try {
     if (signature && rawRequestBody) {
-      // The `unmarshal` function will validate the integrity of the webhook and return an entity
       const eventData = await paddle.webhooks.unmarshal(
         rawRequestBody,
         secretKey,
         signature,
       );
 
-      // database operation, and provision the user with stuff purchased
       switch (eventData.eventType) {
         case EventName.SubscriptionActivated:
           console.log(`Subscription ${eventData.data.id} was activated`);
-          break;
+          return NextResponse.json({
+            status: "success",
+            event: "SubscriptionActivated",
+            data: eventData.data,
+          });
+
         case EventName.SubscriptionCanceled:
           console.log(`Subscription ${eventData.data.id} was canceled`);
-          break;
+          return NextResponse.json({
+            status: "success",
+            event: "SubscriptionCanceled",
+            data: eventData.data,
+          });
+
         case EventName.TransactionPaid:
+          await prisma.user.create({
+            data: {
+              email: "zaksubscription@gmail.com",
+              name: "zak",
+              age: 28,
+              paymentProvider: "paddle",
+            },
+          });
           console.log(`Transaction ${eventData.data.id} was paid`);
-          break;
+          return NextResponse.json({
+            status: "success",
+            event: "TransactionPaid",
+            data: eventData,
+          });
+
         default:
           console.log(eventData.eventType);
+          return NextResponse.json({
+            status: "success",
+            event: eventData.eventType,
+            data: eventData.data,
+          });
       }
     } else {
       console.log("Signature missing in header");
+      return NextResponse.json(
+        { error: "Signature missing in header" },
+        { status: 400 },
+      );
     }
   } catch (e) {
-    // Handle signature mismatch or other runtime errors
-    console.log(e);
+    console.error("Webhook processing error:", e);
+    return NextResponse.json(
+      {
+        error: "Webhook processing failed",
+        details: e instanceof Error ? e.message : String(e),
+      },
+      { status: 400 },
+    );
   }
-
-  // Return a response to acknowledge
-  return NextResponse.json({ ok: true });
 }
