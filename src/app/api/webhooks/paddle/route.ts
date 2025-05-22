@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { db } from "@/db/drizzle";
-import { users } from "@/db/schema";
+import prisma from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,20 +53,26 @@ export async function POST(request: NextRequest) {
     // Process the event
     switch (payload.event_type) {
       case "subscription.created":
-        await db.insert(users).values({
-          email: "zaksubscription@gmail.com",
-          name: "zak",
-          age: 28,
-          paymentProvider: "paddle",
+        await prisma.user.create({
+          data: {
+            email:
+              payload.data.custom_data.email || "zaksubscription@gmail.com",
+            name: payload.data.custom_data.email || "zak",
+            age: 28,
+            paymentProvider: "paddle",
+          },
         });
         console.log("New subscription:", payload.data.id);
         break;
       case "transaction.completed":
-        await db.insert(users).values({
-          email: "zaktransaction@gmail.com",
-          name: "zak",
-          age: 28,
-          paymentProvider: "paddle",
+        await prisma.user.create({
+          data: {
+            email:
+              payload.data.custom_data.email || "zaksubscription@gmail.com",
+            name: payload.data.custom_data.email || "zak",
+            age: 28,
+            paymentProvider: "paddle",
+          },
         });
         console.log("Payment completed:", payload.data.id);
         break;
