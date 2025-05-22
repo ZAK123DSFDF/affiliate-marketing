@@ -38,14 +38,14 @@ export async function POST(req: Request) {
           });
 
         case EventName.TransactionPaid:
-          await prisma.user.create({
-            data: {
-              email: "zaksubscription@gmail.com",
-              name: "zak",
-              age: 28,
-              paymentProvider: "paddle",
-            },
-          });
+          // await prisma.user.create({
+          //   data: {
+          //     email: "zaksubscription@gmail.com",
+          //     name: "zak",
+          //     age: 28,
+          //     paymentProvider: "paddle",
+          //   },
+          // });
           console.log(`Transaction ${eventData.data.id} was paid`);
           return NextResponse.json({
             status: "success",
