@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
           data: {
             email:
               payload.data.custom_data.email || "zaksubscription@gmail.com",
-            name: payload.data.custom_data.email || "zak",
+            name: payload.data.custom_data.name || "zak",
             age: 28,
             paymentProvider: "paddle",
           },
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
           data: {
             email:
               payload.data.custom_data.email || "zaksubscription@gmail.com",
-            name: payload.data.custom_data.email || "zak",
+            name: payload.data.custom_data.name || "zak",
             age: 28,
             paymentProvider: "paddle",
           },
