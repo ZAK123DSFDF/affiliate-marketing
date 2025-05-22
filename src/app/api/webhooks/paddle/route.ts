@@ -27,22 +27,20 @@ export async function POST(request: NextRequest) {
         { status: 500 },
       );
     }
+    const isVerified = crypto.verify(
+      "sha256",
+      Buffer.from(rawBody),
+      {
+        key: secret,
+        padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
+      },
+      Buffer.from(signatureHeader, "base64"),
+    );
 
-    // Create the signed payload
-    const signedPayload = `${timestamp}:${rawBody}`;
-
-    // Calculate the expected signature
-    const computedSignature = crypto
-      .createHmac("sha256", secret)
-      .update(signedPayload)
-      .digest("hex");
-
-    // Verify the signature
-    if (computedSignature !== receivedSignature) {
+    if (!isVerified) {
       console.error("Invalid signature", {
-        computed: computedSignature,
-        received: receivedSignature,
-        payload: signedPayload,
+        rawBody,
+        signatureHeader,
       });
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
