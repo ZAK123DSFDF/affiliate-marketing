@@ -1,8 +1,6 @@
 // app/api/lemon-webhook/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { db } from "@/db/drizzle";
-import { users } from "@/db/schema";
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,11 +35,6 @@ export async function POST(request: NextRequest) {
     // 3. Handle critical events (example)
     if (event.meta.event_name === "order_created") {
       const orderId = event.data.id;
-      await db.insert(users).values({
-        email: "zakorder@gmail.com",
-        name: "zak",
-        age: 28,
-      });
       console.log("💰 New order:", orderId);
       // Call your internal API or database here
     }
