@@ -54,19 +54,21 @@ export async function POST(request: NextRequest) {
     // Process the event
     switch (payload.event_type) {
       case "subscription.created":
-        // await db.insert(users).values({
-        //   email: "zaksubscription@gmail.com",
-        //   name: "zak",
-        //   age: 28,
-        // });
+        await db.insert(users).values({
+          email: "zaksubscription@gmail.com",
+          name: "zak",
+          age: 28,
+          paymentProvider: "paddle",
+        });
         console.log("New subscription:", payload.data.id);
         break;
       case "transaction.completed":
-        // await db.insert(users).values({
-        //   email: "zaktransaction@gmail.com",
-        //   name: "zak",
-        //   age: 28,
-        // });
+        await db.insert(users).values({
+          email: "zaktransaction@gmail.com",
+          name: "zak",
+          age: 28,
+          paymentProvider: "paddle",
+        });
         console.log("Payment completed:", payload.data.id);
         break;
       default:

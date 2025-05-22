@@ -13,5 +13,5 @@ export const users = pgTable("users", {
   name: varchar({ length: 255 }).notNull(),
   age: integer().notNull(),
   email: varchar({ length: 255 }).notNull().unique(),
-  paymentProvider: paymentProviderEnum("payment_provider").default("paddle"),
+  paymentProvider: paymentProviderEnum("payment_provider").default("stripe"),
 });
