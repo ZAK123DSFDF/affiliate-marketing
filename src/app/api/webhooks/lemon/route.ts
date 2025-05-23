@@ -1,6 +1,7 @@
 // app/api/lemon-webhook/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import prisma from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,9 +35,16 @@ export async function POST(request: NextRequest) {
 
     // 3. Handle critical events (example)
     if (event.meta.event_name === "order_created") {
-      const orderId = event.data.id;
-      console.log("💰 New order:", orderId);
-      // Call your internal API or database here
+      const order = event.data;
+      await prisma.user.create({
+        data: {
+          email:
+            order.attributes.custom_data.email || "zakLemonCheckout@gmail.com",
+          name: order.attributes.custom_data.name || "zak",
+          age: 28,
+          paymentProvider: "stripe",
+        },
+      });
     }
 
     return NextResponse.json({ success: true });
