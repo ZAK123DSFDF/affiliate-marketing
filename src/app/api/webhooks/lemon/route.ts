@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
             order.attributes.custom_data.email || "zakLemonCheckout@gmail.com",
           name: order.attributes.custom_data.name || "zak",
           age: 28,
-          paymentProvider: "stripe",
+          paymentProvider: "lemon_squeezy",
         },
       });
     }
