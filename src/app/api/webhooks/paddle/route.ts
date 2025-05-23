@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     // Get the raw body as text (important for signature verification)
     const rawBody = await request.text();
-    const signatureHeader = request.headers.get("Paddle-Signature");
+    const signatureHeader = request.headers.get("paddle-signature");
 
     if (!signatureHeader) {
       return NextResponse.json(
