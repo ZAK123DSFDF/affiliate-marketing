@@ -48,7 +48,11 @@ export async function POST(request: NextRequest) {
       // });
     }
 
-    return NextResponse.json({ success: true, event });
+    return new NextResponse(JSON.stringify({ success: true, event }, null, 2), {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   } catch (err) {
     console.error("Error processing webhook:", err);
     return NextResponse.json(
