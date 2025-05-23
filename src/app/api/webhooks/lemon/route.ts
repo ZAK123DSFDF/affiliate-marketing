@@ -32,20 +32,17 @@ export async function POST(request: NextRequest) {
     // 2. Process the event (payload is now trusted)
     const event = JSON.parse(payload);
     console.log("🔔 Event received:", event.meta.event_name);
-    let order;
+
     // 3. Handle critical events (example)
     if (event.meta.event_name === "order_created") {
-      order = event.data;
-
-      // await prisma.user.create({
-      //   data: {
-      //     email:
-      //       order.attributes.custom_data.email || "zakLemonCheckout@gmail.com",
-      //     name: order.attributes.custom_data.name || "zak",
-      //     age: 28,
-      //     paymentProvider: "lemon_squeezy",
-      //   },
-      // });
+      await prisma.user.create({
+        data: {
+          email: event.meta.custom_data.email || "zakLemonCheckout@gmail.com",
+          name: event.meta.custom_data.name || "zak",
+          age: 28,
+          paymentProvider: "lemon_squeezy",
+        },
+      });
     }
 
     return new NextResponse(JSON.stringify({ success: true, event }, null, 2), {
