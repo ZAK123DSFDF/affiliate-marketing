@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
           email: session.metadata?.email || "zakStripeCheckout@gmail.com",
           name: session.metadata?.name || "zak",
           age: 28,
-          paymentProvider: "paddle",
+          paymentProvider: "stripe",
         },
       });
       console.log("✅ Checkout session completed:", session.id);
