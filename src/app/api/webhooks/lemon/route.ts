@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       // });
     }
 
-    return NextResponse.json({ success: true, order });
+    return NextResponse.json({ success: true, event });
   } catch (err) {
     console.error("Error processing webhook:", err);
     return NextResponse.json(
