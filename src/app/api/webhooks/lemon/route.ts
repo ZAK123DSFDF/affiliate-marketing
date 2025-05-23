@@ -32,22 +32,23 @@ export async function POST(request: NextRequest) {
     // 2. Process the event (payload is now trusted)
     const event = JSON.parse(payload);
     console.log("🔔 Event received:", event.meta.event_name);
-
+    let order;
     // 3. Handle critical events (example)
     if (event.meta.event_name === "order_created") {
-      const order = event.data;
-      await prisma.user.create({
-        data: {
-          email:
-            order.attributes.custom_data.email || "zakLemonCheckout@gmail.com",
-          name: order.attributes.custom_data.name || "zak",
-          age: 28,
-          paymentProvider: "lemon_squeezy",
-        },
-      });
+      order = event.data;
+
+      // await prisma.user.create({
+      //   data: {
+      //     email:
+      //       order.attributes.custom_data.email || "zakLemonCheckout@gmail.com",
+      //     name: order.attributes.custom_data.name || "zak",
+      //     age: 28,
+      //     paymentProvider: "lemon_squeezy",
+      //   },
+      // });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, order });
   } catch (err) {
     console.error("Error processing webhook:", err);
     return NextResponse.json(
