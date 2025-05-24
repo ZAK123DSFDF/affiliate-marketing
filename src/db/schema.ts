@@ -1,4 +1,11 @@
-import { pgTable, uuid, varchar, integer, pgEnum } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  uuid,
+  varchar,
+  integer,
+  pgEnum,
+  text,
+} from "drizzle-orm/pg-core";
 
 // Define enum for payment providers
 export const paymentProviderEnum = pgEnum("payment_provider", [
@@ -9,8 +16,8 @@ export const paymentProviderEnum = pgEnum("payment_provider", [
 
 export const users = pgTable("users", {
   id: uuid().primaryKey().defaultRandom(),
-  name: varchar({ length: 255 }).notNull(),
+  name: text().notNull(),
   age: integer().notNull(),
-  email: varchar({ length: 255 }).notNull().unique(),
+  email: text().notNull().unique(),
   paymentProvider: paymentProviderEnum().notNull(),
 });
