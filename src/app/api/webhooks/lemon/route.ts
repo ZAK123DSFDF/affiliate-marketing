@@ -2,6 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import prisma from "@/lib/prisma";
+import { db } from "@/db/drizzle";
+import { users } from "@/db/schema";
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,13 +37,19 @@ export async function POST(request: NextRequest) {
 
     // 3. Handle critical events (example)
     if (event.meta.event_name === "order_created") {
-      await prisma.user.create({
-        data: {
-          email: event.meta.custom_data.email || "zakLemonCheckout@gmail.com",
-          name: event.meta.custom_data.name || "zak",
-          age: 28,
-          paymentProvider: "lemon_squeezy",
-        },
+      // await prisma.user.create({
+      //   data: {
+      //     email: event.meta.custom_data.email || "zakLemonCheckout@gmail.com",
+      //     name: event.meta.custom_data.name || "zak",
+      //     age: 28,
+      //     paymentProvider: "lemon_squeezy",
+      //   },
+      // });
+      await db.insert(users).values({
+        email: event.meta.custom_data.email || "zakLemonCheckout@gmail.com",
+        name: event.meta.custom_data.name || "zak",
+        age: 28,
+        paymentProvider: "lemon_squeezy",
       });
     }
 

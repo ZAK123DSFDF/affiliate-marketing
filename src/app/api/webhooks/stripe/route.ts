@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import prisma from "@/lib/prisma";
+import { db } from "@/db/drizzle";
+import { users } from "@/db/schema";
 
 // Create Stripe instance with your **platform** secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -35,13 +37,19 @@ export async function POST(req: NextRequest) {
 
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
-      await prisma.user.create({
-        data: {
-          email: session.metadata?.email || "zakStripeCheckout@gmail.com",
-          name: session.metadata?.name || "zak",
-          age: 28,
-          paymentProvider: "stripe",
-        },
+      // await prisma.user.create({
+      //   data: {
+      //     email: session.metadata?.email || "zakStripeCheckout@gmail.com",
+      //     name: session.metadata?.name || "zak",
+      //     age: 28,
+      //     paymentProvider: "stripe",
+      //   },
+      // });
+      await db.insert(users).values({
+        email: session.metadata?.email || "zakTransaction@gmail.com",
+        name: session.metadata?.name || "zak",
+        age: 28,
+        paymentProvider: "stripe",
       });
       console.log("✅ Checkout session completed:", session.id);
       // Handle post-payment logic (e.g., unlock content, fulfill order)
