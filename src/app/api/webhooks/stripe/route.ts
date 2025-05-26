@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import prisma from "@/lib/prisma";
 import { db } from "@/db/drizzle";
 import { users } from "@/db/schema";
 
@@ -37,14 +36,6 @@ export async function POST(req: NextRequest) {
 
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
-      // await prisma.user.create({
-      //   data: {
-      //     email: session.metadata?.email || "zakStripeCheckout@gmail.com",
-      //     name: session.metadata?.name || "zak",
-      //     age: 28,
-      //     paymentProvider: "stripe",
-      //   },
-      // });
       await db.insert(users).values({
         email: session.metadata?.email || "zakTransaction@gmail.com",
         name: session.metadata?.name || "zak",

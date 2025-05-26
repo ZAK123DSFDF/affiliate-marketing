@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import prisma from "@/lib/prisma";
 import { db } from "@/db/drizzle";
 import { users } from "@/db/schema";
 
@@ -73,15 +72,6 @@ export async function POST(request: NextRequest) {
         console.log("New subscription:", payload.data.id);
         break;
       case "transaction.completed":
-        // await prisma.user.create({
-        //   data: {
-        //     email:
-        //       payload.data.custom_data.email || "zaksubscription@gmail.com",
-        //     name: payload.data.custom_data.name || "zak",
-        //     age: 28,
-        //     paymentProvider: "paddle",
-        //   },
-        // });
         await db.insert(users).values({
           email: payload.data.custom_data.email || "zakTransaction@gmail.com",
           name: payload.data.custom_data.name || "zak",
