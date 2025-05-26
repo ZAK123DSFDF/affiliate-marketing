@@ -26,9 +26,6 @@ importers:
       '@paypal/react-paypal-js':
         specifier: ^8.8.3
         version: 8.8.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@prisma/client':
-        specifier: ^6.8.2
-        version: 6.8.2(prisma@6.8.2(typescript@5.8.2))(typescript@5.8.2)
       '@radix-ui/react-checkbox':
         specifier: ^1.1.4
         version: 1.1.4(@types/react-dom@19.0.4(@types/react@19.0.12))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -132,9 +129,6 @@ importers:
       postcss:
         specifier: ^8.5.3
         version: 8.5.3
-      prisma:
-        specifier: ^6.8.2
-        version: 6.8.2(typescript@5.8.2)
       tailwindcss:
         specifier: 3.4.4
         version: 3.4.4
@@ -4020,14 +4014,18 @@ snapshots:
     optionalDependencies:
       prisma: 6.8.2(typescript@5.8.2)
       typescript: 5.8.2
+    optional: true
 
   '@prisma/config@6.8.2':
     dependencies:
       jiti: 2.4.2
+    optional: true
 
-  '@prisma/debug@6.8.2': {}
+  '@prisma/debug@6.8.2':
+    optional: true
 
-  '@prisma/engines-version@6.8.0-43.2060c79ba17c6bb9f5823312b6f6b7f4a845738e': {}
+  '@prisma/engines-version@6.8.0-43.2060c79ba17c6bb9f5823312b6f6b7f4a845738e':
+    optional: true
 
   '@prisma/engines@6.8.2':
     dependencies:
@@ -4035,16 +4033,19 @@ snapshots:
       '@prisma/engines-version': 6.8.0-43.2060c79ba17c6bb9f5823312b6f6b7f4a845738e
       '@prisma/fetch-engine': 6.8.2
       '@prisma/get-platform': 6.8.2
+    optional: true
 
   '@prisma/fetch-engine@6.8.2':
     dependencies:
       '@prisma/debug': 6.8.2
       '@prisma/engines-version': 6.8.0-43.2060c79ba17c6bb9f5823312b6f6b7f4a845738e
       '@prisma/get-platform': 6.8.2
+    optional: true
 
   '@prisma/get-platform@6.8.2':
     dependencies:
       '@prisma/debug': 6.8.2
+    optional: true
 
   '@radix-ui/number@1.1.1': {}
 
@@ -5925,7 +5926,8 @@ snapshots:
 
   jiti@1.21.7: {}
 
-  jiti@2.4.2: {}
+  jiti@2.4.2:
+    optional: true
 
   js-tokens@4.0.0: {}
 
@@ -6242,6 +6244,7 @@ snapshots:
       '@prisma/engines': 6.8.2
     optionalDependencies:
       typescript: 5.8.2
+    optional: true
 
   promise-polyfill@8.3.0: {}
 
