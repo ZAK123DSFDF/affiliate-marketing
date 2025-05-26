@@ -1,4 +1,7 @@
 import { createAuthClient } from "better-auth/react";
+const isProduction = process.env.NODE_ENV === "production";
 export const authClient = createAuthClient({
-  baseURL: "http://myapp.test:3000",
+  baseURL: isProduction
+    ? "https://affiliate-marketing-ten.vercel.app"
+    : "http://myapp.test:3000",
 });
