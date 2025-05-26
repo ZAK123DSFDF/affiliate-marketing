@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Mail, Lock, User, ArrowRight } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -23,6 +23,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
+import { useToast } from "@/hooks/use-toast";
 
 const signUpSchema = z
   .object({
@@ -50,10 +52,40 @@ const Signup = () => {
       confirmPassword: "",
     },
   });
-
-  const onSubmit = (data: SignUpFormValues) => {
-    // Here you would typically make an API call to your backend
-    console.log("Sign up data:", data);
+  const [pending, setPending] = useState(false);
+  const { toast } = useToast();
+  const onSubmit = async (data: SignUpFormValues) => {
+    form.reset();
+    await authClient.signUp.email(
+      {
+        email: data.email,
+        password: data.password,
+        name: data.name,
+      },
+      {
+        onRequest: () => {
+          setPending(true);
+        },
+        onSuccess: () => {
+          toast({
+            title: "Account created",
+            description:
+              "Your account has been created. Check your email for a verification link.",
+          });
+          console.log("success");
+        },
+        onError: (ctx) => {
+          console.log("error", ctx);
+          toast({
+            variant: "destructive",
+            title: "Something went wrong",
+            description: ctx.error.message ?? "Something went wrong.",
+          });
+          console.log("error", ctx.error.message);
+        },
+      },
+    );
+    setPending(false);
   };
 
   return (
