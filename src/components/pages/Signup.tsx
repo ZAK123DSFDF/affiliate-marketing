@@ -1,11 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { Mail, Lock, User, ArrowRight } from "lucide-react";
-import { z } from "zod";
+import { Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -25,22 +23,9 @@ import {
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { useToast } from "@/hooks/use-toast";
-
-const signUpSchema = z
-  .object({
-    name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-    email: z.string().email({ message: "Please enter a valid email address" }),
-    password: z
-      .string()
-      .min(6, { message: "Password must be at least 8 characters" }),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
-
-type SignUpFormValues = z.infer<typeof signUpSchema>;
+import { GoogleAuthButton } from "@/components/Auth/GoogleAuthButton";
+import { InputField } from "@/components/Auth/FormFields";
+import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema";
 
 const Signup = () => {
   const form = useForm<SignUpFormValues>({
@@ -54,6 +39,7 @@ const Signup = () => {
   });
   const [pending, setPending] = useState(false);
   const { toast } = useToast();
+
   const onSubmit = async (data: SignUpFormValues) => {
     form.reset();
     await authClient.signUp.email(
@@ -117,95 +103,55 @@ const Signup = () => {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4"
               >
-                <FormField
+                <InputField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Full Name</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                          <Input
-                            placeholder="John Doe"
-                            className="pl-10"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  label="Full name"
+                  placeholder="john doe"
+                  type="text"
+                  icon={<User className="h-5 w-5 text-muted-foreground" />}
                 />
 
-                <FormField
+                <InputField
                   control={form.control}
                   name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                          <Input
-                            type="email"
-                            placeholder="john.doe@example.com"
-                            className="pl-10"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  label="Email"
+                  placeholder="john.doe@example.com"
+                  type="email"
+                  icon={<Mail className="h-5 w-5 text-muted-foreground" />}
                 />
 
-                <FormField
+                <InputField
                   control={form.control}
                   name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                          <Input
-                            type="password"
-                            placeholder="••••••••"
-                            className="pl-10"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  label="Password"
+                  placeholder="••••••••"
+                  type="password"
+                  icon={<Lock className="h-5 w-5 text-muted-foreground" />}
+                  showPasswordToggle={true}
                 />
 
-                <FormField
+                <InputField
                   control={form.control}
                   name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                          <Input
-                            type="password"
-                            placeholder="••••••••"
-                            className="pl-10"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  label="Confirm Password"
+                  placeholder="••••••••"
+                  type="password"
+                  icon={<Lock className="h-5 w-5 text-muted-foreground" />}
+                  showPasswordToggle={true}
                 />
 
-                <Button type="submit" className="w-full">
-                  Create Account <ArrowRight className="ml-2 h-4 w-4" />
+                <Button type="submit" className="w-full" disabled={pending}>
+                  {pending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Please wait...
+                    </>
+                  ) : (
+                    <>
+                      Sign up <ArrowRight className="h-4 w-4" />
+                    </>
+                  )}
                 </Button>
               </form>
             </Form>
@@ -222,19 +168,18 @@ const Signup = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" className="w-full">
-                Google
-              </Button>
-              <Button variant="outline" className="w-full">
-                GitHub
-              </Button>
+            <div className="flex gap-4 ">
+              <GoogleAuthButton
+                action="signup"
+                buttonText="Sign up with Google"
+                redirectTo="/dashboard"
+              />
             </div>
 
             <div className="text-center text-sm">
               Already have an account?{" "}
               <Link
-                href="/src/components/pages/Login"
+                href="/login"
                 className="font-medium text-primary underline-offset-4 hover:underline"
               >
                 Log in
