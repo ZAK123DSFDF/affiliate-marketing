@@ -4,9 +4,11 @@ import { db } from "@/db/drizzle";
 import { openAPI, organization } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { sendEmail } from "@/lib/email";
+import * as schema from "@/db/schema";
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
+    schema,
   }),
   socialProviders: {
     google: {
