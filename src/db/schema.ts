@@ -15,10 +15,10 @@ export const user = pgTable("user", {
     .notNull(),
   image: text("image"),
   createdAt: timestamp("created_at")
-    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .$defaultFn(() => new Date())
     .notNull(),
   updatedAt: timestamp("updated_at")
-    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .$defaultFn(() => new Date())
     .notNull(),
 });
 
@@ -59,12 +59,8 @@ export const verification = pgTable("verification", {
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at").$defaultFn(
-    () => /* @__PURE__ */ new Date(),
-  ),
-  updatedAt: timestamp("updated_at").$defaultFn(
-    () => /* @__PURE__ */ new Date(),
-  ),
+  createdAt: timestamp("created_at").$defaultFn(() => new Date()),
+  updatedAt: timestamp("updated_at").$defaultFn(() => new Date()),
 });
 
 export const organization = pgTable("organization", {
@@ -76,6 +72,15 @@ export const organization = pgTable("organization", {
   metadata: text("metadata"),
 });
 
+// Define role and status enums first to avoid circular references
+const memberRoles = ["member", "admin", "owner"] as const;
+const invitationStatuses = [
+  "pending",
+  "accepted",
+  "rejected",
+  "expired",
+] as const;
+
 export const member = pgTable("member", {
   id: text("id").primaryKey(),
   organizationId: text("organization_id")
@@ -84,7 +89,7 @@ export const member = pgTable("member", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  role: text("role").default("member").notNull(),
+  role: text("role", { enum: memberRoles }).default("member").notNull(),
   createdAt: timestamp("created_at").notNull(),
 });
 
@@ -94,8 +99,10 @@ export const invitation = pgTable("invitation", {
     .notNull()
     .references(() => organization.id, { onDelete: "cascade" }),
   email: text("email").notNull(),
-  role: text("role"),
-  status: text("status").default("pending").notNull(),
+  role: text("role", { enum: memberRoles }),
+  status: text("status", { enum: invitationStatuses })
+    .default("pending")
+    .notNull(),
   expiresAt: timestamp("expires_at").notNull(),
   inviterId: text("inviter_id")
     .notNull()
