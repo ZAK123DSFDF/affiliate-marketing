@@ -109,12 +109,6 @@ const chartConfig = {
 
 export default function DashboardPage() {
   const [chartTimeframe, setChartTimeframe] = React.useState("monthly");
-  const createOrg = async () => {
-    await authClient.organization.create({
-      name: "My Organization",
-      slug: "my-org",
-    });
-  };
   return (
     <div className="flex flex-col gap-6">
       {/* Dashboard Header */}
@@ -128,7 +122,7 @@ export default function DashboardPage() {
             </p>
           </div>
         </div>
-        <Button onClick={createOrg}>Create New Link</Button>
+        <Button>Create New Link</Button>
       </div>
 
       {/* Stats Cards */}
