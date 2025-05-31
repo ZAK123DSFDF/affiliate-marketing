@@ -12,12 +12,6 @@ const DashboardPage = async () => {
     redirect("login");
   }
   console.log("Session:", session);
-  await auth.api.getFullOrganization({
-    headers: await headers(),
-    query: {
-      organizationId: "dA8Z7loVY71cfKix1kIwlxJQQEzqEkjZ",
-    },
-  });
   return (
     <>
       <Dashboard />
