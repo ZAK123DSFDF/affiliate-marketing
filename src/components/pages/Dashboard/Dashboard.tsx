@@ -40,6 +40,7 @@ import {
   YAxis,
 } from "recharts";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { authClient } from "@/lib/auth-client";
 
 const performanceData = [
   { month: "Jan", revenue: 1200, conversions: 12 },
@@ -108,7 +109,12 @@ const chartConfig = {
 
 export default function DashboardPage() {
   const [chartTimeframe, setChartTimeframe] = React.useState("monthly");
-
+  const createOrg = async () => {
+    await authClient.organization.create({
+      name: "My Organization",
+      slug: "my-org",
+    });
+  };
   return (
     <div className="flex flex-col gap-6">
       {/* Dashboard Header */}
@@ -122,7 +128,7 @@ export default function DashboardPage() {
             </p>
           </div>
         </div>
-        <Button>Create New Link</Button>
+        <Button onClick={createOrg}>Create New Link</Button>
       </div>
 
       {/* Stats Cards */}
