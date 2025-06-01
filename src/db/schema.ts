@@ -5,6 +5,7 @@ import {
   boolean,
   uuid,
   primaryKey,
+  unique,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
@@ -87,9 +88,10 @@ export const affiliate = pgTable(
       .references(() => organization.id, { onDelete: "cascade" }),
   },
   (table) => ({
-    orgEmailUnique: primaryKey({
-      columns: [table.email, table.organizationId],
-    }),
+    orgEmailUnique: unique("org_email_unique").on(
+      table.email,
+      table.organizationId,
+    ),
   }),
 );
 
