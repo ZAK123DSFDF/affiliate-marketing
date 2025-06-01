@@ -23,7 +23,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
 import { useToast } from "@/hooks/use-toast";
 import { InputField } from "@/components/Auth/FormFields";
 import {
@@ -41,28 +40,7 @@ const ForgotPassword = () => {
   const [pending, setPending] = useState(false);
   const { toast } = useToast();
 
-  const onSubmit = async (data: ForgotPasswordFormValues) => {
-    setPending(true);
-    const { error } = await authClient.forgetPassword({
-      email: data.email,
-      redirectTo: "/reset-password",
-    });
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Success",
-        description:
-          "If an account exists with this email, you will receive a password reset link.",
-      });
-    }
-    setPending(false);
-  };
+  const onSubmit = async (data: ForgotPasswordFormValues) => {};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">

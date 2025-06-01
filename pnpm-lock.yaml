@@ -17,6 +17,9 @@ importers:
       '@paddle/paddle-node-sdk':
         specifier: ^2.7.1
         version: 2.7.1
+      '@paralleldrive/cuid2':
+        specifier: ^2.2.2
+        version: 2.2.2
       '@paypal/checkout-server-sdk':
         specifier: ^1.0.3
         version: 1.0.3
@@ -817,6 +820,9 @@ packages:
   '@paddle/paddle-node-sdk@2.7.1':
     resolution: {integrity: sha512-7XWmXzm7VeH/aU/uyPrHZCbWCt/AUvVsWVZsj1XCNjXhNXdzgoA6kbGe97KUJcoELftge+DAMGBNWxv0kT1opQ==}
     engines: {node: '>=18'}
+
+  '@paralleldrive/cuid2@2.2.2':
+    resolution: {integrity: sha512-ZOBkgDwEdoYVlSeRbYYXs0S9MejQofiVYoTbKzy/6GQa39/q5tQU2IX46+shYnUkpEl3wc+J6wRlar7r2EK2xA==}
 
   '@paypal/checkout-server-sdk@1.0.3':
     resolution: {integrity: sha512-UEdq8akEdMz0Vs4qoQFU2gMp8PpyE/HKyMwiZuK4vIWUKl8jfd1fWKjQN5cDFm9NkFUIp5U7h++rdMOVj9WMNA==}
@@ -4177,6 +4183,10 @@ snapshots:
   '@nolyfill/is-core-module@1.0.39': {}
 
   '@paddle/paddle-node-sdk@2.7.1': {}
+
+  '@paralleldrive/cuid2@2.2.2':
+    dependencies:
+      '@noble/hashes': 1.8.0
 
   '@paypal/checkout-server-sdk@1.0.3':
     dependencies:

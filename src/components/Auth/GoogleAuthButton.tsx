@@ -6,7 +6,6 @@ import { GoogleIcon } from "@/components/ui/google-icon";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
 
 interface GoogleAuthButtonProps {
   action: "login" | "signup";
@@ -25,11 +24,6 @@ export const GoogleAuthButton = ({
   const handleGoogleAuth = async () => {
     setIsLoading(true);
     try {
-      await authClient.signIn.social({
-        provider: "google",
-        callbackURL: redirectTo,
-      });
-
       toast({
         title:
           action === "login" ? "Signed in successfully" : "Account created",

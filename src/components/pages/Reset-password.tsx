@@ -22,7 +22,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { InputField } from "@/components/Auth/FormFields";
@@ -66,27 +65,7 @@ const ResetPassword = () => {
   const router = useRouter();
   const { toast } = useToast();
 
-  const onSubmit = async (data: ResetPasswordFormValues) => {
-    setPending(true);
-    const { error } = await authClient.resetPassword({
-      newPassword: data.password,
-      token,
-    });
-    if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: "Password reset successful. Login to continue.",
-      });
-      router.push("/login");
-    }
-    setPending(false);
-  };
+  const onSubmit = async (data: ResetPasswordFormValues) => {};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">

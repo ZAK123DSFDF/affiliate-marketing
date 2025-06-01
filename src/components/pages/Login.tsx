@@ -14,7 +14,6 @@ import {
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { GoogleAuthButton } from "@/components/Auth/GoogleAuthButton";
@@ -33,34 +32,7 @@ const Login = () => {
     },
   });
 
-  const onSubmit = async (data: LoginFormValues) => {
-    form.reset();
-    await authClient.signIn.email(
-      {
-        email: data.email,
-        password: data.password,
-        rememberMe: data.rememberMe,
-      },
-      {
-        onRequest: () => {
-          setPending(true);
-        },
-        onSuccess: () => {
-          router.push("/dashboard");
-        },
-        onError: (ctx) => {
-          console.log("error", ctx);
-          toast({
-            variant: "destructive",
-            title: "Something went wrong",
-            description: ctx.error.message ?? "Something went wrong.",
-          });
-          console.log("error", ctx.error.message);
-        },
-      },
-    );
-    setPending(false);
-  };
+  const onSubmit = async (data: LoginFormValues) => {};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">

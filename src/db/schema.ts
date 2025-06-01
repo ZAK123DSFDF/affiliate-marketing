@@ -1,61 +1,115 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  uuid,
+  primaryKey,
+} from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { createId } from "@paralleldrive/cuid2";
 
+// USER SCHEMA (Sellers are users who create organizations)
 export const user = pgTable("user", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  emailVerified: boolean("email_verified")
-    .$defaultFn(() => false)
-    .notNull(),
+  emailVerified: boolean("email_verified").default(false).notNull(),
   image: text("image"),
-  createdAt: timestamp("created_at")
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
-  updatedAt: timestamp("updated_at")
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const session = pgTable("session", {
-  id: text("id").primaryKey(),
-  expiresAt: timestamp("expires_at").notNull(),
-  token: text("token").notNull().unique(),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
-  ipAddress: text("ip_address"),
-  userAgent: text("user_agent"),
-  userId: text("user_id")
+// ORGANIZATION SCHEMA
+export const organization = pgTable("organization", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  ownerId: uuid("owner_id") // Direct reference to the owner
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
 });
 
-export const account = pgTable("account", {
-  id: text("id").primaryKey(),
-  accountId: text("account_id").notNull(),
-  providerId: text("provider_id").notNull(),
-  userId: text("user_id")
+// TEAM MEMBERS (Only OWNER and ADMIN roles)
+export const teamMember = pgTable(
+  "team_member",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    role: text("role", { enum: ["OWNER", "ADMIN"] }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    userOrgUnique: primaryKey({
+      columns: [table.userId, table.organizationId],
+    }),
+  }),
+);
+
+// SIMPLIFIED INVITATION SYSTEM (Only for ADMINS)
+export const invitation = pgTable("invitation", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull(),
+  token: text("token")
+    .notNull()
+    .unique()
+    .$defaultFn(() => createId()),
+  organizationId: uuid("organization_id")
+    .notNull()
+    .references(() => organization.id, { onDelete: "cascade" }),
+  inviterId: uuid("inviter_id") // Must be the owner
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  accessToken: text("access_token"),
-  refreshToken: text("refresh_token"),
-  idToken: text("id_token"),
-  accessTokenExpiresAt: timestamp("access_token_expires_at"),
-  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
-  scope: text("scope"),
-  password: text("password"),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const verification = pgTable("verification", {
-  id: text("id").primaryKey(),
-  identifier: text("identifier").notNull(),
-  value: text("value").notNull(),
-  expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at").$defaultFn(
-    () => /* @__PURE__ */ new Date(),
-  ),
-  updatedAt: timestamp("updated_at").$defaultFn(
-    () => /* @__PURE__ */ new Date(),
-  ),
-});
+// AFFILIATE SCHEMA (unchanged)
+export const affiliate = pgTable(
+  "affiliate",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    emailVerified: boolean("email_verified").default(false).notNull(),
+    image: text("image"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+  },
+  (table) => ({
+    orgEmailUnique: primaryKey({
+      columns: [table.email, table.organizationId],
+    }),
+  }),
+);
+
+// RELATIONSHIPS
+export const userRelations = relations(user, ({ many }) => ({
+  organizations: many(organization, { relationName: "owner" }),
+  teamMemberships: many(teamMember),
+  sentInvitations: many(invitation, { relationName: "inviter" }),
+}));
+
+export const organizationRelations = relations(
+  organization,
+  ({ one, many }) => ({
+    owner: one(user, {
+      fields: [organization.ownerId],
+      references: [user.id],
+      relationName: "owner",
+    }),
+    teamMembers: many(teamMember),
+    affiliates: many(affiliate),
+    invitations: many(invitation),
+  }),
+);

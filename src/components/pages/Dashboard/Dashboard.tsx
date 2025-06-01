@@ -40,7 +40,6 @@ import {
   YAxis,
 } from "recharts";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { authClient } from "@/lib/auth-client";
 
 const performanceData = [
   { month: "Jan", revenue: 1200, conversions: 12 },
