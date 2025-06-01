@@ -48,9 +48,10 @@ export const teamMember = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
-    userOrgUnique: primaryKey({
-      columns: [table.userId, table.organizationId],
-    }),
+    userOrgUnique: unique("team_member_user_org_unique").on(
+      table.userId,
+      table.organizationId,
+    ),
   }),
 );
 
