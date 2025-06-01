@@ -44,7 +44,7 @@ export const teamMember = pgTable(
     organizationId: uuid("organization_id")
       .notNull()
       .references(() => organization.id, { onDelete: "cascade" }),
-    role: text("role", { enum: ["OWNER", "ADMIN"] }).notNull(),
+    role: text("role", { enum: ["ADMIN"] }).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
