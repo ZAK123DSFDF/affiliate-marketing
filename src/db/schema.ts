@@ -33,7 +33,7 @@ export const organization = pgTable("organization", {
     .references(() => user.id, { onDelete: "cascade" }),
 });
 
-// TEAM MEMBERS (Only OWNER and ADMIN roles)
+// TEAM MEMBERS (ADMIN roles)
 export const teamMember = pgTable(
   "team_member",
   {
