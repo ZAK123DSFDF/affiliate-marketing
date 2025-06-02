@@ -1,10 +1,12 @@
-import React from "react";
+import React, { Suspense } from "react";
 import CreateCompany from "@/components/pages/Create-Company";
 
 const createCompanyPage = () => {
   return (
     <>
-      <CreateCompany />
+      <Suspense fallback={<div>loading...</div>}>
+        <CreateCompany />
+      </Suspense>
     </>
   );
 };
