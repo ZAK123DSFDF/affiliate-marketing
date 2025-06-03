@@ -118,3 +118,32 @@ export const organizationRelations = relations(
     invitations: many(invitation),
   }),
 );
+export const teamMemberRelations = relations(teamMember, ({ one }) => ({
+  organization: one(organization, {
+    fields: [teamMember.organizationId],
+    references: [organization.id],
+  }),
+  user: one(user, {
+    fields: [teamMember.userId],
+    references: [user.id],
+  }),
+}));
+
+export const invitationRelations = relations(invitation, ({ one }) => ({
+  organization: one(organization, {
+    fields: [invitation.organizationId],
+    references: [organization.id],
+  }),
+  inviter: one(user, {
+    fields: [invitation.inviterId],
+    references: [user.id],
+    relationName: "inviter",
+  }),
+}));
+
+export const affiliateRelations = relations(affiliate, ({ one }) => ({
+  organization: one(organization, {
+    fields: [affiliate.organizationId],
+    references: [organization.id],
+  }),
+}));
