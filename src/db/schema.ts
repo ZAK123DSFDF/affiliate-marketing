@@ -6,10 +6,11 @@ import {
   uuid,
   primaryKey,
   unique,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
-
+export const roleEnum = pgEnum("role", ["OWNER", "ADMIN"]);
 // USER SCHEMA (Sellers are users who create organizations)
 export const user = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -17,6 +18,7 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
   emailVerified: boolean("email_verified").default(false).notNull(),
+  role: roleEnum("role").default("OWNER").notNull(),
   image: text("image"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -27,51 +29,9 @@ export const organization = pgTable("organization", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
+  domainName: text("domain_name").notNull().unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  ownerId: uuid("owner_id") // Direct reference to the owner
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-});
-
-// TEAM MEMBERS (ADMIN roles)
-export const teamMember = pgTable(
-  "team_member",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    userId: uuid("user_id")
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
-    organizationId: uuid("organization_id")
-      .notNull()
-      .references(() => organization.id, { onDelete: "cascade" }),
-    role: text("role", { enum: ["ADMIN"] }).notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-  },
-  (table) => ({
-    userOrgUnique: unique("team_member_user_org_unique").on(
-      table.userId,
-      table.organizationId,
-    ),
-  }),
-);
-
-// SIMPLIFIED INVITATION SYSTEM (Only for ADMINS)
-export const invitation = pgTable("invitation", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  email: text("email").notNull(),
-  token: text("token")
-    .notNull()
-    .unique()
-    .$defaultFn(() => createId()),
-  organizationId: uuid("organization_id")
-    .notNull()
-    .references(() => organization.id, { onDelete: "cascade" }),
-  inviterId: uuid("inviter_id") // Must be the owner
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // AFFILIATE SCHEMA (unchanged)
@@ -97,53 +57,37 @@ export const affiliate = pgTable(
     ),
   }),
 );
-
-// RELATIONSHIPS
 export const userRelations = relations(user, ({ many }) => ({
-  organizations: many(organization, { relationName: "owner" }),
-  teamMemberships: many(teamMember),
-  sentInvitations: many(invitation, { relationName: "inviter" }),
+  usersToGroups: many(userToOrganization),
 }));
+export const organizationRelations = relations(organization, ({ many }) => ({
+  usersToGroups: many(userToOrganization),
+}));
+export const userToOrganization = pgTable(
+  "user_to_organization",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
 
-export const organizationRelations = relations(
-  organization,
-  ({ one, many }) => ({
-    owner: one(user, {
-      fields: [organization.ownerId],
-      references: [user.id],
-      relationName: "owner",
-    }),
-    teamMembers: many(teamMember),
-    affiliates: many(affiliate),
-    invitations: many(invitation),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.userId, t.organizationId] }),
   }),
 );
-export const teamMemberRelations = relations(teamMember, ({ one }) => ({
-  organization: one(organization, {
-    fields: [teamMember.organizationId],
-    references: [organization.id],
+export const usersToGroupsRelations = relations(
+  userToOrganization,
+  ({ one }) => ({
+    group: one(organization, {
+      fields: [userToOrganization.organizationId],
+      references: [organization.id],
+    }),
+    user: one(user, {
+      fields: [userToOrganization.userId],
+      references: [user.id],
+    }),
   }),
-  user: one(user, {
-    fields: [teamMember.userId],
-    references: [user.id],
-  }),
-}));
-
-export const invitationRelations = relations(invitation, ({ one }) => ({
-  organization: one(organization, {
-    fields: [invitation.organizationId],
-    references: [organization.id],
-  }),
-  inviter: one(user, {
-    fields: [invitation.inviterId],
-    references: [user.id],
-    relationName: "inviter",
-  }),
-}));
-
-export const affiliateRelations = relations(affiliate, ({ one }) => ({
-  organization: one(organization, {
-    fields: [affiliate.organizationId],
-    references: [organization.id],
-  }),
-}));
+);
