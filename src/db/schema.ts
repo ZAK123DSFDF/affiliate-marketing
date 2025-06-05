@@ -61,7 +61,9 @@ export const invitation = pgTable("invitation", {
   id: uuid("id").primaryKey().defaultRandom(),
 
   email: text("email").notNull(), // Invitee's email
-
+  inviterId: uuid("inviter_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   organizationId: uuid("organization_id")
     .notNull()
     .references(() => organization.id, { onDelete: "cascade" }),
@@ -76,13 +78,6 @@ export const invitation = pgTable("invitation", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
-
-export const userRelations = relations(user, ({ many }) => ({
-  usersToGroups: many(userToOrganization),
-}));
-export const organizationRelations = relations(organization, ({ many }) => ({
-  usersToGroups: many(userToOrganization),
-}));
 export const userToOrganization = pgTable(
   "user_to_organization",
   {
@@ -98,6 +93,13 @@ export const userToOrganization = pgTable(
     pk: primaryKey({ columns: [t.userId, t.organizationId] }),
   }),
 );
+export const userRelations = relations(user, ({ many }) => ({
+  usersToGroups: many(userToOrganization),
+}));
+export const organizationRelations = relations(organization, ({ many }) => ({
+  usersToGroups: many(userToOrganization),
+}));
+
 export const usersToGroupsRelations = relations(
   userToOrganization,
   ({ one }) => ({
