@@ -7,6 +7,7 @@ import {
   primaryKey,
   unique,
   pgEnum,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
@@ -50,12 +51,15 @@ export const affiliate = pgTable(
       .notNull()
       .references(() => organization.id, { onDelete: "cascade" }),
   },
-  (table) => ({
-    orgEmailUniqueField: unique("org_email_unique").on(
-      table.email,
-      table.organizationId,
-    ),
-  }),
+  (table) => {
+    return {
+      pkey: uniqueIndex("affiliate_pkey").on(table.id),
+      orgEmailUnique: unique("org_email_unique").on(
+        table.email,
+        table.organizationId,
+      ),
+    };
+  },
 );
 export const invitation = pgTable("invitation", {
   id: uuid("id").primaryKey().defaultRandom(),
