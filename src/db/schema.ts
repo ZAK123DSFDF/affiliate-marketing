@@ -53,7 +53,6 @@ export const affiliate = pgTable(
   },
   (table) => {
     return {
-      pkey: uniqueIndex("affiliate_pkey").on(table.id),
       orgEmailUnique: unique("org_email_unique").on(
         table.email,
         table.organizationId,
