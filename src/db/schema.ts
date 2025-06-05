@@ -51,7 +51,7 @@ export const affiliate = pgTable(
       .references(() => organization.id, { onDelete: "cascade" }),
   },
   (table) => ({
-    orgEmailUnique: unique("org_email_unique").on(
+    orgEmailUniqueField: unique("org_email_unique").on(
       table.email,
       table.organizationId,
     ),
