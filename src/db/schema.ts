@@ -57,6 +57,26 @@ export const affiliate = pgTable(
     ),
   }),
 );
+export const invitation = pgTable("invitation", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  email: text("email").notNull(), // Invitee's email
+
+  organizationId: uuid("organization_id")
+    .notNull()
+    .references(() => organization.id, { onDelete: "cascade" }),
+
+  title: text("title"), // Optional email subject
+  body: text("body"), // Optional message content
+
+  token: text("token").notNull().unique(), // Unique invite token
+  accepted: boolean("accepted").default(false).notNull(),
+
+  expiresAt: timestamp("expires_at"), // Optional expiration
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const userRelations = relations(user, ({ many }) => ({
   usersToGroups: many(userToOrganization),
 }));
@@ -91,3 +111,9 @@ export const usersToGroupsRelations = relations(
     }),
   }),
 );
+export const invitationRelations = relations(invitation, ({ one }) => ({
+  organization: one(organization, {
+    fields: [invitation.organizationId],
+    references: [organization.id],
+  }),
+}));
