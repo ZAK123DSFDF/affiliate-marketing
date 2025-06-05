@@ -7,7 +7,6 @@ import {
   primaryKey,
   unique,
   pgEnum,
-  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
@@ -51,14 +50,12 @@ export const affiliate = pgTable(
       .notNull()
       .references(() => organization.id, { onDelete: "cascade" }),
   },
-  (table) => {
-    return {
-      orgEmailUnique: unique("org_email_unique").on(
-        table.email,
-        table.organizationId,
-      ),
-    };
-  },
+  (table) => ({
+    orgEmailUnique: unique("org_email_unique").on(
+      table.email,
+      table.organizationId,
+    ),
+  }),
 );
 export const invitation = pgTable("invitation", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -74,7 +71,10 @@ export const invitation = pgTable("invitation", {
   title: text("title"), // Optional email subject
   body: text("body"), // Optional message content
 
-  token: text("token").notNull().unique(), // Unique invite token
+  token: text("token")
+    .notNull()
+    .unique()
+    .$defaultFn(() => createId()), // Unique invite token
   accepted: boolean("accepted").default(false).notNull(),
 
   expiresAt: timestamp("expires_at"), // Optional expiration
