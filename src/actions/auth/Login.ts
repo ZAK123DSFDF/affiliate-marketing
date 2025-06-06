@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import { db } from "@/db/drizzle";
 import { returnError } from "@/lib/errorHandler";
 
-export const getLogin = async ({
+export const Login = async ({
   email,
   password,
 }: {
