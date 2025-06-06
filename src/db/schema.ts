@@ -16,7 +16,7 @@ export const user = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  passwordHash: text("password_hash").notNull(),
+  password: text("password").notNull(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   role: roleEnum("role").default("OWNER").notNull(),
   image: text("image"),
@@ -41,7 +41,7 @@ export const affiliate = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     name: text("name").notNull(),
     email: text("email").notNull(),
-    passwordHash: text("password_hash").notNull(),
+    password: text("password").notNull(),
     emailVerified: boolean("email_verified").default(false).notNull(),
     image: text("image"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -103,7 +103,7 @@ export const organizationRelations = relations(organization, ({ many }) => ({
   usersToGroups: many(userToOrganization),
 }));
 
-export const usersToGroupsRelations = relations(
+export const userToOrganizationRelations = relations(
   userToOrganization,
   ({ one }) => ({
     group: one(organization, {
