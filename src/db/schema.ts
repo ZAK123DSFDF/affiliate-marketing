@@ -97,10 +97,10 @@ export const userToOrganization = pgTable(
   }),
 );
 export const userRelations = relations(user, ({ many }) => ({
-  usersToGroups: many(userToOrganization),
+  userToOrganization: many(userToOrganization),
 }));
 export const organizationRelations = relations(organization, ({ many }) => ({
-  usersToGroups: many(userToOrganization),
+  userToOrganization: many(userToOrganization),
 }));
 
 export const userToOrganizationRelations = relations(
