@@ -1,6 +1,7 @@
 "use server";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { returnError } from "@/lib/errorHandler";
 
 export const verifyToken = async () => {
   try {
@@ -8,15 +9,23 @@ export const verifyToken = async () => {
     const tokenCookie = cookieStore.get("token");
     const token = tokenCookie?.value;
     if (!token) {
-      throw new Error("User is not authenticated");
+      throw {
+        status: 401, // Unauthorized
+        error: "Authentication token missing",
+        toast: "Please log in to continue.",
+      };
     }
     const verified = jwt.verify(token, process.env.secret as string);
     if (!verified) {
-      throw new Error("User is not authenticated");
+      throw {
+        status: 401, // Unauthorized
+        error: "Authentication token expired",
+        toast: "Your session has expired. Please log in again.",
+      };
     }
     return token;
   } catch (error: any) {
     console.error("Error in auth:", error);
-    throw new Error(`Error auth: ${error?.message}`);
+    return returnError(error);
   }
 };
