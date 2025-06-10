@@ -26,6 +26,7 @@ import { GoogleAuthButton } from "@/components/Auth/GoogleAuthButton";
 import { InputField } from "@/components/Auth/FormFields";
 import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema";
 import { useMutation } from "@tanstack/react-query";
+import { SignupServer } from "@/actions/auth/Signup";
 
 const Signup = (): any => {
   const form = useForm<SignUpFormValues>({
@@ -39,7 +40,7 @@ const Signup = (): any => {
   });
   const { toast } = useToast();
   const { mutate, isPending } = useMutation({
-    mutationFn: Signup,
+    mutationFn: SignupServer,
     onSuccess: (data) => {
       console.log(data);
     },

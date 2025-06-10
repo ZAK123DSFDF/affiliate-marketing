@@ -11,7 +11,11 @@ import { returnError } from "@/lib/errorHandler"; // Recommended for type safety
 // Define the type for user creation using Drizzle's InferInsertModel
 type CreateUserPayload = InferInsertModel<typeof user>;
 
-export const Signup = async ({ name, email, password }: CreateUserPayload) => {
+export const SignupServer = async ({
+  name,
+  email,
+  password,
+}: CreateUserPayload) => {
   // Use the defined type
   try {
     if (!email || !password || !name) {
