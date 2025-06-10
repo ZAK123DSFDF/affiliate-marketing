@@ -4,9 +4,7 @@ import CreateCompany from "@/components/pages/Create-Company";
 const createCompanyPage = () => {
   return (
     <>
-      <Suspense fallback={<div>loading...</div>}>
-        <CreateCompany />
-      </Suspense>
+      <CreateCompany />
     </>
   );
 };

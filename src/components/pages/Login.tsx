@@ -21,7 +21,7 @@ import { InputField, CheckboxField } from "@/components/Auth/FormFields";
 import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema";
 import { useMutation } from "@tanstack/react-query";
 import { LoginServer } from "@/actions/auth/Login";
-const Login = (): any => {
+const Login = () => {
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm<LoginFormValues>({
@@ -39,9 +39,8 @@ const Login = (): any => {
     },
   });
 
-  const onSubmit = async (e: any, data: any) => {
+  const onSubmit = async (data: any) => {
     try {
-      e.preventDefault();
       console.log(data);
       mutate(data);
     } catch (error) {

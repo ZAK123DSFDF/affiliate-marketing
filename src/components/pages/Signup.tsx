@@ -28,7 +28,7 @@ import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema";
 import { useMutation } from "@tanstack/react-query";
 import { SignupServer } from "@/actions/auth/Signup";
 
-const Signup = (): any => {
+const Signup = () => {
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {

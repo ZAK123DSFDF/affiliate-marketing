@@ -1,12 +1,9 @@
+"use server";
 import { organization } from "@/db/schema";
-import { cookies } from "next/headers";
 import { db } from "@/db/drizzle";
 import { returnError } from "@/lib/errorHandler";
-import jwt from "jsonwebtoken";
-import { verifyToken } from "@/util/VerifyToken";
 export const CreateOrganization = async ({ name, slug, domainName }: any) => {
   try {
-    await verifyToken();
     // Insert new organization
     const [newOrg] = await db
       .insert(organization)
