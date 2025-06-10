@@ -25,8 +25,9 @@ import { useToast } from "@/hooks/use-toast";
 import { GoogleAuthButton } from "@/components/Auth/GoogleAuthButton";
 import { InputField } from "@/components/Auth/FormFields";
 import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema";
+import { useMutation } from "@tanstack/react-query";
 
-const Signup = () => {
+const Signup = (): any => {
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -36,10 +37,20 @@ const Signup = () => {
       confirmPassword: "",
     },
   });
-  const [pending, setPending] = useState(false);
   const { toast } = useToast();
-
-  const onSubmit = async (data: SignUpFormValues) => {};
+  const { mutate, isPending } = useMutation({
+    mutationFn: Signup,
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
+  const onSubmit = async (data: any) => {
+    try {
+      mutate(data);
+    } catch (err) {
+      console.error("Signup failed:", err);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
@@ -108,8 +119,8 @@ const Signup = () => {
                   showPasswordToggle={true}
                 />
 
-                <Button type="submit" className="w-full" disabled={pending}>
-                  {pending ? (
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  {isPending ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Please wait...

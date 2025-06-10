@@ -19,8 +19,9 @@ import { useRouter } from "next/navigation";
 import { GoogleAuthButton } from "@/components/Auth/GoogleAuthButton";
 import { InputField, CheckboxField } from "@/components/Auth/FormFields";
 import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema";
-const Login = () => {
-  const [pending, setPending] = useState(false);
+import { useMutation } from "@tanstack/react-query";
+import { LoginServer } from "@/actions/auth/Login";
+const Login = (): any => {
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm<LoginFormValues>({
@@ -31,8 +32,22 @@ const Login = () => {
       rememberMe: false,
     },
   });
+  const { mutate, isPending } = useMutation({
+    mutationFn: LoginServer,
+    onSuccess: (data: any) => {
+      console.log(data);
+    },
+  });
 
-  const onSubmit = async (data: LoginFormValues) => {};
+  const onSubmit = async (e: any, data: any) => {
+    try {
+      e.preventDefault();
+      console.log(data);
+      mutate(data);
+    } catch (error) {
+      console.log("login failed", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
@@ -97,8 +112,8 @@ const Login = () => {
                   </Link>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={pending}>
-                  {pending ? (
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  {isPending ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Please wait...
