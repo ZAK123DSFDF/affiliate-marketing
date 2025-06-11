@@ -27,8 +27,11 @@ import { InputField } from "@/components/Auth/FormFields";
 import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema";
 import { useMutation } from "@tanstack/react-query";
 import { SignupServer } from "@/actions/auth/Signup";
-
-const Signup = () => {
+import { SignupAffiliateServer } from "@/actions/auth/affiliate/SignupAffiliate";
+type Props = {
+  orgId?: string;
+};
+const Signup = ({ orgId }: Props) => {
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -39,15 +42,23 @@ const Signup = () => {
     },
   });
   const { toast } = useToast();
-  const { mutate, isPending } = useMutation({
-    mutationFn: SignupServer,
-    onSuccess: (data) => {
-      console.log(data);
-    },
+  const affiliateMutation = useMutation({
+    mutationFn: SignupAffiliateServer,
+    onSuccess: (data) => console.log("Affiliate signup success", data),
   });
+
+  const normalMutation = useMutation({
+    mutationFn: SignupServer,
+    onSuccess: (data) => console.log("Normal signup success", data),
+  });
+
   const onSubmit = async (data: any) => {
     try {
-      mutate(data);
+      if (orgId) {
+        affiliateMutation.mutate({ ...data, organizationId: orgId });
+      } else {
+        normalMutation.mutate(data);
+      }
     } catch (err) {
       console.error("Signup failed:", err);
     }

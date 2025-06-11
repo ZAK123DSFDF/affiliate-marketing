@@ -54,6 +54,7 @@ export const LoginServer = async ({
       id: Existuser.id,
       email: Existuser.email,
       role: Existuser.role,
+      type: Existuser.type,
     };
 
     const token = jwt.sign(payload, process.env.SECRET_KEY as string, {

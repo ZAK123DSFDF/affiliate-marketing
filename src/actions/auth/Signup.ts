@@ -55,6 +55,7 @@ export const SignupServer = async ({
         name,
         email,
         password: hashedPassword,
+        type: "SELLER",
       })
       .returning();
 
@@ -73,6 +74,7 @@ export const SignupServer = async ({
         id: newUser.id,
         email: newUser.email,
         role: newUser.role,
+        type: newUser.type,
       },
       process.env.SECRET_KEY as string,
       { expiresIn: "7d" },

@@ -3,12 +3,12 @@ import React from "react";
 const subDomainPage = async ({
   params,
 }: {
-  params: Promise<{ subdomain: string }>;
+  params: Promise<{ orgId: string }>;
 }) => {
-  const { subdomain } = await params;
+  const { orgId } = await params;
   return (
     <>
-      <div>the page: {subdomain}</div>
+      <div>the page: {orgId}</div>
     </>
   );
 };

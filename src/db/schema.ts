@@ -11,6 +11,7 @@ import {
 import { relations } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 export const roleEnum = pgEnum("role", ["OWNER", "ADMIN"]);
+export const accountTypeEnum = pgEnum("account_type", ["SELLER", "AFFILIATE"]);
 // USER SCHEMA (Sellers are users who create organizations)
 export const user = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -20,6 +21,7 @@ export const user = pgTable("user", {
   emailVerified: boolean("email_verified").default(false).notNull(),
   role: roleEnum("role").default("OWNER").notNull(),
   image: text("image"),
+  type: accountTypeEnum("type").default("SELLER").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -44,6 +46,7 @@ export const affiliate = pgTable(
     password: text("password").notNull(),
     emailVerified: boolean("email_verified").default(false).notNull(),
     image: text("image"),
+    type: accountTypeEnum("type").default("AFFILIATE").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     organizationId: uuid("organization_id")

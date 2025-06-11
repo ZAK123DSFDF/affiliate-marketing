@@ -21,7 +21,11 @@ import { InputField, CheckboxField } from "@/components/Auth/FormFields";
 import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema";
 import { useMutation } from "@tanstack/react-query";
 import { LoginServer } from "@/actions/auth/Login";
-const Login = () => {
+import { LoginAffiliateServer } from "@/actions/auth/affiliate/LoginAffiliate";
+type Props = {
+  orgId?: string;
+};
+const Login = ({ orgId }: Props) => {
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm<LoginFormValues>({
@@ -33,7 +37,7 @@ const Login = () => {
     },
   });
   const { mutate, isPending } = useMutation({
-    mutationFn: LoginServer,
+    mutationFn: orgId ? LoginAffiliateServer : LoginServer,
     onSuccess: (data: any) => {
       console.log(data);
     },
@@ -42,7 +46,7 @@ const Login = () => {
   const onSubmit = async (data: any) => {
     try {
       console.log(data);
-      mutate(data);
+      mutate({ ...data, orgId });
     } catch (error) {
       console.log("login failed", error);
     }
