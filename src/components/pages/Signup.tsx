@@ -131,8 +131,18 @@ const Signup = ({ orgId }: Props) => {
                   showPasswordToggle={true}
                 />
 
-                <Button type="submit" className="w-full" disabled={isPending}>
-                  {isPending ? (
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={
+                    orgId
+                      ? affiliateMutation.isPending
+                      : normalMutation.isPending
+                  }
+                >
+                  {orgId ? (
+                    affiliateMutation.isPending
+                  ) : normalMutation.isPending ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Please wait...
