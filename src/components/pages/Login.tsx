@@ -56,7 +56,7 @@ const Login = ({ orgId }: Props) => {
   const onSubmit = async (data: any) => {
     try {
       if (orgId) {
-        affiliateMutation.mutate({ ...data, orgId });
+        affiliateMutation.mutate({ ...data, organizationId: orgId });
       } else {
         normalMutation.mutate(data);
       }
