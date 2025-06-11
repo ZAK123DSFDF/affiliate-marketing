@@ -2,19 +2,18 @@ import React from "react";
 import Signup from "@/components/pages/Signup";
 import { validateOrg } from "@/actions/auth/ValidateOrg";
 import { redirect } from "next/navigation";
-
-const AffiliateSignupPage = async ({
-  params,
-}: {
-  params: { orgId: string };
-}) => {
-  const org = await validateOrg(params.orgId);
+interface AffiliateSignupPageProps {
+  params: Promise<{ orgId: string }>;
+}
+const AffiliateSignupPage = async ({ params }: AffiliateSignupPageProps) => {
+  const { orgId } = await params;
+  const org = await validateOrg(orgId);
   if (!org.orgFound) {
-    redirect(`/affiliate/${params.orgId}/not-found`);
+    redirect(`/affiliate/${orgId}/not-found`);
   }
   return (
     <>
-      <Signup orgId={params.orgId} />
+      <Signup orgId={orgId} />
     </>
   );
 };
