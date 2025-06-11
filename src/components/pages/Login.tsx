@@ -36,19 +36,32 @@ const Login = ({ orgId }: Props) => {
       rememberMe: false,
     },
   });
-  const { mutate, isPending } = useMutation({
-    mutationFn: orgId ? LoginAffiliateServer : LoginServer,
+  const affiliateMutation = useMutation({
+    mutationFn: LoginAffiliateServer,
     onSuccess: (data: any) => {
-      console.log(data);
+      console.log("Affiliate login success", data);
     },
   });
 
+  const normalMutation = useMutation({
+    mutationFn: LoginServer,
+    onSuccess: (data: any) => {
+      console.log("Normal login success", data);
+    },
+  });
+  const isLoading = orgId
+    ? affiliateMutation.isPending
+    : normalMutation.isPending;
+
   const onSubmit = async (data: any) => {
     try {
-      console.log(data);
-      mutate({ ...data, orgId });
+      if (orgId) {
+        affiliateMutation.mutate({ ...data, orgId });
+      } else {
+        normalMutation.mutate(data);
+      }
     } catch (error) {
-      console.log("login failed", error);
+      console.error("Login failed", error);
     }
   };
 
@@ -115,8 +128,8 @@ const Login = ({ orgId }: Props) => {
                   </Link>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={isPending}>
-                  {isPending ? (
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Please wait...

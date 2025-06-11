@@ -51,6 +51,9 @@ const Signup = ({ orgId }: Props) => {
     mutationFn: SignupServer,
     onSuccess: (data) => console.log("Normal signup success", data),
   });
+  const isLoading = orgId
+    ? affiliateMutation.isPending
+    : normalMutation.isPending;
 
   const onSubmit = async (data: any) => {
     try {
@@ -131,18 +134,8 @@ const Signup = ({ orgId }: Props) => {
                   showPasswordToggle={true}
                 />
 
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={
-                    orgId
-                      ? affiliateMutation.isPending
-                      : normalMutation.isPending
-                  }
-                >
-                  {orgId ? (
-                    affiliateMutation.isPending
-                  ) : normalMutation.isPending ? (
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Please wait...
