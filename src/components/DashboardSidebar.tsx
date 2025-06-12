@@ -28,42 +28,52 @@ import {
 import Link from "next/link";
 
 // Menu items for the sidebar
-const items = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: BarChart3,
-  },
-  {
-    title: "Affiliates",
-    url: "/dashboard/affiliates",
-    icon: LinkIcon,
-  },
-  {
-    title: "Payout",
-    url: "/dashboard/payout",
-    icon: Users,
-  },
-  {
-    title: "Customization",
-    url: "/dashboard/customization",
-    icon: CreditCard,
-  },
-  {
-    title: "Integration",
-    url: "/dashboard/integration",
-    icon: Layers,
-  },
-  {
-    title: "Settings",
-    url: "/dashboard/settings",
-    icon: Settings,
-  },
-];
 
-const DashboardSidebar = () => {
+type Props = {
+  orgId?: string;
+};
+const DashboardSidebar = ({ orgId }: Props) => {
   const pathname = usePathname();
-
+  const items = [
+    {
+      title: "Dashboard",
+      url: orgId ? `/seller/${orgId}/dashboard` : "/dashboard",
+      icon: BarChart3,
+    },
+    {
+      title: "Affiliates",
+      url: orgId
+        ? `/seller/${orgId}/dashboard/affiliates`
+        : "/dashboard/affiliates",
+      icon: LinkIcon,
+    },
+    {
+      title: "Payout",
+      url: orgId ? `/seller/${orgId}/dashboard/payout` : "/dashboard/payout",
+      icon: Users,
+    },
+    {
+      title: "Customization",
+      url: orgId
+        ? `/seller/${orgId}/dashboard/customization`
+        : "/dashboard/customization",
+      icon: CreditCard,
+    },
+    {
+      title: "Integration",
+      url: orgId
+        ? `/seller/${orgId}/dashboard/integration`
+        : "/dashboard/integration",
+      icon: Layers,
+    },
+    {
+      title: "Settings",
+      url: orgId
+        ? `/seller/${orgId}/dashboard/settings`
+        : "/dashboard/settings",
+      icon: Settings,
+    },
+  ];
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center justify-center py-4">
@@ -97,7 +107,7 @@ const DashboardSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="p-4">
-        <Link href="/dashboard/profile">
+        <Link href={`/seller/${orgId}/dashboard/profile`}>
           <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
               JD
