@@ -13,6 +13,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -46,129 +53,117 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 const data: Payment[] = [
   {
     id: "m5gr84i9",
-    amount: 316,
-    status: "success",
     email: "ken99@example.com",
+    commission: 316,
+    visitors: 130,
+    sales: 12,
+    links: ["https://example.com/abc", "https://example.com/xyz"],
   },
   {
     id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
+    email: "abe45@example.com",
+    commission: 242,
+    visitors: 98,
+    sales: 8,
+    links: ["https://example.com/a1", "https://example.com/b2"],
   },
   {
     id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
+    email: "monserrat44@example.com",
+    commission: 837,
+    visitors: 210,
+    sales: 22,
+    links: ["https://example.com/q1", "https://example.com/q2"],
   },
   {
     id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
+    email: "silas22@example.com",
+    commission: 874,
+    visitors: 165,
+    sales: 14,
+    links: ["https://example.com/l1", "https://example.com/l2"],
   },
   {
     id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
     email: "carmella@example.com",
+    commission: 721,
+    visitors: 144,
+    sales: 11,
+    links: ["https://example.com/z1", "https://example.com/z2"],
   },
 ];
 
 export type Payment = {
   id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
   email: string;
+  commission: number;
+  visitors: number;
+  sales: number;
+  links: string[];
 };
 
 export const columns: ColumnDef<Payment>[] = [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
-  },
-  {
     accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: "Email",
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
+    id: "links",
+    header: "Links",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-
+      const links = row.original.links;
+      return (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="link" className="p-0 text-blue-600 underline">
+              View Links
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Links</DialogTitle>
+            </DialogHeader>
+            <ul className="space-y-2">
+              {links.map((link, index) => (
+                <li key={index}>
+                  <a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 underline"
+                  >
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </DialogContent>
+        </Dialog>
+      );
+    },
+  },
+  {
+    accessorKey: "visitors",
+    header: "Visitors",
+    cell: ({ row }) => <div>{row.getValue("visitors")}</div>,
+  },
+  {
+    accessorKey: "sales",
+    header: "Sales",
+    cell: ({ row }) => <div>{row.getValue("sales")}</div>,
+  },
+  {
+    accessorKey: "commission",
+    header: () => <div className="text-right">Commission</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("commission"));
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
       }).format(amount);
 
       return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
     },
   },
 ];
