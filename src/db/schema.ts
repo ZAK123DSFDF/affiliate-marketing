@@ -80,7 +80,6 @@ export const affiliateLink = pgTable("affiliate_link", {
 });
 export const invitation = pgTable("invitation", {
   id: uuid("id").primaryKey().defaultRandom(),
-
   email: text("email").notNull(), // Invitee's email
   inviterId: uuid("inviter_id")
     .notNull()
