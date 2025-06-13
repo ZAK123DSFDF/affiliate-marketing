@@ -60,6 +60,24 @@ export const affiliate = pgTable(
     ),
   }),
 );
+export const affiliateLink = pgTable("affiliate_link", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  code: text("code")
+    .notNull()
+    .unique()
+    .$defaultFn(() => createId()),
+  destinationUrl: text("destination_url").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+
+  // Foreign keys
+  affiliateId: uuid("affiliate_id")
+    .notNull()
+    .references(() => affiliate.id, { onDelete: "cascade" }),
+  organizationId: uuid("organization_id")
+    .notNull()
+    .references(() => organization.id, { onDelete: "cascade" }),
+});
 export const invitation = pgTable("invitation", {
   id: uuid("id").primaryKey().defaultRandom(),
 
@@ -99,25 +117,20 @@ export const userToOrganization = pgTable(
     pk: primaryKey({ columns: [t.userId, t.organizationId] }),
   }),
 );
-export const affiliateSubscription = pgTable("affiliate_subscription", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  stripeCustomerId: text("stripe_customer_id").notNull(),
-  stripeSubscriptionId: text("stripe_subscription_id").notNull(),
-  metadata: text("metadata").notNull(), // stored as JSON string
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
 export const userRelations = relations(user, ({ many }) => ({
   userToOrganization: many(userToOrganization),
 }));
 export const organizationRelations = relations(organization, ({ many }) => ({
   userToOrganization: many(userToOrganization),
+  affiliateLinks: many(affiliateLink),
 }));
-
+export const affiliateRelations = relations(affiliate, ({ many }) => ({
+  affiliateLinks: many(affiliateLink),
+}));
 export const userToOrganizationRelations = relations(
   userToOrganization,
   ({ one }) => ({
-    group: one(organization, {
+    organization: one(organization, {
       fields: [userToOrganization.organizationId],
       references: [organization.id],
     }),
