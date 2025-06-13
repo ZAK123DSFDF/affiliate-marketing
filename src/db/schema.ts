@@ -99,6 +99,14 @@ export const userToOrganization = pgTable(
     pk: primaryKey({ columns: [t.userId, t.organizationId] }),
   }),
 );
+export const affiliateSubscription = pgTable("affiliate_subscription", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  stripeCustomerId: text("stripe_customer_id").notNull(),
+  stripeSubscriptionId: text("stripe_subscription_id").notNull(),
+  metadata: text("metadata").notNull(), // stored as JSON string
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 export const userRelations = relations(user, ({ many }) => ({
   userToOrganization: many(userToOrganization),
 }));
