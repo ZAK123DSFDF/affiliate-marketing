@@ -7,12 +7,20 @@ import {
   primaryKey,
   unique,
   pgEnum,
+  integer,
+  uniqueIndex,
+  index,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 import { generateAffiliateCode } from "@/util/AffiliateCodes";
 export const roleEnum = pgEnum("role", ["OWNER", "ADMIN"]);
 export const accountTypeEnum = pgEnum("account_type", ["SELLER", "AFFILIATE"]);
+export const paymentProviderEnum = pgEnum("payment_provider", [
+  "stripe",
+  "lemon_squeezy",
+  "paddle",
+]);
 // USER SCHEMA (Sellers are users who create organizations)
 export const user = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -67,7 +75,6 @@ export const affiliateLink = pgTable("affiliate_link", {
     .notNull()
     .unique()
     .$defaultFn(() => generateAffiliateCode()),
-  destinationUrl: text("destination_url").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 
@@ -79,9 +86,23 @@ export const affiliateLink = pgTable("affiliate_link", {
     .notNull()
     .references(() => organization.id, { onDelete: "cascade" }),
 });
+export const affiliatePayment = pgTable("affiliate_payment", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  paymentProvider: paymentProviderEnum("payment_provider").notNull(),
+  paymentId: text("payment_id").notNull().unique(),
+  customerId: text("customer_id").notNull().unique(),
+  amount: integer("amount").notNull(),
+  currency: text("currency").notNull(),
+  commission: integer("commission").notNull(),
+  affiliateLinkId: uuid("affiliate_link_id")
+    .notNull()
+    .references(() => affiliateLink.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 export const invitation = pgTable("invitation", {
   id: uuid("id").primaryKey().defaultRandom(),
-  email: text("email").notNull(), // Invitee's email
+  email: text("email").notNull(),
   inviterId: uuid("inviter_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),

@@ -1,7 +1,7 @@
 // app/api/stripe/webhook/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { affiliateSubscription } from "@/db/schema";
+
 import { db } from "@/db/drizzle";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -27,13 +27,6 @@ export async function POST(req: NextRequest) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
       const metadata = session.metadata || {};
-
-      await db.insert(affiliateSubscription).values({
-        stripeCustomerId: session.customer as string,
-        stripeSubscriptionId: session.subscription as string,
-        metadata: JSON.stringify(metadata),
-      });
-
       console.log("✅ Checkout session completed:", session.id);
       break;
     }
@@ -41,13 +34,6 @@ export async function POST(req: NextRequest) {
     case "customer.subscription.updated": {
       const subscription = event.data.object as Stripe.Subscription;
       const metadata = subscription.metadata || {};
-
-      await db.insert(affiliateSubscription).values({
-        stripeCustomerId: subscription.customer as string,
-        stripeSubscriptionId: subscription.id,
-        metadata: JSON.stringify(metadata),
-      });
-
       console.log("✅ Subscription updated:", subscription.id);
       break;
     }
@@ -55,13 +41,6 @@ export async function POST(req: NextRequest) {
     case "customer.subscription.created": {
       const subscription = event.data.object as Stripe.Subscription;
       const metadata = subscription.metadata || {};
-
-      await db.insert(affiliateSubscription).values({
-        stripeCustomerId: subscription.customer as string,
-        stripeSubscriptionId: subscription.id,
-        metadata: JSON.stringify(metadata),
-      });
-
       console.log("✅ Subscription created:", subscription.id);
       break;
     }
