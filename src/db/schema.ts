@@ -10,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
+import { generateAffiliateCode } from "@/util/AffiliateCodes";
 export const roleEnum = pgEnum("role", ["OWNER", "ADMIN"]);
 export const accountTypeEnum = pgEnum("account_type", ["SELLER", "AFFILIATE"]);
 // USER SCHEMA (Sellers are users who create organizations)
@@ -65,7 +66,7 @@ export const affiliateLink = pgTable("affiliate_link", {
   code: text("code")
     .notNull()
     .unique()
-    .$defaultFn(() => createId()),
+    .$defaultFn(() => generateAffiliateCode()),
   destinationUrl: text("destination_url").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
