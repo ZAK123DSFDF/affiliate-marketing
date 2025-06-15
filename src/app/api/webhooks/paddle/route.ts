@@ -79,14 +79,17 @@ export async function POST(request: NextRequest) {
 
           if (existing) {
             // 🚫 Skip if the transaction is after the expiration
-            if (new Date(existing.expirationDate) < transactionTime) {
+            if (transactionTime > new Date(existing.expirationDate)) {
               console.log("Transaction ignored: after expiration");
               break;
             }
-            await db
-              .update(checkTransaction)
-              .set({ amount: existing.amount + rawAmount })
-              .where(eq(checkTransaction.subscriptionId, subscriptionId));
+
+            if (rawAmount >= 0) {
+              await db
+                .update(checkTransaction)
+                .set({ amount: existing.amount + rawAmount })
+                .where(eq(checkTransaction.subscriptionId, subscriptionId));
+            }
           } else {
             const insertData: any = {
               customerId,
