@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-
+import { db } from "@/db/drizzle";
+import { checkTransaction } from "@/db/schema";
+import { eq } from "drizzle-orm";
 export async function POST(request: NextRequest) {
   try {
     // Get the raw body as text (important for signature verification)
@@ -51,23 +53,72 @@ export async function POST(request: NextRequest) {
 
     // Process the event
     switch (payload.event_type) {
-      case "subscription.created":
-        // await db.insert(users).values({
-        //   email: payload.data.custom_data.email || "zakSubscription@gmail.com",
-        //   name: payload.data.custom_data.name || "zak",
-        //   age: 28,
-        //   paymentProvider: "paddle",
-        // });
-        console.log("New subscription:", payload.data.id);
-        break;
       case "transaction.completed":
-        // await db.insert(users).values({
-        //   email: payload.data.custom_data.email || "zakTransaction@gmail.com",
-        //   name: payload.data.custom_data.name || "zak",
-        //   age: 28,
-        //   paymentProvider: "paddle",
-        // });
-        console.log("Payment completed:", payload.data.id);
+        const tx = payload.data;
+        const isSubscription = Boolean(tx.subscription_id);
+
+        const customerId = tx.customer_id;
+        const subscriptionId = tx.subscription_id || null;
+        const currency = tx.details?.totals?.currency_code || "USD";
+        const rawAmount = Number(tx.details?.totals?.total || 0);
+        const customData = tx.custom_data || {};
+        const transactionTime = new Date(tx.created_at); // <-- from Paddle
+
+        // Compute new expiration date
+        const expirationDate = new Date();
+        if (customData.expiration === true) {
+          expirationDate.setHours(expirationDate.getHours() + 3);
+        } else {
+          expirationDate.setDate(expirationDate.getDate() + 7);
+        }
+
+        if (isSubscription) {
+          const existing = await db.query.checkTransaction.findFirst({
+            where: (t, { eq }) => eq(t.subscriptionId, subscriptionId),
+          });
+
+          if (existing) {
+            // 🚫 Skip if the transaction is after the expiration
+            if (new Date(existing.expirationDate) < transactionTime) {
+              console.log("Transaction ignored: after expiration");
+              break;
+            }
+            await db
+              .update(checkTransaction)
+              .set({ amount: existing.amount + rawAmount })
+              .where(eq(checkTransaction.subscriptionId, subscriptionId));
+          } else {
+            const insertData: any = {
+              customerId,
+              subscriptionId,
+              currency,
+              expirationDate,
+              customData,
+            };
+
+            if (rawAmount >= 0) {
+              insertData.amount = rawAmount;
+            }
+
+            await db.insert(checkTransaction).values(insertData);
+          }
+        } else {
+          // One-time purchase: no check needed
+          const insertData: any = {
+            customerId,
+            subscriptionId: null,
+            currency,
+            expirationDate,
+            customData,
+          };
+
+          if (rawAmount >= 0) {
+            insertData.amount = rawAmount;
+          }
+
+          await db.insert(checkTransaction).values(insertData);
+        }
+
         break;
       default:
         console.log("Unhandled event type:", payload.event_type);

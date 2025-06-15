@@ -10,6 +10,7 @@ import {
   integer,
   uniqueIndex,
   index,
+  jsonb,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
@@ -99,6 +100,16 @@ export const affiliatePayment = pgTable("affiliate_payment", {
     .references(() => affiliateLink.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+export const checkTransaction = pgTable("check_transaction", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  customerId: text("customer_id").notNull(),
+  subscriptionId: text("subscription_id"),
+  amount: integer("amount").notNull().default(0),
+  currency: text("currency").notNull(),
+  expirationDate: timestamp("expiration_date").notNull(),
+  customData: jsonb("custom_data").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 export const invitation = pgTable("invitation", {
   id: uuid("id").primaryKey().defaultRandom(),
