@@ -159,6 +159,16 @@ export const organizationRelations = relations(organization, ({ many }) => ({
 export const affiliateRelations = relations(affiliate, ({ many }) => ({
   affiliateLinks: many(affiliateLink),
 }));
+export const affiliateLinkRelations = relations(affiliateLink, ({ one }) => ({
+  affiliate: one(affiliate, {
+    fields: [affiliateLink.affiliateId],
+    references: [affiliate.id],
+  }),
+  organization: one(organization, {
+    fields: [affiliateLink.organizationId],
+    references: [organization.id],
+  }),
+}));
 export const userToOrganizationRelations = relations(
   userToOrganization,
   ({ one }) => ({
