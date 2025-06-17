@@ -5,6 +5,7 @@ import Stripe from "stripe";
 import { db } from "@/db/drizzle";
 import { checkTransaction } from "@/db/schema";
 import { addDays } from "date-fns";
+import { eq } from "drizzle-orm";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-04-30.basil",
 });
@@ -87,14 +88,14 @@ export async function POST(req: NextRequest) {
       if (previousPlan && currentPlan.id !== previousPlan.id) {
         const amountDiff = currentPlan.amount! - previousPlan.amount!;
         if (amountDiff > 0) {
-          await db.insert(checkTransaction).values({
-            customerId,
-            subscriptionId,
-            amount: amountDiff,
-            currency,
-            expirationDate,
-            customData: {},
-          });
+          await db
+            .update(checkTransaction)
+            .set({
+              amount: existingSubscription.amount + amountDiff,
+              currency,
+              expirationDate,
+            })
+            .where(eq(checkTransaction.subscriptionId, subscriptionId));
         }
       }
 
@@ -105,14 +106,14 @@ export async function POST(req: NextRequest) {
         currentEnd > previousEnd &&
         (!previousPlan || currentPlan.id === previousPlan.id) // Avoid double-charge if upgrade already handled
       ) {
-        await db.insert(checkTransaction).values({
-          customerId,
-          subscriptionId,
-          amount: currentPlan.amount!,
-          currency,
-          expirationDate,
-          customData: {},
-        });
+        await db
+          .update(checkTransaction)
+          .set({
+            amount: existingSubscription.amount + currentPlan.amount!,
+            currency,
+            expirationDate,
+          })
+          .where(eq(checkTransaction.subscriptionId, subscriptionId));
       }
       break;
     }
