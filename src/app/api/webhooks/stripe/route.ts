@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 import { db } from "@/db/drizzle";
-
+import { checkTransaction } from "@/db/schema";
+import { addDays } from "date-fns";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-04-30.basil",
 });
@@ -27,14 +28,92 @@ export async function POST(req: NextRequest) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
       const metadata = session.metadata || {};
-      console.log("✅ Checkout session completed:", session.id);
+
+      const mode = session.mode;
+      const isSubscription = mode === "subscription";
+      const customerId = session.customer as string;
+      const subscriptionId = isSubscription
+        ? (session.subscription as string)
+        : null;
+      const amount = session.amount_total ?? 0;
+      const currency = session.currency ?? "usd";
+      const expirationDate = addDays(new Date(), 7);
+
+      await db.insert(checkTransaction).values({
+        customerId,
+        subscriptionId,
+        amount,
+        currency,
+        expirationDate,
+        customData: metadata,
+      });
+
       break;
     }
 
     case "customer.subscription.updated": {
       const subscription = event.data.object as Stripe.Subscription;
-      const metadata = subscription.metadata || {};
-      console.log("✅ Subscription updated:", subscription.id);
+      const previous = (event.data as any).previous_attributes;
+
+      const subscriptionId = subscription.id;
+      const customerId = subscription.customer as string;
+
+      const currentItem = subscription.items.data[0];
+      const currentPlan = currentItem?.plan;
+      const previousItem = previous?.items?.data?.[0];
+      const previousPlan = previousItem?.plan;
+
+      const currentEnd = currentItem?.current_period_end;
+      const previousEnd = previousItem?.current_period_end;
+
+      if (!currentPlan) return;
+
+      const currency = currentPlan.currency;
+      const expirationDate = addDays(new Date(), 7);
+
+      // Ensure subscription exists in your DB (optional if used for deduping)
+      const existingSubscription = await db.query.checkTransaction.findFirst({
+        where: (sub, { eq }) => eq(sub.subscriptionId, subscriptionId),
+      });
+
+      if (!existingSubscription) {
+        console.warn(
+          "Subscription not found in DB, skipping transaction recording.",
+        );
+        return;
+      }
+
+      // Handle upgrade
+      if (previousPlan && currentPlan.id !== previousPlan.id) {
+        const amountDiff = currentPlan.amount! - previousPlan.amount!;
+        if (amountDiff > 0) {
+          await db.insert(checkTransaction).values({
+            customerId,
+            subscriptionId,
+            amount: amountDiff,
+            currency,
+            expirationDate,
+            customData: {},
+          });
+        }
+      }
+
+      // Handle renewal (if period end changed)
+      if (
+        currentEnd &&
+        previousEnd &&
+        currentEnd > previousEnd &&
+        (!previousPlan || currentPlan.id === previousPlan.id) // Avoid double-charge if upgrade already handled
+      ) {
+        await db.insert(checkTransaction).values({
+          customerId,
+          subscriptionId,
+          amount: currentPlan.amount!,
+          currency,
+          expirationDate,
+          customData: {},
+        });
+      }
       break;
     }
 
