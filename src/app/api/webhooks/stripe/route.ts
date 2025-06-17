@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
         currentEnd &&
         previousEnd &&
         currentEnd > previousEnd &&
-        (!previousPlan || currentPlan.id === previousPlan.id) // Avoid double-charge if upgrade already handled
+        currentPlan.id === previousPlan.id // Avoid double-charge if upgrade already handled
       ) {
         await db
           .update(checkTransaction)
