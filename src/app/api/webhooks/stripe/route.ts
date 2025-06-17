@@ -100,12 +100,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Handle renewal (if period end changed)
-      if (
-        currentEnd &&
-        previousEnd &&
-        currentEnd > previousEnd &&
-        currentPlan.id === previousPlan.id // Avoid double-charge if upgrade already handled
-      ) {
+      if (currentEnd && previousEnd && currentEnd > previousEnd) {
         await db
           .update(checkTransaction)
           .set({
