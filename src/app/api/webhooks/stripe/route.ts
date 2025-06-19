@@ -6,6 +6,7 @@ import { db } from "@/db/drizzle";
 import { checkTransaction } from "@/db/schema";
 import { addDays } from "date-fns";
 import { eq } from "drizzle-orm";
+import { generateStripeCustomerId } from "@/util/StripeCustomerId";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-04-30.basil",
 });
@@ -32,7 +33,9 @@ export async function POST(req: NextRequest) {
 
       const mode = session.mode;
       const isSubscription = mode === "subscription";
-      const customerId = session.customer as string;
+      const customerId = session.customer
+        ? (session.customer as string)
+        : generateStripeCustomerId();
       const subscriptionId = isSubscription
         ? (session.subscription as string)
         : null;

@@ -83,13 +83,11 @@ export async function POST(request: NextRequest) {
               console.log("Transaction ignored: after expiration");
               break;
             }
-
-            if (rawAmount >= 0) {
-              await db
-                .update(checkTransaction)
-                .set({ amount: existing.amount + rawAmount })
-                .where(eq(checkTransaction.subscriptionId, subscriptionId));
-            }
+            const newAmount = Math.max(0, existing.amount + rawAmount);
+            await db
+              .update(checkTransaction)
+              .set({ amount: newAmount })
+              .where(eq(checkTransaction.subscriptionId, subscriptionId));
           } else {
             const insertData: any = {
               customerId,
