@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       const amount = session.amount_total ?? 0;
       const currency = session.currency ?? "usd";
       const expirationDate = addDays(new Date(), 7);
-
+      const paymentIntent = session.payment_intent;
       await db.insert(checkTransaction).values({
         customerId,
         subscriptionId,
@@ -55,67 +55,6 @@ export async function POST(req: NextRequest) {
       break;
     }
 
-    case "customer.subscription.updated": {
-      const subscription = event.data.object as Stripe.Subscription;
-      const previous = (event.data as any).previous_attributes;
-
-      const subscriptionId = subscription.id;
-      const customerId = subscription.customer as string;
-
-      const currentItem = subscription.items.data[0];
-      const currentPlan = currentItem?.plan;
-      const previousItem = previous?.items?.data?.[0];
-      const previousPlan = previousItem?.plan;
-
-      const currentEnd = currentItem?.current_period_end;
-      const previousEnd = previousItem?.current_period_end;
-
-      if (!currentPlan) return;
-
-      const currency = currentPlan.currency;
-      const expirationDate = addDays(new Date(), 7);
-
-      // Ensure subscription exists in your DB (optional if used for deduping)
-      const existingSubscription = await db.query.checkTransaction.findFirst({
-        where: (sub, { eq }) => eq(sub.subscriptionId, subscriptionId),
-      });
-
-      if (!existingSubscription) {
-        console.warn(
-          "Subscription not found in DB, skipping transaction recording.",
-        );
-        return;
-      }
-
-      // Handle upgrade
-      if (previousPlan && currentPlan.id !== previousPlan.id) {
-        const amountDiff = currentPlan.amount! - previousPlan.amount!;
-        if (amountDiff > 0) {
-          await db
-            .update(checkTransaction)
-            .set({
-              amount: existingSubscription.amount + amountDiff,
-              currency,
-              expirationDate,
-            })
-            .where(eq(checkTransaction.subscriptionId, subscriptionId));
-        }
-      }
-
-      // Handle renewal (if period end changed)
-      if (currentEnd && previousEnd && currentEnd > previousEnd) {
-        await db
-          .update(checkTransaction)
-          .set({
-            amount: existingSubscription.amount + currentPlan.amount!,
-            currency,
-            expirationDate,
-          })
-          .where(eq(checkTransaction.subscriptionId, subscriptionId));
-      }
-      break;
-    }
-
     case "customer.subscription.created": {
       const subscription = event.data.object as Stripe.Subscription;
       const metadata = subscription.metadata || {};
@@ -123,9 +62,84 @@ export async function POST(req: NextRequest) {
       break;
     }
 
-    case "payment_intent.succeeded": {
-      const paymentIntent = event.data.object as Stripe.PaymentIntent;
-      console.log("✅ PaymentIntent succeeded:", paymentIntent.id);
+    case "invoice.paid": {
+      const invoice = event.data.object as Stripe.Invoice;
+      if (invoice.billing_reason === "subscription_update") {
+        const subscriptionId =
+          invoice.parent?.subscription_details?.subscription;
+
+        if (!subscriptionId || typeof subscriptionId !== "string") {
+          console.warn(
+            "❌ No valid subscriptionId found in invoice.parent for update.",
+          );
+          return;
+        }
+
+        const existing = await db.query.checkTransaction.findFirst({
+          where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
+        });
+
+        if (!existing) {
+          console.warn(
+            "❌ No existing subscription found for update:",
+            subscriptionId,
+          );
+          return;
+        }
+
+        const taxExcludedAmount = invoice.total_excluding_tax ?? 0;
+
+        await db
+          .update(checkTransaction)
+          .set({
+            amount: existing.amount + taxExcludedAmount,
+          })
+          .where(eq(checkTransaction.subscriptionId, subscriptionId));
+
+        console.log(
+          "✅ Updated subscription amount for upgrade:",
+          subscriptionId,
+        );
+      }
+
+      if (invoice.billing_reason === "subscription_cycle") {
+        const subscriptionId =
+          invoice.parent?.subscription_details?.subscription;
+
+        if (!subscriptionId || typeof subscriptionId !== "string") {
+          console.warn(
+            "❌ No valid subscriptionId found in invoice.parent for cycle.",
+          );
+          return;
+        }
+
+        const existing = await db.query.checkTransaction.findFirst({
+          where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
+        });
+
+        if (!existing) {
+          console.warn(
+            "❌ No existing subscription found for cycle:",
+            subscriptionId,
+          );
+          return;
+        }
+
+        const taxExcludedAmount = invoice.total_excluding_tax ?? 0;
+
+        await db
+          .update(checkTransaction)
+          .set({
+            amount: existing.amount + taxExcludedAmount,
+          })
+          .where(eq(checkTransaction.subscriptionId, subscriptionId));
+
+        console.log(
+          "✅ Updated subscription amount for new cycle:",
+          subscriptionId,
+        );
+      }
+
       break;
     }
 

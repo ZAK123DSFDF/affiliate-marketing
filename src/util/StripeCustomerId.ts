@@ -6,5 +6,5 @@ export function generateStripeCustomerId(): string {
     const randomIndex = Math.floor(Math.random() * chars.length);
     result += chars[randomIndex];
   }
-  return `cus_${result}`;
+  return `cus_fake_${result}`;
 }
