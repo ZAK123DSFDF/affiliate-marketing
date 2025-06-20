@@ -87,26 +87,26 @@ export async function POST(req: NextRequest) {
           return;
         }
 
-        if (existing.expirationDate < invoiceCreatedDate) {
+        if (existing.expirationDate > invoiceCreatedDate) {
+          const taxExcludedAmount = invoice.total_excluding_tax ?? 0;
+
+          await db
+            .update(checkTransaction)
+            .set({
+              amount: existing.amount + taxExcludedAmount,
+            })
+            .where(eq(checkTransaction.subscriptionId, subscriptionId));
+
+          console.log(
+            "✅ Updated subscription amount for upgrade:",
+            subscriptionId,
+          );
+        } else {
           console.warn(
             "❌ Subscription is expired — ignoring update:",
             subscriptionId,
           );
-          return;
         }
-        const taxExcludedAmount = invoice.total_excluding_tax ?? 0;
-
-        await db
-          .update(checkTransaction)
-          .set({
-            amount: existing.amount + taxExcludedAmount,
-          })
-          .where(eq(checkTransaction.subscriptionId, subscriptionId));
-
-        console.log(
-          "✅ Updated subscription amount for upgrade:",
-          subscriptionId,
-        );
       }
 
       if (invoice.billing_reason === "subscription_cycle") {
@@ -132,26 +132,26 @@ export async function POST(req: NextRequest) {
           return;
         }
         const invoiceCreatedDate = new Date(invoice.created * 1000);
-        if (existing.expirationDate < invoiceCreatedDate) {
+        if (existing.expirationDate > invoiceCreatedDate) {
+          const taxExcludedAmount = invoice.total_excluding_tax ?? 0;
+
+          await db
+            .update(checkTransaction)
+            .set({
+              amount: existing.amount + taxExcludedAmount,
+            })
+            .where(eq(checkTransaction.subscriptionId, subscriptionId));
+
+          console.log(
+            "✅ Updated subscription amount for new cycle:",
+            subscriptionId,
+          );
+        } else {
           console.warn(
             "❌ Subscription is expired — ignoring update:",
             subscriptionId,
           );
-          return;
         }
-        const taxExcludedAmount = invoice.total_excluding_tax ?? 0;
-
-        await db
-          .update(checkTransaction)
-          .set({
-            amount: existing.amount + taxExcludedAmount,
-          })
-          .where(eq(checkTransaction.subscriptionId, subscriptionId));
-
-        console.log(
-          "✅ Updated subscription amount for new cycle:",
-          subscriptionId,
-        );
       }
 
       break;
