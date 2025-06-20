@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
 
     case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice;
+      const invoiceCreatedDate = invoice.created;
       if (invoice.billing_reason === "subscription_update") {
         const subscriptionId =
           invoice.parent?.subscription_details?.subscription;
@@ -86,7 +87,16 @@ export async function POST(req: NextRequest) {
           );
           return;
         }
-
+        const existingExpirationUnix = Math.floor(
+          existing.expirationDate.getTime() / 1000,
+        );
+        if (existingExpirationUnix < invoiceCreatedDate) {
+          console.warn(
+            "❌ Subscription is expired — ignoring update:",
+            subscriptionId,
+          );
+          return;
+        }
         const taxExcludedAmount = invoice.total_excluding_tax ?? 0;
 
         await db
@@ -124,7 +134,16 @@ export async function POST(req: NextRequest) {
           );
           return;
         }
-
+        const existingExpirationUnix = Math.floor(
+          existing.expirationDate.getTime() / 1000,
+        );
+        if (existingExpirationUnix < invoiceCreatedDate) {
+          console.warn(
+            "❌ Subscription is expired — ignoring update:",
+            subscriptionId,
+          );
+          return;
+        }
         const taxExcludedAmount = invoice.total_excluding_tax ?? 0;
 
         await db
