@@ -42,7 +42,6 @@ export async function POST(req: NextRequest) {
       const amount = session.amount_total ?? 0;
       const currency = session.currency ?? "usd";
       const expirationDate = addDays(new Date(), 7);
-      const paymentIntent = session.payment_intent;
       await db.insert(checkTransaction).values({
         customerId,
         subscriptionId,
