@@ -42,14 +42,58 @@ export async function POST(req: NextRequest) {
       const amount = session.amount_total ?? 0;
       const currency = session.currency ?? "usd";
       const expirationDate = addDays(new Date(), 7);
-      await db.insert(checkTransaction).values({
-        customerId,
-        subscriptionId,
-        amount,
-        currency,
-        expirationDate,
-        customData: metadata,
-      });
+
+      if (subscriptionId) {
+        // ✅ Check if subscription already exists
+        const existing = await db.query.checkTransaction.findFirst({
+          where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
+        });
+
+        if (existing) {
+          // ✅ Update only customData
+          await db
+            .update(checkTransaction)
+            .set({
+              customData: metadata,
+            })
+            .where(eq(checkTransaction.subscriptionId, subscriptionId));
+
+          console.log(
+            "✅ checkout.session.completed — updated customData for existing subscription:",
+            subscriptionId,
+          );
+        } else {
+          // ✅ Insert new
+          await db.insert(checkTransaction).values({
+            customerId,
+            subscriptionId,
+            amount,
+            currency,
+            expirationDate,
+            customData: metadata,
+          });
+
+          console.log(
+            "✅ checkout.session.completed — inserted new subscription:",
+            subscriptionId,
+          );
+        }
+      } else {
+        // Not subscription — normal one-time checkout
+        await db.insert(checkTransaction).values({
+          customerId,
+          subscriptionId: null,
+          amount,
+          currency,
+          expirationDate,
+          customData: metadata,
+        });
+
+        console.log(
+          "✅ checkout.session.completed — inserted one-time payment:",
+          customerId,
+        );
+      }
 
       break;
     }
