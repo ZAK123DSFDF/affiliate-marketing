@@ -44,13 +44,11 @@ export async function POST(req: NextRequest) {
       const expirationDate = addDays(new Date(), 7);
 
       if (subscriptionId) {
-        // ✅ Check if subscription already exists
         const existing = await db.query.checkTransaction.findFirst({
           where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
         });
 
         if (existing) {
-          // ✅ Update only customData
           await db
             .update(checkTransaction)
             .set({
@@ -63,7 +61,6 @@ export async function POST(req: NextRequest) {
             subscriptionId,
           );
         } else {
-          // ✅ Insert new
           await db.insert(checkTransaction).values({
             customerId,
             subscriptionId,
@@ -79,7 +76,6 @@ export async function POST(req: NextRequest) {
           );
         }
       } else {
-        // Not subscription — normal one-time checkout
         await db.insert(checkTransaction).values({
           customerId,
           subscriptionId: null,
