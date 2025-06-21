@@ -61,23 +61,16 @@ export async function POST(req: NextRequest) {
 
       if (
         subscription.status === "trialing" &&
-        subscription.trial_end !== null
+        subscription.trial_end !== null &&
+        subscription.trial_start !== null
       ) {
         const customerId = subscription.customer as string;
         const subscriptionId = subscription.id;
-        const amount = 0; // No payment on trial
+        const amount = 0;
         const currency = subscription.currency ?? "usd";
-
-        // Force cast trial_start — safe in this context
-        const trialStart = subscription.trial_start as number;
-
-        // Trial duration in milliseconds
-        const trialDurationMs = (subscription.trial_end - trialStart) * 1000;
-
-        // Default expiration (7 days from now)
+        const trialDurationMs =
+          (subscription.trial_end - subscription.trial_start) * 1000;
         const defaultExpiration = addDays(new Date(), 7);
-
-        // Final expiration = default + trial duration
         const finalExpiration = new Date(
           defaultExpiration.getTime() + trialDurationMs,
         );
@@ -90,7 +83,6 @@ export async function POST(req: NextRequest) {
         });
 
         if (existing) {
-          // Update expirationDate only
           await db
             .update(checkTransaction)
             .set({
@@ -103,7 +95,6 @@ export async function POST(req: NextRequest) {
             subscriptionId,
           );
         } else {
-          // Insert new
           await db.insert(checkTransaction).values({
             customerId,
             subscriptionId,
