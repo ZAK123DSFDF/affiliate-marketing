@@ -58,6 +58,72 @@ export async function POST(req: NextRequest) {
       const subscription = event.data.object as Stripe.Subscription;
       const metadata = subscription.metadata || {};
       console.log("✅ Subscription created:", subscription.id);
+
+      if (
+        subscription.status === "trialing" &&
+        subscription.trial_end !== null
+      ) {
+        const customerId = subscription.customer as string;
+        const subscriptionId = subscription.id;
+        const amount = 0; // No payment on trial
+        const currency = subscription.currency ?? "usd";
+
+        // Force cast trial_start — safe in this context
+        const trialStart = subscription.trial_start as number;
+
+        // Trial duration in milliseconds
+        const trialDurationMs = (subscription.trial_end - trialStart) * 1000;
+
+        // Default expiration (7 days from now)
+        const defaultExpiration = addDays(new Date(), 7);
+
+        // Final expiration = default + trial duration
+        const finalExpiration = new Date(
+          defaultExpiration.getTime() + trialDurationMs,
+        );
+
+        console.log(`Calculated trial duration: ${trialDurationMs / 1000}s`);
+        console.log(`Final expiration: ${finalExpiration}`);
+
+        const existing = await db.query.checkTransaction.findFirst({
+          where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
+        });
+
+        if (existing) {
+          // Update expirationDate only
+          await db
+            .update(checkTransaction)
+            .set({
+              expirationDate: finalExpiration,
+            })
+            .where(eq(checkTransaction.subscriptionId, subscriptionId));
+
+          console.log(
+            "✅ Updated existing subscription expirationDate:",
+            subscriptionId,
+          );
+        } else {
+          // Insert new
+          await db.insert(checkTransaction).values({
+            customerId,
+            subscriptionId,
+            amount,
+            currency,
+            expirationDate: finalExpiration,
+            customData: metadata,
+          });
+
+          console.log(
+            "✅ Inserted new subscription with trial expirationDate:",
+            subscriptionId,
+          );
+        }
+      } else {
+        console.log(
+          `Subscription status is '${subscription.status}' — skipping`,
+        );
+      }
+
       break;
     }
 
