@@ -119,19 +119,14 @@ export async function POST(request: NextRequest) {
           }
         } else {
           // One-time purchase: no check needed
-          const insertData: any = {
+          await db.insert(checkTransaction).values({
             customerId,
             subscriptionId: null,
             currency,
+            amount: rawAmount,
             expirationDate,
             customData,
-          };
-
-          if (rawAmount >= 0) {
-            insertData.amount = rawAmount;
-          }
-
-          await db.insert(checkTransaction).values(insertData);
+          });
         }
 
         break;
