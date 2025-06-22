@@ -186,11 +186,11 @@ export async function POST(req: NextRequest) {
 
         if (existing.expirationDate > invoiceCreatedDate) {
           const taxExcludedAmount = invoice.total_excluding_tax ?? 0;
-
+          const newAmount = Math.max(0, existing.amount + taxExcludedAmount);
           await db
             .update(checkTransaction)
             .set({
-              amount: existing.amount + taxExcludedAmount,
+              amount: newAmount,
             })
             .where(eq(checkTransaction.subscriptionId, subscriptionId));
 
