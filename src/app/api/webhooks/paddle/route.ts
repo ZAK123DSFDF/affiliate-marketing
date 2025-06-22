@@ -66,13 +66,27 @@ export async function POST(request: NextRequest) {
 
         // Compute new expiration date
         const expirationDate = new Date();
-        if (customData.expiration === true) {
-          expirationDate.setHours(expirationDate.getHours() + 3);
-        } else {
-          expirationDate.setDate(expirationDate.getDate() + 7);
-        }
+
+        expirationDate.setDate(expirationDate.getDate() + 7);
 
         if (isSubscription) {
+          const trial = tx.items?.[0]?.price?.trial_period;
+          const interval = trial?.interval;
+          const frequency = Number(trial?.frequency || 0);
+
+          let trialDays = 0;
+
+          if (interval === "day") {
+            trialDays = frequency;
+          } else if (interval === "week") {
+            trialDays = frequency * 7;
+          } else if (interval === "month") {
+            trialDays = frequency * 30;
+          } else if (interval === "year") {
+            trialDays = frequency * 365;
+          }
+
+          expirationDate.setDate(expirationDate.getDate() + trialDays);
           const existing = await db.query.checkTransaction.findFirst({
             where: (t, { eq }) => eq(t.subscriptionId, subscriptionId),
           });
