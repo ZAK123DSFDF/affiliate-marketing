@@ -129,10 +129,10 @@ export async function POST(request: NextRequest) {
         const trialPeriod = sub.items?.[0]?.price?.trial_period;
         const interval = trialPeriod?.interval;
         const frequency = Number(trialPeriod?.frequency || 0);
-
+        const extraDays = 7;
         const expirationDate = new Date();
         const trialDays = calculateTrialDays(interval, frequency);
-        expirationDate.setDate(expirationDate.getDate() + trialDays + 7);
+        expirationDate.setDate(expirationDate.getDate() + trialDays);
 
         console.log(
           `Subscription trial → ${interval} x ${frequency} → Expiration: ${expirationDate.toISOString()}`,
@@ -150,12 +150,16 @@ export async function POST(request: NextRequest) {
             .where(eq(checkTransaction.subscriptionId, subscriptionId));
         } else {
           console.log("New subscription trial → inserting record");
+          const expirationDateForInsert = new Date(expirationDate);
+          expirationDateForInsert.setDate(
+            expirationDateForInsert.getDate() + extraDays,
+          );
           await db.insert(checkTransaction).values({
             customerId,
             subscriptionId,
             currency,
             amount: 0, // no amount yet
-            expirationDate,
+            expirationDate: expirationDateForInsert,
             customData,
           });
         }
