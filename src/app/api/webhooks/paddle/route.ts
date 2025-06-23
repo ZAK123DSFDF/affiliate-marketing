@@ -70,23 +70,6 @@ export async function POST(request: NextRequest) {
         expirationDate.setDate(expirationDate.getDate() + 7);
 
         if (isSubscription) {
-          const trial = tx.items?.[0]?.price?.trial_period;
-          const interval = trial?.interval;
-          const frequency = Number(trial?.frequency || 0);
-
-          let trialDays = 0;
-
-          if (interval === "day") {
-            trialDays = frequency;
-          } else if (interval === "week") {
-            trialDays = frequency * 7;
-          } else if (interval === "month") {
-            trialDays = frequency * 30;
-          } else if (interval === "year") {
-            trialDays = frequency * 365;
-          }
-
-          expirationDate.setDate(expirationDate.getDate() + trialDays);
           const existing = await db.query.checkTransaction.findFirst({
             where: (t, { eq }) => eq(t.subscriptionId, subscriptionId),
           });
@@ -106,14 +89,11 @@ export async function POST(request: NextRequest) {
             const insertData: any = {
               customerId,
               subscriptionId,
+              amount: rawAmount,
               currency,
               expirationDate,
               customData,
             };
-
-            if (rawAmount >= 0) {
-              insertData.amount = rawAmount;
-            }
 
             await db.insert(checkTransaction).values(insertData);
           }
@@ -130,6 +110,59 @@ export async function POST(request: NextRequest) {
         }
 
         break;
+      case "subscription.created": {
+        const sub = payload.data;
+        const subscriptionId = sub.id;
+        const customerId = sub.customer_id;
+        const customData = sub.custom_data || {};
+        const currency = sub.currency_code || "USD";
+
+        const isTrial = sub.status === "trialing";
+        if (!isTrial) {
+          console.log(
+            "Subscription created but not trialing — skipping expiration update",
+          );
+          break;
+        }
+
+        // 🟢 Use trial_period (interval + frequency)
+        const trialPeriod = sub.items?.[0]?.price?.trial_period;
+        const interval = trialPeriod?.interval;
+        const frequency = Number(trialPeriod?.frequency || 0);
+
+        const expirationDate = new Date();
+        const trialDays = calculateTrialDays(interval, frequency);
+        expirationDate.setDate(expirationDate.getDate() + trialDays + 7);
+
+        console.log(
+          `Subscription trial → ${interval} x ${frequency} → Expiration: ${expirationDate.toISOString()}`,
+        );
+
+        const existing = await db.query.checkTransaction.findFirst({
+          where: (t, { eq }) => eq(t.subscriptionId, subscriptionId),
+        });
+
+        if (existing) {
+          console.log("Existing subscription found → updating expiration");
+          await db
+            .update(checkTransaction)
+            .set({ expirationDate })
+            .where(eq(checkTransaction.subscriptionId, subscriptionId));
+        } else {
+          console.log("New subscription trial → inserting record");
+          await db.insert(checkTransaction).values({
+            customerId,
+            subscriptionId,
+            currency,
+            amount: 0, // no amount yet
+            expirationDate,
+            customData,
+          });
+        }
+
+        break;
+      }
+
       default:
         console.log("Unhandled event type:", payload.event_type);
     }
