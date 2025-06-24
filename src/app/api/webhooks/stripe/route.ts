@@ -110,6 +110,9 @@ export async function POST(req: NextRequest) {
         const currency = subscription.currency ?? "usd";
         const trialDurationMs =
           (subscription.trial_end - subscription.trial_start) * 1000;
+        const trialDaysOnly = Math.round(
+          trialDurationMs / (1000 * 60 * 60 * 24),
+        );
         const defaultExpiration = addDays(new Date(), 7);
         const finalExpiration = new Date(
           defaultExpiration.getTime() + trialDurationMs,
@@ -123,10 +126,14 @@ export async function POST(req: NextRequest) {
         });
 
         if (existing) {
+          const newExpiration = addDays(
+            new Date(existing.expirationDate),
+            trialDaysOnly,
+          );
           await db
             .update(checkTransaction)
             .set({
-              expirationDate: finalExpiration,
+              expirationDate: newExpiration,
             })
             .where(eq(checkTransaction.subscriptionId, subscriptionId));
 
