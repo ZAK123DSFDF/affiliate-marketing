@@ -1,4 +1,7 @@
-function calculateTrialDays(interval: string, frequency: number): number {
+export function calculateTrialDays(
+  interval: string,
+  frequency: number,
+): number {
   if (interval === "day") return frequency;
   if (interval === "week") return frequency * 7;
   if (interval === "month") return frequency * 30;

@@ -3,6 +3,8 @@ import crypto from "crypto";
 import { db } from "@/db/drizzle";
 import { checkTransaction } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { calculateTrialDays } from "@/util/CalculateTrialDays";
+
 export async function POST(request: NextRequest) {
   try {
     // Get the raw body as text (important for signature verification)
