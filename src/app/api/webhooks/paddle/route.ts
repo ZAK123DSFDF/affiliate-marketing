@@ -129,13 +129,11 @@ export async function POST(request: NextRequest) {
         const trialPeriod = sub.items?.[0]?.price?.trial_period;
         const interval = trialPeriod?.interval;
         const frequency = Number(trialPeriod?.frequency || 0);
-        const extraDays = 7;
-        const expirationDate = new Date();
         const trialDays = calculateTrialDays(interval, frequency);
-        expirationDate.setDate(expirationDate.getDate() + trialDays);
+        const extraDays = 7;
 
         console.log(
-          `Subscription trial → ${interval} x ${frequency} → Expiration: ${expirationDate.toISOString()}`,
+          `Subscription trial → ${interval} x ${frequency} → TrialDays=${trialDays}`,
         );
 
         const existing = await db.query.checkTransaction.findFirst({
@@ -143,23 +141,37 @@ export async function POST(request: NextRequest) {
         });
 
         if (existing) {
-          console.log("Existing subscription found → updating expiration");
+          // 👉 If exists → extend from current expiration
+          const newExpiration = new Date(existing.expirationDate);
+          newExpiration.setDate(newExpiration.getDate() + trialDays);
+
+          console.log(
+            "Existing subscription found → extending expiration:",
+            newExpiration.toISOString(),
+          );
+
           await db
             .update(checkTransaction)
-            .set({ expirationDate })
+            .set({ expirationDate: newExpiration })
             .where(eq(checkTransaction.subscriptionId, subscriptionId));
         } else {
-          console.log("New subscription trial → inserting record");
-          const expirationDateForInsert = new Date(expirationDate);
-          expirationDateForInsert.setDate(
-            expirationDateForInsert.getDate() + extraDays,
+          // 👉 New insert → add trialDays + extraDays
+          const expirationDate = new Date();
+          expirationDate.setDate(
+            expirationDate.getDate() + trialDays + extraDays,
           );
+
+          console.log(
+            "New subscription trial → inserting with expiration:",
+            expirationDate.toISOString(),
+          );
+
           await db.insert(checkTransaction).values({
             customerId,
             subscriptionId,
             currency,
             amount: 0, // no amount yet
-            expirationDate: expirationDateForInsert,
+            expirationDate,
             customData,
           });
         }
