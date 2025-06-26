@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     const attributes = event.data.attributes;
     const customerId = attributes.customer_id;
     const customData = event.meta.custom_data || {};
-    const currency = attributes.currency || "USD";
+    const currency = "usd";
 
     if (eventType === "order_created") {
       const orderId = event.data.id;
