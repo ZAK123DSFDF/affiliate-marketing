@@ -1,6 +1,9 @@
 // app/api/lemon-webhook/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { db } from "@/db/drizzle";
+import { checkTransaction } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,7 +11,6 @@ export async function POST(request: NextRequest) {
     const signature = request.headers.get("X-Signature");
     const secret = process.env.LEMON_SQUEEZY_WEBHOOK_SECRET;
 
-    // Validate required values exist
     if (!secret || !signature) {
       console.error("❌ Missing webhook configuration");
       return NextResponse.json(
@@ -17,35 +19,74 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 1. Verify HMAC signature
     const computedSig = crypto
       .createHmac("sha256", secret)
       .update(payload)
       .digest("hex");
-
     if (signature !== computedSig) {
       console.error("⚠️ Invalid signature! Potential attack.");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
-    // 2. Process the event (payload is now trusted)
     const event = JSON.parse(payload);
-    console.log("🔔 Event received:", event.meta.event_name);
+    const eventType = event.meta.event_name;
+    const attributes = event.data.attributes;
+    const customerId = attributes.customer_id;
+    const customData = event.meta.custom_data || {};
+    const currency = attributes.currency || "USD";
 
-    // 3. Handle critical events (example)
-    if (event.meta.event_name === "order_created") {
-      // await db.insert(users).values({
-      //   email: event.meta.custom_data.email || "zakLemonCheckout@gmail.com",
-      //   name: event.meta.custom_data.name || "zak",
-      //   age: 28,
-      //   paymentProvider: "lemon_squeezy",
-      // });
+    if (eventType === "order_created") {
+      const orderId = event.data.id;
+      const amount = attributes.total_usd || attributes.total || 0;
+      const createdAt = new Date(attributes.created_at);
+
+      const existing = await db.query.checkTransaction.findFirst({
+        where: (tx, { eq }) => eq(tx.customerId, customerId),
+      });
+
+      if (!existing) {
+        await db.insert(checkTransaction).values({
+          customerId,
+          subscriptionId: null,
+          currency,
+          amount,
+          expirationDate: new Date(
+            createdAt.getTime() + 7 * 24 * 60 * 60 * 1000,
+          ),
+          customData,
+        });
+        console.log("✅ Order inserted with customer only");
+      } else {
+        console.log("ℹ️ Existing customer found. No insert on order_created.");
+      }
+    }
+
+    if (eventType === "subscription_created") {
+      const subscriptionId = event.data.id;
+      const renewsAt = new Date(attributes.renews_at);
+
+      const existing = await db.query.checkTransaction.findFirst({
+        where: (tx, { eq }) => eq(tx.customerId, customerId),
+      });
+
+      if (existing && !existing.subscriptionId) {
+        await db
+          .update(checkTransaction)
+          .set({ subscriptionId, expirationDate: renewsAt })
+          .where(eq(checkTransaction.customerId, customerId));
+
+        console.log(
+          "✅ Updated existing record with subscription ID and expiration",
+        );
+      } else {
+        console.log(
+          "ℹ️ Subscription already linked or no base record to attach to.",
+        );
+      }
     }
 
     return new NextResponse(JSON.stringify({ success: true, event }, null, 2), {
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (err) {
     console.error("Error processing webhook:", err);
