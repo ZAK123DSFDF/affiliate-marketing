@@ -85,6 +85,33 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    if (eventType === "subscription_payment_success") {
+      const billingReason = attributes.billing_reason;
+      const subscriptionId = attributes.subscription_id;
+      const amount = attributes.total_usd || 0;
+
+      if (billingReason === "renewal") {
+        const existing = await db.query.checkTransaction.findFirst({
+          where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
+        });
+
+        if (existing) {
+          const newAmount = (existing.amount || 0) + amount;
+
+          await db
+            .update(checkTransaction)
+            .set({ amount: newAmount })
+            .where(eq(checkTransaction.subscriptionId, subscriptionId));
+
+          console.log("✅ Renewal payment added to existing amount");
+        } else {
+          console.log("⚠️ Subscription not found for renewal update.");
+        }
+      } else {
+        console.log("ℹ️ Subscription payment is initial. No renewal logic.");
+      }
+    }
+
     return new NextResponse(JSON.stringify({ success: true, event }, null, 2), {
       headers: { "Content-Type": "application/json" },
     });
