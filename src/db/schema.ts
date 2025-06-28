@@ -70,6 +70,18 @@ export const affiliate = pgTable(
     ),
   }),
 );
+export const exchangeRate = pgTable(
+  "exchange_rate",
+  {
+    baseCurrency: text("base_currency").notNull(),
+    targetCurrency: text("target_currency").notNull(),
+    rate: text("rate").notNull(),
+    fetchedAt: timestamp("fetched_at").notNull(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.baseCurrency, t.targetCurrency] }),
+  }),
+);
 export const affiliateLink = pgTable("affiliate_link", {
   id: uuid("id").primaryKey().defaultRandom(),
   code: text("code")
