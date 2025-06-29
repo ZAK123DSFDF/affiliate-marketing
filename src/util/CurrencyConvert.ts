@@ -5,7 +5,7 @@ export async function convertToUSD(
   amountSmallestUnit: number,
   currencyCode: string,
   decimals: number = 2,
-): Promise<number> {
+): Promise<{ amount: number; currency: string }> {
   const currency = currencyCode.toUpperCase();
 
   const [rateRow] = await db
@@ -26,5 +26,8 @@ export async function convertToUSD(
   const amount = amountSmallestUnit / 10 ** decimals;
   const usdAmount = amount / rate;
 
-  return parseFloat(usdAmount.toFixed(2));
+  return {
+    amount: parseFloat(usdAmount.toFixed(2)),
+    currency: currency,
+  };
 }

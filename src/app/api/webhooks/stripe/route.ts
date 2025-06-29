@@ -7,6 +7,8 @@ import { checkTransaction } from "@/db/schema";
 import { addDays } from "date-fns";
 import { eq } from "drizzle-orm";
 import { generateStripeCustomerId } from "@/util/StripeCustomerId";
+import { convertToUSD } from "@/util/CurrencyConvert";
+import { getCurrencyDecimals } from "@/util/CurrencyDecimal";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-04-30.basil",
 });
@@ -39,8 +41,13 @@ export async function POST(req: NextRequest) {
       const subscriptionId = isSubscription
         ? (session.subscription as string)
         : null;
-      const amount = session.amount_total ?? 0;
-      const currency = session.currency ?? "usd";
+      const rawAmount = session.amount_total ?? 0;
+      const decimals = getCurrencyDecimals(session.currency ?? "usd");
+      const { amount, currency } = await convertToUSD(
+        rawAmount,
+        session.currency ?? "usd",
+        decimals,
+      );
       const expirationDate = addDays(new Date(), 7);
 
       if (subscriptionId) {
@@ -107,7 +114,7 @@ export async function POST(req: NextRequest) {
         const customerId = subscription.customer as string;
         const subscriptionId = subscription.id;
         const amount = 0;
-        const currency = subscription.currency ?? "usd";
+        const currency = "usd".toUpperCase();
         const trialDurationMs =
           (subscription.trial_end - subscription.trial_start) * 1000;
         const trialDaysOnly = Math.round(
@@ -192,8 +199,14 @@ export async function POST(req: NextRequest) {
         }
 
         if (existing.expirationDate > invoiceCreatedDate) {
-          const taxExcludedAmount = invoice.total_excluding_tax ?? 0;
-          const newAmount = Math.max(0, existing.amount + taxExcludedAmount);
+          const rawAmount = invoice.total_excluding_tax ?? 0;
+          const decimals = getCurrencyDecimals(invoice.currency ?? "usd");
+          const { amount } = await convertToUSD(
+            rawAmount,
+            invoice.currency ?? "usd",
+            decimals,
+          );
+          const newAmount = Math.max(0, existing.amount + amount);
           await db
             .update(checkTransaction)
             .set({
@@ -237,12 +250,18 @@ export async function POST(req: NextRequest) {
         }
         const invoiceCreatedDate = new Date(invoice.created * 1000);
         if (existing.expirationDate > invoiceCreatedDate) {
-          const taxExcludedAmount = invoice.total_excluding_tax ?? 0;
+          const rawAmount = invoice.total_excluding_tax ?? 0;
+          const decimals = getCurrencyDecimals(invoice.currency ?? "usd");
+          const { amount } = await convertToUSD(
+            rawAmount,
+            invoice.currency ?? "usd",
+            decimals,
+          );
 
           await db
             .update(checkTransaction)
             .set({
-              amount: existing.amount + taxExcludedAmount,
+              amount: existing.amount + amount,
             })
             .where(eq(checkTransaction.subscriptionId, subscriptionId));
 
