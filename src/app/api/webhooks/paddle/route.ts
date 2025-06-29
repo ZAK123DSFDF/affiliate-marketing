@@ -4,6 +4,8 @@ import { db } from "@/db/drizzle";
 import { checkTransaction } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { calculateTrialDays } from "@/util/CalculateTrialDays";
+import { convertToUSD } from "@/util/CurrencyConvert";
+import { getCurrencyDecimals } from "@/util/CurrencyDecimal";
 
 export async function POST(request: NextRequest) {
   try {
@@ -61,8 +63,14 @@ export async function POST(request: NextRequest) {
 
         const customerId = tx.customer_id;
         const subscriptionId = tx.subscription_id || null;
-        const currency = tx.details?.totals?.currency_code || "USD";
+        const rawCurrency = tx.details?.totals?.currency_code || "USD";
         const rawAmount = Number(tx.details?.totals?.total || 0);
+        const decimals = getCurrencyDecimals(rawCurrency);
+        const { amount, currency } = await convertToUSD(
+          rawAmount,
+          rawCurrency,
+          decimals,
+        );
         const customData = tx.custom_data || {};
         const transactionTime = new Date(tx.created_at); // <-- from Paddle
 
@@ -82,7 +90,7 @@ export async function POST(request: NextRequest) {
               console.log("Transaction ignored: after expiration");
               break;
             }
-            const newAmount = Math.max(0, existing.amount + rawAmount);
+            const newAmount = Math.max(0, existing.amount + amount);
             await db
               .update(checkTransaction)
               .set({ amount: newAmount })
@@ -91,7 +99,7 @@ export async function POST(request: NextRequest) {
             const insertData: any = {
               customerId,
               subscriptionId,
-              amount: rawAmount,
+              amount,
               currency,
               expirationDate,
               customData,
@@ -117,7 +125,7 @@ export async function POST(request: NextRequest) {
         const subscriptionId = sub.id;
         const customerId = sub.customer_id;
         const customData = sub.custom_data || {};
-        const currency = sub.currency_code || "USD";
+        const currency = "USD";
 
         const isTrial = sub.status === "trialing";
         if (!isTrial) {
