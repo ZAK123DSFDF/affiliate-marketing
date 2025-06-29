@@ -11,6 +11,7 @@ import {
   uniqueIndex,
   index,
   jsonb,
+  numeric,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
@@ -117,7 +118,9 @@ export const checkTransaction = pgTable("check_transaction", {
   id: uuid("id").primaryKey().defaultRandom(),
   customerId: text("customer_id").notNull(),
   subscriptionId: text("subscription_id"),
-  amount: integer("amount").notNull().default(0),
+  amount: numeric("amount", { precision: 10, scale: 2 })
+    .notNull()
+    .default("0.00"),
   currency: text("currency").notNull(),
   expirationDate: timestamp("expiration_date").notNull(),
   customData: jsonb("custom_data").notNull(),
