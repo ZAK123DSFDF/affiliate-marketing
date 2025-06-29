@@ -5,7 +5,7 @@ export async function convertToUSD(
   amountSmallestUnit: number,
   currencyCode: string,
   decimals: number = 2,
-): Promise<{ amount: number; currency: string }> {
+): Promise<{ amount: string; currency: string }> {
   const currency = currencyCode.toUpperCase();
 
   const [rateRow] = await db

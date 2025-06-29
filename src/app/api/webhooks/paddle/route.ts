@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import { calculateTrialDays } from "@/util/CalculateTrialDays";
 import { convertToUSD } from "@/util/CurrencyConvert";
 import { getCurrencyDecimals } from "@/util/CurrencyDecimal";
+import { safeFormatAmount } from "@/util/SafeParse";
 
 export async function POST(request: NextRequest) {
   try {
@@ -64,10 +65,10 @@ export async function POST(request: NextRequest) {
         const customerId = tx.customer_id;
         const subscriptionId = tx.subscription_id || null;
         const rawCurrency = tx.details?.totals?.currency_code || "USD";
-        const rawAmount = Number(tx.details?.totals?.total || 0);
+        const rawAmount = safeFormatAmount(tx.details?.totals?.total);
         const decimals = getCurrencyDecimals(rawCurrency);
         const { amount, currency } = await convertToUSD(
-          rawAmount,
+          parseFloat(rawAmount),
           rawCurrency,
           decimals,
         );
@@ -90,7 +91,10 @@ export async function POST(request: NextRequest) {
               console.log("Transaction ignored: after expiration");
               break;
             }
-            const newAmount = Math.max(0, existing.amount + amount);
+            const newAmount = Math.max(
+              0,
+              parseFloat(existing.amount) + parseFloat(amount),
+            ).toFixed(2);
             await db
               .update(checkTransaction)
               .set({ amount: newAmount })
@@ -180,7 +184,7 @@ export async function POST(request: NextRequest) {
             customerId,
             subscriptionId,
             currency,
-            amount: 0, // no amount yet
+            amount: "0.00", // no amount yet
             expirationDate,
             customData,
           });

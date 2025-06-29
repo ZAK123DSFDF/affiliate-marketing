@@ -101,7 +101,10 @@ export async function POST(request: NextRequest) {
 
         // Only update if this is a new billing cycle
         if (createdAt <= existingExpiration) {
-          const newAmount = Number(existing.amount || 0) + Number(amountUsd);
+          const newAmount = Math.max(
+            0,
+            parseFloat(existing.amount) + parseFloat(String(amountUsd)),
+          ).toFixed(2);
 
           await db
             .update(checkTransaction)
