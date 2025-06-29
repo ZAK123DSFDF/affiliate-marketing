@@ -28,6 +28,6 @@ export async function convertToUSD(
 
   return {
     amount: String(parseFloat(usdAmount.toFixed(2))),
-    currency: currency,
+    currency: "USD",
   };
 }
