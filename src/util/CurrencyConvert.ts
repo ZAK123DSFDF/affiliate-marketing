@@ -27,7 +27,7 @@ export async function convertToUSD(
   const usdAmount = amount / rate;
 
   return {
-    amount: parseFloat(usdAmount.toFixed(2)),
+    amount: String(parseFloat(usdAmount.toFixed(2))),
     currency: currency,
   };
 }
