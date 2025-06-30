@@ -1,28 +1,26 @@
 "use server";
+import { returnError } from "@/lib/errorHandler";
 import { organization } from "@/db/schema";
 import { db } from "@/db/drizzle";
-import { returnError } from "@/lib/errorHandler";
-export const CreateOrganization = async ({ name, slug, domainName }: any) => {
+import { companySchema } from "@/components/pages/Create-Company";
+import { z } from "zod";
+export const CreateOrganization = async (
+  data: z.infer<typeof companySchema>,
+) => {
   try {
-    // Insert new organization
-    const [newOrg] = await db
-      .insert(organization)
-      .values({ name, slug, domainName })
-      .returning();
+    const [newOrg] = await db.insert(organization).values(data).returning();
 
-    // Ensure an organization was actually created and returned
     if (!newOrg) {
       throw {
         status: 500,
-        error: "Failed to create organization.",
-        toast:
-          "Something went wrong during organization creation. Please try again.",
+        error: "Organization creation failed",
+        toast: "Failed to create organization. Please try again.",
       };
     }
 
     return { ok: true, data: newOrg };
-  } catch (error: any) {
-    console.error("company creation error", error); // Log the full error for debugging
-    return returnError(error);
+  } catch (err) {
+    console.error("Organization create error", err);
+    return returnError(err);
   }
 };

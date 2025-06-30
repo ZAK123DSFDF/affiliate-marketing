@@ -23,6 +23,11 @@ export const paymentProviderEnum = pgEnum("payment_provider", [
   "lemon_squeezy",
   "paddle",
 ]);
+export const referralParamEnum = pgEnum("referral_param_enum", [
+  "ref",
+  "via",
+  "aff",
+]);
 // USER SCHEMA (Sellers are users who create organizations)
 export const user = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -43,6 +48,18 @@ export const organization = pgTable("organization", {
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   domainName: text("domain_name").notNull().unique(),
+  logoUrl: text("logo_url"), // Optional logo
+  referralParam: referralParamEnum("referral_param").default("ref"), // e.g., ref/aff
+  cookieLifetimeValue: integer("cookie_lifetime_value").default(30), // e.g., 30
+  cookieLifetimeUnit: text("cookie_lifetime_unit").default("day"), // year/month/week/day
+  commissionType: text("commission_type").default("percentage"), // 'percentage' or 'fixed'
+  commissionValue: numeric("commission_value", {
+    precision: 10,
+    scale: 2,
+  }).default("0.00"),
+  commissionDurationValue: integer("commission_duration_value").default(0),
+  commissionDurationUnit: text("commission_duration_unit").default("day"),
+  currency: text("currency").default("USD"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
