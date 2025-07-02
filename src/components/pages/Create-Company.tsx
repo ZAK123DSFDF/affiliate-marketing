@@ -8,7 +8,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { CreateOrganization } from "@/actions/auth/CreateOrganization";
-
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Form,
   FormControl,
@@ -28,21 +34,26 @@ export const companySchema = z.object({
   slug: z
     .string()
     .min(2)
-    .regex(/^[a-z0-9-]+$/),
+    .regex(
+      /^[a-z0-9-]+$/,
+      "Slug can only contain lowercase letters, numbers, and hyphens",
+    ),
   domainName: z
     .string()
     .min(2)
-    .regex(/^[a-z0-9-]+(\.[a-z]{2,})+$/i),
-
+    .regex(
+      /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}|localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/i,
+      "Invalid domain format (e.g., 'example.com' or 'localhost')",
+    ),
   logoUrl: z.string().url().optional().or(z.literal("")),
   referralParam: z.enum(["ref", "via", "aff"]),
-  cookieLifetimeValue: z.number().min(1),
+  cookieLifetimeValue: z.coerce.number().min(1),
   cookieLifetimeUnit: z.enum(["day", "week", "month", "year"]),
   commissionType: z.enum(["percentage", "fixed"]),
-  commissionValue: z.number().min(0),
-  commissionDurationValue: z.number().min(1),
+  commissionValue: z.coerce.number().min(0),
+  commissionDurationValue: z.coerce.number().min(1),
   commissionDurationUnit: z.enum(["day", "week", "month", "year"]),
-  currency: z.string().min(1),
+  currency: z.enum(["USD", "EUR", "GBP", "CAD", "AUD"]),
 });
 
 type CompanySchema = z.infer<typeof companySchema>;
@@ -123,7 +134,8 @@ export default function CreateCompany() {
                   control={form.control}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Company URL</FormLabel>
+                      <FormLabel>Company Slug (for URLs)</FormLabel>{" "}
+                      {/* Updated label */}
                       <div className="flex items-center gap-1">
                         <span className="text-sm text-muted-foreground">
                           affiliatex.com/
@@ -142,7 +154,10 @@ export default function CreateCompany() {
                   control={form.control}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Company Domain</FormLabel>
+                      <FormLabel>
+                        Company Domain (e.g., yourcompany.com)
+                      </FormLabel>{" "}
+                      {/* Updated label */}
                       <FormControl>
                         <Input {...field} placeholder="yourcompany.com" />
                       </FormControl>
@@ -174,13 +189,21 @@ export default function CreateCompany() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Referral URL Parameter</FormLabel>
-                      <FormControl>
-                        <select {...field} className="input">
-                          <option value="ref">ref</option>
-                          <option value="via">via</option>
-                          <option value="aff">aff</option>
-                        </select>
-                      </FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select referral param" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="ref">ref</SelectItem>
+                          <SelectItem value="via">via</SelectItem>
+                          <SelectItem value="aff">aff</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -207,14 +230,22 @@ export default function CreateCompany() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Unit</FormLabel>
-                        <FormControl>
-                          <select {...field} className="input">
-                            <option value="day">Day</option>
-                            <option value="week">Week</option>
-                            <option value="month">Month</option>
-                            <option value="year">Year</option>
-                          </select>
-                        </FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select unit" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="day">Day</SelectItem>
+                            <SelectItem value="week">Week</SelectItem>
+                            <SelectItem value="month">Month</SelectItem>
+                            <SelectItem value="year">Year</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -228,12 +259,22 @@ export default function CreateCompany() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Commission Type</FormLabel>
-                        <FormControl>
-                          <select {...field} className="input">
-                            <option value="percentage">Percentage</option>
-                            <option value="fixed">Fixed</option>
-                          </select>
-                        </FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="percentage">
+                              Percentage
+                            </SelectItem>
+                            <SelectItem value="fixed">Fixed</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -275,14 +316,22 @@ export default function CreateCompany() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Unit</FormLabel>
-                        <FormControl>
-                          <select {...field} className="input">
-                            <option value="day">Day</option>
-                            <option value="week">Week</option>
-                            <option value="month">Month</option>
-                            <option value="year">Year</option>
-                          </select>
-                        </FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select unit" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="day">Day</SelectItem>
+                            <SelectItem value="week">Week</SelectItem>
+                            <SelectItem value="month">Month</SelectItem>
+                            <SelectItem value="year">Year</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -295,15 +344,23 @@ export default function CreateCompany() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Currency</FormLabel>
-                      <FormControl>
-                        <select {...field} className="input">
-                          <option value="USD">USD</option>
-                          <option value="EUR">EUR</option>
-                          <option value="GBP">GBP</option>
-                          <option value="CAD">CAD</option>
-                          <option value="AUD">AUD</option>
-                        </select>
-                      </FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select currency" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="USD">USD</SelectItem>
+                          <SelectItem value="EUR">EUR</SelectItem>
+                          <SelectItem value="GBP">GBP</SelectItem>
+                          <SelectItem value="CAD">CAD</SelectItem>
+                          <SelectItem value="AUD">AUD</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
