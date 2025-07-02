@@ -8,7 +8,10 @@ export const CreateOrganization = async (
   data: z.infer<typeof companySchema>,
 ) => {
   try {
-    const [newOrg] = await db.insert(organization).values(data).returning();
+    const [newOrg] = await db
+      .insert(organization)
+      .values({ ...data, commissionValue: data.commissionValue.toFixed(2) })
+      .returning();
 
     if (!newOrg) {
       throw {
