@@ -15,7 +15,10 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
-import { generateAffiliateCode } from "@/util/AffiliateCodes";
+import {
+  generateAffiliateCode,
+  generateOrganizationId,
+} from "@/util/idGenerators";
 export const roleEnum = pgEnum("role", ["OWNER", "ADMIN"]);
 export const accountTypeEnum = pgEnum("account_type", ["SELLER", "AFFILIATE"]);
 export const paymentProviderEnum = pgEnum("payment_provider", [
@@ -44,9 +47,10 @@ export const user = pgTable("user", {
 
 // ORGANIZATION SCHEMA
 export const organization = pgTable("organization", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => generateOrganizationId()),
   name: text("name").notNull(),
-  slug: text("slug").notNull().unique(),
   domainName: text("domain_name").notNull().unique(),
   logoUrl: text("logo_url"), // Optional logo
   referralParam: referralParamEnum("referral_param").default("ref"), // e.g., ref/aff
@@ -77,7 +81,7 @@ export const affiliate = pgTable(
     type: accountTypeEnum("type").default("AFFILIATE").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
-    organizationId: uuid("organization_id")
+    organizationId: text("organization_id")
       .notNull()
       .references(() => organization.id, { onDelete: "cascade" }),
   },
@@ -113,7 +117,7 @@ export const affiliateLink = pgTable("affiliate_link", {
   affiliateId: uuid("affiliate_id")
     .notNull()
     .references(() => affiliate.id, { onDelete: "cascade" }),
-  organizationId: uuid("organization_id")
+  organizationId: text("organization_id")
     .notNull()
     .references(() => organization.id, { onDelete: "cascade" }),
 });
@@ -149,7 +153,7 @@ export const invitation = pgTable("invitation", {
   inviterId: uuid("inviter_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  organizationId: uuid("organization_id")
+  organizationId: text("organization_id")
     .notNull()
     .references(() => organization.id, { onDelete: "cascade" }),
 
@@ -173,7 +177,7 @@ export const userToOrganization = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
 
-    organizationId: uuid("organization_id")
+    organizationId: text("organization_id")
       .notNull()
       .references(() => organization.id, { onDelete: "cascade" }),
   },

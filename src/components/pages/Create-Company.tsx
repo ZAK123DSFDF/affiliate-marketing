@@ -31,13 +31,6 @@ import { Loader2 } from "lucide-react";
 
 export const companySchema = z.object({
   name: z.string().min(2),
-  slug: z
-    .string()
-    .min(2)
-    .regex(
-      /^[a-z0-9-]+$/,
-      "Slug can only contain lowercase letters, numbers, and hyphens",
-    ),
   domainName: z
     .string()
     .min(2)
@@ -63,7 +56,6 @@ export default function CreateCompany() {
     resolver: zodResolver(companySchema),
     defaultValues: {
       name: "",
-      slug: "",
       domainName: "",
       logoUrl: "",
       referralParam: "ref",
@@ -124,26 +116,6 @@ export default function CreateCompany() {
                       <FormControl>
                         <Input {...field} placeholder="Acme Inc" />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  name="slug"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company Slug (for URLs)</FormLabel>{" "}
-                      {/* Updated label */}
-                      <div className="flex items-center gap-1">
-                        <span className="text-sm text-muted-foreground">
-                          affiliatex.com/
-                        </span>
-                        <FormControl>
-                          <Input {...field} placeholder="acme-inc" />
-                        </FormControl>
-                      </div>
                       <FormMessage />
                     </FormItem>
                   )}

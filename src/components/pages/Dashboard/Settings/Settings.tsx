@@ -1,204 +1,199 @@
-// app/dashboard/settings/page.tsx
 "use client";
-import React from "react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
+  SelectTrigger,
   SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 
-export default function Settings() {
-  const [commissionType, setCommissionType] = React.useState("percentage");
-  const [commissionDuration, setCommissionDuration] =
-    React.useState("lifetime");
+type OrgData = {
+  name: string;
+  domainName: string;
+  logoUrl?: string | null;
+  referralParam: "ref" | "via" | "aff";
+  cookieLifetimeValue: number;
+  cookieLifetimeUnit: "day" | "week" | "month" | "year";
+  commissionType: "percentage" | "fixed";
+  commissionValue: string;
+  commissionDurationValue: number;
+  commissionDurationUnit: "day" | "week" | "month" | "year";
+  currency: "USD" | "EUR" | "GBP" | "CAD" | "AUD";
+};
+
+type Props = {
+  orgData: OrgData;
+};
+
+export default function Settings({ orgData }: Props) {
+  const [formValues, setFormValues] = useState({ ...orgData });
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <SidebarTrigger className="md:hidden" />
-          <div>
-            <h1 className="text-3xl font-bold">Project Settings</h1>
-            <p className="text-muted-foreground">
-              Configure your project parameters
-            </p>
-          </div>
-        </div>
-        <Button>Save Settings</Button>
-      </div>
-
-      {/* Main Settings Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Project Configuration</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Project Name */}
-          <div className="space-y-2">
-            <Label htmlFor="projectName">Project Name</Label>
-            <Input id="projectName" placeholder="Enter your project name" />
-          </div>
-
-          {/* Logo Upload */}
-          <div className="space-y-2">
-            <Label>Project Logo</Label>
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-md bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                {/* Placeholder for logo */}
-                <span className="text-gray-400">Logo</span>
-              </div>
-              <Input id="logo" type="file" className="max-w-sm" />
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl">
+        <Card className="border-none shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">
+              Organization Settings
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label>Company Name</label>
+              <Input defaultValue={orgData.name} />
             </div>
-          </div>
 
-          {/* Referral Parameter */}
-          <div className="space-y-2">
-            <Label htmlFor="referralParam">Referral Parameter</Label>
-            <Select>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select parameter" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ref">ref</SelectItem>
-                <SelectItem value="via">via</SelectItem>
-                <SelectItem value="aff">aff</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Cookie Lifetime */}
-          <div className="space-y-2">
-            <Label htmlFor="cookieLifetime">Cookie Lifetime</Label>
-            <Select>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select days" />
-              </SelectTrigger>
-              <SelectContent>
-                {[7, 14, 30, 60, 90, 180, 365].map((days) => (
-                  <SelectItem key={days} value={days.toString()}>
-                    {days} days
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Commission Type */}
-          <div className="space-y-2">
-            <Label>Commission Type</Label>
-            <div className="flex gap-4">
-              <div className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id="percentage"
-                  name="commissionType"
-                  value="percentage"
-                  checked={commissionType === "percentage"}
-                  onChange={() => setCommissionType("percentage")}
-                  className="h-4 w-4 text-primary focus:ring-primary"
-                />
-                <Label htmlFor="percentage">Percentage</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id="fixed"
-                  name="commissionType"
-                  value="fixed"
-                  checked={commissionType === "fixed"}
-                  onChange={() => setCommissionType("fixed")}
-                  className="h-4 w-4 text-primary focus:ring-primary"
-                />
-                <Label htmlFor="fixed">Fixed Amount</Label>
-              </div>
+            <div>
+              <label>Domain Name</label>
+              <Input defaultValue={orgData.domainName} />
             </div>
-          </div>
 
-          {/* Commission Value */}
-          <div className="space-y-2">
-            <Label htmlFor="commissionValue">
-              {commissionType === "percentage"
-                ? "Percentage Value"
-                : "Fixed Amount"}
-            </Label>
-            <div className="flex gap-2 items-center">
-              <Input
-                id="commissionValue"
-                type="number"
-                placeholder={commissionType === "percentage" ? "10" : "5.00"}
-              />
-              {commissionType === "percentage" && <span>%</span>}
+            <div>
+              <label>Logo URL</label>
+              <Input defaultValue={orgData.logoUrl || ""} />
             </div>
-          </div>
 
-          {/* Commission Duration */}
-          <div className="space-y-2">
-            <Label>Commission Duration</Label>
-            <div className="flex gap-4">
-              <div className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id="lifetime"
-                  name="commissionDuration"
-                  value="lifetime"
-                  checked={commissionDuration === "lifetime"}
-                  onChange={() => setCommissionDuration("lifetime")}
-                  className="h-4 w-4 text-primary focus:ring-primary"
-                />
-                <Label htmlFor="lifetime">Lifetime</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id="fixedPeriod"
-                  name="commissionDuration"
-                  value="fixedPeriod"
-                  checked={commissionDuration === "fixedPeriod"}
-                  onChange={() => setCommissionDuration("fixedPeriod")}
-                  className="h-4 w-4 text-primary focus:ring-primary"
-                />
-                <Label htmlFor="fixedPeriod">Fixed Period</Label>
-              </div>
-            </div>
-          </div>
-
-          {/* Fixed Period Duration (conditionally shown) */}
-          {commissionDuration === "fixedPeriod" && (
-            <div className="space-y-2">
-              <Label htmlFor="periodMonths">Duration (months)</Label>
-              <Select>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select months" />
+            <div>
+              <label>Referral Parameter</label>
+              <Select
+                value={formValues.referralParam}
+                onValueChange={(val: any) =>
+                  setFormValues((prev) => ({ ...prev, referralParam: val }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {[1, 3, 6, 12, 24].map((months) => (
-                    <SelectItem key={months} value={months.toString()}>
-                      {months} {months === 1 ? "month" : "months"}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="ref">ref</SelectItem>
+                  <SelectItem value="via">via</SelectItem>
+                  <SelectItem value="aff">aff</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-          )}
-        </CardContent>
-        <CardFooter className="flex justify-end border-t pt-6">
-          <Button>Save Changes</Button>
-        </CardFooter>
-      </Card>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label>Cookie Lifetime</label>
+                <Input
+                  type="number"
+                  defaultValue={orgData.cookieLifetimeValue.toString()}
+                />
+              </div>
+              <div>
+                <label>Lifetime Unit</label>
+                <Select
+                  value={formValues.cookieLifetimeUnit}
+                  onValueChange={(val: any) =>
+                    setFormValues((prev) => ({
+                      ...prev,
+                      cookieLifetimeUnit: val,
+                    }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="day">Day</SelectItem>
+                    <SelectItem value="week">Week</SelectItem>
+                    <SelectItem value="month">Month</SelectItem>
+                    <SelectItem value="year">Year</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label>Commission Type</label>
+                <Select
+                  value={formValues.commissionType}
+                  onValueChange={(val: any) =>
+                    setFormValues((prev) => ({ ...prev, commissionType: val }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="percentage">Percentage</SelectItem>
+                    <SelectItem value="fixed">Fixed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label>Commission Value</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  defaultValue={orgData.commissionValue}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label>Commission Duration</label>
+                <Input
+                  type="number"
+                  defaultValue={orgData.commissionDurationValue.toString()}
+                />
+              </div>
+              <div>
+                <label>Duration Unit</label>
+                <Select
+                  value={formValues.commissionDurationUnit}
+                  onValueChange={(val: any) =>
+                    setFormValues((prev) => ({
+                      ...prev,
+                      commissionDurationUnit: val,
+                    }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="day">Day</SelectItem>
+                    <SelectItem value="week">Week</SelectItem>
+                    <SelectItem value="month">Month</SelectItem>
+                    <SelectItem value="year">Year</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <label>Currency</label>
+              <Select
+                value={formValues.currency}
+                onValueChange={(val: any) =>
+                  setFormValues((prev) => ({ ...prev, currency: val }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="USD">USD</SelectItem>
+                  <SelectItem value="EUR">EUR</SelectItem>
+                  <SelectItem value="GBP">GBP</SelectItem>
+                  <SelectItem value="CAD">CAD</SelectItem>
+                  <SelectItem value="AUD">AUD</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button disabled>Update Settings (coming soon)</Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
