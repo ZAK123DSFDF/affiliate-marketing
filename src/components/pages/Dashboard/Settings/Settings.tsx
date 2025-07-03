@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { SidebarTrigger } from "@/components/ui/sidebar"; // if used
 
 type OrgData = {
   name: string;
@@ -34,32 +35,47 @@ export default function Settings({ orgData }: Props) {
   const [formValues, setFormValues] = useState({ ...orgData });
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl">
-        <Card className="border-none shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl text-center">
-              Organization Settings
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label>Company Name</label>
+    <div className="flex flex-col gap-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <SidebarTrigger className="md:hidden" />
+          <div>
+            <h1 className="text-3xl font-bold">Organization Settings</h1>
+            <p className="text-muted-foreground">
+              Manage your affiliate setup and configuration
+            </p>
+          </div>
+        </div>
+        <Button disabled>Update Settings</Button>
+      </div>
+
+      {/* Basic Information Card - Now with side-by-side fields */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Basic Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium">Company Name</label>
               <Input defaultValue={orgData.name} />
             </div>
 
-            <div>
-              <label>Domain Name</label>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium">Domain Name</label>
               <Input defaultValue={orgData.domainName} />
             </div>
 
-            <div>
-              <label>Logo URL</label>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium">Logo URL</label>
               <Input defaultValue={orgData.logoUrl || ""} />
             </div>
 
-            <div>
-              <label>Referral Parameter</label>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium">
+                Referral Parameter
+              </label>
               <Select
                 value={formValues.referralParam}
                 onValueChange={(val: any) =>
@@ -76,124 +92,139 @@ export default function Settings({ orgData }: Props) {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+        </CardContent>
+      </Card>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label>Cookie Lifetime</label>
-                <Input
-                  type="number"
-                  defaultValue={orgData.cookieLifetimeValue.toString()}
-                />
-              </div>
-              <div>
-                <label>Lifetime Unit</label>
-                <Select
-                  value={formValues.cookieLifetimeUnit}
-                  onValueChange={(val: any) =>
-                    setFormValues((prev) => ({
-                      ...prev,
-                      cookieLifetimeUnit: val,
-                    }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="day">Day</SelectItem>
-                    <SelectItem value="week">Week</SelectItem>
-                    <SelectItem value="month">Month</SelectItem>
-                    <SelectItem value="year">Year</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+      {/* Tracking and Commission Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Tracking and Commission</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium">
+                Cookie Lifetime
+              </label>
+              <Input
+                type="number"
+                defaultValue={orgData.cookieLifetimeValue.toString()}
+              />
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label>Commission Type</label>
-                <Select
-                  value={formValues.commissionType}
-                  onValueChange={(val: any) =>
-                    setFormValues((prev) => ({ ...prev, commissionType: val }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="percentage">Percentage</SelectItem>
-                    <SelectItem value="fixed">Fixed</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label>Commission Value</label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  defaultValue={orgData.commissionValue}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label>Commission Duration</label>
-                <Input
-                  type="number"
-                  defaultValue={orgData.commissionDurationValue.toString()}
-                />
-              </div>
-              <div>
-                <label>Duration Unit</label>
-                <Select
-                  value={formValues.commissionDurationUnit}
-                  onValueChange={(val: any) =>
-                    setFormValues((prev) => ({
-                      ...prev,
-                      commissionDurationUnit: val,
-                    }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="day">Day</SelectItem>
-                    <SelectItem value="week">Week</SelectItem>
-                    <SelectItem value="month">Month</SelectItem>
-                    <SelectItem value="year">Year</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div>
-              <label>Currency</label>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium">Lifetime Unit</label>
               <Select
-                value={formValues.currency}
+                value={formValues.cookieLifetimeUnit}
                 onValueChange={(val: any) =>
-                  setFormValues((prev) => ({ ...prev, currency: val }))
+                  setFormValues((prev) => ({
+                    ...prev,
+                    cookieLifetimeUnit: val,
+                  }))
                 }
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="EUR">EUR</SelectItem>
-                  <SelectItem value="GBP">GBP</SelectItem>
-                  <SelectItem value="CAD">CAD</SelectItem>
-                  <SelectItem value="AUD">AUD</SelectItem>
+                  <SelectItem value="day">Day</SelectItem>
+                  <SelectItem value="week">Week</SelectItem>
+                  <SelectItem value="month">Month</SelectItem>
+                  <SelectItem value="year">Year</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+          </div>
 
-            <Button disabled>Update Settings (coming soon)</Button>
-          </CardContent>
-        </Card>
-      </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium">
+                Commission Type
+              </label>
+              <Select
+                value={formValues.commissionType}
+                onValueChange={(val: any) =>
+                  setFormValues((prev) => ({ ...prev, commissionType: val }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="percentage">Percentage</SelectItem>
+                  <SelectItem value="fixed">Fixed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium">
+                Commission Value
+              </label>
+              <Input
+                type="number"
+                step="0.01"
+                defaultValue={orgData.commissionValue}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium">
+                Commission Duration
+              </label>
+              <Input
+                type="number"
+                defaultValue={orgData.commissionDurationValue.toString()}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium">Duration Unit</label>
+              <Select
+                value={formValues.commissionDurationUnit}
+                onValueChange={(val: any) =>
+                  setFormValues((prev) => ({
+                    ...prev,
+                    commissionDurationUnit: val,
+                  }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="day">Day</SelectItem>
+                  <SelectItem value="week">Week</SelectItem>
+                  <SelectItem value="month">Month</SelectItem>
+                  <SelectItem value="year">Year</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Currency Selector - Now with constrained width */}
+          <div className="w-full space-y-2">
+            <label className="block text-sm font-medium">Currency</label>
+            <Select
+              value={formValues.currency}
+              onValueChange={(val: any) =>
+                setFormValues((prev) => ({ ...prev, currency: val }))
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="USD">USD</SelectItem>
+                <SelectItem value="EUR">EUR</SelectItem>
+                <SelectItem value="GBP">GBP</SelectItem>
+                <SelectItem value="CAD">CAD</SelectItem>
+                <SelectItem value="AUD">AUD</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
