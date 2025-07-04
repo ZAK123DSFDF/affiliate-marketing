@@ -20,8 +20,8 @@ import { GoogleAuthButton } from "@/components/Auth/GoogleAuthButton";
 import { InputField, CheckboxField } from "@/components/Auth/FormFields";
 import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema";
 import { useMutation } from "@tanstack/react-query";
-import { LoginServer } from "@/actions/auth/Login";
-import { LoginAffiliateServer } from "@/actions/auth/affiliate/LoginAffiliate";
+import { LoginAffiliateServer } from "@/app/affiliate/[orgId]/login/action";
+import { LoginServer } from "@/app/login/action";
 type Props = {
   orgId?: string;
 };

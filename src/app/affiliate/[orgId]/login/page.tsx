@@ -1,11 +1,10 @@
 import React from "react";
 import Login from "@/components/pages/Login";
-import { validateOrg } from "@/actions/auth/ValidateOrg";
+import { validateOrg } from "@/util/ValidateOrg";
 import { redirect } from "next/navigation";
-interface AffiliateLoginPageProps {
-  params: Promise<{ orgId: string }>;
-}
-const AffiliateLoginPage = async ({ params }: AffiliateLoginPageProps) => {
+import { OrgIdProps } from "@/lib/types/orgId";
+
+const AffiliateLoginPage = async ({ params }: OrgIdProps) => {
   const { orgId } = await params;
   const org = await validateOrg(orgId);
   if (!org.orgFound) {

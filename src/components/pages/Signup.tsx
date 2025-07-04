@@ -26,8 +26,8 @@ import { GoogleAuthButton } from "@/components/Auth/GoogleAuthButton";
 import { InputField } from "@/components/Auth/FormFields";
 import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema";
 import { useMutation } from "@tanstack/react-query";
-import { SignupServer } from "@/actions/auth/Signup";
-import { SignupAffiliateServer } from "@/actions/auth/affiliate/SignupAffiliate";
+import { SignupAffiliateServer } from "@/app/affiliate/[orgId]/signup/action";
+import { SignupServer } from "@/app/signup/action";
 type Props = {
   orgId?: string;
 };

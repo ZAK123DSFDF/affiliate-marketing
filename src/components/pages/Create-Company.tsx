@@ -7,7 +7,6 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import { CreateOrganization } from "@/actions/auth/CreateOrganization";
 import {
   Select,
   SelectTrigger,
@@ -28,6 +27,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { CreateOrganization } from "@/app/create-company/action";
 
 export const companySchema = z.object({
   name: z.string().min(2),

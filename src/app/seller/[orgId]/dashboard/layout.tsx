@@ -1,11 +1,11 @@
 // app/dashboard/layout.tsx
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import DashboardSidebar from "@/components/DashboardSidebar";
-import { validateOrg } from "@/actions/auth/ValidateOrg";
+import { validateOrg } from "@/util/ValidateOrg";
 import { notFound, redirect } from "next/navigation";
-interface SellerDashboardLayoutProps {
+import { OrgIdProps } from "@/lib/types/orgId";
+interface SellerDashboardLayoutProps extends OrgIdProps {
   children: React.ReactNode;
-  params: Promise<{ orgId: string }>;
 }
 export default async function DashboardLayout({
   children,

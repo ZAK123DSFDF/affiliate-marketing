@@ -1,6 +1,6 @@
 import React from "react";
 import Settings from "@/components/pages/Dashboard/Settings/Settings";
-import { validateOrg } from "@/actions/auth/ValidateOrg";
+import { validateOrg } from "@/util/ValidateOrg";
 import { redirect } from "next/navigation";
 import { orgInfo } from "@/app/seller/[orgId]/dashboard/settings/action";
 import { OrgIdProps } from "@/lib/types/orgId";
