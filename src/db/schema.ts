@@ -16,7 +16,10 @@ import {
 import { relations } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 import {
+  generateAffiliateClickId,
   generateAffiliateCode,
+  generateAffiliatePaymentLinkId,
+  generateInviteLinkId,
   generateOrganizationId,
 } from "@/util/idGenerators";
 export const roleEnum = pgEnum("role", ["OWNER", "ADMIN"]);
@@ -105,15 +108,11 @@ export const exchangeRate = pgTable(
   }),
 );
 export const affiliateLink = pgTable("affiliate_link", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  code: text("code")
-    .notNull()
-    .unique()
+  id: text("id")
+    .primaryKey()
     .$defaultFn(() => generateAffiliateCode()),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-
-  // Foreign keys
   affiliateId: uuid("affiliate_id")
     .notNull()
     .references(() => affiliate.id, { onDelete: "cascade" }),
@@ -121,15 +120,35 @@ export const affiliateLink = pgTable("affiliate_link", {
     .notNull()
     .references(() => organization.id, { onDelete: "cascade" }),
 });
+export const affiliateClick = pgTable("affiliate_click", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => generateAffiliateClickId()),
+  affiliateLinkId: text("affiliate_link_id")
+    .notNull()
+    .references(() => affiliateLink.id, { onDelete: "cascade" }),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  referrer: text("referrer"),
+  country: text("country"),
+  city: text("city"),
+  deviceType: text("device_type"),
+  browser: text("browser"),
+  os: text("os"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 export const affiliatePayment = pgTable("affiliate_payment", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => generateAffiliatePaymentLinkId()),
   paymentProvider: paymentProviderEnum("payment_provider").notNull(),
   paymentId: text("payment_id").notNull().unique(),
   customerId: text("customer_id").notNull().unique(),
   amount: integer("amount").notNull(),
   currency: text("currency").notNull(),
   commission: integer("commission").notNull(),
-  affiliateLinkId: uuid("affiliate_link_id")
+  affiliateLinkId: text("affiliate_link_id")
     .notNull()
     .references(() => affiliateLink.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -148,7 +167,9 @@ export const checkTransaction = pgTable("check_transaction", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 export const invitation = pgTable("invitation", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => generateInviteLinkId()),
   email: text("email").notNull(),
   inviterId: uuid("inviter_id")
     .notNull()
