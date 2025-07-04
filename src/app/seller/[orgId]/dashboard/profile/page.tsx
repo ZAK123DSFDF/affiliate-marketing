@@ -2,8 +2,8 @@ import React from "react";
 import Profile from "@/components/pages/Dashboard/Profile/Profile";
 import { validateOrg } from "@/actions/auth/ValidateOrg";
 import { redirect } from "next/navigation";
-import { orgInfo } from "@/app/seller/[orgId]/dashboard/settings/action";
 import { OrgIdProps } from "@/lib/types/orgId";
+import { getUserData } from "@/app/seller/[orgId]/dashboard/profile/action";
 
 const profilePage = async ({ params }: OrgIdProps) => {
   const { orgId } = await params;
@@ -13,15 +13,15 @@ const profilePage = async ({ params }: OrgIdProps) => {
     redirect(`/affiliate/${orgId}/not-found`);
   }
 
-  const orgResponse = await orgInfo(orgId);
+  const userResponse = await getUserData();
   // Check if the response was successful
-  if (!orgResponse.ok) {
+  if (!userResponse.ok) {
     // Handle the error case - you might want to redirect or show an error
-    redirect(`/error?message=${encodeURIComponent(orgResponse.error)}`);
+    redirect(`/error?message=${encodeURIComponent(userResponse.error)}`);
   }
   return (
     <>
-      <Profile />
+      <Profile userData={userResponse.data} />
     </>
   );
 };

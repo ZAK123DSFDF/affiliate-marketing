@@ -13,12 +13,24 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
-export default function Profile() {
+interface UserData {
+  id: string;
+  name: string;
+  email: string;
+  image?: string | null;
+  // Add other fields from your schema as needed
+}
+
+interface ProfileProps {
+  userData: UserData;
+}
+
+export default function Profile({ userData }: ProfileProps) {
   const [currentPassword, setCurrentPassword] = React.useState("");
   const [newPassword, setNewPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
-  const [username, setUsername] = React.useState("JohnDoe");
-  const [email, setEmail] = React.useState("john.doe@example.com");
+  const [username, setUsername] = React.useState(userData.name);
+  const [email, setEmail] = React.useState(userData.email);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,6 +41,15 @@ export default function Profile() {
       currentPassword,
       newPassword,
     });
+  };
+
+  // Get initials for profile picture
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase();
   };
 
   return (
@@ -55,22 +76,25 @@ export default function Profile() {
           <CardTitle>Account Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-8">
-          {" "}
-          {/* Increased from space-y-6 */}
           <form id="profile-form" onSubmit={handleSubmit}>
             {/* Profile Picture */}
             <div className="space-y-4">
               <div className="space-y-3">
-                {" "}
-                {/* Increased from space-y-2 */}
                 <Label>Profile Picture</Label>
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xl">
-                    JD
-                  </div>
+                  {userData.image ? (
+                    <img
+                      src={userData.image}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xl">
+                      {getInitials(userData.name)}
+                    </div>
+                  )}
                   <div className="flex flex-col gap-2">
-                    <Input id="avatar" type="file" className="max-w-xs" />{" "}
-                    {/* Reduced width */}
+                    <Input id="avatar" type="file" className="max-w-xs" />
                     <p className="text-xs text-muted-foreground">
                       JPG, GIF or PNG. Max size of 2MB
                     </p>
@@ -80,22 +104,18 @@ export default function Profile() {
 
               {/* Username */}
               <div className="space-y-1">
-                {" "}
-                {/* Reduced from space-y-2 */}
                 <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter your username"
-                  className="w-[280px]" /* Fixed width */
+                  className="w-[280px]"
                 />
               </div>
 
               {/* Email */}
               <div className="space-y-1">
-                {" "}
-                {/* Reduced from space-y-2 */}
                 <Label htmlFor="email">Email Address</Label>
                 <Input
                   id="email"
@@ -103,20 +123,16 @@ export default function Profile() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="w-[280px]" /* Fixed width */
+                  className="w-[280px]"
                 />
               </div>
             </div>
 
             {/* Password Change Section */}
             <div className="space-y-4 pt-6 border-t mt-8">
-              {" "}
-              {/* Increased spacing */}
               <h3 className="font-medium">Change Password</h3>
               {/* Current Password */}
               <div className="space-y-1">
-                {" "}
-                {/* Reduced from space-y-2 */}
                 <Label htmlFor="currentPassword">Current Password</Label>
                 <Input
                   id="currentPassword"
@@ -124,13 +140,11 @@ export default function Profile() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Enter current password"
-                  className="w-[280px]" /* Fixed width */
+                  className="w-[280px]"
                 />
               </div>
               {/* New Password */}
               <div className="space-y-1">
-                {" "}
-                {/* Reduced from space-y-2 */}
                 <Label htmlFor="newPassword">New Password</Label>
                 <Input
                   id="newPassword"
@@ -138,13 +152,11 @@ export default function Profile() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Enter new password"
-                  className="w-[280px]" /* Fixed width */
+                  className="w-[280px]"
                 />
               </div>
               {/* Confirm Password */}
               <div className="space-y-1">
-                {" "}
-                {/* Reduced from space-y-2 */}
                 <Label htmlFor="confirmPassword">Confirm New Password</Label>
                 <Input
                   id="confirmPassword"
@@ -152,7 +164,7 @@ export default function Profile() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm new password"
-                  className="w-[280px]" /* Fixed width */
+                  className="w-[280px]"
                 />
               </div>
             </div>
