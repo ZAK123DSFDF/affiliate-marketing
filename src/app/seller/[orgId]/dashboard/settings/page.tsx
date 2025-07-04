@@ -3,10 +3,7 @@ import Settings from "@/components/pages/Dashboard/Settings/Settings";
 import { validateOrg } from "@/actions/auth/ValidateOrg";
 import { redirect } from "next/navigation";
 import { orgInfo } from "@/app/seller/[orgId]/dashboard/settings/action";
-
-interface OrgIdProps {
-  params: { orgId: string };
-}
+import { OrgIdProps } from "@/lib/types/orgId";
 
 const SettingsPage = async ({ params }: OrgIdProps) => {
   const { orgId } = await params;

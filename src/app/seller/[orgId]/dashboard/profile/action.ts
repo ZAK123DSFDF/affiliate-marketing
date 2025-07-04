@@ -9,8 +9,6 @@ import { eq } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
 import { UserDataResponse } from "@/lib/types/auth";
 
-export type SafeUserData = Omit<typeof user.$inferSelect, "password">;
-
 export const getUserData = async (): Promise<UserDataResponse> => {
   try {
     const cookieStore = await cookies();
