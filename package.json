@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:embed": "rollup -c",
     "start": "next start",
     "lint": "next lint",
     "maildev": "maildev --smtp 1025 --web 1080"
@@ -50,10 +51,14 @@
     "recharts": "^2.15.1",
     "stripe": "^18.1.0",
     "tailwind-merge": "^3.0.2",
+    "ua-parser-js": "^2.0.4",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.4",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20",
@@ -66,8 +71,11 @@
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
     "postcss": "^8.5.3",
+    "rollup": "^4.44.2",
+    "rollup-plugin-terser": "^7.0.2",
     "tailwindcss": "3.4.4",
     "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2",
     "tsx": "^4.19.4",
     "typescript": "^5"
   }

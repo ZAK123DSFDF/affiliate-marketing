@@ -127,11 +127,8 @@ export const affiliateClick = pgTable("affiliate_click", {
   affiliateLinkId: text("affiliate_link_id")
     .notNull()
     .references(() => affiliateLink.id, { onDelete: "cascade" }),
-  ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
   referrer: text("referrer"),
-  country: text("country"),
-  city: text("city"),
   deviceType: text("device_type"),
   browser: text("browser"),
   os: text("os"),
