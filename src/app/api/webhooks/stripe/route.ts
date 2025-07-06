@@ -3,8 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 import { db } from "@/db/drizzle";
-import { checkTransaction } from "@/db/schema";
-import { addDays } from "date-fns";
+import {
+  affiliateLink,
+  affiliatePayment,
+  checkTransaction,
+  organization,
+} from "@/db/schema";
+import { addDays, addMonths, addWeeks, addYears } from "date-fns";
 import { eq } from "drizzle-orm";
 import { generateStripeCustomerId } from "@/util/StripeCustomerId";
 import { convertToUSD } from "@/util/CurrencyConvert";
@@ -34,7 +39,23 @@ export async function POST(req: NextRequest) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
       const metadata = session.metadata || {};
+      const refDataRaw = metadata.refearnapp_affiliate_code;
+      if (!refDataRaw) break;
+      const {
+        code,
+        commissionType,
+        commissionValue,
+        commissionDurationValue,
+        commissionDurationUnit,
+      } = JSON.parse(refDataRaw);
+      const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
+        where: (link, { eq }) => eq(link.id, code),
+      });
 
+      if (!affiliateLinkRecord) {
+        console.warn("❌ Affiliate link not found for code:", code);
+        break;
+      }
       const mode = session.mode;
       const isSubscription = mode === "subscription";
       const customerId = session.customer
@@ -50,48 +71,61 @@ export async function POST(req: NextRequest) {
         session.currency ?? "usd",
         decimals,
       );
-      const expirationDate = addDays(new Date(), 7);
+      // Calculate expiration
+      const now = new Date();
+      let expirationDate = now;
 
+      switch (commissionDurationUnit) {
+        case "day":
+          expirationDate = addDays(now, commissionDurationValue);
+          break;
+        case "week":
+          expirationDate = addWeeks(now, commissionDurationValue);
+          break;
+        case "month":
+          expirationDate = addMonths(now, commissionDurationValue);
+          break;
+        case "year":
+          expirationDate = addYears(now, commissionDurationValue);
+          break;
+        default:
+          expirationDate = addDays(now, 7); // fallback
+      }
+      // Calculate commission
+      let commission = 0;
+      if (commissionType === "percentage") {
+        commission = Math.round(
+          (parseFloat(amount) * parseFloat(commissionValue)) / 100,
+        );
+      } else if (commissionType === "fixed") {
+        commission = Math.round(parseFloat(commissionValue));
+      }
       if (subscriptionId) {
-        const existing = await db.query.checkTransaction.findFirst({
-          where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
+        await db.insert(affiliatePayment).values({
+          paymentProvider: "stripe",
+          subscriptionId,
+          customerId,
+          amount: amount.toString(),
+          currency,
+          commission: commission.toString(),
+          expirationDate,
+          affiliateLinkId: affiliateLinkRecord.id,
         });
 
-        if (existing) {
-          await db
-            .update(checkTransaction)
-            .set({
-              customData: metadata,
-            })
-            .where(eq(checkTransaction.subscriptionId, subscriptionId));
-
-          console.log(
-            "✅ checkout.session.completed — updated customData for existing subscription:",
-            subscriptionId,
-          );
-        } else {
-          await db.insert(checkTransaction).values({
-            customerId,
-            subscriptionId,
-            amount,
-            currency,
-            expirationDate,
-            customData: metadata,
-          });
-
-          console.log(
-            "✅ checkout.session.completed — inserted new subscription:",
-            subscriptionId,
-          );
-        }
+        console.log(
+          "✅ checkout.session.completed — inserted new subscription:",
+          subscriptionId,
+        );
       } else {
-        await db.insert(checkTransaction).values({
-          customerId,
+        await db.insert(affiliatePayment).values({
+          paymentProvider: "stripe",
           subscriptionId: null,
-          amount,
+          customerId,
+          amount: amount.toString(),
           currency,
+          commission: commission.toString(),
           expirationDate,
-          customData: metadata,
+          affiliateLinkId: affiliateLinkRecord.id,
         });
 
         console.log(
@@ -108,6 +142,24 @@ export async function POST(req: NextRequest) {
       const metadata = subscription.metadata || {};
       console.log("✅ Subscription created:", subscription.id);
 
+      const refDataRaw = metadata.refearnapp_affiliate_code;
+      if (!refDataRaw) {
+        console.warn("No affiliate metadata found — skipping");
+        break;
+      }
+
+      const { code, commissionDurationValue, commissionDurationUnit } =
+        JSON.parse(refDataRaw);
+
+      const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
+        where: (link, { eq }) => eq(link.id, code),
+      });
+
+      if (!affiliateLinkRecord) {
+        console.warn("❌ Affiliate link not found for code:", code);
+        break;
+      }
+
       if (
         subscription.status === "trialing" &&
         subscription.trial_end !== null &&
@@ -116,52 +168,62 @@ export async function POST(req: NextRequest) {
         const customerId = subscription.customer as string;
         const subscriptionId = subscription.id;
         const amount = "0.00";
+        const commission = "0.00";
         const currency = "usd".toUpperCase();
+
         const trialDurationMs =
           (subscription.trial_end - subscription.trial_start) * 1000;
         const trialDaysOnly = Math.round(
           trialDurationMs / (1000 * 60 * 60 * 24),
         );
-        const defaultExpiration = addDays(new Date(), 7);
-        const finalExpiration = new Date(
-          defaultExpiration.getTime() + trialDurationMs,
-        );
-
-        console.log(`Calculated trial duration: ${trialDurationMs / 1000}s`);
-        console.log(`Final expiration: ${finalExpiration}`);
-
-        const existing = await db.query.checkTransaction.findFirst({
+        const now = new Date();
+        let orgExpiration = now;
+        switch (commissionDurationUnit) {
+          case "day":
+            orgExpiration = addDays(now, commissionDurationValue);
+            break;
+          case "week":
+            orgExpiration = addWeeks(now, commissionDurationValue);
+            break;
+          case "month":
+            orgExpiration = addMonths(now, commissionDurationValue);
+            break;
+          case "year":
+            orgExpiration = addYears(now, commissionDurationValue);
+            break;
+          default:
+            orgExpiration = addDays(now, 7);
+        }
+        const finalExpiration = addDays(orgExpiration, trialDaysOnly);
+        const existing = await db.query.affiliatePayment.findFirst({
           where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
         });
-
         if (existing) {
-          const newExpiration = addDays(
-            new Date(existing.expirationDate),
+          const updatedExpiration = addDays(
+            existing.expirationDate,
             trialDaysOnly,
           );
           await db
-            .update(checkTransaction)
-            .set({
-              expirationDate: newExpiration,
-            })
-            .where(eq(checkTransaction.subscriptionId, subscriptionId));
-
+            .update(affiliatePayment)
+            .set({ expirationDate: updatedExpiration })
+            .where(eq(affiliatePayment.subscriptionId, subscriptionId));
           console.log(
-            "✅ Updated existing subscription expirationDate:",
+            "✅ Updated existing affiliate payment expirationDate:",
             subscriptionId,
           );
         } else {
-          await db.insert(checkTransaction).values({
-            customerId,
+          await db.insert(affiliatePayment).values({
+            paymentProvider: "stripe",
             subscriptionId,
+            customerId,
             amount,
             currency,
+            commission,
             expirationDate: finalExpiration,
-            customData: metadata,
+            affiliateLinkId: affiliateLinkRecord.id,
           });
-
           console.log(
-            "✅ Inserted new subscription with trial expirationDate:",
+            "✅ Inserted new affiliate payment with trial expiration:",
             subscriptionId,
           );
         }
@@ -177,90 +239,68 @@ export async function POST(req: NextRequest) {
     case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice;
       const invoiceCreatedDate = new Date(invoice.created * 1000);
-      if (invoice.billing_reason === "subscription_update") {
-        const subscriptionId =
-          invoice.parent?.subscription_details?.subscription;
+      const subscriptionId = invoice.parent?.subscription_details?.subscription;
 
-        if (!subscriptionId || typeof subscriptionId !== "string") {
-          console.warn(
-            "❌ No valid subscriptionId found in invoice.parent for update.",
-          );
-          return;
-        }
-
-        const existing = await db.query.checkTransaction.findFirst({
-          where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
-        });
-
-        if (!existing) {
-          console.warn(
-            "❌ No existing subscription found for update:",
-            subscriptionId,
-          );
-          return;
-        }
-
-        if (existing.expirationDate > invoiceCreatedDate) {
-          await invoicePaidUpdate(
-            String(invoice.total_excluding_tax ?? 0),
-            invoice.currency,
-            existing.amount,
-            subscriptionId,
-          );
-
-          console.log(
-            "✅ Updated subscription amount for upgrade:",
-            subscriptionId,
-          );
-        } else {
-          console.warn(
-            "❌ Subscription is expired — ignoring update:",
-            subscriptionId,
-          );
-        }
+      if (!subscriptionId || typeof subscriptionId !== "string") {
+        console.warn("❌ No valid subscriptionId found.");
+        return;
       }
 
-      if (invoice.billing_reason === "subscription_cycle") {
-        const subscriptionId =
-          invoice.parent?.subscription_details?.subscription;
+      const affiliateRow = await db
+        .select({
+          payment: affiliatePayment,
+          link: affiliateLink,
+          org: organization,
+        })
+        .from(affiliatePayment)
+        .innerJoin(
+          affiliateLink,
+          eq(affiliatePayment.affiliateLinkId, affiliateLink.id),
+        )
+        .innerJoin(
+          organization,
+          eq(affiliateLink.organizationId, organization.id),
+        )
+        .where(eq(affiliatePayment.subscriptionId, subscriptionId))
+        .limit(1)
+        .then((rows) => rows[0]);
 
-        if (!subscriptionId || typeof subscriptionId !== "string") {
-          console.warn(
-            "❌ No valid subscriptionId found in invoice.parent for cycle.",
-          );
-          return;
-        }
+      if (!affiliateRow) {
+        console.warn("❌ No affiliatePayment found:", subscriptionId);
+        return;
+      }
 
-        const existing = await db.query.checkTransaction.findFirst({
-          where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
-        });
+      const { payment, org } = affiliateRow;
 
-        if (!existing) {
-          console.warn(
-            "❌ No existing subscription found for cycle:",
-            subscriptionId,
-          );
-          return;
-        }
-        const invoiceCreatedDate = new Date(invoice.created * 1000);
-        if (existing.expirationDate > invoiceCreatedDate) {
-          await invoicePaidUpdate(
-            String(invoice.total_excluding_tax ?? 0),
-            invoice.currency,
-            existing.amount,
-            subscriptionId,
-          );
+      if (payment.expirationDate <= invoiceCreatedDate) {
+        console.warn(
+          "❌ Subscription expired — skipping update:",
+          subscriptionId,
+        );
+        return;
+      }
 
-          console.log(
-            "✅ Updated subscription amount for new cycle:",
-            subscriptionId,
-          );
-        } else {
-          console.warn(
-            "❌ Subscription is expired — ignoring update:",
-            subscriptionId,
-          );
-        }
+      const reason = invoice.billing_reason;
+      if (reason === "subscription_update" || reason === "subscription_cycle") {
+        const total = String(invoice.total_excluding_tax ?? 0);
+        const currency = invoice.currency;
+        const commissionType = org.commissionType ?? "percentage";
+        const commissionValue = org.commissionValue ?? "0.00";
+        await invoicePaidUpdate(
+          total,
+          currency,
+          payment.amount,
+          payment.commission,
+          subscriptionId,
+          payment.affiliateLinkId,
+          commissionType,
+          commissionValue,
+        );
+
+        console.log(
+          `✅ Updated subscription (${reason}) — amount & commission:`,
+          subscriptionId,
+        );
       }
 
       break;

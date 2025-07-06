@@ -26,7 +26,6 @@ export const roleEnum = pgEnum("role", ["OWNER", "ADMIN"]);
 export const accountTypeEnum = pgEnum("account_type", ["SELLER", "AFFILIATE"]);
 export const paymentProviderEnum = pgEnum("payment_provider", [
   "stripe",
-  "lemon_squeezy",
   "paddle",
 ]);
 export const referralParamEnum = pgEnum("referral_param_enum", [
@@ -139,18 +138,25 @@ export const affiliatePayment = pgTable("affiliate_payment", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => generateAffiliatePaymentLinkId()),
+
   paymentProvider: paymentProviderEnum("payment_provider").notNull(),
-  paymentId: text("payment_id").notNull().unique(),
-  customerId: text("customer_id").notNull().unique(),
-  amount: integer("amount").notNull(),
+
+  subscriptionId: text("subscription_id"),
+  customerId: text("customer_id").notNull(),
+
+  amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
   currency: text("currency").notNull(),
-  commission: integer("commission").notNull(),
+  commission: numeric("commission", { precision: 10, scale: 2 }).notNull(),
+  expirationDate: timestamp("expiration_date").notNull(),
+
   affiliateLinkId: text("affiliate_link_id")
     .notNull()
     .references(() => affiliateLink.id, { onDelete: "cascade" }),
+
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
 export const checkTransaction = pgTable("check_transaction", {
   id: uuid("id").primaryKey().defaultRandom(),
   customerId: text("customer_id").notNull(),
