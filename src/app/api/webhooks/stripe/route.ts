@@ -16,6 +16,7 @@ import { convertToUSD } from "@/util/CurrencyConvert";
 import { getCurrencyDecimals } from "@/util/CurrencyDecimal";
 import { safeFormatAmount } from "@/util/SafeParse";
 import { invoicePaidUpdate } from "@/util/InvoicePaidUpdate";
+import { calculateExpirationDate } from "@/util/CalculateExpiration";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-04-30.basil",
 });
@@ -73,24 +74,11 @@ export async function POST(req: NextRequest) {
       );
       // Calculate expiration
       const now = new Date();
-      let expirationDate = now;
-
-      switch (commissionDurationUnit) {
-        case "day":
-          expirationDate = addDays(now, commissionDurationValue);
-          break;
-        case "week":
-          expirationDate = addWeeks(now, commissionDurationValue);
-          break;
-        case "month":
-          expirationDate = addMonths(now, commissionDurationValue);
-          break;
-        case "year":
-          expirationDate = addYears(now, commissionDurationValue);
-          break;
-        default:
-          expirationDate = addDays(now, 7); // fallback
-      }
+      const expirationDate = calculateExpirationDate(
+        now,
+        commissionDurationValue,
+        commissionDurationUnit,
+      );
       // Calculate commission
       let commission = 0;
       if (commissionType === "percentage") {
@@ -177,23 +165,11 @@ export async function POST(req: NextRequest) {
           trialDurationMs / (1000 * 60 * 60 * 24),
         );
         const now = new Date();
-        let orgExpiration = now;
-        switch (commissionDurationUnit) {
-          case "day":
-            orgExpiration = addDays(now, commissionDurationValue);
-            break;
-          case "week":
-            orgExpiration = addWeeks(now, commissionDurationValue);
-            break;
-          case "month":
-            orgExpiration = addMonths(now, commissionDurationValue);
-            break;
-          case "year":
-            orgExpiration = addYears(now, commissionDurationValue);
-            break;
-          default:
-            orgExpiration = addDays(now, 7);
-        }
+        const orgExpiration = calculateExpirationDate(
+          now,
+          commissionDurationValue,
+          commissionDurationUnit,
+        );
         const finalExpiration = addDays(orgExpiration, trialDaysOnly);
         const existing = await db.query.affiliatePayment.findFirst({
           where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
