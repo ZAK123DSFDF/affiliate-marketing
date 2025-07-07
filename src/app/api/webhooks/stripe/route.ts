@@ -139,20 +139,19 @@ export async function POST(req: NextRequest) {
       const { code, commissionDurationValue, commissionDurationUnit } =
         JSON.parse(refDataRaw);
 
-      const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
-        where: (link, { eq }) => eq(link.id, code),
-      });
-
-      if (!affiliateLinkRecord) {
-        console.warn("❌ Affiliate link not found for code:", code);
-        break;
-      }
-
       if (
         subscription.status === "trialing" &&
         subscription.trial_end !== null &&
         subscription.trial_start !== null
       ) {
+        const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
+          where: (link, { eq }) => eq(link.id, code),
+        });
+
+        if (!affiliateLinkRecord) {
+          console.warn("❌ Affiliate link not found for code:", code);
+          break;
+        }
         const customerId = subscription.customer as string;
         const subscriptionId = subscription.id;
         const amount = "0.00";
@@ -221,43 +220,40 @@ export async function POST(req: NextRequest) {
         console.warn("❌ No valid subscriptionId found.");
         return;
       }
-
-      const affiliateRow = await db
-        .select({
-          payment: affiliatePayment,
-          link: affiliateLink,
-          org: organization,
-        })
-        .from(affiliatePayment)
-        .innerJoin(
-          affiliateLink,
-          eq(affiliatePayment.affiliateLinkId, affiliateLink.id),
-        )
-        .innerJoin(
-          organization,
-          eq(affiliateLink.organizationId, organization.id),
-        )
-        .where(eq(affiliatePayment.subscriptionId, subscriptionId))
-        .limit(1)
-        .then((rows) => rows[0]);
-
-      if (!affiliateRow) {
-        console.warn("❌ No affiliatePayment found:", subscriptionId);
-        return;
-      }
-
-      const { payment, org } = affiliateRow;
-
-      if (payment.expirationDate <= invoiceCreatedDate) {
-        console.warn(
-          "❌ Subscription expired — skipping update:",
-          subscriptionId,
-        );
-        return;
-      }
-
       const reason = invoice.billing_reason;
       if (reason === "subscription_update" || reason === "subscription_cycle") {
+        const affiliateRow = await db
+          .select({
+            payment: affiliatePayment,
+            link: affiliateLink,
+            org: organization,
+          })
+          .from(affiliatePayment)
+          .innerJoin(
+            affiliateLink,
+            eq(affiliatePayment.affiliateLinkId, affiliateLink.id),
+          )
+          .innerJoin(
+            organization,
+            eq(affiliateLink.organizationId, organization.id),
+          )
+          .where(eq(affiliatePayment.subscriptionId, subscriptionId))
+          .limit(1)
+          .then((rows) => rows[0]);
+
+        if (!affiliateRow) {
+          console.warn("❌ No affiliatePayment found:", subscriptionId);
+          return;
+        }
+
+        const { payment, org } = affiliateRow;
+        if (payment.expirationDate <= invoiceCreatedDate) {
+          console.warn(
+            "❌ Subscription expired — skipping update:",
+            subscriptionId,
+          );
+          return;
+        }
         const total = String(invoice.total_excluding_tax ?? 0);
         const currency = invoice.currency;
         const commissionType = org.commissionType ?? "percentage";
