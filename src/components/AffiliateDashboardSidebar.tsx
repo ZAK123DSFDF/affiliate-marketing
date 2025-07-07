@@ -32,46 +32,23 @@ import Link from "next/link";
 type Props = {
   orgId?: string;
 };
-const DashboardSidebar = ({ orgId }: Props) => {
+const AffiliateDashboardSidebar = ({ orgId }: Props) => {
   const pathname = usePathname();
   const items = [
     {
       title: "Dashboard",
-      url: orgId ? `/seller/${orgId}/dashboard` : "/dashboard",
+      url: `/affiliate/${orgId}/dashboard`,
       icon: BarChart3,
     },
     {
-      title: "Affiliates",
-      url: orgId
-        ? `/seller/${orgId}/dashboard/affiliates`
-        : "/dashboard/affiliates",
+      title: "Links",
+      url: `/affiliate/${orgId}/dashboard/links`,
       icon: LinkIcon,
     },
     {
-      title: "Payout",
-      url: orgId ? `/seller/${orgId}/dashboard/payout` : "/dashboard/payout",
+      title: "Payment",
+      url: `/affiliate/${orgId}/dashboard/payment`,
       icon: Users,
-    },
-    {
-      title: "Customization",
-      url: orgId
-        ? `/seller/${orgId}/dashboard/customization`
-        : "/dashboard/customization",
-      icon: CreditCard,
-    },
-    {
-      title: "Integration",
-      url: orgId
-        ? `/seller/${orgId}/dashboard/integration`
-        : "/dashboard/integration",
-      icon: Layers,
-    },
-    {
-      title: "Settings",
-      url: orgId
-        ? `/seller/${orgId}/dashboard/settings`
-        : "/dashboard/settings",
-      icon: Settings,
     },
   ];
   return (
@@ -107,7 +84,7 @@ const DashboardSidebar = ({ orgId }: Props) => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="p-4">
-        <Link href={`/seller/${orgId}/dashboard/profile`}>
+        <Link href={`/affiliate/${orgId}/dashboard/profile`}>
           <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
               JD
@@ -126,4 +103,4 @@ const DashboardSidebar = ({ orgId }: Props) => {
   );
 };
 
-export default DashboardSidebar;
+export default AffiliateDashboardSidebar;

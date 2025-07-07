@@ -29,12 +29,16 @@ export const CreateOrganization = async (
       role: string;
       type: string;
     };
+    const sanitizedDomain = data.domainName
+      .replace(/^https?:\/\//i, "")
+      .replace(/\/$/, "");
 
     // Insert the new organization
     const [newOrg] = await db
       .insert(organization)
       .values({
         ...data,
+        domainName: sanitizedDomain,
         commissionValue: data.commissionValue.toFixed(2),
       })
       .returning();
