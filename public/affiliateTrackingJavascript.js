@@ -1476,7 +1476,7 @@
        }
        async function storeRefCode(code) {
            try {
-               const res = await fetch(`${ORGID_ENDPOINT}/?code=${encodeURIComponent(code)}`);
+               const res = await fetch(`${ORGID_ENDPOINT}/?code=${encodeURIComponent(code)}`, { credentials: "include" });
                if (!res.ok)
                    throw new Error("Failed to fetch organization info");
                const { cookieLifetimeValue, cookieLifetimeUnit, commissionType, commissionValue, commissionDurationValue, commissionDurationUnit, } = await res.json();
@@ -1529,6 +1529,7 @@
                    headers: { "Content-Type": "application/json" },
                    body: payload,
                    keepalive: true,
+                   credentials: "include",
                }).catch(() => { });
            }
        }
