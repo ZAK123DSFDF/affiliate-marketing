@@ -1,11 +1,13 @@
 import React from "react";
-import DataTableDemo from "@/components/pages/Dashboard/Affiliates/Affiliates";
+import Links from "@/components/pages/AffiliateDashboard/Links/Links";
+import { getAffiliateLinksWithStats } from "@/app/affiliate/[orgId]/dashboard/links/action";
 
-const affiliatePage = () => {
+const linksPage = async () => {
+  const links = await getAffiliateLinksWithStats();
   return (
     <>
-      <DataTableDemo />
+      <Links links={links} />
     </>
   );
 };
-export default affiliatePage;
+export default linksPage;

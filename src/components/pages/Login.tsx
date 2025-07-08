@@ -165,7 +165,7 @@ const Login = ({ orgId }: Props) => {
             <div className="text-center text-sm">
               Don't have an account?{" "}
               <Link
-                href="/signup"
+                href={`affiliate/${orgId}/signup`}
                 className="font-medium text-primary underline-offset-4 hover:underline"
               >
                 Sign up
