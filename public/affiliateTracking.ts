@@ -59,7 +59,15 @@ import { UAParser } from "ua-parser-js";
     }
     return null;
   }
+  function getCookie(name: string) {
+    return document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(name + "="));
+  }
 
+  function setTempClickCookie() {
+    document.cookie = `click_tracked=true; max-age=86400; path=/`; // 5 minutes
+  }
   function getDeviceInfo() {
     const parser = new UAParser();
     const result = parser.getResult();
@@ -85,7 +93,7 @@ import { UAParser } from "ua-parser-js";
 
   // 🔥 Only this is needed — track on landing
   const refCode = getReferralCode();
-  if (refCode) {
+  if (refCode && !getCookie("click_tracked")) {
     storeRefCode(refCode)
       .then(() => {
         sendTrackingData({
@@ -95,6 +103,7 @@ import { UAParser } from "ua-parser-js";
           url: window.location.href,
           ...getDeviceInfo(),
         });
+        setTempClickCookie();
       })
       .catch((err) => {
         console.error("Failed to process affiliate tracking:", err);
