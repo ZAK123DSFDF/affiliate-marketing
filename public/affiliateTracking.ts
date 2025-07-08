@@ -44,9 +44,7 @@ import { UAParser } from "ua-parser-js";
         commissionDurationUnit,
       };
 
-      document.cookie = `refearnapp_affiliate_cookie=${encodeURIComponent(
-        JSON.stringify(affiliateData),
-      )}; path=/; max-age=${maxAge}`;
+      document.cookie = `refearnapp_affiliate_code=${encodeURIComponent(code)}; path=/; max-age=${maxAge}`;
     } catch (err) {
       console.error("Failed to set affiliate cookie:", err);
     }
