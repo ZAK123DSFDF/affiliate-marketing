@@ -110,7 +110,7 @@ import { UAParser } from "ua-parser-js";
           ...getDeviceInfo(),
         });
 
-        setTempClickCookie(maxAge, affiliateData);
+        document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`;
       })
       .catch((err) => {
         console.error("Failed to process affiliate tracking:", err);

@@ -1507,10 +1507,6 @@
                .split("; ")
                .find((row) => row.startsWith(name + "="));
        }
-       function setTempClickCookie(maxAge, affiliateData) {
-           document.cookie = `refearnapp_affiliate_cookie=${encodeURIComponent(JSON.stringify(affiliateData))}; path=/; max-age=${maxAge}`;
-           document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`;
-       }
        function getDeviceInfo() {
            const parser = new UAParser();
            const result = parser.getResult();
@@ -1542,7 +1538,7 @@
                    return;
                const { maxAge, affiliateData } = result;
                sendTrackingData(Object.assign({ ref: refCode, referrer: document.referrer, userAgent: navigator.userAgent, url: window.location.href }, getDeviceInfo()));
-               setTempClickCookie(maxAge, affiliateData);
+               document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`;
            })
                .catch((err) => {
                console.error("Failed to process affiliate tracking:", err);
