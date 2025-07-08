@@ -93,7 +93,7 @@ import { UAParser } from "ua-parser-js";
 
   // 🔥 Only this is needed — track on landing
   const refCode = getReferralCode();
-  if (refCode && !getCookie("click_tracked")) {
+  if (refCode && !getCookie("refearnapp_affiliate_click_tracked")) {
     storeRefCode(refCode)
       .then(() => {
         sendTrackingData({
