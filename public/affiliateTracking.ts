@@ -66,7 +66,7 @@ import { UAParser } from "ua-parser-js";
   }
 
   function setTempClickCookie() {
-    document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`; // 5 minutes
+    document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`;
   }
   function getDeviceInfo() {
     const parser = new UAParser();
