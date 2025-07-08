@@ -1,5 +1,4 @@
 import { UAParser } from "ua-parser-js";
-import jwt from "jsonwebtoken";
 
 (function () {
   const TRACKING_ENDPOINT =
@@ -44,8 +43,8 @@ import jwt from "jsonwebtoken";
         commissionDurationValue,
         commissionDurationUnit,
       };
-      const token = jwt.sign(affiliateData, process.env.SECRET_KEY as string);
-      document.cookie = `refearnapp_affiliate_token=${encodeURIComponent(token)}; path=/; max-age=${maxAge};`;
+
+      return { maxAge, affiliateData };
     } catch (err) {
       console.error("Failed to set affiliate cookie:", err);
     }
@@ -64,7 +63,10 @@ import jwt from "jsonwebtoken";
       .find((row) => row.startsWith(name + "="));
   }
 
-  function setTempClickCookie() {
+  function setTempClickCookie(maxAge: number, affiliateData: any) {
+    document.cookie = `refearnapp_affiliate_cookie=${encodeURIComponent(
+      JSON.stringify(affiliateData),
+    )}; path=/; max-age=${maxAge}`;
     document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`;
   }
   function getDeviceInfo() {
@@ -94,7 +96,10 @@ import jwt from "jsonwebtoken";
   const refCode = getReferralCode();
   if (refCode && !getCookie("refearnapp_affiliate_click_tracked")) {
     storeRefCode(refCode)
-      .then(() => {
+      .then((result) => {
+        if (!result) return;
+        const { maxAge, affiliateData } = result;
+
         sendTrackingData({
           ref: refCode,
           referrer: document.referrer,
@@ -102,7 +107,8 @@ import jwt from "jsonwebtoken";
           url: window.location.href,
           ...getDeviceInfo(),
         });
-        setTempClickCookie();
+
+        setTempClickCookie(maxAge, affiliateData);
       })
       .catch((err) => {
         console.error("Failed to process affiliate tracking:", err);
