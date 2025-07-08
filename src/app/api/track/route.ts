@@ -1,9 +1,15 @@
-// File: /app/api/track/route.ts (for App Router)
-import { db } from "@/db/drizzle"; // your database client setup
-import { affiliateClick, affiliateLink } from "@/db/schema";
+import { db } from "@/db/drizzle";
+import { affiliateClick } from "@/db/schema";
 import { NextRequest, NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
 
+// CORS headers for all origins
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+// Handle POST request with CORS
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
@@ -18,12 +24,26 @@ export async function POST(req: NextRequest) {
       deviceType: data.deviceType || null,
     });
 
-    return NextResponse.json({ success: true });
+    return new NextResponse(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: corsHeaders,
+    });
   } catch (err) {
     console.error("/api/track error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
+    return new NextResponse(
+      JSON.stringify({ error: "Internal server error" }),
+      {
+        status: 500,
+        headers: corsHeaders,
+      },
     );
   }
+}
+
+// Handle preflight request
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders,
+  });
 }
