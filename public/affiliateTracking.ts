@@ -44,7 +44,7 @@ import { UAParser } from "ua-parser-js";
         commissionDurationUnit,
       };
 
-      document.cookie = `affiliate_data=${encodeURIComponent(
+      document.cookie = `refearnapp_affiliate_cookie=${encodeURIComponent(
         JSON.stringify(affiliateData),
       )}; path=/; max-age=${maxAge}`;
     } catch (err) {
@@ -66,7 +66,7 @@ import { UAParser } from "ua-parser-js";
   }
 
   function setTempClickCookie() {
-    document.cookie = `click_tracked=true; max-age=86400; path=/`; // 5 minutes
+    document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`; // 5 minutes
   }
   function getDeviceInfo() {
     const parser = new UAParser();
