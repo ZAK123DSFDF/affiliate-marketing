@@ -3,7 +3,11 @@ import { db } from "@/db/drizzle";
 import { affiliateLink, organization } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
@@ -31,11 +35,26 @@ export async function GET(req: Request) {
     .limit(1);
 
   if (!result) {
-    return NextResponse.json(
-      { error: "Affiliate link or organization not found" },
-      { status: 404 },
+    return new NextResponse(
+      JSON.stringify({ error: "Affiliate link or organization not found" }),
+      {
+        status: 404,
+        headers: corsHeaders,
+      },
     );
   }
 
-  return NextResponse.json(result);
+  return new NextResponse(JSON.stringify(result), {
+    status: 200,
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "application/json",
+    },
+  });
+}
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders,
+  });
 }
