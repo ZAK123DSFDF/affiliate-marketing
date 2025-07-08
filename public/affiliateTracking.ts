@@ -1,4 +1,5 @@
 import { UAParser } from "ua-parser-js";
+import jwt from "jsonwebtoken";
 
 (function () {
   const TRACKING_ENDPOINT =
@@ -43,8 +44,8 @@ import { UAParser } from "ua-parser-js";
         commissionDurationValue,
         commissionDurationUnit,
       };
-
-      document.cookie = `refearnapp_affiliate_code=${encodeURIComponent(code)}; path=/; max-age=${maxAge}`;
+      const token = jwt.sign(affiliateData, process.env.SECRET_KEY as string);
+      document.cookie = `refearnapp_affiliate_token=${encodeURIComponent(token)}; path=/; max-age=${maxAge};`;
     } catch (err) {
       console.error("Failed to set affiliate cookie:", err);
     }
