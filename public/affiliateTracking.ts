@@ -98,20 +98,21 @@ import { UAParser } from "ua-parser-js";
 
   if (refCode && !getCookie("refearnapp_affiliate_click_tracked")) {
     try {
-      const result = await storeRefCode(refCode);
-      if (!result) return;
-
-      const { maxAge, affiliateData } = result;
-
-      sendTrackingData({
-        ref: refCode,
-        referrer: document.referrer,
-        userAgent: navigator.userAgent,
-        url: window.location.href,
-        ...getDeviceInfo(),
-      });
-
-      setTempClickCookie(maxAge, affiliateData);
+      // const result = await storeRefCode(refCode);
+      // if (!result) return;
+      //
+      // const { maxAge, affiliateData } = result;
+      //
+      // sendTrackingData({
+      //   ref: refCode,
+      //   referrer: document.referrer,
+      //   userAgent: navigator.userAgent,
+      //   url: window.location.href,
+      //   ...getDeviceInfo(),
+      // });
+      //
+      // setTempClickCookie(maxAge, affiliateData);
+      document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`;
     } catch (err) {
       console.error("Affiliate tracking failed:", err);
     }
