@@ -98,12 +98,11 @@ export async function POST(request: NextRequest) {
         let commission = 0;
         if (commissionType === "percentage") {
           commission =
-            Math.round(parseFloat(amount) * parseFloat(commissionValue) * 100) /
-            100;
+         (parseFloat(amount) * parseFloat(commissionValue)) /100
         } else if (commissionType === "fixed") {
           commission =
             parseFloat(amount) < 0
-              ? -parseFloat(commissionValue)
+              ? 0
               : parseFloat(commissionValue);
         }
 
