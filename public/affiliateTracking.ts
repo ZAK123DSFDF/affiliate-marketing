@@ -1,6 +1,6 @@
 import { UAParser } from "ua-parser-js";
 
-(function () {
+(async function () {
   const TRACKING_ENDPOINT =
     "https://affiliate-marketing-ten.vercel.app/api/track";
   const ORGID_ENDPOINT = "https://affiliate-marketing-ten.vercel.app/api/org";
@@ -20,35 +20,32 @@ import { UAParser } from "ua-parser-js";
   }
 
   async function storeRefCode(code: string) {
-    try {
-      const res = await fetch(
-        `${ORGID_ENDPOINT}/?code=${encodeURIComponent(code)}`,
-        { credentials: "include" },
-      );
-      if (!res.ok) throw new Error("Failed to fetch organization info");
-      const {
-        cookieLifetimeValue,
-        cookieLifetimeUnit,
-        commissionType,
-        commissionValue,
-        commissionDurationValue,
-        commissionDurationUnit,
-      } = await res.json();
+    const res = await fetch(
+      `${ORGID_ENDPOINT}/?code=${encodeURIComponent(code)}`,
+      { credentials: "include" },
+    );
+    if (!res.ok) throw new Error("Failed to fetch organization info");
 
-      const maxAge = convertToSeconds(cookieLifetimeValue, cookieLifetimeUnit);
+    const {
+      cookieLifetimeValue,
+      cookieLifetimeUnit,
+      commissionType,
+      commissionValue,
+      commissionDurationValue,
+      commissionDurationUnit,
+    } = await res.json();
 
-      const affiliateData = {
-        code,
-        commissionType,
-        commissionValue,
-        commissionDurationValue,
-        commissionDurationUnit,
-      };
+    const maxAge = convertToSeconds(cookieLifetimeValue, cookieLifetimeUnit);
 
-      return { maxAge, affiliateData };
-    } catch (err) {
-      console.error("Failed to set affiliate cookie:", err);
-    }
+    const affiliateData = {
+      code,
+      commissionType,
+      commissionValue,
+      commissionDurationValue,
+      commissionDurationUnit,
+    };
+
+    return { maxAge, affiliateData };
   }
 
   function getReferralCode(): string | null {
@@ -58,6 +55,7 @@ import { UAParser } from "ua-parser-js";
     }
     return null;
   }
+
   function getCookie(name: string) {
     return document.cookie
       .split("; ")
@@ -70,6 +68,7 @@ import { UAParser } from "ua-parser-js";
     )}; path=/; max-age=${maxAge}`;
     document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`;
   }
+
   function getDeviceInfo() {
     const parser = new UAParser();
     const result = parser.getResult();
@@ -94,26 +93,27 @@ import { UAParser } from "ua-parser-js";
     }
   }
 
-  // 🔥 Only this is needed — track on landing
+  // 🔥 Track affiliate if code is present and hasn't been tracked
   const refCode = getReferralCode();
+
   if (refCode && !getCookie("refearnapp_affiliate_click_tracked")) {
-    storeRefCode(refCode)
-      .then((result) => {
-        if (!result) return;
-        const { maxAge, affiliateData } = result;
+    try {
+      const result = await storeRefCode(refCode);
+      if (!result) return;
 
-        sendTrackingData({
-          ref: refCode,
-          referrer: document.referrer,
-          userAgent: navigator.userAgent,
-          url: window.location.href,
-          ...getDeviceInfo(),
-        });
+      const { maxAge, affiliateData } = result;
 
-        document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`;
-      })
-      .catch((err) => {
-        console.error("Failed to process affiliate tracking:", err);
+      sendTrackingData({
+        ref: refCode,
+        referrer: document.referrer,
+        userAgent: navigator.userAgent,
+        url: window.location.href,
+        ...getDeviceInfo(),
       });
+
+      setTempClickCookie(maxAge, affiliateData);
+    } catch (err) {
+      console.error("Affiliate tracking failed:", err);
+    }
   }
 })();
