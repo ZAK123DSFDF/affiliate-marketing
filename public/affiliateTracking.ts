@@ -23,7 +23,6 @@ import { UAParser } from "ua-parser-js";
     try {
       const res = await fetch(
         `${ORGID_ENDPOINT}?code=${encodeURIComponent(code)}`,
-        { credentials: "include" },
       );
       if (!res.ok) throw new Error("Failed to fetch organization info");
       const {
@@ -89,7 +88,6 @@ import { UAParser } from "ua-parser-js";
         headers: { "Content-Type": "application/json" },
         body: payload,
         keepalive: true,
-        credentials: "include",
       }).catch(() => {});
     }
   }
