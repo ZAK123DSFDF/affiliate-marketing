@@ -98,24 +98,43 @@ import { UAParser } from "ua-parser-js";
 
   if (refCode && !getCookie("refearnapp_affiliate_click_tracked")) {
     try {
-      // const result = await storeRefCode(refCode);
-      // if (!result) return;
-      //
-      // const { maxAge, affiliateData } = result;
-      //
-      // sendTrackingData({
-      //   ref: refCode,
-      //   referrer: document.referrer,
-      //   userAgent: navigator.userAgent,
-      //   url: window.location.href,
-      //   ...getDeviceInfo(),
-      // });
-      //
-      const res = await fetch("https://jsonplaceholder.typicode.com/posts/1");
-      const post = await res.json();
-      console.log("✅ Successfully fetched post from JSONPlaceholder:", post);
-      // setTempClickCookie(maxAge, affiliateData);
+      const res = await fetch(
+        `${ORGID_ENDPOINT}/?code=${encodeURIComponent(refCode)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!res.ok) throw new Error("CORS or fetch failed");
+
+      const {
+        cookieLifetimeValue,
+        cookieLifetimeUnit,
+        commissionType,
+        commissionValue,
+        commissionDurationValue,
+        commissionDurationUnit,
+      } = await res.json();
+
+      const maxAge = convertToSeconds(cookieLifetimeValue, cookieLifetimeUnit);
+
+      const affiliateData = {
+        code: refCode,
+        commissionType,
+        commissionValue,
+        commissionDurationValue,
+        commissionDurationUnit,
+      };
+
+      document.cookie = `refearnapp_affiliate_cookie=${encodeURIComponent(
+        JSON.stringify(affiliateData),
+      )}; path=/; max-age=${maxAge}`;
       document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`;
+
+      console.log("✅ Affiliate data fetched and cookie set:", affiliateData);
     } catch (err) {
       console.error("Affiliate tracking failed:", err);
     }
