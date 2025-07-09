@@ -126,85 +126,52 @@ export async function POST(req: NextRequest) {
 
     case "customer.subscription.created": {
       const subscription = event.data.object as Stripe.Subscription;
-      const metadata = subscription.metadata || {};
-      console.log("✅ Subscription created:", subscription.id);
+      const subscriptionId = subscription.id;
 
-      const refDataRaw = metadata.refearnapp_affiliate_code;
-      if (!refDataRaw) {
-        console.warn("No affiliate metadata found — skipping");
-        break;
-      }
+      console.log("✅ Subscription created:", subscriptionId);
 
-      const { code, commissionDurationValue, commissionDurationUnit } =
-        JSON.parse(refDataRaw);
+
 
       if (
-        subscription.status === "trialing" &&
-        subscription.trial_end !== null &&
-        subscription.trial_start !== null
+          subscription.status === "trialing" &&
+          subscription.trial_end !== null &&
+          subscription.trial_start !== null
       ) {
-        const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
-          where: (link, { eq }) => eq(link.id, code),
-        });
+        const trialDurationMs =
+            (subscription.trial_end - subscription.trial_start) * 1000;
+        const trialDaysOnly = Math.round(trialDurationMs / (1000 * 60 * 60 * 24));
+        const tryGetAffiliatePayment = async (retries: number): Promise<any> => {
+          for (let i = 0; i <= retries; i++) {
+            const existing = await db.query.affiliatePayment.findFirst({
+              where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
+            });
+            if (existing) return existing;
+            if (i < retries) await new Promise((res) => setTimeout(res, 2000));
+          }
+          return null;
+        };
 
-        if (!affiliateLinkRecord) {
-          console.warn("❌ Affiliate link not found for code:", code);
+        const existingPayment = await tryGetAffiliatePayment(2);
+        if (!existingPayment) {
+          console.warn("❌ No affiliate payment found after retries:", subscriptionId);
           break;
         }
-        const customerId = subscription.customer as string;
-        const subscriptionId = subscription.id;
-        const amount = "0.00";
-        const commission = "0.00";
-        const currency = "usd".toUpperCase();
-
-        const trialDurationMs =
-          (subscription.trial_end - subscription.trial_start) * 1000;
-        const trialDaysOnly = Math.round(
-          trialDurationMs / (1000 * 60 * 60 * 24),
-        );
-        const now = new Date();
-        const orgExpiration = calculateExpirationDate(
-          now,
-          commissionDurationValue,
-          commissionDurationUnit,
-        );
-        const finalExpiration = addDays(orgExpiration, trialDaysOnly);
-        const existing = await db.query.affiliatePayment.findFirst({
-          where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
-        });
-        if (existing) {
-          const updatedExpiration = addDays(
-            existing.expirationDate,
+        const updatedExpiration = addDays(
+            existingPayment.expirationDate,
             trialDaysOnly,
-          );
-          await db
+        );
+
+        await db
             .update(affiliatePayment)
             .set({ expirationDate: updatedExpiration })
             .where(eq(affiliatePayment.subscriptionId, subscriptionId));
-          console.log(
-            "✅ Updated existing affiliate payment expirationDate:",
-            subscriptionId,
-          );
-        } else {
-          await db.insert(affiliatePayment).values({
-            paymentProvider: "stripe",
-            subscriptionId,
-            customerId,
-            amount,
-            currency,
-            commission,
-            expirationDate: finalExpiration,
-            affiliateLinkId: affiliateLinkRecord.id,
-          });
-          console.log(
-            "✅ Inserted new affiliate payment with trial expiration:",
-            subscriptionId,
-          );
-        }
-      } else {
+
         console.log(
-          `Subscription status is '${subscription.status}' — skipping`,
+            "✅ Updated affiliate payment with trial days:",
+            subscriptionId,
         );
+      } else {
+        console.log(`Subscription status is '${subscription.status}' — skipping`);
       }
 
       break;
