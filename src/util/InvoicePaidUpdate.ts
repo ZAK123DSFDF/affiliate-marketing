@@ -40,7 +40,7 @@ export const invoicePaidUpdate = async (
   } else if (commissionType === "fixed") {
     addedCommission =
       parseFloat(invoiceAmount) < 0
-        ? -parseFloat(commissionValue)
+        ? 0
         : parseFloat(commissionValue);
   }
 
