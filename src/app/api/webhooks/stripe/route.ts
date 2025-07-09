@@ -82,11 +82,10 @@ export async function POST(req: NextRequest) {
       // Calculate commission
       let commission = 0;
       if (commissionType === "percentage") {
-        commission = Math.round(
-          (parseFloat(amount) * parseFloat(commissionValue)) / 100,
-        );
+        commission = (parseFloat(amount) * parseFloat(commissionValue)) / 100
+        ;
       } else if (commissionType === "fixed") {
-        commission = Math.round(parseFloat(commissionValue));
+        commission = parseFloat(commissionValue)
       }
       if (subscriptionId) {
         await db.insert(affiliatePayment).values({
