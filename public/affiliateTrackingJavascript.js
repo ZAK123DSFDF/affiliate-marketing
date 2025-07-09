@@ -1458,7 +1458,7 @@
        UAParser.DEVICE = enumerize([MODEL, VENDOR, TYPE, CONSOLE, MOBILE, SMARTTV, TABLET, WEARABLE, EMBEDDED]);
        UAParser.ENGINE = UAParser.OS = enumerize([NAME, VERSION]);
 
-   (function () {
+   (async function () {
        const TRACKING_ENDPOINT = "https://affiliate-marketing-ten.vercel.app/api/track";
        const ORGID_ENDPOINT = "https://affiliate-marketing-ten.vercel.app/api/org";
        const REF_KEYS = ["ref", "aff", "via"];
@@ -1475,24 +1475,19 @@
            return value * (unitToSeconds[unit.toLowerCase()] || 86400);
        }
        async function storeRefCode(code) {
-           try {
-               const res = await fetch(`${ORGID_ENDPOINT}/?code=${encodeURIComponent(code)}`, { credentials: "include" });
-               if (!res.ok)
-                   throw new Error("Failed to fetch organization info");
-               const { cookieLifetimeValue, cookieLifetimeUnit, commissionType, commissionValue, commissionDurationValue, commissionDurationUnit, } = await res.json();
-               const maxAge = convertToSeconds(cookieLifetimeValue, cookieLifetimeUnit);
-               const affiliateData = {
-                   code,
-                   commissionType,
-                   commissionValue,
-                   commissionDurationValue,
-                   commissionDurationUnit,
-               };
-               return { maxAge, affiliateData };
-           }
-           catch (err) {
-               console.error("Failed to set affiliate cookie:", err);
-           }
+           const res = await fetch(`${ORGID_ENDPOINT}/?code=${encodeURIComponent(code)}`, { credentials: "include" });
+           if (!res.ok)
+               throw new Error("Failed to fetch organization info");
+           const { cookieLifetimeValue, cookieLifetimeUnit, commissionType, commissionValue, commissionDurationValue, commissionDurationUnit, } = await res.json();
+           const maxAge = convertToSeconds(cookieLifetimeValue, cookieLifetimeUnit);
+           const affiliateData = {
+               code,
+               commissionType,
+               commissionValue,
+               commissionDurationValue,
+               commissionDurationUnit,
+           };
+           return { maxAge, affiliateData };
        }
        function getReferralCode() {
            const urlParams = new URLSearchParams(window.location.search);
@@ -1506,6 +1501,10 @@
            return document.cookie
                .split("; ")
                .find((row) => row.startsWith(name + "="));
+       }
+       function setTempClickCookie(maxAge, affiliateData) {
+           document.cookie = `refearnapp_affiliate_cookie=${encodeURIComponent(JSON.stringify(affiliateData))}; path=/; max-age=${maxAge}`;
+           document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`;
        }
        function getDeviceInfo() {
            const parser = new UAParser();
@@ -1529,20 +1528,20 @@
                }).catch(() => { });
            }
        }
-       // 🔥 Only this is needed — track on landing
+       // 🔥 Track affiliate if code is present and hasn't been tracked
        const refCode = getReferralCode();
        if (refCode && !getCookie("refearnapp_affiliate_click_tracked")) {
-           storeRefCode(refCode)
-               .then((result) => {
+           try {
+               const result = await storeRefCode(refCode);
                if (!result)
                    return;
                const { maxAge, affiliateData } = result;
                sendTrackingData(Object.assign({ ref: refCode, referrer: document.referrer, userAgent: navigator.userAgent, url: window.location.href }, getDeviceInfo()));
-               document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`;
-           })
-               .catch((err) => {
-               console.error("Failed to process affiliate tracking:", err);
-           });
+               setTempClickCookie(maxAge, affiliateData);
+           }
+           catch (err) {
+               console.error("Affiliate tracking failed:", err);
+           }
        }
    })();
 
