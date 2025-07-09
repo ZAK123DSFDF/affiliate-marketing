@@ -3,7 +3,7 @@ import { UAParser } from "ua-parser-js";
 (async function () {
   const TRACKING_ENDPOINT =
     "https://affiliate-marketing-ten.vercel.app/api/track";
-  const ORGID_ENDPOINT = "https://affiliate-marketing-ten.vercel.app/api/org";
+  const ORGID_ENDPOINT = "https://affiliate-marketing-ten.vercel.app/api/org/";
   const REF_KEYS = ["ref", "aff", "via"];
 
   function convertToSeconds(value: number, unit: string): number {
