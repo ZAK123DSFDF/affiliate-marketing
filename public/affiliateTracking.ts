@@ -111,6 +111,9 @@ import { UAParser } from "ua-parser-js";
       //   ...getDeviceInfo(),
       // });
       //
+      const res = await fetch("https://jsonplaceholder.typicode.com/posts/1");
+      const post = await res.json();
+      console.log("✅ Successfully fetched post from JSONPlaceholder:", post);
       // setTempClickCookie(maxAge, affiliateData);
       document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`;
     } catch (err) {
