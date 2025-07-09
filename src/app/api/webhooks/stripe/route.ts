@@ -37,92 +37,92 @@ export async function POST(req: NextRequest) {
   }
 
   switch (event.type) {
-    case "checkout.session.completed": {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const metadata = session.metadata || {};
-      const refDataRaw = metadata.refearnapp_affiliate_code;
-      if (!refDataRaw) break;
-      const {
-        code,
-        commissionType,
-        commissionValue,
-        commissionDurationValue,
-        commissionDurationUnit,
-      } = JSON.parse(refDataRaw);
-      const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
-        where: (link, { eq }) => eq(link.id, code),
-      });
-
-      if (!affiliateLinkRecord) {
-        console.warn("❌ Affiliate link not found for code:", code);
-        break;
-      }
-      const mode = session.mode;
-      const isSubscription = mode === "subscription";
-      const customerId = session.customer
-        ? (session.customer as string)
-        : generateStripeCustomerId();
-      const subscriptionId = isSubscription
-        ? (session.subscription as string)
-        : null;
-      const rawAmount = safeFormatAmount(session.amount_total);
-      const decimals = getCurrencyDecimals(session.currency ?? "usd");
-      const { amount, currency } = await convertToUSD(
-        parseFloat(rawAmount),
-        session.currency ?? "usd",
-        decimals,
-      );
-      // Calculate expiration
-      const now = new Date();
-      const expirationDate = calculateExpirationDate(
-        now,
-        commissionDurationValue,
-        commissionDurationUnit,
-      );
-      // Calculate commission
-      let commission = 0;
-      if (commissionType === "percentage") {
-        commission = (parseFloat(amount) * parseFloat(commissionValue)) / 100
-        ;
-      } else if (commissionType === "fixed") {
-        commission = parseFloat(commissionValue)
-      }
-      if (subscriptionId) {
-        await db.insert(affiliatePayment).values({
-          paymentProvider: "stripe",
-          subscriptionId,
-          customerId,
-          amount: amount.toString(),
-          currency,
-          commission: commission.toString(),
-          expirationDate,
-          affiliateLinkId: affiliateLinkRecord.id,
-        });
-
-        console.log(
-          "✅ checkout.session.completed — inserted new subscription:",
-          subscriptionId,
-        );
-      } else {
-        await db.insert(affiliatePayment).values({
-          paymentProvider: "stripe",
-          subscriptionId: null,
-          customerId,
-          amount: amount.toString(),
-          currency,
-          commission: commission.toString(),
-          expirationDate,
-          affiliateLinkId: affiliateLinkRecord.id,
-        });
-
-        console.log(
-          "✅ checkout.session.completed — inserted one-time payment:",
-          customerId,
-        );
-      }
-
-      break;
-    }
+    // case "checkout.session.completed": {
+    //   const session = event.data.object as Stripe.Checkout.Session;
+    //   const metadata = session.metadata || {};
+    //   const refDataRaw = metadata.refearnapp_affiliate_code;
+    //   if (!refDataRaw) break;
+    //   const {
+    //     code,
+    //     commissionType,
+    //     commissionValue,
+    //     commissionDurationValue,
+    //     commissionDurationUnit,
+    //   } = JSON.parse(refDataRaw);
+    //   const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
+    //     where: (link, { eq }) => eq(link.id, code),
+    //   });
+    //
+    //   if (!affiliateLinkRecord) {
+    //     console.warn("❌ Affiliate link not found for code:", code);
+    //     break;
+    //   }
+    //   const mode = session.mode;
+    //   const isSubscription = mode === "subscription";
+    //   const customerId = session.customer
+    //     ? (session.customer as string)
+    //     : generateStripeCustomerId();
+    //   const subscriptionId = isSubscription
+    //     ? (session.subscription as string)
+    //     : null;
+    //   const rawAmount = safeFormatAmount(session.amount_total);
+    //   const decimals = getCurrencyDecimals(session.currency ?? "usd");
+    //   const { amount, currency } = await convertToUSD(
+    //     parseFloat(rawAmount),
+    //     session.currency ?? "usd",
+    //     decimals,
+    //   );
+    //   // Calculate expiration
+    //   const now = new Date();
+    //   const expirationDate = calculateExpirationDate(
+    //     now,
+    //     commissionDurationValue,
+    //     commissionDurationUnit,
+    //   );
+    //   // Calculate commission
+    //   let commission = 0;
+    //   if (commissionType === "percentage") {
+    //     commission = (parseFloat(amount) * parseFloat(commissionValue)) / 100
+    //     ;
+    //   } else if (commissionType === "fixed") {
+    //     commission = parseFloat(commissionValue)
+    //   }
+    //   if (subscriptionId) {
+    //     await db.insert(affiliatePayment).values({
+    //       paymentProvider: "stripe",
+    //       subscriptionId,
+    //       customerId,
+    //       amount: amount.toString(),
+    //       currency,
+    //       commission: commission.toString(),
+    //       expirationDate,
+    //       affiliateLinkId: affiliateLinkRecord.id,
+    //     });
+    //
+    //     console.log(
+    //       "✅ checkout.session.completed — inserted new subscription:",
+    //       subscriptionId,
+    //     );
+    //   } else {
+    //     await db.insert(affiliatePayment).values({
+    //       paymentProvider: "stripe",
+    //       subscriptionId: null,
+    //       customerId,
+    //       amount: amount.toString(),
+    //       currency,
+    //       commission: commission.toString(),
+    //       expirationDate,
+    //       affiliateLinkId: affiliateLinkRecord.id,
+    //     });
+    //
+    //     console.log(
+    //       "✅ checkout.session.completed — inserted one-time payment:",
+    //       customerId,
+    //     );
+    //   }
+    //
+    //   break;
+    // }
 
     case "customer.subscription.created": {
       const subscription = event.data.object as Stripe.Subscription;
