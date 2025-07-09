@@ -147,7 +147,7 @@
        const refCode = getReferralCode();
        if (refCode && !getCookie("refearnapp_affiliate_click_tracked")) {
            try {
-               const res = await fetch(`${ORGID_ENDPOINT}/?code=${encodeURIComponent(refCode)}`, {
+               const res = await fetch(`${ORGID_ENDPOINT}?code=${encodeURIComponent(refCode)}`, {
                    method: "GET",
                    headers: {
                        "Content-Type": "application/json",
