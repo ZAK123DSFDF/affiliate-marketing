@@ -34,7 +34,7 @@ export const invoicePaidUpdate = async (
 
   if (commissionType === "percentage") {
     addedCommission =
-        parseFloat(invoiceAmount) * parseFloat(commissionValue) * 100
+       ( parseFloat(invoiceAmount) * parseFloat(commissionValue)) / 100
   } else if (commissionType === "fixed") {
     addedCommission =
       parseFloat(invoiceAmount) < 0
