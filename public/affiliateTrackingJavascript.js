@@ -116,7 +116,7 @@
        enumerize([NAME, VERSION]);
 
    (async function () {
-       const ORGID_ENDPOINT = "https://affiliate-marketing-ten.vercel.app/api/org/";
+       const ORGID_ENDPOINT = "https://affiliate-marketing-ten.vercel.app/api/org";
        const REF_KEYS = ["ref", "aff", "via"];
        function convertToSeconds(value, unit) {
            const unitToSeconds = {
