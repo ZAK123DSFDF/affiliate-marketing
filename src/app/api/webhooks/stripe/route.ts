@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
           return null;
         };
 
-        const existingPayment = await tryGetAffiliatePayment(2);
+        const existingPayment = await tryGetAffiliatePayment(4);
         if (!existingPayment) {
           console.warn("❌ No affiliate payment found after retries:", subscriptionId);
           break;
