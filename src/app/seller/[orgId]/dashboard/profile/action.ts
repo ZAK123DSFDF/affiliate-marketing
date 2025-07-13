@@ -4,10 +4,11 @@
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { db } from "@/db/drizzle";
-import { user } from "@/db/schema";
+import { affiliate, user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
 import { UserDataResponse } from "@/lib/types/auth";
+import * as bcrypt from "bcrypt";
 
 export const getUserData = async (): Promise<UserDataResponse> => {
   try {
@@ -52,3 +53,65 @@ export const getUserData = async (): Promise<UserDataResponse> => {
     return returnError(err) as UserDataResponse;
   }
 };
+export async function updateUserProfile({
+  name,
+  email,
+}: {
+  name: string;
+  email: string;
+}) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token) throw { status: 401, toast: "Unauthorized" };
+
+    const { id } = jwt.decode(token) as { id: string };
+    if (!id) throw { status: 400, toast: "Invalid session" };
+
+    await db.update(user).set({ name, email }).where(eq(user.id, id));
+    return { ok: true };
+  } catch (err) {
+    console.error("updateAffiliateProfile error:", err);
+    return returnError(err);
+  }
+}
+export async function validateCurrentSellerPassword(currentPassword: string) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token) throw { status: 401, toast: "Unauthorized" };
+
+    const { id } = jwt.decode(token) as { id: string };
+    if (!id) throw { status: 400, toast: "Invalid session" };
+
+    const record = await db.query.user.findFirst({
+      where: eq(user.id, id),
+    });
+    if (!record) throw { status: 404, toast: "User not found" };
+
+    const isMatch = await bcrypt.compare(currentPassword, record.password);
+    if (!isMatch) throw { status: 403, toast: "Incorrect current password" };
+
+    return { ok: true };
+  } catch (err) {
+    console.error("validateCurrentPassword error:", err);
+    return returnError(err);
+  }
+}
+export async function updateUserPassword(newPassword: string) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token) throw { status: 401, toast: "Unauthorized" };
+
+    const { id } = jwt.decode(token) as { id: string };
+    if (!id) throw { status: 400, toast: "Invalid session" };
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await db.update(user).set({ password: hashed }).where(eq(user.id, id));
+    return { ok: true };
+  } catch (err) {
+    console.error("updateAffiliatePassword error:", err);
+    return returnError(err);
+  }
+}

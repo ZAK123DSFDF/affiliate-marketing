@@ -6,6 +6,9 @@ import jwt from "jsonwebtoken";
 import { db } from "@/db/drizzle";
 import { returnError } from "@/lib/errorHandler";
 import { OrgInfoResponse } from "@/lib/types/organization";
+import { organization } from "@/db/schema";
+import { orgSettingsSchema } from "@/lib/schema/orgSettingSchema";
+import { eq } from "drizzle-orm";
 
 export const orgInfo = async (orgId: string): Promise<OrgInfoResponse> => {
   try {
@@ -93,3 +96,38 @@ export const orgInfo = async (orgId: string): Promise<OrgInfoResponse> => {
     return returnError(err) as OrgInfoResponse;
   }
 };
+export async function updateOrgSettings(raw: unknown) {
+  try {
+    const data = orgSettingsSchema.parse(raw);
+    const cookiesStore = await cookies();
+    const token = cookiesStore.get("token")?.value;
+    if (!token) throw { status: 401, toast: "Unauthorized" };
+    const { id: userId } = jwt.decode(token) as { id: string };
+    if (!userId) throw { status: 400, toast: "Invalid session" };
+    const relation = await db.query.userToOrganization.findFirst({
+      where: (uto, { and, eq }) =>
+        and(eq(uto.userId, userId), eq(uto.organizationId, data.orgId)),
+    });
+    if (!relation) throw { status: 403, toast: "Forbidden" };
+    await db
+      .update(organization)
+      .set({
+        name: data.name.trim(),
+        domainName: data.domainName.trim().replace(/^https?:\/\//, ""),
+        logoUrl: data.logoUrl || null,
+        referralParam: data.referralParam,
+        cookieLifetimeValue: data.cookieLifetimeValue,
+        cookieLifetimeUnit: data.cookieLifetimeUnit,
+        commissionType: data.commissionType,
+        commissionValue: data.commissionValue.toFixed(2),
+        commissionDurationValue: data.commissionDurationValue,
+        commissionDurationUnit: data.commissionDurationUnit,
+        currency: data.currency,
+      })
+      .where(eq(organization.id, data.orgId));
+    return { ok: true };
+  } catch (err) {
+    console.error("updateOrgSettings error", err);
+    return returnError(err);
+  }
+}

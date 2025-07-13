@@ -21,7 +21,7 @@ const profilePage = async ({ params }: OrgIdProps) => {
   }
   return (
     <>
-      <Profile userData={userResponse.data} />
+      <Profile UserData={userResponse.data} />
     </>
   );
 };

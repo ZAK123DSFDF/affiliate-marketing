@@ -4,12 +4,13 @@
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { db } from "@/db/drizzle";
-import { user } from "@/db/schema";
+import { affiliate, user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
-import { UserDataResponse } from "@/lib/types/auth";
+import { AffiliateDataResponse } from "@/lib/types/auth";
+import * as bcrypt from "bcrypt";
 
-export const getUserData = async (): Promise<UserDataResponse> => {
+export const getAffiliateData = async (): Promise<AffiliateDataResponse> => {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -31,14 +32,14 @@ export const getUserData = async (): Promise<UserDataResponse> => {
       };
     }
 
-    const userData = await db.query.user.findFirst({
-      where: eq(user.id, decoded.id),
+    const affiliateData = await db.query.affiliate.findFirst({
+      where: eq(affiliate.id, decoded.id),
       columns: {
         password: false, // Explicitly exclude password
       },
     });
 
-    if (!userData) {
+    if (!affiliateData) {
       throw {
         status: 404,
         error: "User not found",
@@ -46,9 +47,77 @@ export const getUserData = async (): Promise<UserDataResponse> => {
       };
     }
 
-    return { ok: true, data: userData };
+    return { ok: true, data: affiliateData };
   } catch (err) {
     console.error("getUserData error:", err);
-    return returnError(err) as UserDataResponse;
+    return returnError(err) as AffiliateDataResponse;
   }
 };
+
+export async function updateAffiliateProfile({
+  name,
+  email,
+}: {
+  name: string;
+  email: string;
+}) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token) throw { status: 401, toast: "Unauthorized" };
+
+    const { id } = jwt.decode(token) as { id: string };
+    if (!id) throw { status: 400, toast: "Invalid session" };
+
+    await db.update(affiliate).set({ name, email }).where(eq(affiliate.id, id));
+    return { ok: true };
+  } catch (err) {
+    console.error("updateAffiliateProfile error:", err);
+    return returnError(err);
+  }
+}
+
+export async function validateCurrentPassword(currentPassword: string) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token) throw { status: 401, toast: "Unauthorized" };
+
+    const { id } = jwt.decode(token) as { id: string };
+    if (!id) throw { status: 400, toast: "Invalid session" };
+
+    const record = await db.query.affiliate.findFirst({
+      where: eq(affiliate.id, id),
+    });
+    if (!record) throw { status: 404, toast: "User not found" };
+
+    const isMatch = await bcrypt.compare(currentPassword, record.password);
+    if (!isMatch) throw { status: 403, toast: "Incorrect current password" };
+
+    return { ok: true };
+  } catch (err) {
+    console.error("validateCurrentPassword error:", err);
+    return returnError(err);
+  }
+}
+export async function updateAffiliatePassword(newPassword: string) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token) throw { status: 401, toast: "Unauthorized" };
+
+    const { id } = jwt.decode(token) as { id: string };
+    if (!id) throw { status: 400, toast: "Invalid session" };
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await db
+      .update(affiliate)
+      .set({ password: hashed })
+      .where(eq(affiliate.id, id));
+
+    return { ok: true };
+  } catch (err) {
+    console.error("updateAffiliatePassword error:", err);
+    return returnError(err);
+  }
+}

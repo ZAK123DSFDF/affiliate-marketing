@@ -11,9 +11,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { SidebarTrigger } from "@/components/ui/sidebar"; // if used
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { z } from "zod";
+import { orgSettingsSchema } from "@/lib/schema/orgSettingSchema";
+import { useMutation } from "@tanstack/react-query";
+import { updateOrgSettings } from "@/app/seller/[orgId]/dashboard/settings/action";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react"; // if used
 
 type OrgData = {
+  id: string;
   name: string;
   domainName: string;
   logoUrl?: string | null;
@@ -30,10 +37,39 @@ type OrgData = {
 type Props = {
   orgData: OrgData;
 };
-
+type OrgDataType = z.infer<typeof orgSettingsSchema>;
 export default function Settings({ orgData }: Props) {
-  const [formValues, setFormValues] = useState({ ...orgData });
-
+  const [formValues, setFormValues] = useState({
+    ...orgData,
+    orgId: orgData.id,
+  });
+  const { toast } = useToast();
+  const mut = useMutation({
+    mutationFn: updateOrgSettings,
+    onSuccess: (res) => {
+      if (res?.ok) {
+        toast({
+          title: "Settings updated",
+          description: "Organization settings saved.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Update failed.",
+        });
+      }
+    },
+    onError: () =>
+      toast({
+        variant: "destructive",
+        title: "Unexpected error",
+        description: "Please try again",
+      }),
+  });
+  const onSubmit = (data: OrgData) => {
+    mut.mutate(data);
+  };
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
@@ -47,7 +83,10 @@ export default function Settings({ orgData }: Props) {
             </p>
           </div>
         </div>
-        <Button disabled>Update Settings</Button>
+        <Button onClick={() => onSubmit(formValues)} disabled={mut.isPending}>
+          {mut.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+          Update Settings
+        </Button>
       </div>
 
       {/* Basic Information Card - Now with side-by-side fields */}
@@ -59,17 +98,38 @@ export default function Settings({ orgData }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="block text-sm font-medium">Company Name</label>
-              <Input defaultValue={orgData.name} />
+              <Input
+                defaultValue={orgData.name}
+                onChange={(e) =>
+                  setFormValues((prev) => ({ ...prev, name: e.target.value }))
+                }
+              />
             </div>
 
             <div className="space-y-2">
               <label className="block text-sm font-medium">Domain Name</label>
-              <Input defaultValue={orgData.domainName} />
+              <Input
+                defaultValue={orgData.domainName}
+                onChange={(e) =>
+                  setFormValues((prev) => ({
+                    ...prev,
+                    domainName: e.target.value,
+                  }))
+                }
+              />
             </div>
 
             <div className="space-y-2">
               <label className="block text-sm font-medium">Logo URL</label>
-              <Input defaultValue={orgData.logoUrl || ""} />
+              <Input
+                defaultValue={orgData.logoUrl || ""}
+                onChange={(e) =>
+                  setFormValues((prev) => ({
+                    ...prev,
+                    logoUrl: e.target.value,
+                  }))
+                }
+              />
             </div>
 
             <div className="space-y-2">
@@ -110,6 +170,12 @@ export default function Settings({ orgData }: Props) {
               <Input
                 type="number"
                 defaultValue={orgData.cookieLifetimeValue.toString()}
+                onChange={(e) =>
+                  setFormValues((prev) => ({
+                    ...prev,
+                    cookieLifetimeValue: parseInt(e.target.value, 10),
+                  }))
+                }
               />
             </div>
             <div className="space-y-2">
@@ -164,6 +230,12 @@ export default function Settings({ orgData }: Props) {
                 type="number"
                 step="0.01"
                 defaultValue={orgData.commissionValue}
+                onChange={(e) =>
+                  setFormValues((prev) => ({
+                    ...prev,
+                    commissionValue: parseFloat(e.target.value).toFixed(2),
+                  }))
+                }
               />
             </div>
           </div>
@@ -176,6 +248,12 @@ export default function Settings({ orgData }: Props) {
               <Input
                 type="number"
                 defaultValue={orgData.commissionDurationValue.toString()}
+                onChange={(e) =>
+                  setFormValues((prev) => ({
+                    ...prev,
+                    commissionDurationValue: parseInt(e.target.value, 10),
+                  }))
+                }
               />
             </div>
             <div className="space-y-2">
