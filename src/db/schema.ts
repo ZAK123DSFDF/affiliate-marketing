@@ -19,6 +19,7 @@ import {
   generateAffiliateClickId,
   generateAffiliateCode,
   generateAffiliatePaymentLinkId,
+  generateExpirationDateId,
   generateInviteLinkId,
   generateOrganizationId,
 } from "@/util/idGenerators";
@@ -65,6 +66,7 @@ export const organization = pgTable("organization", {
   }).default("0.00"),
   commissionDurationValue: integer("commission_duration_value").default(0),
   commissionDurationUnit: text("commission_duration_unit").default("day"),
+  expirationDate: timestamp("expiration_date").defaultNow().notNull(),
   currency: text("currency").default("USD"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -134,29 +136,28 @@ export const affiliateClick = pgTable("affiliate_click", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
-export const affiliatePayment = pgTable("affiliate_payment", {
+export const affiliateInvoice = pgTable("affiliate_invoice", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => generateAffiliatePaymentLinkId()),
-
   paymentProvider: paymentProviderEnum("payment_provider").notNull(),
-
   subscriptionId: text("subscription_id"),
   customerId: text("customer_id").notNull(),
-
   amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
   currency: text("currency").notNull(),
   commission: numeric("commission", { precision: 10, scale: 2 }).notNull(),
-  expirationDate: timestamp("expiration_date").notNull(),
-
+  paidAmount: numeric("paid_amount", { precision: 10, scale: 2 })
+    .default("0")
+    .notNull(),
   affiliateLinkId: text("affiliate_link_id")
     .notNull()
     .references(() => affiliateLink.id, { onDelete: "cascade" }),
-
+  unpaidAmount: numeric("unpaid_amount", { precision: 10, scale: 2 })
+    .default("0")
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
-
 export const checkTransaction = pgTable("check_transaction", {
   id: uuid("id").primaryKey().defaultRandom(),
   customerId: text("customer_id").notNull(),

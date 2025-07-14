@@ -3,14 +3,13 @@ import { safeFormatAmount } from "@/util/SafeParse";
 import { getCurrencyDecimals } from "@/util/CurrencyDecimal";
 import { convertToUSD } from "@/util/CurrencyConvert";
 import { db } from "@/db/drizzle";
-import { affiliatePayment } from "@/db/schema";
+import { affiliateInvoice } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export const invoicePaidUpdate = async (
   total: string,
   currency: string,
-  existingAmount: string,
-  existingCommission: string,
+  customerId: string,
   subscriptionId: string,
   affiliateLinkId: string,
   commissionType: string,
@@ -24,34 +23,23 @@ export const invoicePaidUpdate = async (
     currency ?? "usd",
     decimals,
   );
-
-  const newAmount = Math.max(
-    0,
-    parseFloat(existingAmount) + parseFloat(invoiceAmount),
-  );
-
   let addedCommission = 0;
-
   if (commissionType === "percentage") {
     addedCommission =
-       ( parseFloat(invoiceAmount) * parseFloat(commissionValue)) / 100
+      (parseFloat(invoiceAmount) * parseFloat(commissionValue)) / 100;
   } else if (commissionType === "fixed") {
     addedCommission =
-      parseFloat(invoiceAmount) < 0
-        ? 0
-        : parseFloat(commissionValue);
+      parseFloat(invoiceAmount) < 0 ? 0 : parseFloat(commissionValue);
   }
-
-  const totalCommission = Math.max(
-    0,
-    parseFloat(existingCommission) + addedCommission,
-  );
-
-  await db
-    .update(affiliatePayment)
-    .set({
-      amount: newAmount.toFixed(2),
-      commission: totalCommission.toFixed(2),
-    })
-    .where(eq(affiliatePayment.subscriptionId, subscriptionId));
+  await db.insert(affiliateInvoice).values({
+    paymentProvider: "stripe",
+    subscriptionId,
+    customerId,
+    amount: invoiceAmount.toString(),
+    currency,
+    commission: addedCommission.toString(),
+    paidAmount: "0.00",
+    unpaidAmount: addedCommission.toFixed(2),
+    affiliateLinkId,
+  });
 };

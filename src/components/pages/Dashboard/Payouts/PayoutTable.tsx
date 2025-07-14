@@ -20,7 +20,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import {
+  ArrowUpDown,
+  ChevronDown,
+  Download,
+  MoreHorizontal,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -50,8 +55,16 @@ import {
 } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AffiliateStats } from "@/app/seller/[orgId]/dashboard/affiliates/action";
+import {
+  AffiliatePayout,
+  getAffiliatePayouts,
+} from "@/app/seller/[orgId]/dashboard/payout/action";
+import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import MonthSelect from "@/components/ui-custom/MonthSelect";
+import { useQuery } from "@tanstack/react-query";
 
-export const columns: ColumnDef<AffiliateStats>[] = [
+export const columns: ColumnDef<AffiliatePayout>[] = [
   {
     accessorKey: "email",
     header: "Email",
@@ -115,21 +128,93 @@ export const columns: ColumnDef<AffiliateStats>[] = [
       return <div className="text-right font-medium">{formatted}</div>;
     },
   },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const unpaid = row.original.unpaid;
+      const status = unpaid > 0 ? "pending" : "paid";
+      return (
+        <span
+          className={`px-2 py-1 rounded-full text-xs ${
+            status === "paid"
+              ? "bg-green-100 text-green-800"
+              : "bg-yellow-100 text-yellow-800"
+          }`}
+        >
+          {status}
+        </span>
+      );
+    },
+  },
 ];
-interface AffiliatesTableProps {
-  data: AffiliateStats[];
+interface AffiliatesTablePayoutProps {
+  data: AffiliatePayout[];
+  orgId: string;
 }
-export default function AffiliatesTable({ data }: AffiliatesTableProps) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+export default function PayoutTable({
+  data,
+  orgId,
+}: AffiliatesTablePayoutProps) {
+  const [monthYear, setMonthYear] = useState<{
+    month?: number;
+    year?: number;
+  }>({});
+
+  /* optional: refetch when month changes */
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const onMonthChange = (m?: number, y?: number) => {
+    setMonthYear({ month: m, year: y });
+    const qs = m && y ? `?m=${m}&y=${y}` : "";
+    router.replace(`${pathname}${qs}`);
+    // You could also trigger a client‑side fetch here instead of full reload
+  };
+  const { data: live, isPending } = useQuery({
+    queryKey: ["payouts", orgId, monthYear.month, monthYear.year],
+    queryFn: () =>
+      getAffiliatePayouts(orgId, monthYear.month, monthYear.year).then((r) =>
+        r.ok ? r.data : [],
+      ),
+  });
+  const tableData = live ?? data;
+  /* CSV helper */
+  const csv = React.useMemo(() => {
+    const header = "Email,Sales,Unpaid,Paid,Commission,Status,Links\n";
+    return (
+      header +
+      tableData
+        .map(
+          (r) =>
+            `${r.email},${r.sales},${r.unpaid.toFixed(
+              2,
+            )},${r.paid.toFixed(2)},${r.commission.toFixed(2)},${
+              r.unpaid > 0 ? "pending" : "paid"
+            },"${r.links.join(" ")}"`,
+        )
+        .join("\n")
+    );
+  }, [tableData]);
+
+  const downloadCSV = () => {
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `payouts_${monthYear.year ?? "all"}_${
+      monthYear.month ?? "all"
+    }.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -160,7 +245,25 @@ export default function AffiliatesTable({ data }: AffiliatesTableProps) {
         </div>
         <Button>Add Payment</Button>
       </div>
+      <div className="flex justify-between items-center">
+        <div className="flex gap-2 items-center">
+          <MonthSelect value={monthYear} onChange={onMonthChange} />
+        </div>
 
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={downloadCSV}>
+            <Download className="w-4 h-4 mr-2" />
+            Export CSV
+          </Button>
+          <Button
+            onClick={() =>
+              window.open("https://www.paypal.com/mep/payoutsweb", "_blank")
+            }
+          >
+            Mass Payout
+          </Button>
+        </div>
+      </div>
       {/* Table Card */}
       <Card>
         <CardHeader>
@@ -226,7 +329,21 @@ export default function AffiliatesTable({ data }: AffiliatesTableProps) {
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length ? (
+                {isPending ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-gray-600" />
+                        <span className="text-sm text-muted-foreground">
+                          Loading...
+                        </span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}

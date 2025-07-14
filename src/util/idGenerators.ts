@@ -5,6 +5,7 @@ export const generateOrganizationId = customAlphabet(alphabet, 8);
 export const generateAffiliateClickId = customAlphabet(alphabet, 8);
 export const generateInviteLinkId = customAlphabet(alphabet, 8);
 export const generateAffiliatePaymentLinkId = () => {
-  const nanoid = customAlphabet(alphabet, 8);
+  const nanoid = customAlphabet(alphabet, 9);
   return `pay_${nanoid()}`;
 };
+export const generateExpirationDateId = customAlphabet(alphabet, 8);

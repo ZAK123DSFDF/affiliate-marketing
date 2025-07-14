@@ -1,5 +1,6 @@
 // components/ui-custom/MonthSelect.tsx
 "use client";
+
 import React from "react";
 import {
   Select,
@@ -8,30 +9,37 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { startOfYear } from "date-fns";
 
 interface Props {
   value: { month?: number; year?: number }; // month 1‑12
-  onChange: (m?: number, y?: number) => void;
+  onChange: (month?: number, year?: number) => void;
 }
 
 export default function MonthSelect({ value, onChange }: Props) {
   const now = new Date();
-  const years = Array.from({ length: 5 }, (_, i) => now.getUTCFullYear() - i);
+  const START_YEAR = 1990;
+  const years = Array.from(
+    { length: now.getUTCFullYear() - START_YEAR + 1 },
+    (_, i) => now.getUTCFullYear() - i,
+  );
 
   return (
     <div className="flex gap-2">
+      {/* Year Select */}
       <Select
-        value={value.year?.toString()}
-        onValueChange={(y) =>
-          onChange(value.month, y ? parseInt(y, 10) : undefined)
+        value={value.year ? value.year.toString() : "all"}
+        onValueChange={(yearVal) =>
+          onChange(
+            value.month,
+            yearVal === "all" ? undefined : parseInt(yearVal),
+          )
         }
       >
         <SelectTrigger className="w-[100px]">
           <SelectValue placeholder="Year" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All</SelectItem>
+          <SelectItem value="all">All</SelectItem>
           {years.map((y) => (
             <SelectItem key={y} value={y.toString()}>
               {y}
@@ -40,18 +48,22 @@ export default function MonthSelect({ value, onChange }: Props) {
         </SelectContent>
       </Select>
 
+      {/* Month Select */}
       <Select
-        value={value.month?.toString()}
-        onValueChange={(m) =>
-          onChange(m ? parseInt(m, 10) : undefined, value.year)
+        value={value.month ? value.month.toString() : "all"}
+        onValueChange={(monthVal) =>
+          onChange(
+            monthVal === "all" ? undefined : parseInt(monthVal),
+            value.year,
+          )
         }
-        disabled={!value.year} // month only selectable when a year is chosen
+        disabled={!value.year}
       >
         <SelectTrigger className="w-[100px]">
           <SelectValue placeholder="Month" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All</SelectItem>
+          <SelectItem value="all">All</SelectItem>
           {Array.from({ length: 12 }, (_, i) => (
             <SelectItem key={i + 1} value={(i + 1).toString()}>
               {new Date(0, i).toLocaleString("default", { month: "short" })}

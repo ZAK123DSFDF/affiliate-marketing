@@ -3,20 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 import { db } from "@/db/drizzle";
-import {
-  affiliateLink,
-  affiliatePayment,
-  checkTransaction,
-  organization,
-} from "@/db/schema";
-import { addDays, addMonths, addWeeks, addYears } from "date-fns";
+import { affiliateInvoice, organization } from "@/db/schema";
+import { addDays } from "date-fns";
 import { eq } from "drizzle-orm";
 import { generateStripeCustomerId } from "@/util/StripeCustomerId";
 import { convertToUSD } from "@/util/CurrencyConvert";
 import { getCurrencyDecimals } from "@/util/CurrencyDecimal";
 import { safeFormatAmount } from "@/util/SafeParse";
 import { invoicePaidUpdate } from "@/util/InvoicePaidUpdate";
-import { calculateExpirationDate } from "@/util/CalculateExpiration";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-04-30.basil",
 });
@@ -42,13 +36,7 @@ export async function POST(req: NextRequest) {
       const metadata = session.metadata || {};
       const refDataRaw = metadata.refearnapp_affiliate_code;
       if (!refDataRaw) break;
-      const {
-        code,
-        commissionType,
-        commissionValue,
-        commissionDurationValue,
-        commissionDurationUnit,
-      } = JSON.parse(refDataRaw);
+      const { code, commissionType, commissionValue } = JSON.parse(refDataRaw);
       const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
         where: (link, { eq }) => eq(link.id, code),
       });
@@ -72,30 +60,23 @@ export async function POST(req: NextRequest) {
         session.currency ?? "usd",
         decimals,
       );
-      // Calculate expiration
-      const now = new Date();
-      const expirationDate = calculateExpirationDate(
-        now,
-        commissionDurationValue,
-        commissionDurationUnit,
-      );
       // Calculate commission
       let commission = 0;
       if (commissionType === "percentage") {
-        commission = (parseFloat(amount) * parseFloat(commissionValue)) / 100
-        ;
+        commission = (parseFloat(amount) * parseFloat(commissionValue)) / 100;
       } else if (commissionType === "fixed") {
-        commission = parseFloat(commissionValue)
+        commission = parseFloat(commissionValue);
       }
       if (subscriptionId) {
-        await db.insert(affiliatePayment).values({
+        await db.insert(affiliateInvoice).values({
           paymentProvider: "stripe",
           subscriptionId,
           customerId,
           amount: amount.toString(),
           currency,
           commission: commission.toString(),
-          expirationDate,
+          paidAmount: "0.00",
+          unpaidAmount: commission.toFixed(2),
           affiliateLinkId: affiliateLinkRecord.id,
         });
 
@@ -104,14 +85,15 @@ export async function POST(req: NextRequest) {
           subscriptionId,
         );
       } else {
-        await db.insert(affiliatePayment).values({
+        await db.insert(affiliateInvoice).values({
           paymentProvider: "stripe",
           subscriptionId: null,
           customerId,
           amount: amount.toString(),
           currency,
           commission: commission.toString(),
-          expirationDate,
+          paidAmount: "0.00",
+          unpaidAmount: commission.toFixed(2),
           affiliateLinkId: affiliateLinkRecord.id,
         });
 
@@ -130,19 +112,21 @@ export async function POST(req: NextRequest) {
 
       console.log("✅ Subscription created:", subscriptionId);
 
-
-
       if (
-          subscription.status === "trialing" &&
-          subscription.trial_end !== null &&
-          subscription.trial_start !== null
+        subscription.status === "trialing" &&
+        subscription.trial_end !== null &&
+        subscription.trial_start !== null
       ) {
         const trialDurationMs =
-            (subscription.trial_end - subscription.trial_start) * 1000;
-        const trialDaysOnly = Math.round(trialDurationMs / (1000 * 60 * 60 * 24));
-        const tryGetAffiliatePayment = async (retries: number): Promise<any> => {
+          (subscription.trial_end - subscription.trial_start) * 1000;
+        const trialDaysOnly = Math.round(
+          trialDurationMs / (1000 * 60 * 60 * 24),
+        );
+        const tryGetAffiliatePayment = async (
+          retries: number,
+        ): Promise<any> => {
           for (let i = 0; i <= retries; i++) {
-            const existing = await db.query.affiliatePayment.findFirst({
+            const existing = await db.query.affiliateInvoice.findFirst({
               where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
             });
             if (existing) return existing;
@@ -151,27 +135,52 @@ export async function POST(req: NextRequest) {
           return null;
         };
 
-        const existingPayment = await tryGetAffiliatePayment(4);
-        if (!existingPayment) {
-          console.warn("❌ No affiliate payment found after retries:", subscriptionId);
+        const invoice = await tryGetAffiliatePayment(4);
+        if (!invoice) {
+          console.warn(
+            "❌ No affiliate payment found after retries:",
+            subscriptionId,
+          );
           break;
         }
+        const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
+          where: (link, { eq }) => eq(link.id, invoice.affiliateLinkId),
+        });
+        if (!affiliateLinkRecord) {
+          console.warn("❌ No affiliate link found for invoice:", invoice.id);
+          break;
+        }
+        const organizationRecord = await db.query.organization.findFirst({
+          where: (org, { eq }) =>
+            eq(org.id, affiliateLinkRecord.organizationId),
+        });
+
+        if (!organizationRecord) {
+          console.warn(
+            "❌ No organization found for affiliate link:",
+            affiliateLinkRecord.id,
+          );
+          break;
+        }
+
         const updatedExpiration = addDays(
-            existingPayment.expirationDate,
-            trialDaysOnly,
+          organizationRecord.expirationDate,
+          trialDaysOnly,
         );
 
         await db
-            .update(affiliatePayment)
-            .set({ expirationDate: updatedExpiration })
-            .where(eq(affiliatePayment.subscriptionId, subscriptionId));
+          .update(organization)
+          .set({ expirationDate: updatedExpiration })
+          .where(eq(organization.id, organizationRecord.id));
 
         console.log(
-            "✅ Updated affiliate payment with trial days:",
-            subscriptionId,
+          "✅ Updated affiliate payment with trial days:",
+          subscriptionId,
         );
       } else {
-        console.log(`Subscription status is '${subscription.status}' — skipping`);
+        console.log(
+          `Subscription status is '${subscription.status}' — skipping`,
+        );
       }
 
       break;
@@ -181,39 +190,40 @@ export async function POST(req: NextRequest) {
       const invoice = event.data.object as Stripe.Invoice;
       const invoiceCreatedDate = new Date(invoice.created * 1000);
       const subscriptionId = invoice.parent?.subscription_details?.subscription;
-
+      const customerId = invoice.customer as string;
       if (!subscriptionId || typeof subscriptionId !== "string") {
         console.warn("❌ No valid subscriptionId found.");
         return;
       }
       const reason = invoice.billing_reason;
       if (reason === "subscription_update" || reason === "subscription_cycle") {
-        const affiliateRow = await db
-          .select({
-            payment: affiliatePayment,
-            link: affiliateLink,
-            org: organization,
-          })
-          .from(affiliatePayment)
-          .innerJoin(
-            affiliateLink,
-            eq(affiliatePayment.affiliateLinkId, affiliateLink.id),
-          )
-          .innerJoin(
-            organization,
-            eq(affiliateLink.organizationId, organization.id),
-          )
-          .where(eq(affiliatePayment.subscriptionId, subscriptionId))
-          .limit(1)
-          .then((rows) => rows[0]);
-
-        if (!affiliateRow) {
-          console.warn("❌ No affiliatePayment found:", subscriptionId);
-          return;
+        const invoiceRecord = await db.query.affiliateInvoice.findFirst({
+          where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
+        });
+        if (!invoiceRecord) {
+          console.warn("❌ No affiliate link found for invoice:");
+          break;
         }
+        const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
+          where: (link, { eq }) => eq(link.id, invoiceRecord.affiliateLinkId),
+        });
+        if (!affiliateLinkRecord) {
+          console.warn("❌ No affiliate link found for invoice:", invoice.id);
+          break;
+        }
+        const organizationRecord = await db.query.organization.findFirst({
+          where: (org, { eq }) =>
+            eq(org.id, affiliateLinkRecord.organizationId),
+        });
 
-        const { payment, org } = affiliateRow;
-        if (payment.expirationDate <= invoiceCreatedDate) {
+        if (!organizationRecord) {
+          console.warn(
+            "❌ No organization found for affiliate link:",
+            affiliateLinkRecord.id,
+          );
+          break;
+        }
+        if (organizationRecord.expirationDate <= invoiceCreatedDate) {
           console.warn(
             "❌ Subscription expired — skipping update:",
             subscriptionId,
@@ -222,15 +232,15 @@ export async function POST(req: NextRequest) {
         }
         const total = String(invoice.total_excluding_tax ?? 0);
         const currency = invoice.currency;
-        const commissionType = org.commissionType ?? "percentage";
-        const commissionValue = org.commissionValue ?? "0.00";
+        const commissionType =
+          organizationRecord.commissionType ?? "percentage";
+        const commissionValue = organizationRecord.commissionValue ?? "0.00";
         await invoicePaidUpdate(
           total,
           currency,
-          payment.amount,
-          payment.commission,
+          customerId,
           subscriptionId,
-          payment.affiliateLinkId,
+          invoiceRecord.affiliateLinkId,
           commissionType,
           commissionValue,
         );
