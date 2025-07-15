@@ -197,58 +197,72 @@ export async function POST(req: NextRequest) {
       }
       const reason = invoice.billing_reason;
       if (reason === "subscription_update" || reason === "subscription_cycle") {
-        const invoiceRecord = await db.query.affiliateInvoice.findFirst({
-          where: (tx, { eq }) => eq(tx.subscriptionId, subscriptionId),
-        });
-        if (!invoiceRecord) {
-          console.warn("❌ No affiliate link found for invoice:");
-          break;
-        }
-        const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
-          where: (link, { eq }) => eq(link.id, invoiceRecord.affiliateLinkId),
-        });
-        if (!affiliateLinkRecord) {
-          console.warn("❌ No affiliate link found for invoice:", invoice.id);
-          break;
-        }
-        const organizationRecord = await db.query.organization.findFirst({
-          where: (org, { eq }) =>
-            eq(org.id, affiliateLinkRecord.organizationId),
-        });
+        await db.transaction(async (tx) => {
+          const invoiceRecord = await tx.query.affiliateInvoice.findFirst({
+            where: (table, { eq }) => eq(table.subscriptionId, subscriptionId),
+          });
 
-        if (!organizationRecord) {
-          console.warn(
-            "❌ No organization found for affiliate link:",
-            affiliateLinkRecord.id,
+          if (!invoiceRecord) {
+            console.warn(
+              "❌ No affiliate invoice found for subscription:",
+              subscriptionId,
+            );
+            return;
+          }
+
+          const affiliateLinkRecord = await tx.query.affiliateLink.findFirst({
+            where: (link, { eq }) => eq(link.id, invoiceRecord.affiliateLinkId),
+          });
+
+          if (!affiliateLinkRecord) {
+            console.warn("❌ No affiliate link found for invoice:", invoice.id);
+            return;
+          }
+
+          const organizationRecord = await tx.query.organization.findFirst({
+            where: (org, { eq }) =>
+              eq(org.id, affiliateLinkRecord.organizationId),
+          });
+
+          if (!organizationRecord) {
+            console.warn(
+              "❌ No organization found for affiliate link:",
+              affiliateLinkRecord.id,
+            );
+            return;
+          }
+
+          if (organizationRecord.expirationDate <= invoiceCreatedDate) {
+            console.warn(
+              "❌ Subscription expired — skipping update:",
+              subscriptionId,
+            );
+            return;
+          }
+
+          const total = String(invoice.total_excluding_tax ?? 0);
+          const currency = invoice.currency;
+          const commissionType =
+            organizationRecord.commissionType ?? "percentage";
+          const commissionValue = organizationRecord.commissionValue ?? "0.00";
+
+          // Pass the `tx` instance to `invoicePaidUpdate`
+          await invoicePaidUpdate(
+            tx, // ← pass transaction context
+            total,
+            currency,
+            customerId,
+            subscriptionId,
+            invoiceRecord.affiliateLinkId,
+            commissionType,
+            commissionValue,
           );
-          break;
-        }
-        if (organizationRecord.expirationDate <= invoiceCreatedDate) {
-          console.warn(
-            "❌ Subscription expired — skipping update:",
+
+          console.log(
+            `✅ Updated subscription (${reason}) — amount & commission:`,
             subscriptionId,
           );
-          return;
-        }
-        const total = String(invoice.total_excluding_tax ?? 0);
-        const currency = invoice.currency;
-        const commissionType =
-          organizationRecord.commissionType ?? "percentage";
-        const commissionValue = organizationRecord.commissionValue ?? "0.00";
-        await invoicePaidUpdate(
-          total,
-          currency,
-          customerId,
-          subscriptionId,
-          invoiceRecord.affiliateLinkId,
-          commissionType,
-          commissionValue,
-        );
-
-        console.log(
-          `✅ Updated subscription (${reason}) — amount & commission:`,
-          subscriptionId,
-        );
+        });
       }
 
       break;
