@@ -13,15 +13,7 @@ import {
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
 import { ResponseData } from "@/lib/types/response";
-
-export type AffiliateStats = {
-  id: string;
-  email: string;
-  visitors: number;
-  sales: number;
-  commission: number;
-  links: string[];
-};
+import { AffiliateStats } from "@/lib/types/affiliateStats";
 
 export async function getAffiliatesWithStats(
   orgId: string,

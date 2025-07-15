@@ -8,13 +8,7 @@ import { revalidatePath } from "next/cache";
 import { inArray, sql } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
 import { ResponseData } from "@/lib/types/response";
-export type AffiliateLinkWithStats = {
-  id: string;
-  fullUrl: string;
-  clicks: number;
-  sales: number;
-  createdAt: Date;
-};
+import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
 
 export const createAffiliateLink = async () => {
   const { org, decoded } = await getOrganization();

@@ -7,9 +7,9 @@ import { db } from "@/db/drizzle";
 import { affiliate, user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
-import { SafeAffiliateData } from "@/lib/types/auth";
 import * as bcrypt from "bcrypt";
 import { ResponseData } from "@/lib/types/response";
+import { SafeAffiliateData } from "@/lib/types/authAffiliate";
 
 export const getAffiliateData = async (): Promise<
   ResponseData<SafeAffiliateData>

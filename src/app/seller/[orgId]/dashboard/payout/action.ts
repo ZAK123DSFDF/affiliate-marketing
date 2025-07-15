@@ -15,17 +15,7 @@ import {
 import { and, between, eq, inArray, sql } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
 import { ResponseData } from "@/lib/types/response";
-
-export type AffiliatePayout = {
-  id: string;
-  email: string;
-  visitors: number;
-  sales: number;
-  commission: number;
-  paid: number;
-  unpaid: number;
-  links: string[];
-};
+import { AffiliatePayout } from "@/lib/types/affiliatePayout";
 
 /* ------------------------------------------------------------------ */
 /* 🚀 main                                                            */

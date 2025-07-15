@@ -7,9 +7,9 @@ import { db } from "@/db/drizzle";
 import { affiliate, user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
-import { SafeUserData } from "@/lib/types/auth";
 import * as bcrypt from "bcrypt";
 import { ResponseData } from "@/lib/types/response";
+import { SafeUserData } from "@/lib/types/authUser";
 
 export const getUserData = async (): Promise<ResponseData<SafeUserData>> => {
   try {
