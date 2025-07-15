@@ -5,12 +5,15 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { db } from "@/db/drizzle";
 import { returnError } from "@/lib/errorHandler";
-import { OrgInfoResponse } from "@/lib/types/organization";
+import { OrgData } from "@/lib/types/organization";
 import { organization } from "@/db/schema";
 import { orgSettingsSchema } from "@/lib/schema/orgSettingSchema";
 import { eq } from "drizzle-orm";
+import { ResponseData } from "@/lib/types/response";
 
-export const orgInfo = async (orgId: string): Promise<OrgInfoResponse> => {
+export const orgInfo = async (
+  orgId: string,
+): Promise<ResponseData<OrgData>> => {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -93,7 +96,7 @@ export const orgInfo = async (orgId: string): Promise<OrgInfoResponse> => {
     };
   } catch (err) {
     console.error("orgInfo error:", err);
-    return returnError(err) as OrgInfoResponse;
+    return returnError(err) as ResponseData<OrgData>;
   }
 };
 export async function updateOrgSettings(raw: unknown) {

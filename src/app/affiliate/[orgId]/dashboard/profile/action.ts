@@ -7,10 +7,13 @@ import { db } from "@/db/drizzle";
 import { affiliate, user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
-import { AffiliateDataResponse } from "@/lib/types/auth";
+import { SafeAffiliateData } from "@/lib/types/auth";
 import * as bcrypt from "bcrypt";
+import { ResponseData } from "@/lib/types/response";
 
-export const getAffiliateData = async (): Promise<AffiliateDataResponse> => {
+export const getAffiliateData = async (): Promise<
+  ResponseData<SafeAffiliateData>
+> => {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -50,7 +53,7 @@ export const getAffiliateData = async (): Promise<AffiliateDataResponse> => {
     return { ok: true, data: affiliateData };
   } catch (err) {
     console.error("getUserData error:", err);
-    return returnError(err) as AffiliateDataResponse;
+    return returnError(err) as ResponseData<SafeAffiliateData>;
   }
 };
 

@@ -7,10 +7,11 @@ import { db } from "@/db/drizzle";
 import { affiliate, user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
-import { UserDataResponse } from "@/lib/types/auth";
+import { SafeUserData } from "@/lib/types/auth";
 import * as bcrypt from "bcrypt";
+import { ResponseData } from "@/lib/types/response";
 
-export const getUserData = async (): Promise<UserDataResponse> => {
+export const getUserData = async (): Promise<ResponseData<SafeUserData>> => {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -50,7 +51,7 @@ export const getUserData = async (): Promise<UserDataResponse> => {
     return { ok: true, data: userData };
   } catch (err) {
     console.error("getUserData error:", err);
-    return returnError(err) as UserDataResponse;
+    return returnError(err) as ResponseData<SafeUserData>;
   }
 };
 export async function updateUserProfile({

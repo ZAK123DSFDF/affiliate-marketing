@@ -1,11 +1,14 @@
 "use server";
 
 import { db } from "@/db/drizzle";
-import { affiliateLink } from "@/db/schema";
+import { affiliateClick, affiliateInvoice, affiliateLink } from "@/db/schema";
 import { generateAffiliateCode } from "@/util/idGenerators";
 import { getOrganization } from "@/util/GetOrganization";
 import { revalidatePath } from "next/cache";
-type AffiliateLinkWithStats = {
+import { inArray, sql } from "drizzle-orm";
+import { returnError } from "@/lib/errorHandler";
+import { ResponseData } from "@/lib/types/response";
+export type AffiliateLinkWithStats = {
   id: string;
   fullUrl: string;
   clicks: number;
@@ -32,47 +35,64 @@ export const createAffiliateLink = async () => {
 };
 
 export const getAffiliateLinksWithStats = async (): Promise<
-  AffiliateLinkWithStats[]
+  ResponseData<AffiliateLinkWithStats[]>
 > => {
-  const { org, decoded } = await getOrganization();
+  try {
+    const { org, decoded } = await getOrganization();
 
-  const baseDomain = org.domainName.replace(/^https?:\/\//, "");
-  const param = org.referralParam;
+    const baseDomain = org.domainName.replace(/^https?:\/\//, "");
+    const param = org.referralParam;
 
-  // Step 2: Get only this affiliate's links
-  const links = await db.query.affiliateLink.findMany({
-    where: (l, { and, eq }) =>
-      and(
-        eq(l.affiliateId, decoded.id),
-        eq(l.organizationId, decoded.organizationId),
-      ),
-  });
+    // Step 1: Fetch all links for this affiliate in the current org
+    const links = await db.query.affiliateLink.findMany({
+      where: (l, { and, eq }) =>
+        and(
+          eq(l.affiliateId, decoded.id),
+          eq(l.organizationId, decoded.organizationId),
+        ),
+    });
 
-  const linkIds = links.map((link) => link.id);
+    if (!links.length) return { ok: true, data: [] };
 
-  if (linkIds.length === 0) return [];
+    const linkIds = links.map((l) => l.id);
 
-  // Step 3: Fetch related clicks & sales using `inArray`
-  const [clicks, payments] = await Promise.all([
-    db.query.affiliateClick.findMany({
-      where: (c, { inArray }) => inArray(c.affiliateLinkId, linkIds),
-    }),
-    db.query.affiliatePayment.findMany({
-      where: (p, { inArray }) => inArray(p.affiliateLinkId, linkIds),
-    }),
-  ]);
+    // Step 2: Aggregate clicks & sales using GROUP BY
+    const [clickAgg, salesAgg] = await Promise.all([
+      db
+        .select({
+          id: affiliateClick.affiliateLinkId,
+          count: sql<number>`count(*)`.mapWith(Number),
+        })
+        .from(affiliateClick)
+        .where(inArray(affiliateClick.affiliateLinkId, linkIds))
+        .groupBy(affiliateClick.affiliateLinkId),
 
-  // Step 4: Build stats per link
-  return links.map((link) => {
-    const linkClicks = clicks.filter((c) => c.affiliateLinkId === link.id);
-    const linkSales = payments.filter((p) => p.affiliateLinkId === link.id);
+      db
+        .select({
+          id: affiliateInvoice.affiliateLinkId,
+          count: sql<number>`count(*)`.mapWith(Number),
+        })
+        .from(affiliateInvoice)
+        .where(inArray(affiliateInvoice.affiliateLinkId, linkIds))
+        .groupBy(affiliateInvoice.affiliateLinkId),
+    ]);
 
-    return {
+    // Step 3: Store counts in a map for fast lookup
+    const clicksMap = new Map(clickAgg.map((c) => [c.id, c.count]));
+    const salesMap = new Map(salesAgg.map((s) => [s.id, s.count]));
+
+    // Step 4: Combine into final list
+    const rows: AffiliateLinkWithStats[] = links.map((link) => ({
       id: link.id,
       fullUrl: `https://${baseDomain}/?${param}=${link.id}`,
-      clicks: linkClicks.length,
-      sales: linkSales.length,
+      clicks: clicksMap.get(link.id) ?? 0,
+      sales: salesMap.get(link.id) ?? 0,
       createdAt: link.createdAt,
-    };
-  });
+    }));
+
+    return { ok: true, data: rows };
+  } catch (err) {
+    console.error("getAffiliateLinksWithStats error:", err);
+    return returnError(err) as ResponseData<AffiliateLinkWithStats[]>;
+  }
 };

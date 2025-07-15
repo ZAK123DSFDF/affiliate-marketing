@@ -15,7 +15,3 @@ export interface OrgData {
   createdAt: Date;
   updatedAt: Date;
 }
-
-export type OrgInfoResponse =
-  | { ok: true; data: OrgData }
-  | { ok: false; error: string; status: number; toast?: string };

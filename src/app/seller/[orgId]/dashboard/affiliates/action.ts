@@ -7,12 +7,12 @@ import {
   affiliate,
   affiliateLink,
   affiliateClick,
-  affiliatePayment,
   organization,
-  userToOrganization,
+  affiliateInvoice,
 } from "@/db/schema";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
+import { ResponseData } from "@/lib/types/response";
 
 export type AffiliateStats = {
   id: string;
@@ -23,13 +23,9 @@ export type AffiliateStats = {
   links: string[];
 };
 
-export type AffiliatesResponse =
-  | { ok: true; data: AffiliateStats[] }
-  | { ok: false; error: string; status: number; toast?: string };
-
 export async function getAffiliatesWithStats(
   orgId: string,
-): Promise<AffiliatesResponse> {
+): Promise<ResponseData<AffiliateStats[]>> {
   try {
     /* ------------------------------------------------------------------ */
     /*  OPTIONAL: Make sure the caller really belongs to this org          */
@@ -120,25 +116,25 @@ export async function getAffiliatesWithStats(
     /* ------------------------------------------------------------------ */
     /* 5. aggregate payments                                               */
     /* ------------------------------------------------------------------ */
-    const payAgg = await db
+    const invoiceAgg = await db
       .select({
-        id: affiliatePayment.affiliateLinkId,
-        sales: sql<number>`count(*)`.mapWith(Number),
-        commission: sql<string>`sum(${affiliatePayment.commission})`,
+        id: affiliateInvoice.affiliateLinkId,
+        sales: sql<number>`count(*)`.mapWith(Number), // ← each invoice = one “sale”
+        commission: sql<string>`coalesce(sum(${affiliateInvoice.commission}),0)`,
       })
-      .from(affiliatePayment)
-      .where(inArray(affiliatePayment.affiliateLinkId, linkIds))
-      .groupBy(affiliatePayment.affiliateLinkId);
+      .from(affiliateInvoice)
+      .where(inArray(affiliateInvoice.affiliateLinkId, linkIds))
+      .groupBy(affiliateInvoice.affiliateLinkId);
 
     const salesByLink: Record<string, { sales: number; commission: number }> =
       {};
-    payAgg.forEach(
-      (p) =>
-        (salesByLink[p.id] = {
-          sales: p.sales,
-          commission: parseFloat(p.commission),
-        }),
-    );
+
+    invoiceAgg.forEach((row) => {
+      salesByLink[row.id] = {
+        sales: row.sales,
+        commission: parseFloat(row.commission),
+      };
+    });
 
     /* ------------------------------------------------------------------ */
     /* 6. build rows                                                       */
@@ -173,6 +169,6 @@ export async function getAffiliatesWithStats(
     return { ok: true, data: rows };
   } catch (err) {
     console.error("getAffiliatesWithStats error:", err);
-    return returnError(err) as AffiliatesResponse;
+    return returnError(err) as ResponseData<AffiliateStats[]>;
   }
 }

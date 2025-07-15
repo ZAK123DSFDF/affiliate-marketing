@@ -6,18 +6,15 @@ import jwt from "jsonwebtoken";
 import { db } from "@/db/drizzle";
 import {
   affiliate,
-  affiliateClick,
   affiliateLink,
-  affiliatePayment,
+  affiliateClick,
+  affiliateInvoice,
   organization,
   userToOrganization,
 } from "@/db/schema";
-import { and, between, eq, inArray, sql, type InferModel } from "drizzle-orm";
+import { and, between, eq, inArray, sql } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
-
-/* -------------------------------------------------------------------------- */
-/*                                🔑 TYPES                                    */
-/* -------------------------------------------------------------------------- */
+import { ResponseData } from "@/lib/types/response";
 
 export type AffiliatePayout = {
   id: string;
@@ -30,35 +27,28 @@ export type AffiliatePayout = {
   links: string[];
 };
 
-export type AffiliatePayoutsResponse =
-  | { ok: true; data: AffiliatePayout[] }
-  | { ok: false; status: number; error: string; toast?: string };
-
-/* -------------------------------------------------------------------------- */
-/*                           🚀 ACTION FUNCTION                               */
-/* -------------------------------------------------------------------------- */
-
+/* ------------------------------------------------------------------ */
+/* 🚀 main                                                            */
+/* ------------------------------------------------------------------ */
 export async function getAffiliatePayouts(
   orgId: string,
   month?: number,
   year?: number,
-): Promise<AffiliatePayoutsResponse> {
+): Promise<ResponseData<AffiliatePayout[]>> {
   try {
-    /* ------------------------------ Auth check ----------------------------- */
+    /* 1 — security -------------------------------------------------------- */
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     if (!token) throw { status: 401, toast: "Unauthorized" };
 
     const { id: userId } = jwt.decode(token) as { id: string };
-    if (!userId) throw { status: 400, toast: "Invalid session" };
-
-    const membership = await db.query.userToOrganization.findFirst({
-      where: (u, { and, eq }) =>
-        and(eq(u.userId, userId), eq(u.organizationId, orgId)),
+    const isMember = await db.query.userToOrganization.findFirst({
+      where: (t, { and, eq }) =>
+        and(eq(t.userId, userId), eq(t.organizationId, orgId)),
     });
-    if (!membership) throw { status: 403, toast: "Forbidden" };
+    if (!isMember) throw { status: 403, toast: "Forbidden" };
 
-    /* --------- Org basics (needed to build full tracking URLs later) ------- */
+    /* 2 — org basics (domain/param) -------------------------------------- */
     const org = await db
       .select({
         domain: organization.domainName,
@@ -67,144 +57,124 @@ export async function getAffiliatePayouts(
       .from(organization)
       .where(eq(organization.id, orgId))
       .then((r) => r[0]);
+    if (!org) throw { status: 404, toast: "Org not found" };
 
-    if (!org) throw { status: 404, toast: "Organization not found" };
-
-    /* ------------------------- Fetch all affiliates ------------------------ */
-    const aff = await db
+    /* 3 — affiliates ------------------------------------------------------ */
+    const affRows = await db
       .select({ id: affiliate.id, email: affiliate.email })
       .from(affiliate)
       .where(eq(affiliate.organizationId, orgId));
+    if (!affRows.length) return { ok: true, data: [] };
 
-    if (!aff.length) return { ok: true, data: [] };
+    const affIds = affRows.map((a) => a.id);
 
-    const affiliateIds = aff.map((a) => a.id);
-
-    /* ---------------------- Their links (ids + URLs) ----------------------- */
-    const links = await db
-      .select({
-        id: affiliateLink.id,
-        affiliateId: affiliateLink.affiliateId,
-      })
+    /* 4 — their links (needed for URLs & join key) ------------------------ */
+    const allLinks = await db
+      .select({ id: affiliateLink.id, affId: affiliateLink.affiliateId })
       .from(affiliateLink)
       .where(
         and(
           eq(affiliateLink.organizationId, orgId),
-          inArray(affiliateLink.affiliateId, affiliateIds),
+          inArray(affiliateLink.affiliateId, affIds),
         ),
       );
 
-    const linksByAff: Record<string, string[]> = {};
-    links.forEach((l) => {
-      linksByAff[l.affiliateId] ||= [];
-      linksByAff[l.affiliateId].push(
-        `https://${org.domain}/?${org.param}=${l.id}`,
-      );
+    /* helper: links per affiliate + flat list of link‑ids */
+    const linksByAffiliate: Record<string, string[]> = {};
+    const linkIds: string[] = [];
+    allLinks.forEach((l) => {
+      const url = `https://${org.domain}/?${org.param}=${l.id}`;
+      (linksByAffiliate[l.affId] ||= []).push(url);
+      linkIds.push(l.id);
     });
 
-    const linkIds = links.map((l) => l.id);
-
-    /* ---------------------- Optional month‑year filter --------------------- */
-    let dateCondClicks: ReturnType<typeof between> | undefined = undefined;
-    let dateCondPay: ReturnType<typeof between> | undefined = undefined;
+    /* 5 — optional month filter ----------------------------------------- */
+    let clickCond, invoiceCond;
     if (month && year) {
-      const from = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
+      const from = new Date(Date.UTC(year, month - 1, 1));
       const to = new Date(Date.UTC(year, month, 0, 23, 59, 59));
-      // NOTE: applies to both clicks and payments
-      dateCondClicks = between(affiliateClick.createdAt, from, to);
-      dateCondPay = between(affiliatePayment.createdAt, from, to);
+      clickCond = between(affiliateClick.createdAt, from, to);
+      invoiceCond = between(affiliateInvoice.createdAt, from, to);
     }
 
-    /* -------------------- Visitors (clicks) aggregated -------------------- */
-    const clickRows = await db
+    /* 6 — aggregate clicks per link -------------------------------------- */
+    const clk = await db
       .select({
         linkId: affiliateClick.affiliateLinkId,
         visits: sql<number>`count(*)`.mapWith(Number),
       })
       .from(affiliateClick)
       .where(
-        dateCondClicks
-          ? and(
-              inArray(affiliateClick.affiliateLinkId, linkIds),
-              dateCondClicks,
-            )
+        clickCond
+          ? and(inArray(affiliateClick.affiliateLinkId, linkIds), clickCond)
           : inArray(affiliateClick.affiliateLinkId, linkIds),
       )
-      .groupBy(affiliateClick.affiliateLinkId);
+      .groupBy(affiliateClick.affiliateLinkId)
+      .as("clk");
 
-    const visitsByLink: Record<string, number> = {};
-    clickRows.forEach((c) => (visitsByLink[c.linkId] = c.visits));
-
-    /* ----------------- Sales & commissions aggregated --------------------- */
-    const paymentRows = await db
+    /* 7 — aggregate invoices per link (negatives included) --------------- */
+    const inv = await db
       .select({
-        linkId: affiliatePayment.affiliateLinkId,
-        sales: sql<number>`count(*)`.mapWith(Number),
-        commission: sql<string>`coalesce(sum(${affiliatePayment.commission}),0)`,
+        linkId: affiliateInvoice.affiliateLinkId,
+        // only “positive” rows count as a sale
+        sales: sql<number>`
+          sum(case when ${affiliateInvoice.amount} > 0 then 1 else 0 end)
+        `.mapWith(Number),
+        commission: sql<string>`coalesce(sum(${affiliateInvoice.commission}),0)`,
+        paid: sql<string>`coalesce(sum(${affiliateInvoice.paidAmount}),0)`,
+        unpaid: sql<string>`coalesce(sum(${affiliateInvoice.unpaidAmount}),0)`,
       })
-      .from(affiliatePayment)
+      .from(affiliateInvoice)
       .where(
-        dateCondPay
-          ? and(inArray(affiliatePayment.affiliateLinkId, linkIds), dateCondPay)
-          : inArray(affiliatePayment.affiliateLinkId, linkIds),
+        invoiceCond
+          ? and(inArray(affiliateInvoice.affiliateLinkId, linkIds), invoiceCond)
+          : inArray(affiliateInvoice.affiliateLinkId, linkIds),
       )
-      .groupBy(affiliatePayment.affiliateLinkId);
+      .groupBy(affiliateInvoice.affiliateLinkId)
+      .as("inv");
 
-    const salesByLink: Record<string, { sales: number; commission: number }> =
-      {};
-    paymentRows.forEach((p) => {
-      salesByLink[p.linkId] = {
-        sales: p.sales,
-        commission: parseFloat(p.commission) || 0,
-      };
-    });
+    /* 8 — join links ↔ clicks/invoices and group by affiliate ------------ */
+    const agg = await db
+      .select({
+        affiliateId: affiliateLink.affiliateId,
 
-    /* --------------- (Optional) already‑paid amounts here ------------------ */
-    const paidByLink: Record<string, number> = {};
-    // TODO: join your payouts table and fill paidByLink if you have it.
+        visitors: sql<number>`coalesce(sum(${clk}.visits),0)`.mapWith(Number),
 
-    /* ------------------- Assemble final affiliate rows -------------------- */
-    const rows: AffiliatePayout[] = aff.map((a) => {
-      const linkList = linksByAff[a.id] ?? [];
+        sales: sql<number>`coalesce(sum(${inv}.sales),0)`.mapWith(Number),
 
-      return linkList.reduce<AffiliatePayout>(
-        (tot, url, i) => {
-          const idPart = url.split("=").pop() as string;
-          const visit = visitsByLink[idPart] ?? 0;
-          const sale = salesByLink[idPart]?.sales ?? 0;
-          const comm = salesByLink[idPart]?.commission ?? 0;
-          const paid = paidByLink[idPart] ?? 0;
+        commission: sql<number>`
+          coalesce(sum(${inv}.commission),0)
+        `.mapWith(Number),
 
-          tot.visitors += visit;
-          tot.sales += sale;
-          tot.commission += comm;
-          tot.paid += paid;
-          // only push links once
-          tot.links.push(url);
-          return tot;
-        },
-        {
-          id: a.id,
-          email: a.email,
-          visitors: 0,
-          sales: 0,
-          commission: 0,
-          paid: 0,
-          unpaid: 0,
-          links: [],
-        },
-      );
-    });
+        paid: sql<number>`coalesce(sum(${inv}.paid),0)`.mapWith(Number),
 
-    // compute unpaid
-    rows.forEach((r) => (r.unpaid = r.commission - r.paid));
+        unpaid: sql<number>`coalesce(sum(${inv}.unpaid),0)`.mapWith(Number),
+      })
+      .from(affiliateLink)
+      .leftJoin(clk, eq(clk.linkId, affiliateLink.id))
+      .leftJoin(inv, eq(inv.linkId, affiliateLink.id))
+      .where(eq(affiliateLink.organizationId, orgId))
+      .groupBy(affiliateLink.affiliateId);
+
+    /* 9 — stitch everything together ------------------------------------- */
+    const rows: AffiliatePayout[] = agg.map((r) => ({
+      id: r.affiliateId,
+      email: affRows.find((a) => a.id === r.affiliateId)!.email,
+      visitors: r.visitors,
+      sales: r.sales,
+      commission: r.commission,
+      paid: r.paid,
+      unpaid: r.unpaid,
+      links: linksByAffiliate[r.affiliateId] ?? [],
+    }));
 
     return { ok: true, data: rows };
   } catch (err) {
     console.error("getAffiliatePayouts error:", err);
-    return returnError(err) as AffiliatePayoutsResponse;
+    return returnError(err) as ResponseData<AffiliatePayout[]>;
   }
 }
+
 // export type UnpaidMonth = { month: number; year: number };
 // export async function getUnpaidMonths(
 //   orgId: string,
