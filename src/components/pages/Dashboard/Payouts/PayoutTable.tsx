@@ -54,15 +54,12 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { AffiliateStats } from "@/app/seller/[orgId]/dashboard/affiliates/action";
-import {
-  AffiliatePayout,
-  getAffiliatePayouts,
-} from "@/app/seller/[orgId]/dashboard/payout/action";
+import { getAffiliatePayouts } from "@/app/seller/[orgId]/dashboard/payout/action";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import MonthSelect from "@/components/ui-custom/MonthSelect";
 import { useQuery } from "@tanstack/react-query";
+import { AffiliatePayout } from "@/lib/types/affiliatePayout";
 
 export const columns: ColumnDef<AffiliatePayout>[] = [
   {

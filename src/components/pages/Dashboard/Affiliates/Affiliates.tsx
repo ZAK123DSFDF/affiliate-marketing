@@ -49,7 +49,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { AffiliateStats } from "@/app/seller/[orgId]/dashboard/affiliates/action";
+import { AffiliateStats } from "@/lib/types/affiliateStats";
 
 export const columns: ColumnDef<AffiliateStats>[] = [
   {

@@ -24,14 +24,7 @@ import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { createAffiliateLink } from "@/app/affiliate/[orgId]/dashboard/links/action";
 import { toast } from "@/hooks/use-toast";
-
-export type AffiliateLinkWithStats = {
-  id: string;
-  fullUrl: string;
-  clicks: number;
-  sales: number;
-  createdAt: Date;
-};
+import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
 
 const columns: ColumnDef<AffiliateLinkWithStats>[] = [
   {
@@ -66,8 +59,10 @@ const columns: ColumnDef<AffiliateLinkWithStats>[] = [
     ),
   },
 ];
-
-export default function Links({ links }: { links: AffiliateLinkWithStats[] }) {
+interface AffiliateLinkProps {
+  data: AffiliateLinkWithStats[];
+}
+export default function Links({ data }: AffiliateLinkProps) {
   const mutation = useMutation({
     mutationFn: createAffiliateLink,
     onSuccess: async (newLink: string) => {
@@ -86,7 +81,7 @@ export default function Links({ links }: { links: AffiliateLinkWithStats[] }) {
     mutation.mutate();
   };
   const table = useReactTable({
-    data: links,
+    data: data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -113,7 +108,7 @@ export default function Links({ links }: { links: AffiliateLinkWithStats[] }) {
           <CardTitle>Link Stats</CardTitle>
         </CardHeader>
         <CardContent>
-          {links.length === 0 ? (
+          {data.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">
               No links found.
             </div>
