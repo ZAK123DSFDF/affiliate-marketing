@@ -26,7 +26,6 @@ export async function getAffiliatePayouts(
   year?: number,
 ): Promise<ResponseData<AffiliatePayout[]>> {
   try {
-    /* 1 — security -------------------------------------------------------- */
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     if (!token) throw { status: 401, toast: "Unauthorized" };
@@ -37,8 +36,6 @@ export async function getAffiliatePayouts(
         and(eq(t.userId, userId), eq(t.organizationId, orgId)),
     });
     if (!isMember) throw { status: 403, toast: "Forbidden" };
-
-    /* 2 — org basics (domain/param) -------------------------------------- */
     const org = await db
       .select({
         domain: organization.domainName,
@@ -48,17 +45,12 @@ export async function getAffiliatePayouts(
       .where(eq(organization.id, orgId))
       .then((r) => r[0]);
     if (!org) throw { status: 404, toast: "Org not found" };
-
-    /* 3 — affiliates ------------------------------------------------------ */
     const affRows = await db
       .select({ id: affiliate.id, email: affiliate.email })
       .from(affiliate)
       .where(eq(affiliate.organizationId, orgId));
     if (!affRows.length) return { ok: true, data: [] };
-
     const affIds = affRows.map((a) => a.id);
-
-    /* 4 — their links (needed for URLs & join key) ------------------------ */
     const allLinks = await db
       .select({ id: affiliateLink.id, affId: affiliateLink.affiliateId })
       .from(affiliateLink)
@@ -68,8 +60,6 @@ export async function getAffiliatePayouts(
           inArray(affiliateLink.affiliateId, affIds),
         ),
       );
-
-    /* helper: links per affiliate + flat list of link‑ids */
     const linksByAffiliate: Record<string, string[]> = {};
     const linkIds: string[] = [];
     allLinks.forEach((l) => {
@@ -77,8 +67,6 @@ export async function getAffiliatePayouts(
       (linksByAffiliate[l.affId] ||= []).push(url);
       linkIds.push(l.id);
     });
-
-    /* 5 — optional month filter ----------------------------------------- */
     let clickCond, invoiceCond;
     if (month && year) {
       const from = new Date(Date.UTC(year, month - 1, 1));
@@ -86,77 +74,100 @@ export async function getAffiliatePayouts(
       clickCond = between(affiliateClick.createdAt, from, to);
       invoiceCond = between(affiliateInvoice.createdAt, from, to);
     }
+    const [clickAgg, invoiceAgg] = await Promise.all([
+      db
+        .select({
+          linkId: affiliateClick.affiliateLinkId,
+          visits: sql<number>`count(*)`.mapWith(Number),
+        })
+        .from(affiliateClick)
+        .where(
+          clickCond
+            ? and(inArray(affiliateClick.affiliateLinkId, linkIds), clickCond)
+            : inArray(affiliateClick.affiliateLinkId, linkIds),
+        )
+        .groupBy(affiliateClick.affiliateLinkId),
 
-    /* 6 — aggregate clicks per link -------------------------------------- */
-    const clk = await db
-      .select({
-        linkId: affiliateClick.affiliateLinkId,
-        visits: sql<number>`count(*)`.mapWith(Number),
-      })
-      .from(affiliateClick)
-      .where(
-        clickCond
-          ? and(inArray(affiliateClick.affiliateLinkId, linkIds), clickCond)
-          : inArray(affiliateClick.affiliateLinkId, linkIds),
-      )
-      .groupBy(affiliateClick.affiliateLinkId)
-      .as("clk");
+      db
+        .select({
+          linkId: affiliateInvoice.affiliateLinkId,
+          sales: sql<number>`
+        sum(
+          case when ${affiliateInvoice.amount} > 0 then 1 else 0 end
+        )
+      `.mapWith(Number),
 
-    /* 7 — aggregate invoices per link (negatives included) --------------- */
-    const inv = await db
-      .select({
-        linkId: affiliateInvoice.affiliateLinkId,
-        // only “positive” rows count as a sale
-        sales: sql<number>`
-          sum(case when ${affiliateInvoice.amount} > 0 then 1 else 0 end)
-        `.mapWith(Number),
-        commission: sql<string>`coalesce(sum(${affiliateInvoice.commission}),0)`,
-        paid: sql<string>`coalesce(sum(${affiliateInvoice.paidAmount}),0)`,
-        unpaid: sql<string>`coalesce(sum(${affiliateInvoice.unpaidAmount}),0)`,
-      })
-      .from(affiliateInvoice)
-      .where(
-        invoiceCond
-          ? and(inArray(affiliateInvoice.affiliateLinkId, linkIds), invoiceCond)
-          : inArray(affiliateInvoice.affiliateLinkId, linkIds),
-      )
-      .groupBy(affiliateInvoice.affiliateLinkId)
-      .as("inv");
+          commission: sql<number>`
+        coalesce(sum(${affiliateInvoice.commission}),0)
+      `.mapWith(Number),
 
-    /* 8 — join links ↔ clicks/invoices and group by affiliate ------------ */
-    const agg = await db
-      .select({
-        affiliateId: affiliateLink.affiliateId,
+          paid: sql<number>`
+        coalesce(sum(${affiliateInvoice.paidAmount}),0)
+      `.mapWith(Number),
 
-        visitors: sql<number>`coalesce(sum(${clk}.visits),0)`.mapWith(Number),
+          unpaid: sql<number>`
+        coalesce(sum(${affiliateInvoice.unpaidAmount}),0)
+      `.mapWith(Number),
+        })
+        .from(affiliateInvoice)
+        .where(
+          invoiceCond
+            ? and(
+                inArray(affiliateInvoice.affiliateLinkId, linkIds),
+                invoiceCond,
+              )
+            : inArray(affiliateInvoice.affiliateLinkId, linkIds),
+        )
+        .groupBy(affiliateInvoice.affiliateLinkId),
+    ]);
 
-        sales: sql<number>`coalesce(sum(${inv}.sales),0)`.mapWith(Number),
+    const clicksMap = new Map(clickAgg.map((r) => [r.linkId, r.visits]));
+    const invoiceMap = new Map(
+      invoiceAgg.map((r) => [
+        r.linkId,
+        {
+          sales: r.sales,
+          commission: r.commission,
+          paid: r.paid,
+          unpaid: r.unpaid,
+        },
+      ]),
+    );
 
-        commission: sql<number>`
-          coalesce(sum(${inv}.commission),0)
-        `.mapWith(Number),
+    const rows: AffiliatePayout[] = affRows.map((aff) => {
+      const urls = linksByAffiliate[aff.id] ?? [];
 
-        paid: sql<number>`coalesce(sum(${inv}.paid),0)`.mapWith(Number),
+      let visitors = 0;
+      let sales = 0;
+      let commission = 0;
+      let paid = 0;
+      let unpaid = 0;
 
-        unpaid: sql<number>`coalesce(sum(${inv}.unpaid),0)`.mapWith(Number),
-      })
-      .from(affiliateLink)
-      .leftJoin(clk, eq(clk.linkId, affiliateLink.id))
-      .leftJoin(inv, eq(inv.linkId, affiliateLink.id))
-      .where(eq(affiliateLink.organizationId, orgId))
-      .groupBy(affiliateLink.affiliateId);
+      for (const url of urls) {
+        const linkId = url.split("=").pop()!;
 
-    /* 9 — stitch everything together ------------------------------------- */
-    const rows: AffiliatePayout[] = agg.map((r) => ({
-      id: r.affiliateId,
-      email: affRows.find((a) => a.id === r.affiliateId)!.email,
-      visitors: r.visitors,
-      sales: r.sales,
-      commission: r.commission,
-      paid: r.paid,
-      unpaid: r.unpaid,
-      links: linksByAffiliate[r.affiliateId] ?? [],
-    }));
+        visitors += clicksMap.get(linkId) ?? 0;
+
+        const inv = invoiceMap.get(linkId);
+        if (inv) {
+          sales += inv.sales;
+          commission += inv.commission;
+          paid += inv.paid;
+          unpaid += inv.unpaid;
+        }
+      }
+
+      return {
+        id: aff.id,
+        email: aff.email,
+        visitors,
+        sales,
+        commission,
+        paid,
+        unpaid,
+        links: urls,
+      };
+    });
 
     return { ok: true, data: rows };
   } catch (err) {
