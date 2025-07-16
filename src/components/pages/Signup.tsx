@@ -172,7 +172,7 @@ const Signup = ({ orgId }: Props) => {
             <div className="text-center text-sm">
               Already have an account?{" "}
               <Link
-                href="/login"
+                href={`login`}
                 className="font-medium text-primary underline-offset-4 hover:underline"
               >
                 Log in
