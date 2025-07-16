@@ -91,23 +91,23 @@ export async function getAffiliatePayouts(
       db
         .select({
           linkId: affiliateInvoice.affiliateLinkId,
-          sales: sql<number>`
-        sum(
-          case when ${affiliateInvoice.amount} > 0 then 1 else 0 end
-        )
-      `.mapWith(Number),
-
+          subs: sql<number>`count(distinct ${affiliateInvoice.subscriptionId})`.mapWith(
+            Number,
+          ),
+          singles: sql<number>`
+                      sum(case when ${affiliateInvoice.subscriptionId} is null then 1 else 0 end)
+                    `.mapWith(Number),
           commission: sql<number>`
-        coalesce(sum(${affiliateInvoice.commission}),0)
-      `.mapWith(Number),
+      coalesce(sum(${affiliateInvoice.commission}), 0)
+    `.mapWith(Number),
 
           paid: sql<number>`
-        coalesce(sum(${affiliateInvoice.paidAmount}),0)
-      `.mapWith(Number),
+      coalesce(sum(${affiliateInvoice.paidAmount}), 0)
+    `.mapWith(Number),
 
           unpaid: sql<number>`
-        coalesce(sum(${affiliateInvoice.unpaidAmount}),0)
-      `.mapWith(Number),
+      coalesce(sum(${affiliateInvoice.unpaidAmount}), 0)
+    `.mapWith(Number),
         })
         .from(affiliateInvoice)
         .where(
@@ -126,7 +126,7 @@ export async function getAffiliatePayouts(
       invoiceAgg.map((r) => [
         r.linkId,
         {
-          sales: r.sales,
+          sales: r.subs + r.singles,
           commission: r.commission,
           paid: r.paid,
           unpaid: r.unpaid,
