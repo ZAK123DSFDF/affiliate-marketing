@@ -64,7 +64,12 @@ export const getAffiliateLinksWithStats = async (): Promise<
       db
         .select({
           id: affiliateInvoice.affiliateLinkId,
-          count: sql<number>`count(*)`.mapWith(Number),
+          subs: sql<number>`count(distinct ${affiliateInvoice.subscriptionId})`.mapWith(
+            Number,
+          ),
+          singles: sql<number>`
+                      sum(case when ${affiliateInvoice.subscriptionId} is null then 1 else 0 end)
+                    `.mapWith(Number),
         })
         .from(affiliateInvoice)
         .where(inArray(affiliateInvoice.affiliateLinkId, linkIds))
@@ -73,7 +78,9 @@ export const getAffiliateLinksWithStats = async (): Promise<
 
     // Step 3: Store counts in a map for fast lookup
     const clicksMap = new Map(clickAgg.map((c) => [c.id, c.count]));
-    const salesMap = new Map(salesAgg.map((s) => [s.id, s.count]));
+    const salesMap = new Map(
+      salesAgg.map((r) => [r.id, (r.subs ?? 0) + (r.singles ?? 0)]),
+    );
 
     // Step 4: Combine into final list
     const rows: AffiliateLinkWithStats[] = links.map((link) => ({
