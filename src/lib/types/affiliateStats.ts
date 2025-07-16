@@ -4,5 +4,7 @@ export interface AffiliateStats {
   visitors: number;
   sales: number;
   commission: number;
+  paid: number;
+  unpaid: number;
   links: string[];
 }

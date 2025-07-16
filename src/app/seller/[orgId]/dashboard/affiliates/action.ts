@@ -93,14 +93,33 @@ export async function getAffiliatesWithStats(
     /* ------------------------------------------------------------------ */
     /* 4. aggregate clicks                                                 */
     /* ------------------------------------------------------------------ */
-    const clickAgg = await db
-      .select({
-        id: affiliateClick.affiliateLinkId,
-        visits: sql<number>`count(*)`.mapWith(Number),
-      })
-      .from(affiliateClick)
-      .where(inArray(affiliateClick.affiliateLinkId, linkIds))
-      .groupBy(affiliateClick.affiliateLinkId);
+    const [clickAgg, invoiceAgg] = await Promise.all([
+      db
+        .select({
+          id: affiliateClick.affiliateLinkId,
+          visits: sql<number>`count(*)`.mapWith(Number),
+        })
+        .from(affiliateClick)
+        .where(inArray(affiliateClick.affiliateLinkId, linkIds))
+        .groupBy(affiliateClick.affiliateLinkId),
+
+      db
+        .select({
+          id: affiliateInvoice.affiliateLinkId,
+          subs: sql<number>`count(distinct ${affiliateInvoice.subscriptionId})`.mapWith(
+            Number,
+          ),
+          singles: sql<number>`
+        sum(case when ${affiliateInvoice.subscriptionId} is null then 1 else 0 end)
+      `.mapWith(Number),
+          commission: sql<string>`coalesce(sum(${affiliateInvoice.commission}), 0)`,
+          paid: sql<string>`coalesce(sum(${affiliateInvoice.paidAmount}), 0)`,
+          unpaid: sql<string>`coalesce(sum(${affiliateInvoice.unpaidAmount}), 0)`,
+        })
+        .from(affiliateInvoice)
+        .where(inArray(affiliateInvoice.affiliateLinkId, linkIds))
+        .groupBy(affiliateInvoice.affiliateLinkId),
+    ]);
 
     const visitsByLink: Record<string, number> = {};
     clickAgg.forEach((c) => (visitsByLink[c.id] = c.visits));
@@ -108,23 +127,18 @@ export async function getAffiliatesWithStats(
     /* ------------------------------------------------------------------ */
     /* 5. aggregate payments                                               */
     /* ------------------------------------------------------------------ */
-    const invoiceAgg = await db
-      .select({
-        id: affiliateInvoice.affiliateLinkId,
-        sales: sql<number>`count(*)`.mapWith(Number), // ← each invoice = one “sale”
-        commission: sql<string>`coalesce(sum(${affiliateInvoice.commission}),0)`,
-      })
-      .from(affiliateInvoice)
-      .where(inArray(affiliateInvoice.affiliateLinkId, linkIds))
-      .groupBy(affiliateInvoice.affiliateLinkId);
 
-    const salesByLink: Record<string, { sales: number; commission: number }> =
-      {};
+    const salesByLink: Record<
+      string,
+      { sales: number; commission: number; paid: number; unpaid: number }
+    > = {};
 
     invoiceAgg.forEach((row) => {
       salesByLink[row.id] = {
-        sales: row.sales,
+        sales: row.subs + row.singles,
         commission: parseFloat(row.commission),
+        paid: parseFloat(row.paid),
+        unpaid: parseFloat(row.unpaid),
       };
     });
 
@@ -138,15 +152,22 @@ export async function getAffiliatesWithStats(
         0,
       );
 
-      const { sales, commission } = linkList.reduce(
-        (acc, url) => {
-          const key = url.split("=").pop()!;
-          acc.sales += salesByLink[key]?.sales ?? 0;
-          acc.commission += salesByLink[key]?.commission ?? 0;
-          return acc;
-        },
-        { sales: 0, commission: 0 },
-      );
+      let sales = 0;
+      let commission = 0;
+      let paid = 0;
+      let unpaid = 0;
+
+      for (const url of linkList) {
+        const key = url.split("=").pop()!;
+        const stats = salesByLink[key];
+
+        if (stats) {
+          sales += stats.sales;
+          commission += stats.commission;
+          paid += stats.paid;
+          unpaid += stats.unpaid;
+        }
+      }
 
       return {
         id: a.id,
@@ -154,6 +175,8 @@ export async function getAffiliatesWithStats(
         visitors,
         sales,
         commission,
+        paid,
+        unpaid,
         links: linkList,
       };
     });
