@@ -115,6 +115,32 @@ export const columns: ColumnDef<AffiliateStats>[] = [
       return <div className="text-right font-medium">{formatted}</div>;
     },
   },
+  {
+    accessorKey: "paid",
+    header: () => <div className="text-right">Paid</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("paid"));
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(amount);
+
+      return <div className="text-right font-medium">{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: "unpaid",
+    header: () => <div className="text-right">Unpaid</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("unpaid"));
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(amount);
+
+      return <div className="text-right font-medium">{formatted}</div>;
+    },
+  },
 ];
 interface AffiliatesTableProps {
   data: AffiliateStats[];
