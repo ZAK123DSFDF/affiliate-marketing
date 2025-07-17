@@ -54,12 +54,17 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { getAffiliatePayouts } from "@/app/seller/[orgId]/dashboard/payout/action";
-import { useState } from "react";
+import {
+  getAffiliatePayouts,
+  getUnpaidMonths,
+} from "@/app/seller/[orgId]/dashboard/payout/action";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import MonthSelect from "@/components/ui-custom/MonthSelect";
 import { useQuery } from "@tanstack/react-query";
 import { AffiliatePayout } from "@/lib/types/affiliatePayout";
+import UnpaidPicker from "@/components/ui-custom/UnpaidPicker";
+import { UnpaidMonth } from "@/lib/types/unpaidMonth";
 
 export const columns: ColumnDef<AffiliatePayout>[] = [
   {
@@ -183,7 +188,9 @@ export default function PayoutTable({
     month?: number;
     year?: number;
   }>({});
-
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [unpaidMonths, setUnpaidMonths] = useState<UnpaidMonth[]>([]);
+  const [selectedMonths, setSelectedMonths] = useState<UnpaidMonth[]>([]);
   /* optional: refetch when month changes */
   const router = useRouter();
   const pathname = usePathname();
@@ -201,6 +208,17 @@ export default function PayoutTable({
         r.ok ? r.data : [],
       ),
   });
+  const { data: unpaidMonthData, isPending: pendingMonth } = useQuery({
+    queryKey: ["unpaid-months", orgId],
+    queryFn: () =>
+      getUnpaidMonths(orgId).then((res) => (res.ok ? res.data : [])),
+    enabled: isDialogOpen && !!orgId, // ✅ only fetch when modal opens
+  });
+  useEffect(() => {
+    if (unpaidMonthData) {
+      setUnpaidMonths(unpaidMonthData);
+    }
+  }, [unpaidMonthData]);
   const tableData = live ?? data;
   /* CSV helper */
   const csv = React.useMemo(() => {
@@ -272,7 +290,18 @@ export default function PayoutTable({
         <div className="flex gap-2 items-center">
           <MonthSelect value={monthYear} onChange={onMonthChange} />
         </div>
+        <Button variant="outline" onClick={() => setDialogOpen(true)}>
+          Unpaid Months
+        </Button>
 
+        <UnpaidPicker
+          open={isDialogOpen}
+          onOpenChange={setDialogOpen}
+          months={unpaidMonths}
+          selection={selectedMonths}
+          setSelection={setSelectedMonths}
+          loading={pendingMonth}
+        />
         <div className="flex gap-2">
           <Button variant="outline" onClick={downloadCSV}>
             <Download className="w-4 h-4 mr-2" />

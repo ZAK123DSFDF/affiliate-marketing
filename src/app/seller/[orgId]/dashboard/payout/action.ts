@@ -16,6 +16,7 @@ import { and, between, eq, inArray, sql } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
 import { ResponseData } from "@/lib/types/response";
 import { AffiliatePayout } from "@/lib/types/affiliatePayout";
+import { UnpaidMonth } from "@/lib/types/unpaidMonth";
 
 /* ------------------------------------------------------------------ */
 /* 🚀 main                                                            */
@@ -176,35 +177,38 @@ export async function getAffiliatePayouts(
   }
 }
 
-// export type UnpaidMonth = { month: number; year: number };
-// export async function getUnpaidMonths(
-//   orgId: string,
-// ): Promise<
-//   | { ok: true; data: UnpaidMonth[] }
-//   | { ok: false; status: number; error: string; toast?: string }
-// > {
-//   try {
-//     const rows = await db
-//       .select({
-//         month:
-//           sql<number>`extract(month from ${affiliatePayment.createdAt})`.mapWith(
-//             Number,
-//           ),
-//         year: sql<number>`extract(year  from ${affiliatePayment.createdAt})`.mapWith(
-//           Number,
-//         ),
-//       })
-//       .from(affiliatePayment)
-//       .where(
-//         and(
-//           eq(affiliatePayment.organizationId, orgId),
-//           sql`paid_amount IS NULL OR paid_amount < commission`, // adapt to your schema
-//         ),
-//       )
-//       .groupBy(sql.raw("year, month"));
-//
-//     return { ok: true, data: rows };
-//   } catch (e) {
-//     return returnError(e);
-//   }
-// }
+export async function getUnpaidMonths(
+  orgId: string,
+): Promise<ResponseData<UnpaidMonth[]>> {
+  try {
+    const rows = await db
+      .select({
+        month:
+          sql<number>`extract(month from ${affiliateInvoice.createdAt})`.mapWith(
+            Number,
+          ),
+        year: sql<number>`extract(year from ${affiliateInvoice.createdAt})`.mapWith(
+          Number,
+        ),
+      })
+      .from(affiliateInvoice)
+      .innerJoin(
+        affiliateLink,
+        eq(affiliateInvoice.affiliateLinkId, affiliateLink.id),
+      )
+      .where(
+        and(
+          eq(affiliateLink.organizationId, orgId),
+          sql`${affiliateInvoice.unpaidAmount} > 0`,
+        ),
+      )
+      .groupBy(
+        sql`EXTRACT(YEAR FROM ${affiliateInvoice.createdAt})`,
+        sql`EXTRACT(MONTH FROM ${affiliateInvoice.createdAt})`,
+      );
+
+    return { ok: true, data: rows };
+  } catch (e) {
+    return returnError(e) as ResponseData<UnpaidMonth[]>;
+  }
+}
