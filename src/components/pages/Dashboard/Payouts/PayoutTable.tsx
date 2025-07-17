@@ -65,6 +65,8 @@ import { useQuery } from "@tanstack/react-query";
 import { AffiliatePayout } from "@/lib/types/affiliatePayout";
 import UnpaidPicker from "@/components/ui-custom/UnpaidPicker";
 import { UnpaidMonth } from "@/lib/types/unpaidMonth";
+import UnpaidDropdown from "@/components/ui-custom/UnpaidPicker";
+import UnpaidSelect from "@/components/ui-custom/UnpaidPicker";
 
 export const columns: ColumnDef<AffiliatePayout>[] = [
   {
@@ -188,32 +190,89 @@ export default function PayoutTable({
     month?: number;
     year?: number;
   }>({});
-  const [isDialogOpen, setDialogOpen] = useState(false);
   const [unpaidMonths, setUnpaidMonths] = useState<UnpaidMonth[]>([]);
   const [selectedMonths, setSelectedMonths] = useState<UnpaidMonth[]>([]);
+  const [isUnpaidMode, setIsUnpaidMode] = useState(false);
   /* optional: refetch when month changes */
   const router = useRouter();
   const pathname = usePathname();
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const month = searchParams.get("m");
+    const year = searchParams.get("y");
 
+    if (year) {
+      setMonthYear({
+        month: month ? parseInt(month) : undefined,
+        year: parseInt(year),
+      });
+    }
+  }, []);
   const onMonthChange = (m?: number, y?: number) => {
     setMonthYear({ month: m, year: y });
-    const qs = m && y ? `?m=${m}&y=${y}` : "";
+    let qs = "";
+    if (y && m) {
+      qs = `?m=${m}&y=${y}`;
+    } else if (y) {
+      qs = `?y=${y}`;
+    }
     router.replace(`${pathname}${qs}`);
-    // You could also trigger a client‑side fetch here instead of full reload
   };
   const { data: live, isPending } = useQuery({
-    queryKey: ["payouts", orgId, monthYear.month, monthYear.year],
-    queryFn: () =>
-      getAffiliatePayouts(orgId, monthYear.month, monthYear.year).then((r) =>
-        r.ok ? r.data : [],
-      ),
+    queryKey: [
+      "payouts",
+      orgId,
+      isUnpaidMode ? "unpaid" : "regular",
+      isUnpaidMode
+        ? selectedMonths
+        : { month: monthYear.month, year: monthYear.year },
+    ],
+    queryFn: async () => {
+      if (selectedMonths.length > 0) {
+        const results = await Promise.all(
+          selectedMonths.map(({ month, year }) =>
+            getAffiliatePayouts(orgId, month, year).then((r) =>
+              r.ok ? r.data : [],
+            ),
+          ),
+        );
+        return results.flat().reduce((acc, curr) => {
+          const existing = acc.find((a) => a.id === curr.id);
+          if (existing) {
+            existing.visitors += curr.visitors;
+            existing.sales += curr.sales;
+            existing.commission += curr.commission;
+            existing.paid += curr.paid;
+            existing.unpaid += curr.unpaid;
+          } else {
+            acc.push({ ...curr });
+          }
+          return acc;
+        }, [] as AffiliatePayout[]);
+      }
+      return getAffiliatePayouts(orgId, monthYear.month, monthYear.year).then(
+        (r) => (r.ok ? r.data : []),
+      );
+    },
   });
   const { data: unpaidMonthData, isPending: pendingMonth } = useQuery({
     queryKey: ["unpaid-months", orgId],
     queryFn: () =>
       getUnpaidMonths(orgId).then((res) => (res.ok ? res.data : [])),
-    enabled: isDialogOpen && !!orgId, // ✅ only fetch when modal opens
   });
+  const applyUnpaidMonths = () => {
+    if (selectedMonths.length > 0) {
+      setIsUnpaidMode(true);
+      setMonthYear({});
+      router.replace(pathname);
+    }
+  };
+  const clearUnpaidMonths = () => {
+    setSelectedMonths([]);
+    setIsUnpaidMode(false);
+    setMonthYear({});
+    router.replace(pathname);
+  };
   useEffect(() => {
     if (unpaidMonthData) {
       setUnpaidMonths(unpaidMonthData);
@@ -253,7 +312,6 @@ export default function PayoutTable({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-
   const table = useReactTable({
     data: tableData,
     columns,
@@ -288,19 +346,30 @@ export default function PayoutTable({
       </div>
       <div className="flex justify-between items-center">
         <div className="flex gap-2 items-center">
-          <MonthSelect value={monthYear} onChange={onMonthChange} />
+          <MonthSelect
+            value={monthYear}
+            onChange={onMonthChange}
+            disabled={isUnpaidMode && selectedMonths.length > 0}
+          />
+          {isUnpaidMode && selectedMonths.length > 0 && (
+            <div className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+              <span>Unpaid Months Selected</span>
+              <button
+                onClick={clearUnpaidMonths}
+                className="text-blue-600 hover:text-blue-800"
+              >
+                ×
+              </button>
+            </div>
+          )}
         </div>
-        <Button variant="outline" onClick={() => setDialogOpen(true)}>
-          Unpaid Months
-        </Button>
-
-        <UnpaidPicker
-          open={isDialogOpen}
-          onOpenChange={setDialogOpen}
+        <UnpaidSelect
           months={unpaidMonths}
           selection={selectedMonths}
           setSelection={setSelectedMonths}
           loading={pendingMonth}
+          onApply={applyUnpaidMonths}
+          disabled={isUnpaidMode}
         />
         <div className="flex gap-2">
           <Button variant="outline" onClick={downloadCSV}>

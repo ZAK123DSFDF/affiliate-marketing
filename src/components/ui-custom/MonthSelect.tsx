@@ -1,4 +1,3 @@
-// components/ui-custom/MonthSelect.tsx
 "use client";
 
 import React from "react";
@@ -11,11 +10,12 @@ import {
 } from "@/components/ui/select";
 
 interface Props {
-  value: { month?: number; year?: number }; // month 1‑12
+  value: { month?: number; year?: number };
   onChange: (month?: number, year?: number) => void;
+  disabled?: boolean;
 }
 
-export default function MonthSelect({ value, onChange }: Props) {
+export default function MonthSelect({ value, onChange, disabled }: Props) {
   const now = new Date();
   const START_YEAR = 1990;
   const years = Array.from(
@@ -34,8 +34,9 @@ export default function MonthSelect({ value, onChange }: Props) {
             yearVal === "all" ? undefined : parseInt(yearVal),
           )
         }
+        disabled={disabled}
       >
-        <SelectTrigger className="w-[100px]">
+        <SelectTrigger className="w-[100px]" aria-disabled={disabled}>
           <SelectValue placeholder="Year" />
         </SelectTrigger>
         <SelectContent>
@@ -57,9 +58,12 @@ export default function MonthSelect({ value, onChange }: Props) {
             value.year,
           )
         }
-        disabled={!value.year}
+        disabled={!value.year || disabled}
       >
-        <SelectTrigger className="w-[100px]">
+        <SelectTrigger
+          className="w-[100px]"
+          aria-disabled={!value.year || disabled}
+        >
           <SelectValue placeholder="Month" />
         </SelectTrigger>
         <SelectContent>

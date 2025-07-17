@@ -74,6 +74,11 @@ export async function getAffiliatePayouts(
       const to = new Date(Date.UTC(year, month, 0, 23, 59, 59));
       clickCond = between(affiliateClick.createdAt, from, to);
       invoiceCond = between(affiliateInvoice.createdAt, from, to);
+    } else if (year) {
+      const from = new Date(Date.UTC(year, 0, 1));
+      const to = new Date(Date.UTC(year, 11, 31, 23, 59, 59));
+      clickCond = between(affiliateClick.createdAt, from, to);
+      invoiceCond = between(affiliateInvoice.createdAt, from, to);
     }
     const [clickAgg, invoiceAgg] = await Promise.all([
       db
@@ -190,6 +195,9 @@ export async function getUnpaidMonths(
         year: sql<number>`extract(year from ${affiliateInvoice.createdAt})`.mapWith(
           Number,
         ),
+        unpaid: sql<number>`sum(${affiliateInvoice.unpaidAmount})`.mapWith(
+          Number,
+        ),
       })
       .from(affiliateInvoice)
       .innerJoin(
@@ -207,7 +215,14 @@ export async function getUnpaidMonths(
         sql`EXTRACT(MONTH FROM ${affiliateInvoice.createdAt})`,
       );
 
-    return { ok: true, data: rows };
+    return {
+      ok: true,
+      data: rows.map((row) => ({
+        month: row.month,
+        year: row.year,
+        unpaid: row.unpaid,
+      })),
+    };
   } catch (e) {
     return returnError(e) as ResponseData<UnpaidMonth[]>;
   }
