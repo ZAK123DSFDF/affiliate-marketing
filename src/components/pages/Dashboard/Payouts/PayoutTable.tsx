@@ -56,6 +56,7 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   getAffiliatePayouts,
+  getAffiliatePayoutsBulk,
   getUnpaidMonths,
 } from "@/app/seller/[orgId]/dashboard/payout/action";
 import { useEffect, useState } from "react";
@@ -229,26 +230,9 @@ export default function PayoutTable({
     ],
     queryFn: async () => {
       if (selectedMonths.length > 0) {
-        const results = await Promise.all(
-          selectedMonths.map(({ month, year }) =>
-            getAffiliatePayouts(orgId, month, year).then((r) =>
-              r.ok ? r.data : [],
-            ),
-          ),
+        return getAffiliatePayoutsBulk(orgId, selectedMonths).then((r) =>
+          r.ok ? r.data : [],
         );
-        return results.flat().reduce((acc, curr) => {
-          const existing = acc.find((a) => a.id === curr.id);
-          if (existing) {
-            existing.visitors += curr.visitors;
-            existing.sales += curr.sales;
-            existing.commission += curr.commission;
-            existing.paid += curr.paid;
-            existing.unpaid += curr.unpaid;
-          } else {
-            acc.push({ ...curr });
-          }
-          return acc;
-        }, [] as AffiliatePayout[]);
       }
       return getAffiliatePayouts(orgId, monthYear.month, monthYear.year).then(
         (r) => (r.ok ? r.data : []),
