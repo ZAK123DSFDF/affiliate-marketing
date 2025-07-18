@@ -92,23 +92,26 @@ const columns: ColumnDef<AffiliatePaymentRow>[] = [
         rowDate.getFullYear() === currentYear;
 
       let status = "Paid";
-      let color = "text-white bg-green-600"; // Paid
+      let badgeClass =
+        "bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800"; // Paid
 
       if (unpaid > 0) {
         if (isSameMonth) {
           status = "Pending";
-          color = "bg-yellow-500 text-white";
+          badgeClass =
+            "bg-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:text-yellow-800";
         } else if (
           rowDate.getFullYear() < currentYear ||
           (rowDate.getFullYear() === currentYear &&
             rowDate.getMonth() < currentMonth)
         ) {
           status = "Overdue";
-          color = "bg-gray-500 text-white";
+          badgeClass =
+            "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-800";
         }
       }
 
-      return <Badge className={color}>{status}</Badge>;
+      return <Badge className={badgeClass}>{status}</Badge>;
     },
   },
 ];
