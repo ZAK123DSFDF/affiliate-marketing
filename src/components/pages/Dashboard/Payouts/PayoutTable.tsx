@@ -64,9 +64,7 @@ import { usePathname, useRouter } from "next/navigation";
 import MonthSelect from "@/components/ui-custom/MonthSelect";
 import { useQuery } from "@tanstack/react-query";
 import { AffiliatePayout } from "@/lib/types/affiliatePayout";
-import UnpaidPicker from "@/components/ui-custom/UnpaidPicker";
 import { UnpaidMonth } from "@/lib/types/unpaidMonth";
-import UnpaidDropdown from "@/components/ui-custom/UnpaidPicker";
 import UnpaidSelect from "@/components/ui-custom/UnpaidPicker";
 
 export const columns: ColumnDef<AffiliatePayout>[] = [
@@ -219,25 +217,22 @@ export default function PayoutTable({
     }
     router.replace(`${pathname}${qs}`);
   };
-  const { data: live, isPending } = useQuery({
-    queryKey: [
-      "payouts",
-      orgId,
-      isUnpaidMode ? "unpaid" : "regular",
-      isUnpaidMode
-        ? selectedMonths
-        : { month: monthYear.month, year: monthYear.year },
-    ],
-    queryFn: async () => {
-      if (selectedMonths.length > 0) {
-        return getAffiliatePayoutsBulk(orgId, selectedMonths).then((r) =>
-          r.ok ? r.data : [],
-        );
-      }
-      return getAffiliatePayouts(orgId, monthYear.month, monthYear.year).then(
-        (r) => (r.ok ? r.data : []),
-      );
-    },
+  const { data: unpaidPayouts, isPending: isPendingUnpaid } = useQuery({
+    queryKey: ["unpaid-payouts", orgId, selectedMonths],
+    queryFn: () =>
+      getAffiliatePayoutsBulk(orgId, selectedMonths).then((r) =>
+        r.ok ? r.data : [],
+      ),
+    enabled: isUnpaidMode && selectedMonths.length > 0,
+  });
+
+  const { data: regularPayouts, isPending: isPendingRegular } = useQuery({
+    queryKey: ["regular-payouts", orgId, monthYear.month, monthYear.year],
+    queryFn: () =>
+      getAffiliatePayouts(orgId, monthYear.month, monthYear.year).then((r) =>
+        r.ok ? r.data : [],
+      ),
+    enabled: !isUnpaidMode,
   });
   const { data: unpaidMonthData, isPending: pendingMonth } = useQuery({
     queryKey: ["unpaid-months", orgId],
@@ -257,12 +252,14 @@ export default function PayoutTable({
     setMonthYear({});
     router.replace(pathname);
   };
+  const isPending = isUnpaidMode ? isPendingUnpaid : isPendingRegular;
   useEffect(() => {
     if (unpaidMonthData) {
       setUnpaidMonths(unpaidMonthData);
     }
   }, [unpaidMonthData]);
-  const tableData = live ?? data;
+  const tableData =
+    (isUnpaidMode ? unpaidPayouts : regularPayouts) ?? data ?? [];
   /* CSV helper */
   const csv = React.useMemo(() => {
     const header = "Email,Sales,Unpaid,Paid,Commission,Status,Links\n";

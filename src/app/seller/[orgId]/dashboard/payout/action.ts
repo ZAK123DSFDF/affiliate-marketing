@@ -10,7 +10,6 @@ import {
   affiliateClick,
   affiliateInvoice,
   organization,
-  userToOrganization,
 } from "@/db/schema";
 import { and, between, eq, inArray, or, sql } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
@@ -236,10 +235,16 @@ export async function getAffiliatePayoutsBulk(
       linkIds.push(l.id);
     });
 
-    const dateFilters = months.map(({ month, year }) => {
+    const clickDateFilters = months.map(({ month, year }) => {
       const from = new Date(Date.UTC(year, month - 1, 1));
       const to = new Date(Date.UTC(year, month, 0, 23, 59, 59));
       return between(affiliateClick.createdAt, from, to);
+    });
+
+    const invoiceDateFilters = months.map(({ month, year }) => {
+      const from = new Date(Date.UTC(year, month - 1, 1));
+      const to = new Date(Date.UTC(year, month, 0, 23, 59, 59));
+      return between(affiliateInvoice.createdAt, from, to);
     });
 
     const [clickAgg, invoiceAgg] = await Promise.all([
@@ -252,7 +257,7 @@ export async function getAffiliatePayoutsBulk(
         .where(
           and(
             inArray(affiliateClick.affiliateLinkId, linkIds),
-            or(...dateFilters),
+            or(...clickDateFilters),
           ),
         )
         .groupBy(affiliateClick.affiliateLinkId),
@@ -283,7 +288,7 @@ export async function getAffiliatePayoutsBulk(
         .where(
           and(
             inArray(affiliateInvoice.affiliateLinkId, linkIds),
-            or(...dateFilters),
+            or(...invoiceDateFilters),
           ),
         )
         .groupBy(affiliateInvoice.affiliateLinkId),
@@ -336,7 +341,7 @@ export async function getAffiliatePayoutsBulk(
         links: urls,
       };
     });
-
+    console.log("Affiliate payouts bulk data:", rows);
     return { ok: true, data: rows };
   } catch (err) {
     console.error("getAffiliatePayoutsBulk error:", err);
