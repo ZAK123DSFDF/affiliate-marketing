@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow";
 import { usePathname, useRouter } from "next/navigation";
@@ -74,6 +74,43 @@ const columns: ColumnDef<AffiliatePaymentRow>[] = [
       return <div className="text-right font-medium">{formatted}</div>;
     },
   },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const unpaid = parseFloat(row.getValue("unpaidCommission"));
+      const monthStr = row.getValue("month") as string;
+
+      const today = new Date();
+      const [year, month] = monthStr.split("-").map(Number);
+      const rowDate = new Date(year, month - 1); // zero-based month
+
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+      const isSameMonth =
+        rowDate.getMonth() === currentMonth &&
+        rowDate.getFullYear() === currentYear;
+
+      let status = "Paid";
+      let color = "text-white bg-green-600"; // Paid
+
+      if (unpaid > 0) {
+        if (isSameMonth) {
+          status = "Pending";
+          color = "bg-yellow-500 text-white";
+        } else if (
+          rowDate.getFullYear() < currentYear ||
+          (rowDate.getFullYear() === currentYear &&
+            rowDate.getMonth() < currentMonth)
+        ) {
+          status = "Overdue";
+          color = "bg-gray-500 text-white";
+        }
+      }
+
+      return <Badge className={color}>{status}</Badge>;
+    },
+  },
 ];
 
 export default function AffiliateCommissionTable({
@@ -83,8 +120,6 @@ export default function AffiliateCommissionTable({
   const pathname = usePathname();
 
   const [yearValue, setYearValue] = useState<number | undefined>(undefined);
-
-  // Sync with query param
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const year = searchParams.get("y");
@@ -151,7 +186,27 @@ export default function AffiliateCommissionTable({
           <CardTitle>Monthly Commission Stats</CardTitle>
         </CardHeader>
         <CardContent>
-          {table.getRowModel().rows.length === 0 ? (
+          {yearValue !== undefined && isPending ? (
+            <div className="rounded-md border">
+              <Table>
+                <TableBody>
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-gray-600" />
+                        <span className="text-sm text-muted-foreground">
+                          Loading...
+                        </span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+          ) : table.getRowModel().rows.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">
               No commission data available.
             </div>

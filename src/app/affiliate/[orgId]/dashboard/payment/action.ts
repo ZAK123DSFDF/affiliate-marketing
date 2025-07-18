@@ -13,18 +13,13 @@ export const getAffiliateCommissionByMonth = async (
 ): Promise<ResponseData<AffiliatePaymentRow[]>> => {
   try {
     const { org, decoded } = await getOrganization();
-
     const links = await db.query.affiliateLink.findMany({
       where: (l, { eq, and }) =>
         and(eq(l.organizationId, org.id), eq(l.affiliateId, decoded.id)),
     });
-
     if (!links.length) return { ok: true, data: [] };
     const linkIds = links.map((l) => l.id);
-
-    // Default to current year if none provided
     const targetYear = year ?? new Date().getFullYear();
-
     const rows = await db
       .select({
         month: sql<string>`to_char(${affiliateInvoice.createdAt}, 'YYYY-MM')`,
