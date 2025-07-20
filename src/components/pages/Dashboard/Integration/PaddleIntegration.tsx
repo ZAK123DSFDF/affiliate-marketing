@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CopyIcon } from "lucide-react";
 import FrameworkInstructions from "@/components/pages/Dashboard/Integration/FrameworkInstructions";
+import { CopyButton } from "@/components/ui/copy-button";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import {
+  clientLabels,
+  clientSnippets,
+  serverLabels,
+  serverSnippets,
+} from "@/util/integration/paddle/Integration";
 
 const WEBHOOK_URL = "https://yourdomain.com/api/webhooks/paddle";
 
@@ -227,6 +236,101 @@ export default function PaddleIntegration() {
       <div className="space-y-4">
         <h3 className="text-xl font-semibold">3. Embed the Script</h3>
         <FrameworkInstructions />
+      </div>
+      {/* 4. Embed Affiliate Code */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold">
+          4. Embed Affiliate Code in Checkout
+        </h3>
+        <p className="text-muted-foreground">
+          To pass the affiliate code to Paddle Checkout, use the following code
+          snippet in your server-side checkout logic:
+        </p>
+        <Tabs defaultValue="server" className="w-full">
+          <TabsList className="mb-2">
+            <TabsTrigger value="server">Server Integration</TabsTrigger>
+            <TabsTrigger value="client">Client Integration</TabsTrigger>
+          </TabsList>
+          <TabsContent value="server">
+            <Tabs defaultValue="Nextjs_apiRoutes">
+              <TabsList className="mb-2 overflow-x-auto">
+                {Object.keys(serverSnippets).map((key) => (
+                  <TabsTrigger key={key} value={key}>
+                    {serverLabels[key as keyof typeof serverLabels] ?? key}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              {Object.entries(serverSnippets).map(([key, code]) => (
+                <TabsContent key={key} value={key} className="relative">
+                  <Card className="relative overflow-hidden">
+                    <CopyButton
+                      value={code}
+                      className="absolute top-2 right-2 z-10 text-white"
+                    />
+                    <ScrollArea className="max-h-[500px] overflow-y-auto">
+                      <SyntaxHighlighter
+                        language="ts"
+                        style={vscDarkPlus}
+                        wrapLongLines={true}
+                        customStyle={{
+                          margin: 0,
+                          padding: "1rem",
+                          fontSize: "0.875rem",
+                          backgroundColor: "#1e1e1e",
+                          borderRadius: "0.75rem",
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {code}
+                      </SyntaxHighlighter>
+                    </ScrollArea>
+                  </Card>
+                </TabsContent>
+              ))}
+            </Tabs>
+          </TabsContent>
+
+          <TabsContent value="client">
+            <Tabs defaultValue="react">
+              <TabsList className="mb-2 overflow-x-auto">
+                {Object.keys(clientSnippets).map((key) => (
+                  <TabsTrigger key={key} value={key}>
+                    {clientLabels[key as keyof typeof clientLabels] ?? key}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              {Object.entries(clientSnippets).map(([key, code]) => (
+                <TabsContent key={key} value={key} className="relative">
+                  <Card className="relative overflow-hidden">
+                    <CopyButton
+                      value={code}
+                      className="absolute top-2 right-2 z-10 text-white"
+                    />
+                    <ScrollArea className="max-h-[500px] overflow-y-auto">
+                      <SyntaxHighlighter
+                        language="ts"
+                        style={vscDarkPlus}
+                        wrapLongLines={true}
+                        customStyle={{
+                          margin: 0,
+                          padding: "1rem",
+                          fontSize: "0.875rem",
+                          backgroundColor: "#1e1e1e",
+                          borderRadius: "0.75rem",
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {code}
+                      </SyntaxHighlighter>
+                    </ScrollArea>
+                  </Card>
+                </TabsContent>
+              ))}
+            </Tabs>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
