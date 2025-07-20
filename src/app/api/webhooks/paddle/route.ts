@@ -7,7 +7,6 @@ import { calculateTrialDays } from "@/util/CalculateTrialDays";
 import { convertToUSD } from "@/util/CurrencyConvert";
 import { getCurrencyDecimals } from "@/util/CurrencyDecimal";
 import { safeFormatAmount } from "@/util/SafeParse";
-import { calculateExpirationDate } from "@/util/CalculateExpiration";
 import { addDays } from "date-fns";
 
 export async function POST(request: NextRequest) {
