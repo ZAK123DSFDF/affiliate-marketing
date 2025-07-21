@@ -19,8 +19,8 @@ import Link from "next/link";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
-  onSelectPage: (page: string) => void;
-  currentPage: string;
+  onSelectPage?: (page: string) => void;
+  currentPage?: string;
 };
 
 const AffiliateDashboardSidebar = ({
@@ -81,7 +81,7 @@ const AffiliateDashboardSidebar = ({
                     {isPreview ? (
                       <button
                         type="button"
-                        onClick={() => onSelectPage(item.key)}
+                        onClick={() => onSelectPage && onSelectPage(item.key)}
                         className={`flex items-center gap-2 w-full px-2 py-1.5 text-sm rounded-md transition-colors ${
                           currentPage === item.key
                             ? "bg-primary/10 text-primary"
