@@ -154,21 +154,7 @@ const Signup = ({ orgId }: Props) => {
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
-                  Or continue with
-                </span>
-              </div>
             </div>
-
-            <div className="flex gap-4 ">
-              <GoogleAuthButton
-                action="signup"
-                buttonText="Sign up with Google"
-                redirectTo="/dashboard"
-              />
-            </div>
-
             <div className="text-center text-sm">
               Already have an account?{" "}
               <Link
