@@ -30,6 +30,7 @@ import { getAffiliateCommissionByMonth } from "@/app/affiliate/[orgId]/dashboard
 
 interface AffiliateCommissionTableProps {
   data: AffiliatePaymentRow[];
+  isPreview?: boolean;
 }
 
 const columns: ColumnDef<AffiliatePaymentRow>[] = [
@@ -118,6 +119,7 @@ const columns: ColumnDef<AffiliatePaymentRow>[] = [
 
 export default function AffiliateCommissionTable({
   data,
+  isPreview,
 }: AffiliateCommissionTableProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -133,7 +135,12 @@ export default function AffiliateCommissionTable({
       }
     }
   }, []);
+  const filteredData = React.useMemo(() => {
+    if (!isPreview) return data;
+    if (!yearValue) return data;
 
+    return data.filter((row) => row.month.startsWith(yearValue.toString()));
+  }, [data, yearValue, isPreview]);
   const OnYearChange = (y?: number) => {
     setYearValue(y);
     const qs = y ? `?y=${y}` : "";
@@ -142,22 +149,26 @@ export default function AffiliateCommissionTable({
 
   const { data: yearSelectedData, isPending } = useQuery({
     queryKey: ["affiliate-commissions", yearValue],
-    queryFn: () =>
-      getAffiliateCommissionByMonth(yearValue!).then((r) =>
+    queryFn: () => {
+      return getAffiliateCommissionByMonth(yearValue).then((r) =>
         r.ok ? r.data : [],
-      ),
-    enabled: !!yearValue,
+      );
+    },
+    enabled: !!yearValue && !isPreview,
   });
 
   const table = useReactTable({
-    data: yearValue && yearSelectedData ? yearSelectedData : data,
+    data: isPreview
+      ? filteredData
+      : yearValue && yearSelectedData
+        ? yearSelectedData
+        : data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
-
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
@@ -167,14 +178,6 @@ export default function AffiliateCommissionTable({
             Monthly breakdown of your affiliate commissions
           </p>
         </div>
-        <Input
-          placeholder="Filter by month (e.g. 2025-07)..."
-          value={(table.getColumn("month")?.getFilterValue() as string) ?? ""}
-          onChange={(e) =>
-            table.getColumn("month")?.setFilterValue(e.target.value)
-          }
-          className="w-64"
-        />
       </div>
 
       <div className="flex justify-between items-center">
@@ -189,7 +192,7 @@ export default function AffiliateCommissionTable({
           <CardTitle>Monthly Commission Stats</CardTitle>
         </CardHeader>
         <CardContent>
-          {yearValue !== undefined && isPending ? (
+          {yearValue !== undefined && isPending && !isPreview ? (
             <div className="rounded-md border">
               <Table>
                 <TableBody>

@@ -62,9 +62,11 @@ export function CustomizationForm() {
           />
           <div className="flex-1 p-6 overflow-y-auto">
             {selectedPage === "dashboard" && <Dashboard />}
-            {selectedPage === "links" && <Links data={dummyAffiliateLinks} />}
+            {selectedPage === "links" && (
+              <Links isPreview data={dummyAffiliateLinks} />
+            )}
             {selectedPage === "payment" && (
-              <PaymentTable data={dummyAffiliatePayments} />
+              <PaymentTable isPreview data={dummyAffiliatePayments} />
             )}
           </div>
         </div>

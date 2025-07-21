@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -25,21 +25,42 @@ import { useMutation } from "@tanstack/react-query";
 import { createAffiliateLink } from "@/app/affiliate/[orgId]/dashboard/links/action";
 import { toast } from "@/hooks/use-toast";
 import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
+import { Copy } from "lucide-react";
 
 const columns: ColumnDef<AffiliateLinkWithStats>[] = [
   {
     accessorKey: "fullUrl",
     header: "Affiliate Link",
-    cell: ({ row }) => (
-      <a
-        href={row.getValue("fullUrl")}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 underline"
-      >
-        {row.getValue("fullUrl")}
-      </a>
-    ),
+    cell: ({ row }) => {
+      const url: string = row.getValue("fullUrl");
+
+      const handleCopy = () => {
+        navigator.clipboard.writeText(url).then(() => {
+          toast({ title: "Copied!", description: url });
+        });
+      };
+
+      return (
+        <div className="flex items-center gap-2">
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-black hover:underline break-all"
+          >
+            {url}
+          </a>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleCopy}
+          >
+            <Copy className="w-4 h-4" />
+          </Button>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "clicks",
@@ -61,8 +82,10 @@ const columns: ColumnDef<AffiliateLinkWithStats>[] = [
 ];
 interface AffiliateLinkProps {
   data: AffiliateLinkWithStats[];
+  isPreview?: boolean;
 }
-export default function Links({ data }: AffiliateLinkProps) {
+export default function Links({ data, isPreview }: AffiliateLinkProps) {
+  const [isFakeLoading, setIsFakeLoading] = useState(false);
   const mutation = useMutation({
     mutationFn: createAffiliateLink,
     onSuccess: async (newLink: string) => {
@@ -78,7 +101,18 @@ export default function Links({ data }: AffiliateLinkProps) {
   });
 
   const handleCreate = () => {
-    mutation.mutate();
+    if (isPreview) {
+      setIsFakeLoading(true);
+      setTimeout(() => {
+        setIsFakeLoading(false);
+        toast({
+          title: "Preview Mode",
+          description: "Simulated link creation.",
+        });
+      }, 1500);
+    } else {
+      mutation.mutate();
+    }
   };
   const table = useReactTable({
     data: data,
@@ -98,8 +132,13 @@ export default function Links({ data }: AffiliateLinkProps) {
             Track your referral links and their performance
           </p>
         </div>
-        <Button onClick={handleCreate} disabled={mutation.isPending}>
-          {mutation.isPending ? "Creating..." : "Create New Link"}
+        <Button
+          onClick={handleCreate}
+          disabled={mutation.isPending || isFakeLoading}
+        >
+          {mutation.isPending || isFakeLoading
+            ? "Creating..."
+            : "Create New Link"}
         </Button>
       </div>
 
