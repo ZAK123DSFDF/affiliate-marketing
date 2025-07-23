@@ -1,0 +1,23 @@
+export type AuthCustomizationSettings = {
+  backgroundColor: string;
+  showShadow: boolean;
+  shadowColor: string;
+  borderColor: string;
+  showInputBorder: boolean;
+  showBorder: boolean;
+  includeOrgName: boolean;
+  logoUrl: string;
+  cardBackgroundColor: string;
+  primaryTextColor: string;
+  linkTextColor: string;
+  errorColor: string;
+  inputBorderColor: string;
+  inputBorderErrorColor: string;
+  inputBorderFocusColor: string;
+  inputTextColor: string;
+  placeholderTextColor: string;
+  iconColor: string;
+  checkboxActiveColor: string;
+  checkboxInactiveColor: string;
+  customNotes: string;
+};

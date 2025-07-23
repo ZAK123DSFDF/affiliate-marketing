@@ -28,10 +28,12 @@ import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema";
 import { useMutation } from "@tanstack/react-query";
 import { SignupAffiliateServer } from "@/app/affiliate/[orgId]/signup/action";
 import { SignupServer } from "@/app/signup/action";
+import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 type Props = {
   orgId?: string;
+  customization?: AuthCustomizationSettings;
 };
-const Signup = ({ orgId }: Props) => {
+const Signup = ({ orgId, customization }: Props) => {
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -102,7 +104,7 @@ const Signup = ({ orgId }: Props) => {
                   label="Full name"
                   placeholder="john doe"
                   type="text"
-                  icon={<User className="h-5 w-5 text-muted-foreground" />}
+                  icon={User}
                 />
 
                 <InputField
@@ -111,7 +113,7 @@ const Signup = ({ orgId }: Props) => {
                   label="Email"
                   placeholder="john.doe@example.com"
                   type="email"
-                  icon={<Mail className="h-5 w-5 text-muted-foreground" />}
+                  icon={Mail}
                 />
 
                 <InputField
@@ -120,7 +122,7 @@ const Signup = ({ orgId }: Props) => {
                   label="Password"
                   placeholder="••••••••"
                   type="password"
-                  icon={<Lock className="h-5 w-5 text-muted-foreground" />}
+                  icon={Lock}
                   showPasswordToggle={true}
                 />
 
@@ -130,7 +132,7 @@ const Signup = ({ orgId }: Props) => {
                   label="Confirm Password"
                   placeholder="••••••••"
                   type="password"
-                  icon={<Lock className="h-5 w-5 text-muted-foreground" />}
+                  icon={Lock}
                   showPasswordToggle={true}
                 />
 

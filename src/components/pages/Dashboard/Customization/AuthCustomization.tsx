@@ -7,29 +7,31 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import Login from "@/components/pages/Login";
 import Signup from "@/components/pages/Signup";
+import { ResettableColorInput } from "@/util/ResettableColorInput";
 
 export const AuthCustomization = () => {
   const [customization, setCustomization] = useState({
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "",
     showShadow: true,
-    shadowColor: "#000000",
-    borderColor: "#e5e7eb",
+    shadowColor: "",
+    borderColor: "",
     showBorder: true,
+    showInputBorder: true,
     includeOrgName: true,
     logoUrl: "",
+    cardBackgroundColor: "",
 
-    // Text Colors
-    primaryTextColor: "#111827", // email/password/remember
-    linkTextColor: "#2563eb", // forgot password, signup
-    errorColor: "#ef4444", // error text
-    inputBorderColor: "#d1d5db",
-    inputBorderErrorColor: "#ef4444",
-    inputBorderHoverColor: "#9ca3af",
-    inputTextColor: "#111827",
-    placeholderTextColor: "#6b7280",
-    iconColor: "#6b7280",
-    checkboxActiveColor: "#2563eb",
-    checkboxInactiveColor: "#9ca3af",
+    primaryTextColor: "",
+    linkTextColor: "",
+    errorColor: "",
+    inputBorderColor: "",
+    inputBorderErrorColor: "",
+    inputBorderFocusColor: "",
+    inputTextColor: "",
+    placeholderTextColor: "",
+    iconColor: "",
+    checkboxActiveColor: "",
+    checkboxInactiveColor: "",
 
     customNotes: "<p>Welcome! Please enter your credentials.</p>",
   });
@@ -41,16 +43,16 @@ export const AuthCustomization = () => {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label>Background Color</Label>
-          <Input
-            type="color"
-            value={customization.backgroundColor}
-            onChange={(e) => handleChange("backgroundColor", e.target.value)}
-          />
-        </div>
-
-        {/* Logo URL */}
+        <ResettableColorInput
+          label="Background Color"
+          value={customization.backgroundColor}
+          onChange={(val) => handleChange("backgroundColor", val)}
+        />
+        <ResettableColorInput
+          label="Card Background Color"
+          value={customization.cardBackgroundColor}
+          onChange={(val) => handleChange("cardBackgroundColor", val)}
+        />
         <div>
           <Label>Logo URL</Label>
           <Input
@@ -60,7 +62,6 @@ export const AuthCustomization = () => {
           />
         </div>
 
-        {/* Include Org Name Toggle */}
         <div className="col-span-2">
           <Label>Include Organization Name</Label>
           <Switch
@@ -69,16 +70,12 @@ export const AuthCustomization = () => {
           />
         </div>
 
-        {/* Custom Notes - Rich Text */}
+        {/* Rich Text Placeholder */}
         <div className="col-span-2">
           <Label>Custom Notes</Label>
-          {/*<RichTextEditor*/}
-          {/*  value={customization.customNotes}*/}
-          {/*  onChange={(html) => handleChange("customNotes", html)}*/}
-          {/*/>*/}
+          {/* RichTextEditor here */}
         </div>
 
-        {/* Shadow */}
         <div>
           <Label>Show Shadow</Label>
           <Switch
@@ -87,15 +84,28 @@ export const AuthCustomization = () => {
           />
         </div>
         <div>
-          <Label>Shadow Color</Label>
-          <Input
-            type="color"
-            value={customization.shadowColor}
-            onChange={(e) => handleChange("shadowColor", e.target.value)}
+          <Label>Show Input Border</Label>
+          <Switch
+            checked={customization.showInputBorder}
+            onCheckedChange={(val) => handleChange("showInputBorder", val)}
           />
         </div>
+        <ResettableColorInput
+          label="Input Border Color"
+          value={customization.inputBorderColor}
+          onChange={(val) => handleChange("inputBorderColor", val)}
+        />
+        <ResettableColorInput
+          label="Input Border Focus Color"
+          value={customization.inputBorderFocusColor}
+          onChange={(val) => handleChange("inputBorderFocusColor", val)}
+        />
+        <ResettableColorInput
+          label="Shadow Color"
+          value={customization.shadowColor}
+          onChange={(val) => handleChange("shadowColor", val)}
+        />
 
-        {/* Border */}
         <div>
           <Label>Show Border</Label>
           <Switch
@@ -103,16 +113,13 @@ export const AuthCustomization = () => {
             onCheckedChange={(val) => handleChange("showBorder", val)}
           />
         </div>
-        <div>
-          <Label>Border Color</Label>
-          <Input
-            type="color"
-            value={customization.borderColor}
-            onChange={(e) => handleChange("borderColor", e.target.value)}
-          />
-        </div>
+        <ResettableColorInput
+          label="Border Color"
+          value={customization.borderColor}
+          onChange={(val) => handleChange("borderColor", val)}
+        />
 
-        {/* All Text Colors */}
+        {/* All other colors */}
         {[
           ["primaryTextColor", "Primary Text Color"],
           ["linkTextColor", "Link Color"],
@@ -126,26 +133,16 @@ export const AuthCustomization = () => {
           ["checkboxActiveColor", "Checkbox Active Color"],
           ["checkboxInactiveColor", "Checkbox Inactive Color"],
         ].map(([key, label]) => (
-          <div key={key}>
-            <Label>{label}</Label>
-            <Input
-              type="color"
-              value={customization[key as keyof typeof customization] as string}
-              onChange={(e) => handleChange(key, e.target.value)}
-            />
-          </div>
+          <ResettableColorInput
+            key={key}
+            label={label}
+            value={customization[key as keyof typeof customization] as string}
+            onChange={(val) => handleChange(key, val)}
+          />
         ))}
       </div>
-      <div
-        className={`border rounded-lg p-4 transition-all duration-300 mt-6 ${
-          customization.showShadow ? "shadow-md" : ""
-        }`}
-        style={{
-          backgroundColor: customization.backgroundColor,
-          borderColor: customization.borderColor,
-          borderWidth: 1,
-        }}
-      >
+
+      <div className="border rounded-lg p-4 transition-all duration-300 mt-6 shadow-md">
         <Tabs defaultValue="login">
           <TabsList className="w-full grid grid-cols-2 mb-4">
             <TabsTrigger value="login">Login</TabsTrigger>
@@ -153,10 +150,10 @@ export const AuthCustomization = () => {
           </TabsList>
 
           <TabsContent value="login">
-            <Login />
+            <Login customization={customization} />
           </TabsContent>
           <TabsContent value="signup">
-            <Signup />
+            <Signup customization={customization} />
           </TabsContent>
         </Tabs>
       </div>

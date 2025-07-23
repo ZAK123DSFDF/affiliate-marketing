@@ -21,10 +21,12 @@ import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema";
 import { useMutation } from "@tanstack/react-query";
 import { LoginAffiliateServer } from "@/app/affiliate/[orgId]/login/action";
 import { LoginServer } from "@/app/login/action";
+import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 type Props = {
   orgId?: string;
+  customization?: AuthCustomizationSettings;
 };
-const Login = ({ orgId }: Props) => {
+const Login = ({ orgId, customization }: Props) => {
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm<LoginFormValues>({
@@ -65,7 +67,16 @@ const Login = ({ orgId }: Props) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
+    <div
+      className={`min-h-screen flex items-center justify-center p-4 ${
+        customization?.backgroundColor
+          ? ""
+          : "bg-gradient-to-b from-background to-background/80"
+      }`}
+      style={{
+        backgroundColor: customization?.backgroundColor || undefined,
+      }}
+    >
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
@@ -78,7 +89,22 @@ const Login = ({ orgId }: Props) => {
           </Link>
         </div>
 
-        <Card className="border-none shadow-lg">
+        <Card
+          className={`transition-shadow duration-300 ${
+            customization?.showShadow ? "shadow-lg" : ""
+          } ${customization?.showBorder ? "border" : "border-none"}`}
+          style={{
+            backgroundColor: customization?.cardBackgroundColor || undefined,
+            boxShadow:
+              customization?.showShadow && customization?.shadowColor
+                ? `0 10px 15px -3px ${customization.shadowColor}, 0 4px 6px -4px ${customization.shadowColor}`
+                : undefined,
+            borderColor:
+              customization?.showBorder && customization?.borderColor
+                ? customization.borderColor
+                : undefined,
+          }}
+        >
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">
               Welcome back
@@ -99,7 +125,8 @@ const Login = ({ orgId }: Props) => {
                   label="Email"
                   placeholder="john.doe@example.com"
                   type="email"
-                  icon={<Mail className="h-5 w-5 text-muted-foreground" />}
+                  icon={Mail}
+                  customization={customization}
                 />
 
                 <InputField
@@ -108,8 +135,9 @@ const Login = ({ orgId }: Props) => {
                   label="Password"
                   placeholder="••••••••"
                   type="password"
-                  icon={<Lock className="h-5 w-5 text-muted-foreground" />}
+                  icon={Lock}
                   showPasswordToggle={true}
+                  customization={customization}
                 />
 
                 <div className="flex items-center justify-between">
@@ -117,6 +145,7 @@ const Login = ({ orgId }: Props) => {
                     control={form.control}
                     name="rememberMe"
                     label="Remember me"
+                    customization={customization}
                   />
 
                   <Link
