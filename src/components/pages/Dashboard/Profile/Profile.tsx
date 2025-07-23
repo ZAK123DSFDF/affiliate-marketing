@@ -44,9 +44,14 @@ interface CommonData {
 interface ProfileProps {
   AffiliateData?: CommonData;
   UserData?: CommonData;
+  isPreview?: boolean;
 }
 
-export default function Profile({ AffiliateData, UserData }: ProfileProps) {
+export default function Profile({
+  AffiliateData,
+  UserData,
+  isPreview = false,
+}: ProfileProps) {
   const {
     register,
     handleSubmit,
@@ -70,7 +75,16 @@ export default function Profile({ AffiliateData, UserData }: ProfileProps) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const updateProfile = useMutation({
-    mutationFn: AffiliateData ? updateAffiliateProfile : updateUserProfile,
+    mutationFn: async (data: any) => {
+      if (isPreview) {
+        return new Promise((resolve) =>
+          setTimeout(() => resolve({ ok: true }), 1000),
+        );
+      }
+      return AffiliateData
+        ? updateAffiliateProfile(data)
+        : updateUserProfile(data);
+    },
     onSuccess: () => {
       toast({
         title: "Profile updated successfully",
@@ -87,12 +101,18 @@ export default function Profile({ AffiliateData, UserData }: ProfileProps) {
   });
 
   const validatePassword = useMutation({
-    mutationFn: (currentPassword: string) =>
-      AffiliateData
-        ? validateCurrentPassword(currentPassword)
-        : validateCurrentSellerPassword(currentPassword),
+    mutationFn: async (password: string) => {
+      if (isPreview) {
+        return new Promise((resolve) =>
+          setTimeout(() => resolve({ ok: password === "correct123" }), 1000),
+        );
+      }
 
-    onSuccess: (res) => {
+      return AffiliateData
+        ? validateCurrentPassword(password)
+        : validateCurrentSellerPassword(password);
+    },
+    onSuccess: (res: any) => {
       if (res?.ok) {
         setStep("new");
         toast({
@@ -108,9 +128,7 @@ export default function Profile({ AffiliateData, UserData }: ProfileProps) {
         setPasswordError("Incorrect current password");
       }
     },
-
     onError: () => {
-      // Just in case something *actually* throws
       toast({
         variant: "destructive",
         title: "Something went wrong",
@@ -120,12 +138,18 @@ export default function Profile({ AffiliateData, UserData }: ProfileProps) {
   });
 
   const updatePassword = useMutation({
-    mutationFn: (newPassword: string) =>
-      AffiliateData
-        ? updateAffiliatePassword(newPassword)
-        : updateUserPassword(newPassword),
+    mutationFn: async (newPassword: string) => {
+      if (isPreview) {
+        return new Promise((resolve) =>
+          setTimeout(() => resolve({ ok: true }), 1000),
+        );
+      }
 
-    onSuccess: (res) => {
+      return AffiliateData
+        ? updateAffiliatePassword(newPassword)
+        : updateUserPassword(newPassword);
+    },
+    onSuccess: (res: any) => {
       if (res?.ok) {
         toast({
           title: "Password updated successfully",
@@ -140,7 +164,6 @@ export default function Profile({ AffiliateData, UserData }: ProfileProps) {
         });
       }
     },
-
     onError: () => {
       toast({
         variant: "destructive",

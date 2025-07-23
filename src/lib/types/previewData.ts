@@ -32,3 +32,8 @@ export const dummyAffiliatePayments: AffiliatePaymentRow[] = [
     unpaidCommission: 100.0,
   },
 ];
+export const dummyProfileData = {
+  id: "demo-profile-id",
+  name: "Preview User",
+  email: "preview.user@example.com",
+};

@@ -53,7 +53,9 @@ const AffiliateDashboardSidebar = ({
     { title: "Payment", key: "payment", icon: Users },
   ];
   const baseSidebarClass = isPreview ? "relative h-full" : ""; // you can add full-screen layout styles here
-
+  const setProfile = () => {
+    onSelectPage && onSelectPage("profile");
+  };
   return (
     <Sidebar className={baseSidebarClass}>
       <SidebarHeader className="flex items-center justify-center py-4">
@@ -109,7 +111,10 @@ const AffiliateDashboardSidebar = ({
 
       <SidebarFooter className="p-4">
         {isPreview ? (
-          <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10">
+          <div
+            className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 cursor-pointer"
+            onClick={setProfile}
+          >
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
               JD
             </div>

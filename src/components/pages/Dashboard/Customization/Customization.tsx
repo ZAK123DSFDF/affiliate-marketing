@@ -3,17 +3,17 @@
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DashboardLayoutPreview } from "@/components/pages/Dashboard/Customization/DashboardLayoutPreview";
 import AffiliateDashboardSidebar from "@/components/AffiliateDashboardSidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useParams } from "next/navigation";
 import PaymentTable from "@/components/pages/AffiliateDashboard/Payment/Payment";
 import {
   dummyAffiliateLinks,
   dummyAffiliatePayments,
+  dummyProfileData,
 } from "@/lib/types/previewData";
 import Links from "@/components/pages/AffiliateDashboard/Links/Links";
 import Dashboard from "@/components/pages/Dashboard/Dashboard";
+import Profile from "@/components/pages/Dashboard/Profile/Profile";
 
 export function CustomizationForm() {
   const [colors, setColors] = useState({
@@ -67,6 +67,9 @@ export function CustomizationForm() {
             )}
             {selectedPage === "payment" && (
               <PaymentTable isPreview data={dummyAffiliatePayments} />
+            )}
+            {selectedPage === "profile" && (
+              <Profile AffiliateData={dummyProfileData} isPreview />
             )}
           </div>
         </div>
