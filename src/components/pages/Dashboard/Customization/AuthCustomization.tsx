@@ -9,37 +9,40 @@ import Login from "@/components/pages/Login";
 import Signup from "@/components/pages/Signup";
 import { ResettableColorInput } from "@/util/ResettableColorInput";
 import { RichTextEditor } from "@/components/ui-custom/RichTextEditor";
+import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 
 export const AuthCustomization = () => {
-  const [customization, setCustomization] = useState({
-    backgroundColor: "",
-    showShadow: true,
-    shadowColor: "",
-    borderColor: "",
-    showBorder: true,
-    includeOrgName: true,
-    logoUrl: "",
-    cardBackgroundColor: "",
+  const [customization, setCustomization] = useState<AuthCustomizationSettings>(
+    {
+      backgroundColor: "",
+      showShadow: true,
+      shadowColor: "",
+      borderColor: "",
+      showBorder: true,
+      includeOrgName: true,
+      logoUrl: "",
+      cardBackgroundColor: "",
 
-    primaryTextColor: "",
-    linkTextColor: "",
-    secondaryTextColor: "",
-    errorColor: "",
-    inputBorderColor: "",
-    inputBorderErrorColor: "",
-    inputBorderFocusColor: "",
-    inputTextColor: "",
-    placeholderTextColor: "",
-    iconColor: "",
-    buttonBackgroundColor: "",
-    buttonTextColor: "",
-    buttonDisabledBackgroundColor: "",
-    buttonDisabledTextColor: "",
-    checkboxActiveColor: "",
-    checkboxInactiveColor: "",
+      primaryTextColor: "",
+      linkTextColor: "",
+      secondaryTextColor: "",
+      errorColor: "",
+      inputBorderColor: "",
+      inputBorderErrorColor: "",
+      inputBorderFocusColor: "",
+      inputTextColor: "",
+      placeholderTextColor: "",
+      iconColor: "",
+      buttonBackgroundColor: "",
+      buttonTextColor: "",
+      buttonDisabledBackgroundColor: "",
+      buttonDisabledTextColor: "",
+      checkboxActiveColor: "",
+      checkboxInactiveColor: "",
 
-    customNotes: "<p>Welcome! Please enter your credentials.</p>",
-  });
+      customNotes: "",
+    },
+  );
 
   const handleChange = (key: string, value: string | boolean) => {
     setCustomization((prev) => ({ ...prev, [key]: value }));

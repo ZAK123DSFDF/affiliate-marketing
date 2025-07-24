@@ -156,9 +156,31 @@
   margin-bottom: 0.5rem;
 }
 
-.rich-text-area ol {
-  list-style-type: decimal;
-  padding-left: 1.5rem;
+
+.rich-text-preview p[data-spacing="medium"] {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+.rich-text-preview p[data-spacing="large"] {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+[data-spacing="medium"] {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+[data-spacing="large"] {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.rich-text-preview [data-hyphen="true"]::before {
+  content: "-";
+  margin-right: 0.2rem;
+  display: inline-block;
+}
+[data-hyphen="true"]::before {
+  content: "-";
+  margin-right: 0.2rem;
+  display: inline-block;
 }

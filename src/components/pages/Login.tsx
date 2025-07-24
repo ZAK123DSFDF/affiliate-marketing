@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -74,7 +74,6 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
       console.error("Login failed", error);
     }
   };
-
   return (
     <div
       className={`min-h-screen flex items-center justify-center p-4 ${
@@ -115,13 +114,28 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
           }}
         >
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">
-              Welcome back
-            </CardTitle>
-            <CardDescription className="text-center">
-              Enter your credentials to access your account
-            </CardDescription>
+            {(!customization?.customNotes ||
+              customization?.customNotes === "") && (
+              <>
+                <CardTitle className="text-2xl font-bold text-center">
+                  Welcome back
+                </CardTitle>
+                <CardDescription className="text-center">
+                  Enter your credentials to access your account
+                </CardDescription>
+              </>
+            )}
+            {customization?.customNotes?.trim() && (
+              <div
+                className="rich-text-preview text-sm"
+                style={{
+                  color: customization?.primaryTextColor || undefined,
+                }}
+                dangerouslySetInnerHTML={{ __html: customization.customNotes }}
+              />
+            )}
           </CardHeader>
+
           <CardContent>
             <Form {...form}>
               <form
