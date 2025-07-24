@@ -9,6 +9,7 @@ export type AuthCustomizationSettings = {
   cardBackgroundColor: string;
   primaryTextColor: string;
   linkTextColor: string;
+  secondaryTextColor: string;
   errorColor: string;
   inputBorderColor: string;
   inputBorderErrorColor: string;
@@ -16,6 +17,10 @@ export type AuthCustomizationSettings = {
   inputTextColor: string;
   placeholderTextColor: string;
   iconColor: string;
+  buttonBackgroundColor: string;
+  buttonTextColor: string;
+  buttonDisabledBackgroundColor: string;
+  buttonDisabledTextColor: string;
   checkboxActiveColor: string;
   checkboxInactiveColor: string;
   customNotes: string;

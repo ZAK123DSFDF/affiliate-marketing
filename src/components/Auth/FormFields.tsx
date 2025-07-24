@@ -72,7 +72,7 @@ export const InputField = ({
                     : customization?.inputTextColor || undefined,
                   borderColor: fieldState.error
                     ? customization?.inputBorderErrorColor || undefined
-                    : customization?.inputBorderColor || undefined, // Default border color
+                    : customization?.inputBorderColor || undefined,
                 }}
                 {...field}
               />
@@ -86,6 +86,12 @@ export const InputField = ({
                       border-color: ${customization?.inputBorderFocusColor || undefined} !important;
                       box-shadow: 0 0 0 1px ${customization?.inputBorderFocusColor || undefined} !important;
                            }
+                     input.auth-input-placeholder:-webkit-autofill {
+                         box-shadow: 0 0 0px 1000px ${customization?.cardBackgroundColor || undefined} inset !important;
+                         -webkit-box-shadow: 0 0 0px 1000px ${customization?.cardBackgroundColor || undefined} inset !important;
+                         -webkit-text-fill-color: ${customization?.inputTextColor || undefined} !important;
+                          transition: background-color 9999s ease-in-out 0s;
+                            }
                   `}</style>
               {showPasswordToggle && (
                 <button
@@ -134,14 +140,11 @@ export const CheckboxField = ({
   label,
   customization,
 }: CheckboxFieldProps) => {
-  const activeColor = customization?.checkboxActiveColor || "#2563eb";
-  const inactiveColor = customization?.checkboxInactiveColor || "#9ca3af";
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => {
-        const isChecked = !!field.value;
         return (
           <FormItem>
             <div className="flex items-center space-x-2">

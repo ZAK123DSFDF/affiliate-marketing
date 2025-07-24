@@ -22,6 +22,7 @@ export const AuthCustomization = () => {
 
     primaryTextColor: "",
     linkTextColor: "",
+    secondaryTextColor: "",
     errorColor: "",
     inputBorderColor: "",
     inputBorderErrorColor: "",
@@ -29,6 +30,10 @@ export const AuthCustomization = () => {
     inputTextColor: "",
     placeholderTextColor: "",
     iconColor: "",
+    buttonBackgroundColor: "",
+    buttonTextColor: "",
+    buttonDisabledBackgroundColor: "",
+    buttonDisabledTextColor: "",
     checkboxActiveColor: "",
     checkboxInactiveColor: "",
 
@@ -105,6 +110,7 @@ export const AuthCustomization = () => {
         {[
           ["primaryTextColor", "Primary Text Color"],
           ["linkTextColor", "Link Color"],
+          ["secondaryTextColor", "Secondary Text Color"],
           ["errorColor", "Error Text Color"],
           ["inputBorderColor", "Input Border Color"],
           ["inputBorderErrorColor", "Input Border Error Color"],
@@ -112,6 +118,10 @@ export const AuthCustomization = () => {
           ["inputTextColor", "Input Text Color"],
           ["placeholderTextColor", "Placeholder Text Color"],
           ["iconColor", "Icon Color"],
+          ["buttonBackgroundColor", "Button Background Color"],
+          ["buttonTextColor", "Button Text Color"],
+          ["buttonDisabledBackgroundColor", "Button Disabled Background Color"],
+          ["buttonDisabledTextColor", "Button Disabled Text Color"],
           ["checkboxActiveColor", "Checkbox Active Color"],
           ["checkboxInactiveColor", "Checkbox Inactive Color"],
         ].map(([key, label]) => (
@@ -132,7 +142,7 @@ export const AuthCustomization = () => {
           </TabsList>
 
           <TabsContent value="login">
-            <Login customization={customization} />
+            <Login customization={customization} isPreview />
           </TabsContent>
           <TabsContent value="signup">
             <Signup customization={customization} />

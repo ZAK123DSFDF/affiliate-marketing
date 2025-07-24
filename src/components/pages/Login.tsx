@@ -25,10 +25,12 @@ import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
+  isPreview?: boolean;
 };
-const Login = ({ orgId, customization }: Props) => {
+const Login = ({ orgId, customization, isPreview = false }: Props) => {
   const { toast } = useToast();
   const router = useRouter();
+  const [previewLoading, setPreviewLoading] = useState(false);
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -50,11 +52,18 @@ const Login = ({ orgId, customization }: Props) => {
       console.log("Normal login success", data);
     },
   });
-  const isLoading = orgId
-    ? affiliateMutation.isPending
-    : normalMutation.isPending;
-
+  const isLoading = isPreview
+    ? previewLoading
+    : orgId
+      ? affiliateMutation.isPending
+      : normalMutation.isPending;
   const onSubmit = async (data: any) => {
+    if (isPreview) {
+      setPreviewLoading(true);
+      await new Promise((res) => setTimeout(res, 1500));
+      setPreviewLoading(false);
+      return;
+    }
     try {
       if (orgId) {
         affiliateMutation.mutate({ ...data, organizationId: orgId });
@@ -153,20 +162,48 @@ const Login = ({ orgId, customization }: Props) => {
                   <Link
                     href="/forgot-password"
                     className="text-sm font-medium text-primary hover:underline"
+                    style={{
+                      color: customization?.linkTextColor || undefined,
+                    }}
                   >
                     Forgot password?
                   </Link>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading}
+                  style={{
+                    backgroundColor: isLoading
+                      ? customization?.buttonDisabledBackgroundColor ||
+                        undefined
+                      : customization?.buttonBackgroundColor || undefined,
+                    color: isLoading
+                      ? customization?.buttonDisabledTextColor || undefined
+                      : customization?.buttonTextColor || undefined,
+                  }}
+                >
                   {isLoading ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2
+                        className="h-4 w-4 animate-spin"
+                        style={{
+                          color:
+                            customization?.buttonDisabledTextColor || undefined,
+                        }}
+                      />
                       Please wait...
                     </>
                   ) : (
                     <>
-                      Log in <ArrowRight className="h-4 w-4" />
+                      Log in{" "}
+                      <ArrowRight
+                        className="h-4 w-4"
+                        style={{
+                          color: customization?.buttonTextColor || undefined,
+                        }}
+                      />
                     </>
                   )}
                 </Button>
@@ -179,11 +216,19 @@ const Login = ({ orgId, customization }: Props) => {
                 <span className="w-full border-t" />
               </div>
             </div>
-            <div className="text-center text-sm">
+            <div
+              className="text-center text-sm"
+              style={{
+                color: customization?.secondaryTextColor || undefined,
+              }}
+            >
               Don't have an account?{" "}
               <Link
                 href={`signup`}
                 className="font-medium text-primary underline-offset-4 hover:underline"
+                style={{
+                  color: customization?.linkTextColor || undefined,
+                }}
               >
                 Sign up
               </Link>
