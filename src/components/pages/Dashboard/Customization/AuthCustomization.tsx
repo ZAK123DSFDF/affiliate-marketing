@@ -16,7 +16,6 @@ export const AuthCustomization = () => {
     shadowColor: "",
     borderColor: "",
     showBorder: true,
-    showInputBorder: true,
     includeOrgName: true,
     logoUrl: "",
     cardBackgroundColor: "",
@@ -83,23 +82,6 @@ export const AuthCustomization = () => {
             onCheckedChange={(val) => handleChange("showShadow", val)}
           />
         </div>
-        <div>
-          <Label>Show Input Border</Label>
-          <Switch
-            checked={customization.showInputBorder}
-            onCheckedChange={(val) => handleChange("showInputBorder", val)}
-          />
-        </div>
-        <ResettableColorInput
-          label="Input Border Color"
-          value={customization.inputBorderColor}
-          onChange={(val) => handleChange("inputBorderColor", val)}
-        />
-        <ResettableColorInput
-          label="Input Border Focus Color"
-          value={customization.inputBorderFocusColor}
-          onChange={(val) => handleChange("inputBorderFocusColor", val)}
-        />
         <ResettableColorInput
           label="Shadow Color"
           value={customization.shadowColor}
@@ -126,7 +108,7 @@ export const AuthCustomization = () => {
           ["errorColor", "Error Text Color"],
           ["inputBorderColor", "Input Border Color"],
           ["inputBorderErrorColor", "Input Border Error Color"],
-          ["inputBorderHoverColor", "Input Border Hover Color"],
+          ["inputBorderFocusColor", "Input Border Focus Color"],
           ["inputTextColor", "Input Text Color"],
           ["placeholderTextColor", "Placeholder Text Color"],
           ["iconColor", "Icon Color"],

@@ -39,11 +39,13 @@ export const InputField = ({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <FormItem>
           <FormLabel
             style={{
-              color: customization?.primaryTextColor || undefined,
+              color: fieldState.error
+                ? customization?.errorColor || undefined
+                : customization?.primaryTextColor || undefined,
             }}
           >
             {label}
@@ -61,16 +63,29 @@ export const InputField = ({
               <Input
                 type={showPasswordToggle && showPassword ? "text" : type}
                 placeholder={placeholder}
-                className={`${icon ? "pl-10" : ""} auth-input-placeholder`}
+                className={`auth-input-placeholder ${icon ? "pl-10" : ""} border ${
+                  fieldState.error ? "border" : ""
+                }`}
                 style={{
-                  color: customization?.inputTextColor || undefined,
+                  color: fieldState.error
+                    ? customization?.errorColor || undefined
+                    : customization?.inputTextColor || undefined,
+                  borderColor: fieldState.error
+                    ? customization?.inputBorderErrorColor || undefined
+                    : customization?.inputBorderColor || undefined, // Default border color
                 }}
                 {...field}
               />
+
               <style>{`
                  .auth-input-placeholder::placeholder {
                       color: ${customization?.placeholderTextColor || undefined} !important;
                           }
+                  input:focus.auth-input-placeholder {
+                      outline: none !important;
+                      border-color: ${customization?.inputBorderFocusColor || undefined} !important;
+                      box-shadow: 0 0 0 1px ${customization?.inputBorderFocusColor || undefined} !important;
+                           }
                   `}</style>
               {showPasswordToggle && (
                 <button
@@ -88,7 +103,18 @@ export const InputField = ({
               )}
             </div>
           </FormControl>
-          <FormMessage />
+          {fieldState.error && (
+            <div
+              style={{
+                color: customization?.errorColor || "red",
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                marginTop: "0.25rem",
+              }}
+            >
+              {fieldState.error.message}
+            </div>
+          )}
         </FormItem>
       )}
     />

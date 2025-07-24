@@ -120,6 +120,7 @@ const Login = ({ orgId, customization }: Props) => {
                 className="space-y-4"
               >
                 <InputField
+                  key={`email-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="email"
                   label="Email"
@@ -130,6 +131,7 @@ const Login = ({ orgId, customization }: Props) => {
                 />
 
                 <InputField
+                  key={`password-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="password"
                   label="Password"

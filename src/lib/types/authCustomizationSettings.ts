@@ -3,7 +3,6 @@ export type AuthCustomizationSettings = {
   showShadow: boolean;
   shadowColor: string;
   borderColor: string;
-  showInputBorder: boolean;
   showBorder: boolean;
   includeOrgName: boolean;
   logoUrl: string;
