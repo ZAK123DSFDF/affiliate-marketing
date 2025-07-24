@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import Login from "@/components/pages/Login";
 import Signup from "@/components/pages/Signup";
 import { ResettableColorInput } from "@/util/ResettableColorInput";
+import { RichTextEditor } from "@/components/ui-custom/RichTextEditor";
 
 export const AuthCustomization = () => {
   const [customization, setCustomization] = useState({
@@ -77,7 +78,10 @@ export const AuthCustomization = () => {
         {/* Rich Text Placeholder */}
         <div className="col-span-2">
           <Label>Custom Notes</Label>
-          {/* RichTextEditor here */}
+          <RichTextEditor
+            content={customization.customNotes}
+            onChange={(val) => handleChange("customNotes", val)}
+          />
         </div>
 
         <div>
