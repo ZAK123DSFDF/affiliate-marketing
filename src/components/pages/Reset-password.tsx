@@ -102,7 +102,7 @@ const ResetPassword = () => {
                   label="New Password"
                   placeholder="••••••••"
                   type="password"
-                  icon={<Lock className="h-5 w-5 text-muted-foreground" />}
+                  icon={Lock}
                   showPasswordToggle={true}
                 />
 
@@ -112,7 +112,7 @@ const ResetPassword = () => {
                   label="Confirm New Password"
                   placeholder="••••••••"
                   type="password"
-                  icon={<Lock className="h-5 w-5 text-muted-foreground" />}
+                  icon={Lock}
                   showPasswordToggle={true}
                 />
 
