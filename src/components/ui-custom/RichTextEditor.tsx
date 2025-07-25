@@ -15,6 +15,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { ParagraphSpacing } from "@/lib/extensions/paragraphSpacing";
 import { HyphenBullet } from "@/lib/extensions/hyphenBullet";
+import { Color } from "@tiptap/extension-color";
+import { TextStyle } from "@tiptap/extension-text-style";
 
 // Extend TipTap commands
 declare module "@tiptap/core" {
@@ -45,6 +47,8 @@ export const RichTextEditor = ({ content, onChange }: Props) => {
       }),
       ParagraphSpacing,
       HyphenBullet,
+      Color,
+      TextStyle,
     ],
     content,
     onUpdate({ editor }) {
@@ -181,6 +185,14 @@ export const RichTextEditor = ({ content, onChange }: Props) => {
         >
           <Minus className="w-4 h-4" />
         </Button>
+        <input
+          type="color"
+          onChange={(e) => {
+            editor.chain().focus().setColor(e.target.value).run();
+          }}
+          className="w-8 h-8 border rounded"
+          title="Text color"
+        />
       </div>
 
       {/* Editor */}

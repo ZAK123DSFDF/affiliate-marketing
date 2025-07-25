@@ -129,7 +129,7 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
               <div
                 className="rich-text-preview text-sm"
                 style={{
-                  color: customization?.primaryTextColor || undefined,
+                  color: customization?.customNoteColor || undefined,
                 }}
                 dangerouslySetInnerHTML={{ __html: customization.customNotes }}
               />
