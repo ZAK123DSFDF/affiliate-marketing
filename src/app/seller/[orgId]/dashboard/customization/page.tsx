@@ -1,7 +1,7 @@
 import React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { CustomizationForm } from "@/components/pages/Dashboard/Customization/Customization";
 import { AuthCustomization } from "@/components/pages/Dashboard/Customization/AuthCustomization";
+import { DashboardCustomization } from "@/components/pages/Dashboard/Customization/DashboardCustomization";
 export default function CustomizationPage() {
   return (
     <div className="p-6 space-y-6">
@@ -21,7 +21,7 @@ export default function CustomizationPage() {
         </TabsList>
 
         <TabsContent value="sidebar">
-          <CustomizationForm />
+          <DashboardCustomization />
         </TabsContent>
 
         <TabsContent value="auth">
