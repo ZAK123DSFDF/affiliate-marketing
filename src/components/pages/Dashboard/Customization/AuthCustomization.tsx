@@ -41,7 +41,6 @@ export const AuthCustomization = () => {
       checkboxInactiveColor: "",
 
       customNotes: "",
-      customNoteColor: "",
     },
   );
 
@@ -118,7 +117,6 @@ export const AuthCustomization = () => {
         {[
           ["primaryTextColor", "Primary Text Color"],
           ["linkTextColor", "Link Color"],
-          ["customNoteColor", "Custom Note Color"],
           ["secondaryTextColor", "Secondary Text Color"],
           ["errorColor", "Error Text Color"],
           ["inputBorderColor", "Input Border Color"],

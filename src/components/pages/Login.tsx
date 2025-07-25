@@ -128,9 +128,6 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
             {customization?.customNotes?.trim() && (
               <div
                 className="rich-text-preview text-sm"
-                style={{
-                  color: customization?.customNoteColor || undefined,
-                }}
                 dangerouslySetInnerHTML={{ __html: customization.customNotes }}
               />
             )}

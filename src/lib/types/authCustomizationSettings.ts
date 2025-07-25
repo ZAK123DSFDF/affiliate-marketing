@@ -24,5 +24,4 @@ export type AuthCustomizationSettings = {
   checkboxActiveColor: string;
   checkboxInactiveColor: string;
   customNotes: string;
-  customNoteColor: string;
 };
