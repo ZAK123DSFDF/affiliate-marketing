@@ -70,38 +70,65 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
       // Simulate error if password is "incorrect123"
       if (data.password === "incorrect123") {
         toast({
-          title: "Login Failed",
-          description: "The password you entered is incorrect.",
+          title: (
+            <span
+              className="font-semibold"
+              style={{
+                color: customization?.toastErrorTextColor || undefined,
+              }}
+            >
+              Login Failed
+            </span>
+          ) as unknown as string,
+          description: (
+            <span
+              className="text-sm"
+              style={{
+                color:
+                  customization?.toastErrorSecondaryTextColor ||
+                  customization?.toastErrorTextColor ||
+                  undefined,
+              }}
+            >
+              The password you entered is incorrect.
+            </span>
+          ),
           ...(!customization?.toastErrorBackgroundColor &&
-          !customization?.toastErrorTextColor
+          !customization?.toastErrorTextColor &&
+          !customization?.toastErrorSecondaryTextColor
             ? { variant: "destructive" }
             : {}),
-          ...((customization?.toastErrorBackgroundColor ||
-            customization?.toastErrorTextColor) && {
-            style: {
-              ...(customization?.toastErrorBackgroundColor && {
-                backgroundColor: customization.toastErrorBackgroundColor,
-              }),
-              ...(customization?.toastErrorTextColor && {
-                color: customization.toastErrorTextColor,
-              }),
-            },
+          ...(customization?.toastErrorBackgroundColor && {
+            style: { backgroundColor: customization.toastErrorBackgroundColor },
           }),
         });
       } else {
         toast({
-          title: "Login Successful",
-          description: "Welcome back!",
-          ...((customization?.toastBackgroundColor ||
-            customization?.toastTextColor) && {
-            style: {
-              ...(customization?.toastBackgroundColor && {
-                backgroundColor: customization.toastBackgroundColor,
-              }),
-              ...(customization?.toastTextColor && {
-                color: customization.toastTextColor,
-              }),
-            },
+          title: (
+            <span
+              className="font-semibold"
+              style={{
+                color: customization?.toastTextColor || undefined,
+              }}
+            >
+              Login Successful
+            </span>
+          ) as unknown as string,
+          description: (
+            <span
+              className="text-sm"
+              style={{
+                color:
+                  customization?.toastSecondaryTextColor ||
+                  customization?.toastTextColor ||
+                  undefined,
+              }}
+            >
+              Welcome back!
+            </span>
+          ),
+          ...(customization?.toastBackgroundColor && {
+            style: { backgroundColor: customization.toastBackgroundColor },
           }),
         });
       }

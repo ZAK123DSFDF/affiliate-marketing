@@ -20,8 +20,10 @@ export type AuthCustomizationSettings = {
   iconColor: string;
   toastBackgroundColor: string;
   toastTextColor: string;
+  toastSecondaryTextColor: string;
   toastErrorBackgroundColor: string;
   toastErrorTextColor: string;
+  toastErrorSecondaryTextColor: string;
   buttonBackgroundColor: string;
   buttonTextColor: string;
   buttonDisabledBackgroundColor: string;
