@@ -2,6 +2,7 @@ export type AuthCustomizationSettings = {
   backgroundColor: string;
   showShadow: boolean;
   shadowColor: string;
+  shadowThickness: "sm" | "md" | "lg" | "xl";
   borderColor: string;
   showBorder: boolean;
   includeOrgName: boolean;
@@ -17,6 +18,10 @@ export type AuthCustomizationSettings = {
   inputTextColor: string;
   placeholderTextColor: string;
   iconColor: string;
+  toastBackgroundColor: string;
+  toastTextColor: string;
+  toastErrorBackgroundColor: string;
+  toastErrorTextColor: string;
   buttonBackgroundColor: string;
   buttonTextColor: string;
   buttonDisabledBackgroundColor: string;

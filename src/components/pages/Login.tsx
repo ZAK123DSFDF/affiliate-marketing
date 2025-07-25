@@ -22,6 +22,7 @@ import { useMutation } from "@tanstack/react-query";
 import { LoginAffiliateServer } from "@/app/affiliate/[orgId]/login/action";
 import { LoginServer } from "@/app/login/action";
 import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
+import { getShadowWithColor } from "@/util/GetShadowWithColor";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -60,8 +61,51 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
   const onSubmit = async (data: any) => {
     if (isPreview) {
       setPreviewLoading(true);
+
+      // Simulate loading delay
       await new Promise((res) => setTimeout(res, 1500));
+
       setPreviewLoading(false);
+
+      // Simulate error if password is "incorrect123"
+      if (data.password === "incorrect123") {
+        toast({
+          title: "Login Failed",
+          description: "The password you entered is incorrect.",
+          ...(!customization?.toastErrorBackgroundColor &&
+          !customization?.toastErrorTextColor
+            ? { variant: "destructive" }
+            : {}),
+          ...((customization?.toastErrorBackgroundColor ||
+            customization?.toastErrorTextColor) && {
+            style: {
+              ...(customization?.toastErrorBackgroundColor && {
+                backgroundColor: customization.toastErrorBackgroundColor,
+              }),
+              ...(customization?.toastErrorTextColor && {
+                color: customization.toastErrorTextColor,
+              }),
+            },
+          }),
+        });
+      } else {
+        toast({
+          title: "Login Successful",
+          description: "Welcome back!",
+          ...((customization?.toastBackgroundColor ||
+            customization?.toastTextColor) && {
+            style: {
+              ...(customization?.toastBackgroundColor && {
+                backgroundColor: customization.toastBackgroundColor,
+              }),
+              ...(customization?.toastTextColor && {
+                color: customization.toastTextColor,
+              }),
+            },
+          }),
+        });
+      }
+
       return;
     }
     try {
@@ -99,14 +143,20 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
 
         <Card
           className={`transition-shadow duration-300 ${
-            customization?.showShadow ? "shadow-lg" : ""
+            customization?.showShadow && customization?.shadowThickness
+              ? `shadow-${customization.shadowThickness}`
+              : customization?.showShadow
+                ? "shadow-lg"
+                : ""
           } ${customization?.showBorder ? "border" : "border-none"}`}
           style={{
             backgroundColor: customization?.cardBackgroundColor || undefined,
-            boxShadow:
-              customization?.showShadow && customization?.shadowColor
-                ? `0 10px 15px -3px ${customization.shadowColor}, 0 4px 6px -4px ${customization.shadowColor}`
-                : undefined,
+            ...(customization?.showShadow && {
+              boxShadow: getShadowWithColor(
+                customization.shadowThickness || "lg",
+                customization.shadowColor,
+              ),
+            }),
             borderColor:
               customization?.showBorder && customization?.borderColor
                 ? customization.borderColor

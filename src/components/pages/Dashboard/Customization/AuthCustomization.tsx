@@ -7,9 +7,16 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import Login from "@/components/pages/Login";
 import Signup from "@/components/pages/Signup";
-import { ResettableColorInput } from "@/util/ResettableColorInput";
+import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import { RichTextEditor } from "@/components/ui-custom/RichTextEditor";
 import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const AuthCustomization = () => {
   const [customization, setCustomization] = useState<AuthCustomizationSettings>(
@@ -17,6 +24,7 @@ export const AuthCustomization = () => {
       backgroundColor: "",
       showShadow: true,
       shadowColor: "",
+      shadowThickness: "lg",
       borderColor: "",
       showBorder: true,
       includeOrgName: true,
@@ -33,6 +41,10 @@ export const AuthCustomization = () => {
       inputTextColor: "",
       placeholderTextColor: "",
       iconColor: "",
+      toastBackgroundColor: "",
+      toastTextColor: "",
+      toastErrorBackgroundColor: "",
+      toastErrorTextColor: "",
       buttonBackgroundColor: "",
       buttonTextColor: "",
       buttonDisabledBackgroundColor: "",
@@ -69,7 +81,23 @@ export const AuthCustomization = () => {
             placeholder="https://yourcdn.com/logo.png"
           />
         </div>
-
+        <div className="space-y-1">
+          <Label>Shadow Thickness</Label>
+          <Select
+            value={customization.shadowThickness}
+            onValueChange={(val) => handleChange("shadowThickness", val)}
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Select shadow thickness" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="sm">Small</SelectItem>
+              <SelectItem value="md">Medium</SelectItem>
+              <SelectItem value="lg">Large</SelectItem>
+              <SelectItem value="xl">Extra Large</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <div className="col-span-2">
           <Label>Include Organization Name</Label>
           <Switch
@@ -125,6 +153,10 @@ export const AuthCustomization = () => {
           ["inputTextColor", "Input Text Color"],
           ["placeholderTextColor", "Placeholder Text Color"],
           ["iconColor", "Icon Color"],
+          ["toastBackgroundColor", "Toast Background Color"],
+          ["toastTextColor", "Toast Text Color"],
+          ["toastErrorBackgroundColor", "Toast Error Background Color"],
+          ["toastErrorTextColor", "Toast Error Text Color"],
           ["buttonBackgroundColor", "Button Background Color"],
           ["buttonTextColor", "Button Text Color"],
           ["buttonDisabledBackgroundColor", "Button Disabled Background Color"],
