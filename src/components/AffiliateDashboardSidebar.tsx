@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import { BarChart3, Link as LinkIcon, Users, User } from "lucide-react";
 import {
@@ -15,12 +15,14 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { dashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
 
 type Props = {
   orgId?: string;
   isPreview?: boolean;
   onSelectPage?: (page: string) => void;
   currentPage?: string;
+  customization?: dashboardCustomizationSettings;
 };
 
 const AffiliateDashboardSidebar = ({
@@ -28,6 +30,7 @@ const AffiliateDashboardSidebar = ({
   isPreview = false,
   onSelectPage,
   currentPage,
+  customization,
 }: Props) => {
   const pathname = usePathname();
   const items = [
@@ -52,13 +55,19 @@ const AffiliateDashboardSidebar = ({
     { title: "Links", key: "links", icon: LinkIcon },
     { title: "Payment", key: "payment", icon: Users },
   ];
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const baseSidebarClass = isPreview ? "relative h-full" : ""; // you can add full-screen layout styles here
   const setProfile = () => {
     onSelectPage && onSelectPage("profile");
   };
   return (
     <Sidebar className={baseSidebarClass}>
-      <SidebarHeader className="flex items-center justify-center py-4">
+      <SidebarHeader
+        className="flex items-center justify-center py-4"
+        style={{
+          backgroundColor: customization?.sideBarBackgroundColor || undefined,
+        }}
+      >
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 rounded-md bg-primary/90 flex items-center justify-center text-white font-bold text-xs">
             A
@@ -69,62 +78,122 @@ const AffiliateDashboardSidebar = ({
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent
+        style={{
+          backgroundColor: customization?.sideBarBackgroundColor || undefined,
+        }}
+      >
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {(isPreview ? itemsPreview : items).map((item: any) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={!isPreview && pathname === item.url}
-                    tooltip={item.title}
-                  >
-                    {isPreview ? (
-                      <button
-                        type="button"
-                        onClick={() => onSelectPage && onSelectPage(item.key)}
-                        className={`flex items-center gap-2 w-full px-2 py-1.5 text-sm rounded-md transition-colors ${
-                          currentPage === item.key
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted-foreground hover:bg-muted"
-                        }`}
-                      >
-                        <item.icon className="w-5 h-5" />
-                        <span>{item.title}</span>
-                      </button>
-                    ) : (
-                      <Link href={item.url}>
-                        <item.icon className="w-5 h-5" />
-                        <span className={isPreview ? "text-sm" : ""}>
-                          {item.title}
-                        </span>
-                      </Link>
-                    )}
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {(isPreview ? itemsPreview : items).map((item: any) => {
+                const isActive = currentPage === item.key;
+                const isHovered = hoveredKey === item.key;
+
+                const backgroundColor = isActive
+                  ? customization?.sideBarActiveNavigationBackgroundColor ||
+                    "rgba(59, 130, 246, 0.1)"
+                  : isHovered
+                    ? customization?.sideBarHoverNavigationBackgroundColor ||
+                      "rgba(229, 231, 235, 1)"
+                    : undefined;
+
+                const textColor = isActive
+                  ? customization?.sideBarActiveNavigationTextColor || "#3B82F6"
+                  : isHovered
+                    ? customization?.sideBarHoverNavigationTextColor ||
+                      "#111827"
+                    : customization?.sideBarInActiveNavigationTextColor ||
+                      "#6B7280";
+
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={!isPreview && pathname === item.url}
+                      tooltip={item.title}
+                    >
+                      {isPreview ? (
+                        <button
+                          type="button"
+                          onClick={() => onSelectPage && onSelectPage(item.key)}
+                          onMouseEnter={() => setHoveredKey(item.key)}
+                          onMouseLeave={() => setHoveredKey(null)}
+                          className="flex items-center gap-2 w-full px-2 py-1.5 text-sm rounded-md transition-colors"
+                          style={{
+                            backgroundColor: backgroundColor || undefined,
+                            color: textColor || undefined,
+                          }}
+                        >
+                          <item.icon
+                            className="w-5 h-5"
+                            style={{ color: textColor || undefined }}
+                          />
+                          <span>{item.title}</span>
+                        </button>
+                      ) : (
+                        <Link href={item.url}>
+                          <item.icon className="w-5 h-5" />
+                          <span className={isPreview ? "text-sm" : ""}>
+                            {item.title}
+                          </span>
+                        </Link>
+                      )}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4">
+      <SidebarFooter
+        className="p-4"
+        style={{
+          backgroundColor: customization?.sideBarBackgroundColor || undefined,
+        }}
+      >
         {isPreview ? (
           <div
             className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 cursor-pointer"
             onClick={setProfile}
+            style={{
+              backgroundColor:
+                customization?.sideBarProfileBackgroundColor || undefined,
+            }}
           >
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
               JD
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">John Doe</p>
-              <p className="text-xs text-muted-foreground truncate">
+              <p
+                className="text-sm font-medium truncate"
+                style={{
+                  color:
+                    customization?.sideBarProfileTextPrimaryColor || undefined,
+                }}
+              >
+                John Doe
+              </p>
+              <p
+                className="text-xs text-muted-foreground truncate"
+                style={{
+                  color:
+                    customization?.sideBarProfileTextSecondaryColor ||
+                    undefined,
+                }}
+              >
                 john.doe@example.com
               </p>
             </div>
-            <User className="w-4 h-4 text-muted-foreground" />
+            <User
+              className="w-4 h-4 text-muted-foreground"
+              style={{
+                color:
+                  customization?.sideBarProfileTextSecondaryColor || undefined,
+              }}
+            />
           </div>
         ) : (
           <Link href={`/affiliate/${orgId}/dashboard/profile`}>

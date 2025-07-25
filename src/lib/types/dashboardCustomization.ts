@@ -3,7 +3,9 @@ export interface dashboardCustomizationSettings {
   sideBarActiveNavigationTextColor: string;
   sideBarInActiveNavigationTextColor: string;
   sideBarActiveNavigationBackgroundColor: string;
-  sideBarInActiveNavigationBackgroundColor: string;
+  sideBarHoverNavigationBackgroundColor: string;
+  sideBarHoverNavigationTextColor: string;
   sideBarProfileBackgroundColor: string;
-  sideBarProfileTextColor: string;
+  sideBarProfileTextPrimaryColor: string;
+  sideBarProfileTextSecondaryColor: string;
 }

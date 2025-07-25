@@ -25,9 +25,11 @@ export function DashboardCustomization() {
       sideBarActiveNavigationTextColor: "",
       sideBarInActiveNavigationTextColor: "",
       sideBarActiveNavigationBackgroundColor: "",
-      sideBarInActiveNavigationBackgroundColor: "",
+      sideBarHoverNavigationBackgroundColor: "",
+      sideBarHoverNavigationTextColor: "",
       sideBarProfileBackgroundColor: "",
-      sideBarProfileTextColor: "",
+      sideBarProfileTextPrimaryColor: "",
+      sideBarProfileTextSecondaryColor: "",
     });
 
   const handleChange = (key: keyof typeof customization, value: string) => {
@@ -45,9 +47,14 @@ export function DashboardCustomization() {
     ["sideBarActiveNavigationTextColor", "Active Nav Text Color"],
     ["sideBarInActiveNavigationTextColor", "Inactive Nav Text Color"],
     ["sideBarActiveNavigationBackgroundColor", "Active Nav Background"],
-    ["sideBarInActiveNavigationBackgroundColor", "Inactive Nav Background"],
+    ["sideBarHoverNavigationBackgroundColor", "Nav Hover Background"],
+    ["sideBarHoverNavigationTextColor", "Nav Hover Text/Icon Color"],
     ["sideBarProfileBackgroundColor", "Sidebar Profile Background"],
-    ["sideBarProfileTextColor", "Sidebar Profile Text Color"],
+    ["sideBarProfileTextPrimaryColor", "Sidebar Profile Text Color"],
+    [
+      "sideBarProfileTextSecondaryColor",
+      "Sidebar Profile Secondary Text Color",
+    ],
   ];
   return (
     <div className="space-y-6">
@@ -68,6 +75,7 @@ export function DashboardCustomization() {
             isPreview
             currentPage={selectedPage}
             onSelectPage={(page: any) => setSelectedPage(page)}
+            customization={customization}
           />
           <div className="flex-1 p-6 overflow-y-auto">
             {selectedPage === "dashboard" && <Dashboard />}
