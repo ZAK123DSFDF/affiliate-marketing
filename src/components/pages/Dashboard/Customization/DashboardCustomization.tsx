@@ -14,13 +14,17 @@ import {
 } from "@/lib/types/previewData";
 import { Label } from "@/components/ui/label";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
-import { dashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
+import {
+  dashboardCustomizationSettings,
+  localDashboardCustomizationSettings,
+} from "@/lib/types/dashboardCustomization";
+import { useMainBackgroundColor } from "@/store/useMainBackgroundColor";
 
 export function DashboardCustomization() {
   const [selectedPage, setSelectedPage] = useState("dashboard");
 
   const [customization, setCustomization] =
-    useState<dashboardCustomizationSettings>({
+    useState<localDashboardCustomizationSettings>({
       sideBarBackgroundColor: "",
       sideBarActiveNavigationTextColor: "",
       sideBarInActiveNavigationTextColor: "",
@@ -31,42 +35,81 @@ export function DashboardCustomization() {
       sideBarProfileTextPrimaryColor: "",
       sideBarProfileTextSecondaryColor: "",
     });
-
-  const handleChange = (key: keyof typeof customization, value: string) => {
-    setCustomization((prev) => ({ ...prev, [key]: value }));
+  const { setMainBackgroundColor, mainBackgroundColor } =
+    useMainBackgroundColor();
+  const handleColorChange = (
+    key: keyof localDashboardCustomizationSettings | "mainBackgroundColor",
+    val: string,
+  ) => {
+    if (key === "mainBackgroundColor") {
+      setMainBackgroundColor(val);
+    } else {
+      setCustomization((prev) => ({
+        ...prev,
+        [key]: val,
+      }));
+    }
   };
-
   const params = useParams();
   const orgId = params?.orgId as string;
 
   if (!orgId) {
     return <div className="text-red-500">Invalid organization ID</div>;
   }
-  const colorInputs: [keyof dashboardCustomizationSettings, string][] = [
-    ["sideBarBackgroundColor", "Sidebar Background Color"],
-    ["sideBarActiveNavigationTextColor", "Active Nav Text Color"],
-    ["sideBarInActiveNavigationTextColor", "Inactive Nav Text Color"],
-    ["sideBarActiveNavigationBackgroundColor", "Active Nav Background"],
-    ["sideBarHoverNavigationBackgroundColor", "Nav Hover Background"],
-    ["sideBarHoverNavigationTextColor", "Nav Hover Text/Icon Color"],
-    ["sideBarProfileBackgroundColor", "Sidebar Profile Background"],
-    ["sideBarProfileTextPrimaryColor", "Sidebar Profile Text Color"],
-    [
-      "sideBarProfileTextSecondaryColor",
-      "Sidebar Profile Secondary Text Color",
-    ],
+  const colorInputs: {
+    key: keyof localDashboardCustomizationSettings | "mainBackgroundColor";
+    label: string;
+  }[] = [
+    { key: "sideBarBackgroundColor", label: "Sidebar Background Color" },
+    { key: "sideBarActiveNavigationTextColor", label: "Active Nav Text Color" },
+    {
+      key: "sideBarInActiveNavigationTextColor",
+      label: "Inactive Nav Text Color",
+    },
+    {
+      key: "sideBarActiveNavigationBackgroundColor",
+      label: "Active Nav Background",
+    },
+    {
+      key: "sideBarHoverNavigationBackgroundColor",
+      label: "Nav Hover Background",
+    },
+    {
+      key: "sideBarHoverNavigationTextColor",
+      label: "Nav Hover Text/Icon Color",
+    },
+    {
+      key: "sideBarProfileBackgroundColor",
+      label: "Sidebar Profile Background",
+    },
+    {
+      key: "sideBarProfileTextPrimaryColor",
+      label: "Sidebar Profile Text Color",
+    },
+    {
+      key: "sideBarProfileTextSecondaryColor",
+      label: "Sidebar Profile Secondary Text Color",
+    },
+    { key: "mainBackgroundColor", label: "Main Background Color" },
   ];
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {colorInputs.map(([key, label]) => (
-          <ResettableColorInput
-            key={key}
-            label={label}
-            value={customization[key]}
-            onChange={(val) => handleChange(key, val)}
-          />
-        ))}
+        {colorInputs.map(({ key, label }) => {
+          const isMainBg = key === "mainBackgroundColor";
+          const value = isMainBg
+            ? mainBackgroundColor
+            : customization[key as keyof localDashboardCustomizationSettings];
+
+          return (
+            <ResettableColorInput
+              key={key}
+              label={label}
+              value={value}
+              onChange={(val) => handleColorChange(key, val)}
+            />
+          );
+        })}
       </div>
       <div className="border rounded-xl overflow-hidden shadow-lg ring ring-muted bg-background max-w-5xl h-[500px] mx-auto relative">
         <div className="flex h-full">
@@ -77,16 +120,33 @@ export function DashboardCustomization() {
             onSelectPage={(page: any) => setSelectedPage(page)}
             customization={customization}
           />
-          <div className="flex-1 p-6 overflow-y-auto">
+          <div
+            className="flex-1 p-6 overflow-y-auto"
+            style={{
+              backgroundColor: mainBackgroundColor || undefined,
+            }}
+          >
             {selectedPage === "dashboard" && <Dashboard />}
             {selectedPage === "links" && (
-              <Links isPreview data={dummyAffiliateLinks} />
+              <Links
+                isPreview
+                data={dummyAffiliateLinks}
+                customization={customization}
+              />
             )}
             {selectedPage === "payment" && (
-              <PaymentTable isPreview data={dummyAffiliatePayments} />
+              <PaymentTable
+                isPreview
+                data={dummyAffiliatePayments}
+                customization={customization}
+              />
             )}
             {selectedPage === "profile" && (
-              <Profile AffiliateData={dummyProfileData} isPreview />
+              <Profile
+                AffiliateData={dummyProfileData}
+                isPreview
+                customization={customization}
+              />
             )}
           </div>
         </div>

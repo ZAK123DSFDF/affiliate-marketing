@@ -8,4 +8,9 @@ export interface dashboardCustomizationSettings {
   sideBarProfileBackgroundColor: string;
   sideBarProfileTextPrimaryColor: string;
   sideBarProfileTextSecondaryColor: string;
+  mainBackgroundColor: string;
 }
+export type localDashboardCustomizationSettings = Omit<
+  dashboardCustomizationSettings,
+  "mainBackgroundColor"
+>;

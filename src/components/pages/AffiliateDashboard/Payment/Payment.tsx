@@ -27,10 +27,12 @@ import { usePathname, useRouter } from "next/navigation";
 import YearSelect from "@/components/ui-custom/YearSelect";
 import { useQuery } from "@tanstack/react-query";
 import { getAffiliateCommissionByMonth } from "@/app/affiliate/[orgId]/dashboard/payment/action";
+import { localDashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
 
 interface AffiliateCommissionTableProps {
   data: AffiliatePaymentRow[];
   isPreview?: boolean;
+  customization?: localDashboardCustomizationSettings;
 }
 
 const columns: ColumnDef<AffiliatePaymentRow>[] = [
@@ -120,6 +122,7 @@ const columns: ColumnDef<AffiliatePaymentRow>[] = [
 export default function AffiliateCommissionTable({
   data,
   isPreview,
+  customization,
 }: AffiliateCommissionTableProps) {
   const router = useRouter();
   const pathname = usePathname();

@@ -15,14 +15,17 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { dashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
+import {
+  dashboardCustomizationSettings,
+  localDashboardCustomizationSettings,
+} from "@/lib/types/dashboardCustomization";
 
 type Props = {
   orgId?: string;
   isPreview?: boolean;
   onSelectPage?: (page: string) => void;
   currentPage?: string;
-  customization?: dashboardCustomizationSettings;
+  customization?: localDashboardCustomizationSettings;
 };
 
 const AffiliateDashboardSidebar = ({

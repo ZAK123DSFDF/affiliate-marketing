@@ -40,6 +40,10 @@ import {
 } from "@/lib/schema/passwordSchema";
 import { cn } from "@/lib/utils";
 import { InputField } from "@/components/Auth/FormFields";
+import {
+  dashboardCustomizationSettings,
+  localDashboardCustomizationSettings,
+} from "@/lib/types/dashboardCustomization";
 
 interface CommonData {
   id: string;
@@ -52,12 +56,14 @@ interface ProfileProps {
   AffiliateData?: CommonData;
   UserData?: CommonData;
   isPreview?: boolean;
+  customization?: localDashboardCustomizationSettings;
 }
 
 export default function Profile({
   AffiliateData,
   UserData,
   isPreview = false,
+  customization,
 }: ProfileProps) {
   const initialName = AffiliateData
     ? AffiliateData.name
