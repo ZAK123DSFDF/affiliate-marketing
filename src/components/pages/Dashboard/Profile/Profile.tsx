@@ -8,8 +8,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
@@ -27,12 +26,20 @@ import {
   updateAffiliateProfile,
   validateCurrentPassword,
 } from "@/app/affiliate/[orgId]/dashboard/profile/action";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, Mail, Lock, User } from "lucide-react";
 import {
   updateUserPassword,
   updateUserProfile,
   validateCurrentSellerPassword,
 } from "@/app/seller/[orgId]/dashboard/profile/action";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { profileSchema } from "@/lib/schema/profileSchema";
+import {
+  currentPasswordSchema,
+  newPasswordSchema,
+} from "@/lib/schema/passwordSchema";
+import { cn } from "@/lib/utils";
+import { InputField } from "@/components/Auth/FormFields";
 
 interface CommonData {
   id: string;
@@ -52,27 +59,42 @@ export default function Profile({
   UserData,
   isPreview = false,
 }: ProfileProps) {
-  const {
-    register,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm({
+  const initialName = AffiliateData
+    ? AffiliateData.name
+    : (UserData?.name ?? "");
+  const initialEmail = AffiliateData
+    ? AffiliateData.email
+    : (UserData?.email ?? "");
+
+  const profileForm = useForm({
+    resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: AffiliateData ? AffiliateData.name : UserData?.name,
-      email: AffiliateData ? AffiliateData.email : UserData?.email,
+      name: initialName,
+      email: initialEmail,
     },
   });
-
+  const currrentPasswordForm = useForm({
+    resolver: zodResolver(currentPasswordSchema),
+    defaultValues: {
+      currentPassword: "",
+    },
+  });
+  const newPasswordForm = useForm({
+    resolver: zodResolver(newPasswordSchema),
+    defaultValues: {
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+  const currentName = profileForm.watch("name");
+  const currentEmail = profileForm.watch("email");
+  const isFormUnchanged =
+    currentName.trim() === initialName.trim() &&
+    currentEmail.trim() === initialEmail.trim();
   const { toast } = useToast();
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [step, setStep] = useState<"current" | "new">("current");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const updateProfile = useMutation({
     mutationFn: async (data: any) => {
@@ -115,6 +137,7 @@ export default function Profile({
     onSuccess: (res: any) => {
       if (res?.ok) {
         setStep("new");
+        newPasswordForm.reset({ newPassword: "", confirmPassword: "" });
         toast({
           title: "Password validated",
           description: "Enter your new password below.",
@@ -125,7 +148,6 @@ export default function Profile({
           title: "Invalid Password",
           description: "Incorrect password.",
         });
-        setPasswordError("Incorrect current password");
       }
     },
     onError: () => {
@@ -176,15 +198,17 @@ export default function Profile({
   const onSubmit = (data: any) => {
     updateProfile.mutate(data);
   };
-
+  const onSubmitValidateCurrent = (data: any) => {
+    validatePassword.mutate(data.currentPassword);
+  };
+  const onSubmitUpdatePassword = (data: any) => {
+    updatePassword.mutate(data.newPassword);
+  };
   const resetPasswordModal = () => {
     setShowPasswordModal(false);
     setStep("current");
-    setCurrentPassword("");
-    setPasswordError(null);
-    setShowCurrentPassword(false);
-    setShowNewPassword(false);
-    setShowConfirmPassword(false);
+    currrentPasswordForm.reset();
+    newPasswordForm.reset();
   };
 
   return (
@@ -206,43 +230,49 @@ export default function Profile({
           <CardTitle>Account Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-8">
-          <form
-            id="profile-form"
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-6"
-          >
-            <div className="space-y-1">
-              <Label htmlFor="name">Username</Label>
-              <Input
-                id="name"
-                {...register("name", { required: true })}
-                className="w-[280px]"
+          <Form {...profileForm}>
+            <form
+              id="profile-form"
+              onSubmit={profileForm.handleSubmit(onSubmit)}
+              className="space-y-6"
+            >
+              <InputField
+                control={profileForm.control}
+                name="name"
+                label="Username"
+                placeholder="Enter your name"
+                type="text"
+                icon={User}
+                profile
               />
-            </div>
 
-            <div className="space-y-1">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
+              <InputField
+                control={profileForm.control}
+                name="email"
+                label="Email Address"
+                placeholder="john@example.com"
                 type="email"
-                {...register("email", { required: true })}
-                className="w-[280px]"
+                icon={Mail}
+                profile
               />
-            </div>
 
-            <div className="pt-6 border-t mt-8">
-              <h3 className="font-medium mb-4">Password</h3>
-              <Button type="button" onClick={() => setShowPasswordModal(true)}>
-                Change Password
-              </Button>
-            </div>
-          </form>
+              <div className="pt-6 border-t mt-8">
+                <h3 className="font-medium mb-4">Password</h3>
+                <Button
+                  type="button"
+                  onClick={() => setShowPasswordModal(true)}
+                >
+                  Change Password
+                </Button>
+              </div>
+            </form>
+          </Form>
         </CardContent>
         <CardFooter className="flex justify-end border-t pt-6">
           <Button
             form="profile-form"
             type="submit"
-            disabled={updateProfile.isPending}
+            disabled={updateProfile.isPending || isFormUnchanged}
           >
             {updateProfile.isPending && (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -263,122 +293,77 @@ export default function Profile({
           </DialogHeader>
 
           {step === "current" ? (
-            <div className="space-y-4">
-              <Label htmlFor="current-password">Current Password</Label>
-              <div className="relative">
-                <Input
-                  id="current-password"
-                  type={showCurrentPassword ? "text" : "password"}
-                  value={currentPassword}
-                  onChange={(e) => {
-                    setCurrentPassword(e.target.value);
-                    setPasswordError(null);
-                  }}
+            <Form {...currrentPasswordForm}>
+              <form
+                onSubmit={currrentPasswordForm.handleSubmit(
+                  onSubmitValidateCurrent,
+                )}
+                className="space-y-4"
+              >
+                <InputField
+                  control={currrentPasswordForm.control}
+                  name="currentPassword"
+                  label="Current Password"
+                  placeholder="Enter current password"
+                  type="password"
+                  icon={Lock}
+                  showPasswordToggle={true}
                 />
-                <button
-                  type="button"
-                  className="absolute right-3 top-2.5 text-muted-foreground"
-                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                >
-                  {showCurrentPassword ? <EyeOff /> : <Eye />}
-                </button>
-              </div>
-              {passwordError && (
-                <p className="text-sm text-destructive">{passwordError}</p>
-              )}
-              <DialogFooter>
-                <Button
-                  onClick={() => {
-                    if (!currentPassword) {
-                      return toast({
-                        variant: "destructive",
-                        title: "Missing password",
-                        description: "Please enter your current password.",
-                      });
-                    }
-                    validatePassword.mutate(currentPassword);
-                  }}
-                  disabled={validatePassword.isPending}
-                >
-                  {validatePassword.isPending ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Validating
-                    </>
-                  ) : (
-                    "Continue"
-                  )}
-                </Button>
-              </DialogFooter>
-            </div>
+                <DialogFooter>
+                  <Button type="submit" disabled={validatePassword.isPending}>
+                    {validatePassword.isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Validating
+                      </>
+                    ) : (
+                      "Continue"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
           ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const newPassword = e.currentTarget.newPassword.value;
-                const confirmPassword = e.currentTarget.confirmPassword.value;
+            <Form {...newPasswordForm}>
+              <form
+                key={step}
+                onSubmit={newPasswordForm.handleSubmit(onSubmitUpdatePassword)}
+                className="space-y-4"
+              >
+                <InputField
+                  control={newPasswordForm.control}
+                  name="newPassword"
+                  label="New Password"
+                  placeholder="Enter new password"
+                  type="password"
+                  icon={Lock}
+                  showPasswordToggle
+                />
 
-                if (newPassword !== confirmPassword) {
-                  return toast({
-                    variant: "destructive",
-                    title: "Password mismatch",
-                    description: "Please ensure both passwords match.",
-                  });
-                }
+                <InputField
+                  control={newPasswordForm.control}
+                  name="confirmPassword"
+                  label="Confirm Password"
+                  placeholder="Re-enter password"
+                  type="password"
+                  icon={Lock}
+                  showPasswordToggle
+                />
 
-                updatePassword.mutate(newPassword);
-              }}
-              className="space-y-4"
-            >
-              <div>
-                <Label htmlFor="newPassword">New Password</Label>
-                <div className="relative">
-                  <Input
-                    id="newPassword"
-                    name="newPassword"
-                    type={showNewPassword ? "text" : "password"}
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-2.5 text-muted-foreground"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                  >
-                    {showNewPassword ? <EyeOff /> : <Eye />}
-                  </button>
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-2.5 text-muted-foreground"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? <EyeOff /> : <Eye />}
-                  </button>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="submit" disabled={updatePassword.isPending}>
-                  {updatePassword.isPending ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Updating
-                    </>
-                  ) : (
-                    "Update Password"
-                  )}
-                </Button>
-              </DialogFooter>
-            </form>
+                <DialogFooter>
+                  <Button type="submit" disabled={updatePassword.isPending}>
+                    {updatePassword.isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Updating
+                      </>
+                    ) : (
+                      "Update Password"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
           )}
         </DialogContent>
       </Dialog>

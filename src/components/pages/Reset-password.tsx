@@ -27,8 +27,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { InputField } from "@/components/Auth/FormFields";
 import {
   ResetPasswordFormValues,
-  resetPasswordSchema,
-} from "@/lib/schema/resetPasswordSchema";
+  passwordSchema,
+} from "@/lib/schema/passwordSchema";
 
 const ResetPassword = () => {
   const searchParams = useSearchParams();
@@ -54,7 +54,7 @@ const ResetPassword = () => {
     );
   }
   const form = useForm<ResetPasswordFormValues>({
-    resolver: zodResolver(resetPasswordSchema),
+    resolver: zodResolver(passwordSchema),
     defaultValues: {
       password: "",
       confirmPassword: "",

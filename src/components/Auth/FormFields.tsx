@@ -21,6 +21,7 @@ type InputFieldProps = {
   icon?: React.ElementType;
   showPasswordToggle?: boolean;
   customization?: AuthCustomizationSettings;
+  profile?: boolean;
 };
 
 export const InputField = ({
@@ -32,6 +33,7 @@ export const InputField = ({
   icon,
   showPasswordToggle = false,
   customization,
+  profile = false,
 }: InputFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const Icon = icon;
@@ -42,6 +44,7 @@ export const InputField = ({
       render={({ field, fieldState }) => (
         <FormItem>
           <FormLabel
+            className={fieldState.error ? "text-destructive" : ""}
             style={{
               color: fieldState.error
                 ? customization?.errorColor || undefined
@@ -63,8 +66,12 @@ export const InputField = ({
               <Input
                 type={showPasswordToggle && showPassword ? "text" : type}
                 placeholder={placeholder}
-                className={`auth-input-placeholder ${icon ? "pl-10" : ""} border ${
-                  fieldState.error ? "border" : ""
+                className={`auth-input-placeholder border ${
+                  icon ? "pl-10" : ""
+                } ${profile ? "w-[280px]" : "w-full"} ${
+                  fieldState.error
+                    ? "border-destructive focus-visible:ring-destructive"
+                    : ""
                 }`}
                 style={{
                   color: fieldState.error

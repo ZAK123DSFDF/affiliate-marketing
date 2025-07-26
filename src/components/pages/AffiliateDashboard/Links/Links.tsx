@@ -25,7 +25,8 @@ import { useMutation } from "@tanstack/react-query";
 import { createAffiliateLink } from "@/app/affiliate/[orgId]/dashboard/links/action";
 import { toast } from "@/hooks/use-toast";
 import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
-import { Copy } from "lucide-react";
+import { Check, Copy } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const columns: ColumnDef<AffiliateLinkWithStats>[] = [
   {
@@ -33,30 +34,38 @@ const columns: ColumnDef<AffiliateLinkWithStats>[] = [
     header: "Affiliate Link",
     cell: ({ row }) => {
       const url: string = row.getValue("fullUrl");
+      const [copied, setCopied] = useState(false);
 
       const handleCopy = () => {
         navigator.clipboard.writeText(url).then(() => {
-          toast({ title: "Copied!", description: url });
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1000);
         });
       };
 
       return (
-        <div className="flex items-center gap-2">
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-black hover:underline break-all"
-          >
-            {url}
-          </a>
+        <div className="flex items-center">
+          <span className="text-black break-all">{url}</span>
           <Button
             type="button"
-            variant="ghost"
             size="icon"
+            variant="ghost"
             onClick={handleCopy}
+            className={cn(
+              "ml-5 flex items-center gap-[2px] text-xs rounded-md transition-colors",
+              copied
+                ? "hover:bg-transparent active:bg-transparent"
+                : "hover:text-blue-600 hover:bg-blue-100",
+            )}
           >
-            <Copy className="w-4 h-4" />
+            {copied ? (
+              <>
+                <Check className="w-3 h-3 text-blue-600" />
+                <span className="text-blue-600">Copied</span>
+              </>
+            ) : (
+              <Copy className="w-3 h-3" />
+            )}
           </Button>
         </div>
       );

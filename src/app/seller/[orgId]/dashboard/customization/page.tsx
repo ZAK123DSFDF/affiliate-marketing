@@ -23,7 +23,6 @@ export default function CustomizationPage() {
         <TabsContent value="sidebar">
           <DashboardCustomization />
         </TabsContent>
-
         <TabsContent value="auth">
           <AuthCustomization />
         </TabsContent>
