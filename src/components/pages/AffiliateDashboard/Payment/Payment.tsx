@@ -28,6 +28,7 @@ import YearSelect from "@/components/ui-custom/YearSelect";
 import { useQuery } from "@tanstack/react-query";
 import { getAffiliateCommissionByMonth } from "@/app/affiliate/[orgId]/dashboard/payment/action";
 import { localDashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
+import { getShadowWithColor } from "@/util/GetShadowWithColor";
 
 interface AffiliateCommissionTableProps {
   data: AffiliatePaymentRow[];
@@ -176,8 +177,20 @@ export default function AffiliateCommissionTable({
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Affiliate Earnings</h1>
-          <p className="text-muted-foreground">
+          <h1
+            className="text-3xl font-bold"
+            style={{
+              color: customization?.headerNameColor || undefined,
+            }}
+          >
+            Affiliate Earnings
+          </h1>
+          <p
+            className="text-muted-foreground"
+            style={{
+              color: customization?.headerDescColor || undefined,
+            }}
+          >
             Monthly breakdown of your affiliate commissions
           </p>
         </div>
@@ -190,7 +203,21 @@ export default function AffiliateCommissionTable({
         />
       </div>
 
-      <Card>
+      <Card
+        style={{
+          backgroundColor: customization?.cardBackgroundColor || undefined,
+          boxShadow:
+            customization?.cardShadow && customization?.cardShadow !== "none"
+              ? getShadowWithColor(
+                  customization?.cardShadow,
+                  customization?.cardShadowColor,
+                )
+              : "none",
+          border: customization?.cardBorder
+            ? `1px solid ${customization?.cardBorderColor}`
+            : "",
+        }}
+      >
         <CardHeader>
           <CardTitle>Monthly Commission Stats</CardTitle>
         </CardHeader>

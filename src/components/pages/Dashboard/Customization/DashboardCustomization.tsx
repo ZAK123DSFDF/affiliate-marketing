@@ -15,10 +15,19 @@ import {
 import { Label } from "@/components/ui/label";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import {
+  ColorCustomizationSettings,
   dashboardCustomizationSettings,
   localDashboardCustomizationSettings,
 } from "@/lib/types/dashboardCustomization";
 import { useMainBackgroundColor } from "@/store/useMainBackgroundColor";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 export function DashboardCustomization() {
   const [selectedPage, setSelectedPage] = useState("dashboard");
@@ -34,10 +43,17 @@ export function DashboardCustomization() {
       sideBarProfileBackgroundColor: "",
       sideBarProfileTextPrimaryColor: "",
       sideBarProfileTextSecondaryColor: "",
+      cardShadow: "sm",
+      cardBorder: false,
+      cardBorderColor: "",
+      cardBackgroundColor: "",
+      cardShadowColor: "",
+      headerNameColor: "",
+      headerDescColor: "",
     });
   const { setMainBackgroundColor, mainBackgroundColor } =
     useMainBackgroundColor();
-  const handleColorChange = (
+  const handleChange = (
     key: keyof localDashboardCustomizationSettings | "mainBackgroundColor",
     val: string,
   ) => {
@@ -91,22 +107,55 @@ export function DashboardCustomization() {
       label: "Sidebar Profile Secondary Text Color",
     },
     { key: "mainBackgroundColor", label: "Main Background Color" },
+    { key: "cardBackgroundColor", label: "Card Background Color" },
+    { key: "cardShadowColor", label: "Card Shadow Color" },
+    {
+      key: "cardBorderColor",
+      label: "Card Border Color",
+    },
+    { key: "headerNameColor", label: "Header Title Color" },
+    { key: "headerDescColor", label: "Header Description Color" },
   ];
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Label>Shadow Thickness</Label>
+        <Select
+          value={customization.cardShadow}
+          onValueChange={(val) => handleChange("cardShadow", val)}
+        >
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Select shadow thickness" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">None</SelectItem>
+            <SelectItem value="sm">Small</SelectItem>
+            <SelectItem value="md">Medium</SelectItem>
+            <SelectItem value="lg">Large</SelectItem>
+            <SelectItem value="xl">Extra Large</SelectItem>
+          </SelectContent>
+        </Select>
+        <div className="flex items-center space-x-2 mt-4">
+          <Switch
+            id="card-border"
+            checked={customization.cardBorder}
+            onCheckedChange={(checked: any) =>
+              handleChange("cardBorder", checked)
+            }
+          />
+          <Label htmlFor="card-border">Enable Card Border</Label>
+        </div>
         {colorInputs.map(({ key, label }) => {
           const isMainBg = key === "mainBackgroundColor";
           const value = isMainBg
             ? mainBackgroundColor
-            : customization[key as keyof localDashboardCustomizationSettings];
-
+            : customization[key as keyof ColorCustomizationSettings];
           return (
             <ResettableColorInput
               key={key}
               label={label}
               value={value}
-              onChange={(val) => handleColorChange(key, val)}
+              onChange={(val) => handleChange(key, val)}
             />
           );
         })}

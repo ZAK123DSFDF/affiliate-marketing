@@ -9,8 +9,19 @@ export interface dashboardCustomizationSettings {
   sideBarProfileTextPrimaryColor: string;
   sideBarProfileTextSecondaryColor: string;
   mainBackgroundColor: string;
+  cardShadow: "none" | "sm" | "md" | "lg" | "xl";
+  cardBorder: boolean;
+  cardBorderColor: string;
+  cardBackgroundColor: string;
+  cardShadowColor: string;
+  headerNameColor: string;
+  headerDescColor: string;
 }
 export type localDashboardCustomizationSettings = Omit<
   dashboardCustomizationSettings,
   "mainBackgroundColor"
+>;
+export type ColorCustomizationSettings = Omit<
+  localDashboardCustomizationSettings,
+  "cardBorder" | "cardShadow"
 >;

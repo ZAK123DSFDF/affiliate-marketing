@@ -44,6 +44,7 @@ import {
   dashboardCustomizationSettings,
   localDashboardCustomizationSettings,
 } from "@/lib/types/dashboardCustomization";
+import { getShadowWithColor } from "@/util/GetShadowWithColor";
 
 interface CommonData {
   id: string;
@@ -223,15 +224,41 @@ export default function Profile({
         <div className="flex items-center gap-2">
           <SidebarTrigger className="md:hidden" />
           <div>
-            <h1 className="text-3xl font-bold">Profile Settings</h1>
-            <p className="text-muted-foreground">
+            <h1
+              className="text-3xl font-bold"
+              style={{
+                color: customization?.headerNameColor || undefined,
+              }}
+            >
+              Profile Settings
+            </h1>
+            <p
+              className="text-muted-foreground"
+              style={{
+                color: customization?.headerDescColor || undefined,
+              }}
+            >
               Manage your account information
             </p>
           </div>
         </div>
       </div>
 
-      <Card>
+      <Card
+        style={{
+          backgroundColor: customization?.cardBackgroundColor || undefined,
+          boxShadow:
+            customization?.cardShadow && customization?.cardShadow !== "none"
+              ? getShadowWithColor(
+                  customization?.cardShadow,
+                  customization?.cardShadowColor,
+                )
+              : "none",
+          border: customization?.cardBorder
+            ? `1px solid ${customization?.cardBorderColor}`
+            : "",
+        }}
+      >
         <CardHeader>
           <CardTitle>Account Information</CardTitle>
         </CardHeader>
