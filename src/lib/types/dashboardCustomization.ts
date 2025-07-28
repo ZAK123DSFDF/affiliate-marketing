@@ -39,6 +39,16 @@ export interface dashboardCustomizationSettings {
   dialogBackgroundColor: string;
   dialogCloseIconColor: string;
   dialogCloseIconBorderColor: string;
+  yearSelectBackgroundColor: string;
+  yearSelectTextColor: string;
+  yearSelectActiveBorderColor: string;
+  yearSelectDropDownBackgroundColor: string;
+  yearSelectDropDownTextColor: string;
+  yearSelectDropDownActiveTextColor: string;
+  yearSelectDropDownActiveBackgroundColor: string;
+  yearSelectDropDownIconColor: string;
+  yearSelectDropDownHoverBackgroundColor: string;
+  yearSelectDropDownHoverTextColor: string;
 }
 export type localDashboardCustomizationSettings = Omit<
   dashboardCustomizationSettings,

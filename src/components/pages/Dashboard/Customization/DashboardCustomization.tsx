@@ -73,6 +73,16 @@ export function DashboardCustomization() {
       dialogBackgroundColor: "",
       dialogCloseIconColor: "",
       dialogCloseIconBorderColor: "",
+      yearSelectBackgroundColor: "",
+      yearSelectTextColor: "",
+      yearSelectActiveBorderColor: "",
+      yearSelectDropDownBackgroundColor: "",
+      yearSelectDropDownTextColor: "",
+      yearSelectDropDownActiveTextColor: "",
+      yearSelectDropDownActiveBackgroundColor: "",
+      yearSelectDropDownIconColor: "",
+      yearSelectDropDownHoverBackgroundColor: "",
+      yearSelectDropDownHoverTextColor: "",
     });
   const { setMainBackgroundColor, mainBackgroundColor } =
     useMainBackgroundColor();
@@ -196,6 +206,40 @@ export function DashboardCustomization() {
     {
       key: "dialogCloseIconBorderColor",
       label: "Dialog Close Icon Border Color",
+    },
+    { key: "yearSelectBackgroundColor", label: "Year Select Background Color" },
+    { key: "yearSelectTextColor", label: "Year Select Text Color" },
+    {
+      key: "yearSelectActiveBorderColor",
+      label: "Year Select Active Border Color",
+    },
+    {
+      key: "yearSelectDropDownBackgroundColor",
+      label: "Year Select Dropdown Background Color",
+    },
+    {
+      key: "yearSelectDropDownTextColor",
+      label: "Year Select Dropdown Text Color",
+    },
+    {
+      key: "yearSelectDropDownActiveTextColor",
+      label: "Year Select Dropdown Active Text Color",
+    },
+    {
+      key: "yearSelectDropDownActiveBackgroundColor",
+      label: "Year Select Dropdown Active Background Color",
+    },
+    {
+      key: "yearSelectDropDownIconColor",
+      label: "Year Select Dropdown Icon Color",
+    },
+    {
+      key: "yearSelectDropDownHoverBackgroundColor",
+      label: "Year Select Dropdown Hover Background Color",
+    },
+    {
+      key: "yearSelectDropDownHoverTextColor",
+      label: "Year Select Dropdown Hover Text Color",
     },
   ];
   return (
