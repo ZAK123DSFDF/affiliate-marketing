@@ -20,6 +20,21 @@ export interface dashboardCustomizationSettings {
   buttonTextColor: string;
   buttonDisabledBackgroundColor: string;
   buttonDisabledTextColor: string;
+  tableBorderColor: string;
+  tableHeaderTextColor: string;
+  tableHoverBackgroundColor: string;
+  tableIconColor: string;
+  tableIconHoverColor: string;
+  tableIconHoverBackgroundColor: string;
+  tableRowPrimaryTextColor: string;
+  tableRowSecondaryTextColor: string;
+  tableRowTertiaryTextColor: string;
+  tableRowBadgeOverDueTextColor: string;
+  tableRowBadgeOverDueBackgroundColor: string;
+  tableRowBadgePendingTextColor: string;
+  tableRowBadgePendingBackgroundColor: string;
+  tableRowBadgePaidTextColor: string;
+  tableRowBadgePaidBackgroundColor: string;
 }
 export type localDashboardCustomizationSettings = Omit<
   dashboardCustomizationSettings,

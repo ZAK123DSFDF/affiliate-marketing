@@ -21,7 +21,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow";
 import { usePathname, useRouter } from "next/navigation";
 import YearSelect from "@/components/ui-custom/YearSelect";
@@ -36,95 +35,191 @@ interface AffiliateCommissionTableProps {
   customization?: localDashboardCustomizationSettings;
 }
 
-const columns: ColumnDef<AffiliatePaymentRow>[] = [
-  {
-    accessorKey: "month",
-    header: "Month",
-    cell: ({ row }) => <div>{row.getValue("month")}</div>,
-  },
-  {
-    accessorKey: "totalCommission",
-    header: () => <div className="text-right">Total Commission</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("totalCommission"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "paidCommission",
-    header: () => <div className="text-right">Paid Commission</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("paidCommission"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "unpaidCommission",
-    header: () => <div className="text-right">Unpaid Commission</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("unpaidCommission"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const unpaid = parseFloat(row.getValue("unpaidCommission"));
-      const monthStr = row.getValue("month") as string;
-
-      const today = new Date();
-      const [year, month] = monthStr.split("-").map(Number);
-      const rowDate = new Date(year, month - 1); // zero-based month
-
-      const currentMonth = today.getMonth();
-      const currentYear = today.getFullYear();
-      const isSameMonth =
-        rowDate.getMonth() === currentMonth &&
-        rowDate.getFullYear() === currentYear;
-
-      let status = "Paid";
-      let badgeClass =
-        "bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800"; // Paid
-
-      if (unpaid > 0) {
-        if (isSameMonth) {
-          status = "Pending";
-          badgeClass =
-            "bg-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:text-yellow-800";
-        } else if (
-          rowDate.getFullYear() < currentYear ||
-          (rowDate.getFullYear() === currentYear &&
-            rowDate.getMonth() < currentMonth)
-        ) {
-          status = "Overdue";
-          badgeClass =
-            "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-800";
-        }
-      }
-
-      return <Badge className={badgeClass}>{status}</Badge>;
-    },
-  },
-];
-
 export default function AffiliateCommissionTable({
   data,
   isPreview,
   customization,
 }: AffiliateCommissionTableProps) {
+  const columns: ColumnDef<AffiliatePaymentRow>[] = [
+    {
+      accessorKey: "month",
+      header: () => (
+        <span
+          style={{
+            color: customization?.tableHeaderTextColor || undefined,
+          }}
+        >
+          Month
+        </span>
+      ),
+      cell: ({ row }) => (
+        <div
+          style={{
+            color: customization?.tableRowTertiaryTextColor || undefined,
+          }}
+        >
+          {row.getValue("month")}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "totalCommission",
+      header: () => (
+        <span
+          style={{
+            color: customization?.tableHeaderTextColor || undefined,
+          }}
+        >
+          Total Commission
+        </span>
+      ),
+      cell: ({ row }) => {
+        const amount = parseFloat(row.getValue("totalCommission"));
+        const formatted = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(amount);
+        return (
+          <div
+            className="text-right font-medium"
+            style={{
+              color: customization?.tableRowPrimaryTextColor || undefined,
+            }}
+          >
+            {formatted}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "paidCommission",
+      header: () => (
+        <span
+          style={{
+            color: customization?.tableHeaderTextColor || undefined,
+          }}
+        >
+          Paid Commission
+        </span>
+      ),
+      cell: ({ row }) => {
+        const amount = parseFloat(row.getValue("paidCommission"));
+        const formatted = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(amount);
+        return (
+          <div
+            className="text-right font-medium"
+            style={{
+              color: customization?.tableRowPrimaryTextColor || undefined,
+            }}
+          >
+            {formatted}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "unpaidCommission",
+      header: () => (
+        <span
+          style={{
+            color: customization?.tableHeaderTextColor || undefined,
+          }}
+        >
+          Unpaid Commission
+        </span>
+      ),
+      cell: ({ row }) => {
+        const amount = parseFloat(row.getValue("unpaidCommission"));
+        const formatted = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(amount);
+        return (
+          <div
+            className="text-right font-medium"
+            style={{
+              color: customization?.tableRowPrimaryTextColor || undefined,
+            }}
+          >
+            {formatted}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "status",
+      header: () => (
+        <span
+          style={{
+            color: customization?.tableHeaderTextColor || undefined,
+          }}
+        >
+          Status
+        </span>
+      ),
+      cell: ({ row }) => {
+        const unpaid = parseFloat(row.getValue("unpaidCommission"));
+        const monthStr = row.getValue("month") as string;
+
+        const today = new Date();
+        const [year, month] = monthStr.split("-").map(Number);
+        const rowDate = new Date(year, month - 1);
+
+        const currentMonth = today.getMonth();
+        const currentYear = today.getFullYear();
+        const isSameMonth =
+          rowDate.getMonth() === currentMonth &&
+          rowDate.getFullYear() === currentYear;
+
+        let status = "Paid";
+
+        let defaultClass =
+          "bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800";
+        let textColor = customization?.tableRowBadgePaidTextColor;
+        let backgroundColor = customization?.tableRowBadgePaidBackgroundColor;
+
+        if (unpaid > 0) {
+          if (isSameMonth) {
+            status = "Pending";
+            defaultClass =
+              "bg-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:text-yellow-800";
+            textColor = customization?.tableRowBadgePendingTextColor;
+            backgroundColor =
+              customization?.tableRowBadgePendingBackgroundColor;
+          } else if (
+            rowDate.getFullYear() < currentYear ||
+            (rowDate.getFullYear() === currentYear &&
+              rowDate.getMonth() < currentMonth)
+          ) {
+            status = "Overdue";
+            defaultClass =
+              "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-800";
+            textColor = customization?.tableRowBadgeOverDueTextColor;
+            backgroundColor =
+              customization?.tableRowBadgeOverDueBackgroundColor;
+          }
+        }
+
+        const hasCustomStyle = textColor || backgroundColor;
+
+        return hasCustomStyle ? (
+          <Badge
+            style={{
+              color: textColor,
+              backgroundColor: backgroundColor,
+            }}
+          >
+            {status}
+          </Badge>
+        ) : (
+          <Badge className={defaultClass}>{status}</Badge>
+        );
+      },
+    },
+  ];
   const router = useRouter();
   const pathname = usePathname();
 

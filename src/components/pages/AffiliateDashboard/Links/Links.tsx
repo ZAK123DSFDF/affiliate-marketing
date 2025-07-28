@@ -32,67 +32,6 @@ import {
 } from "@/lib/types/dashboardCustomization";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 
-const columns: ColumnDef<AffiliateLinkWithStats>[] = [
-  {
-    accessorKey: "fullUrl",
-    header: "Affiliate Link",
-    cell: ({ row }) => {
-      const url: string = row.getValue("fullUrl");
-      const [copied, setCopied] = useState(false);
-
-      const handleCopy = () => {
-        navigator.clipboard.writeText(url).then(() => {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1000);
-        });
-      };
-
-      return (
-        <div className="flex items-center">
-          <span className="text-black break-all">{url}</span>
-          <Button
-            type="button"
-            size="icon"
-            variant="ghost"
-            onClick={handleCopy}
-            className={cn(
-              "ml-5 flex items-center gap-[2px] text-xs rounded-md transition-colors",
-              copied
-                ? "hover:bg-transparent active:bg-transparent"
-                : "hover:text-blue-600 hover:bg-blue-100",
-            )}
-          >
-            {copied ? (
-              <>
-                <Check className="w-3 h-3 text-blue-600" />
-                <span className="text-blue-600">Copied</span>
-              </>
-            ) : (
-              <Copy className="w-3 h-3" />
-            )}
-          </Button>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "clicks",
-    header: "Clicks",
-    cell: ({ row }) => <div>{row.getValue("clicks")}</div>,
-  },
-  {
-    accessorKey: "sales",
-    header: "Sales",
-    cell: ({ row }) => <div>{row.getValue("sales")}</div>,
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Created",
-    cell: ({ row }) => (
-      <div>{new Date(row.getValue("createdAt")).toLocaleDateString()}</div>
-    ),
-  },
-];
 interface AffiliateLinkProps {
   data: AffiliateLinkWithStats[];
   isPreview?: boolean;
@@ -103,6 +42,138 @@ export default function Links({
   isPreview,
   customization,
 }: AffiliateLinkProps) {
+  const columns: ColumnDef<AffiliateLinkWithStats>[] = [
+    {
+      accessorKey: "fullUrl",
+      header: () => (
+        <span
+          style={{
+            color: customization?.tableHeaderTextColor || undefined,
+          }}
+        >
+          Affiliate Link
+        </span>
+      ),
+      cell: ({ row }) => {
+        const url: string = row.getValue("fullUrl");
+        const [isHovered, setIsHovered] = useState(false);
+        const [copied, setCopied] = useState(false);
+
+        const handleCopy = () => {
+          navigator.clipboard.writeText(url).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1000);
+          });
+        };
+        const iconColor = copied
+          ? customization?.tableIconHoverColor || "#2563eb"
+          : isHovered
+            ? customization?.tableIconHoverColor || "#2563eb"
+            : customization?.tableIconColor || "";
+
+        const iconBgColor = copied
+          ? "transparent"
+          : isHovered
+            ? customization?.tableIconHoverBackgroundColor || "#dbeafe"
+            : "transparent";
+        return (
+          <div
+            className="flex items-center"
+            style={{
+              color: customization?.tableRowSecondaryTextColor || undefined,
+            }}
+          >
+            <span className="break-all">{url}</span>
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              onClick={handleCopy}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              className="ml-5 flex items-center gap-[2px] text-xs rounded-md transition-colors"
+              style={{
+                color: iconColor,
+                backgroundColor: iconBgColor,
+              }}
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3 h-3" style={{ color: iconColor }} />
+                  <span style={{ color: iconColor }}>Copied</span>
+                </>
+              ) : (
+                <Copy className="w-3 h-3" />
+              )}
+            </Button>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "clicks",
+      header: () => (
+        <span
+          style={{
+            color: customization?.tableHeaderTextColor || undefined,
+          }}
+        >
+          Clicks
+        </span>
+      ),
+      cell: ({ row }) => (
+        <div
+          style={{
+            color: customization?.tableRowTertiaryTextColor || undefined,
+          }}
+        >
+          {row.getValue("clicks")}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "sales",
+      header: () => (
+        <span
+          style={{
+            color: customization?.tableHeaderTextColor || undefined,
+          }}
+        >
+          Sales
+        </span>
+      ),
+      cell: ({ row }) => (
+        <div
+          style={{
+            color: customization?.tableRowTertiaryTextColor || undefined,
+          }}
+        >
+          {row.getValue("sales")}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "createdAt",
+      header: () => (
+        <span
+          style={{
+            color: customization?.tableHeaderTextColor || undefined,
+          }}
+        >
+          Created
+        </span>
+      ),
+      cell: ({ row }) => (
+        <div
+          style={{
+            color: customization?.tableRowTertiaryTextColor || undefined,
+          }}
+        >
+          {new Date(row.getValue("createdAt")).toLocaleDateString()}
+        </div>
+      ),
+    },
+  ];
   const [isFakeLoading, setIsFakeLoading] = useState(false);
   const mutation = useMutation({
     mutationFn: createAffiliateLink,
@@ -212,13 +283,25 @@ export default function Links({
               No links found.
             </div>
           ) : (
-            <div className="rounded-md border">
+            <div
+              className="rounded-md border"
+              style={{
+                borderColor: customization?.tableBorderColor || undefined,
+                borderWidth: "1px",
+                borderStyle: "solid",
+              }}
+            >
               <Table>
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => (
-                        <TableHead key={header.id}>
+                        <TableHead
+                          key={header.id}
+                          style={{
+                            borderBottom: `1px solid ${customization?.tableBorderColor || "#e5e7eb"}`,
+                          }}
+                        >
                           {flexRender(
                             header.column.columnDef.header,
                             header.getContext(),
@@ -229,8 +312,16 @@ export default function Links({
                   ))}
                 </TableHeader>
                 <TableBody>
-                  {table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id}>
+                  {table.getRowModel().rows.map((row, idx, allRows) => (
+                    <TableRow
+                      key={row.id}
+                      style={{
+                        borderBottom:
+                          idx !== allRows.length - 1
+                            ? `1px solid ${customization?.tableBorderColor || "#e5e7eb"}`
+                            : "none",
+                      }}
+                    >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
                           {flexRender(

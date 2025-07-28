@@ -54,6 +54,21 @@ export function DashboardCustomization() {
       buttonTextColor: "",
       buttonDisabledBackgroundColor: "",
       buttonDisabledTextColor: "",
+      tableBorderColor: "",
+      tableHeaderTextColor: "",
+      tableHoverBackgroundColor: "",
+      tableIconColor: "",
+      tableIconHoverColor: "",
+      tableIconHoverBackgroundColor: "",
+      tableRowPrimaryTextColor: "",
+      tableRowSecondaryTextColor: "",
+      tableRowTertiaryTextColor: "",
+      tableRowBadgeOverDueTextColor: "",
+      tableRowBadgeOverDueBackgroundColor: "",
+      tableRowBadgePendingTextColor: "",
+      tableRowBadgePendingBackgroundColor: "",
+      tableRowBadgePaidTextColor: "",
+      tableRowBadgePaidBackgroundColor: "",
     });
   const { setMainBackgroundColor, mainBackgroundColor } =
     useMainBackgroundColor();
@@ -128,6 +143,48 @@ export function DashboardCustomization() {
     {
       key: "buttonDisabledTextColor",
       label: "Button Disabled Text Color",
+    },
+    { key: "tableBorderColor", label: "Table Border Color" },
+    { key: "tableHeaderTextColor", label: "Table Header Text Color" },
+    { key: "tableHoverBackgroundColor", label: "Table Hover Background Color" },
+    { key: "tableIconColor", label: "Table Icon Color" },
+    { key: "tableIconHoverColor", label: "Table Icon Hover Color" },
+    {
+      key: "tableIconHoverBackgroundColor",
+      label: "Table Icon Hover Background",
+    },
+    { key: "tableRowPrimaryTextColor", label: "Table Row Primary Text Color" },
+    {
+      key: "tableRowSecondaryTextColor",
+      label: "Table Row Secondary Text Color",
+    },
+    {
+      key: "tableRowTertiaryTextColor",
+      label: "Table Row Tertiary Text Color",
+    },
+    {
+      key: "tableRowBadgeOverDueTextColor",
+      label: "Table Row Badge Overdue Text Color",
+    },
+    {
+      key: "tableRowBadgeOverDueBackgroundColor",
+      label: "Table Row Badge Overdue Background Color",
+    },
+    {
+      key: "tableRowBadgePendingTextColor",
+      label: "Table Row Badge Pending Text Color",
+    },
+    {
+      key: "tableRowBadgePendingBackgroundColor",
+      label: "Table Row Badge Pending Background Color",
+    },
+    {
+      key: "tableRowBadgePaidTextColor",
+      label: "Table Row Badge Paid Text Color",
+    },
+    {
+      key: "tableRowBadgePaidBackgroundColor",
+      label: "Table Row Badge Paid Background Color",
     },
   ];
   return (

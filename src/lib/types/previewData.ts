@@ -31,6 +31,12 @@ export const dummyAffiliatePayments: AffiliatePaymentRow[] = [
     paidCommission: 200.0,
     unpaidCommission: 100.0,
   },
+  {
+    month: "2025-08",
+    totalCommission: 300.0,
+    paidCommission: 200.0,
+    unpaidCommission: 0.0,
+  },
 ];
 export const dummyProfileData = {
   id: "demo-profile-id",
