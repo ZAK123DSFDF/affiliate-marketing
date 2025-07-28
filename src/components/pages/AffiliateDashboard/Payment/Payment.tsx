@@ -219,7 +219,13 @@ export default function AffiliateCommissionTable({
         }}
       >
         <CardHeader>
-          <CardTitle>Monthly Commission Stats</CardTitle>
+          <CardTitle
+            style={{
+              color: customization?.headerNameColor || undefined,
+            }}
+          >
+            Monthly Commission Stats
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {yearValue !== undefined && isPending && !isPreview ? (

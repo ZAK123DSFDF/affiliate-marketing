@@ -165,6 +165,16 @@ export default function Links({
         <Button
           onClick={handleCreate}
           disabled={mutation.isPending || isFakeLoading}
+          style={{
+            backgroundColor:
+              mutation.isPending || isFakeLoading
+                ? customization?.buttonDisabledBackgroundColor || undefined
+                : customization?.buttonBackgroundColor || undefined,
+            color:
+              mutation.isPending || isFakeLoading
+                ? customization?.buttonDisabledTextColor || undefined
+                : customization?.buttonTextColor || undefined,
+          }}
         >
           {mutation.isPending || isFakeLoading
             ? "Creating..."
@@ -188,7 +198,13 @@ export default function Links({
         }}
       >
         <CardHeader>
-          <CardTitle>Link Stats</CardTitle>
+          <CardTitle
+            style={{
+              color: customization?.headerNameColor || undefined,
+            }}
+          >
+            Link Stats
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {data.length === 0 ? (

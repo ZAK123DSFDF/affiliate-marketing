@@ -260,7 +260,13 @@ export default function Profile({
         }}
       >
         <CardHeader>
-          <CardTitle>Account Information</CardTitle>
+          <CardTitle
+            style={{
+              color: customization?.headerNameColor || undefined,
+            }}
+          >
+            Account Information
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-8">
           <Form {...profileForm}>
@@ -290,10 +296,22 @@ export default function Profile({
               />
 
               <div className="pt-6 border-t mt-8">
-                <h3 className="font-medium mb-4">Password</h3>
+                <h3
+                  className="font-medium mb-4"
+                  style={{
+                    color: customization?.headerNameColor || undefined,
+                  }}
+                >
+                  Password
+                </h3>
                 <Button
                   type="button"
                   onClick={() => setShowPasswordModal(true)}
+                  style={{
+                    backgroundColor:
+                      customization?.buttonBackgroundColor || undefined,
+                    color: customization?.buttonTextColor || undefined,
+                  }}
                 >
                   Change Password
                 </Button>
@@ -306,6 +324,16 @@ export default function Profile({
             form="profile-form"
             type="submit"
             disabled={updateProfile.isPending || isFormUnchanged}
+            style={{
+              backgroundColor:
+                updateProfile.isPending || isFormUnchanged
+                  ? customization?.buttonDisabledBackgroundColor || undefined
+                  : customization?.buttonBackgroundColor || undefined,
+              color:
+                updateProfile.isPending || isFormUnchanged
+                  ? customization?.buttonDisabledTextColor || undefined
+                  : customization?.buttonTextColor || undefined,
+            }}
           >
             {updateProfile.isPending && (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -343,7 +371,19 @@ export default function Profile({
                   showPasswordToggle={true}
                 />
                 <DialogFooter>
-                  <Button type="submit" disabled={validatePassword.isPending}>
+                  <Button
+                    type="submit"
+                    disabled={validatePassword.isPending}
+                    style={{
+                      backgroundColor: validatePassword.isPending
+                        ? customization?.buttonDisabledBackgroundColor ||
+                          undefined
+                        : customization?.buttonBackgroundColor || undefined,
+                      color: validatePassword.isPending
+                        ? customization?.buttonDisabledTextColor || undefined
+                        : customization?.buttonTextColor || undefined,
+                    }}
+                  >
                     {validatePassword.isPending ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -384,7 +424,19 @@ export default function Profile({
                 />
 
                 <DialogFooter>
-                  <Button type="submit" disabled={updatePassword.isPending}>
+                  <Button
+                    type="submit"
+                    disabled={updatePassword.isPending}
+                    style={{
+                      backgroundColor: updatePassword.isPending
+                        ? customization?.buttonDisabledBackgroundColor ||
+                          undefined
+                        : customization?.buttonBackgroundColor || undefined,
+                      color: updatePassword.isPending
+                        ? customization?.buttonDisabledTextColor || undefined
+                        : customization?.buttonTextColor || undefined,
+                    }}
+                  >
                     {updatePassword.isPending ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />

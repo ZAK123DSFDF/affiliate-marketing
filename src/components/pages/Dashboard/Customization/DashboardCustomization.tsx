@@ -50,6 +50,10 @@ export function DashboardCustomization() {
       cardShadowColor: "",
       headerNameColor: "",
       headerDescColor: "",
+      buttonBackgroundColor: "",
+      buttonTextColor: "",
+      buttonDisabledBackgroundColor: "",
+      buttonDisabledTextColor: "",
     });
   const { setMainBackgroundColor, mainBackgroundColor } =
     useMainBackgroundColor();
@@ -115,6 +119,16 @@ export function DashboardCustomization() {
     },
     { key: "headerNameColor", label: "Header Title Color" },
     { key: "headerDescColor", label: "Header Description Color" },
+    { key: "buttonBackgroundColor", label: "Button Background Color" },
+    { key: "buttonTextColor", label: "Button Text Color" },
+    {
+      key: "buttonDisabledBackgroundColor",
+      label: "Button Disabled Background Color",
+    },
+    {
+      key: "buttonDisabledTextColor",
+      label: "Button Disabled Text Color",
+    },
   ];
   return (
     <div className="space-y-6">

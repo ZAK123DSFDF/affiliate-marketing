@@ -16,6 +16,10 @@ export interface dashboardCustomizationSettings {
   cardShadowColor: string;
   headerNameColor: string;
   headerDescColor: string;
+  buttonBackgroundColor: string;
+  buttonTextColor: string;
+  buttonDisabledBackgroundColor: string;
+  buttonDisabledTextColor: string;
 }
 export type localDashboardCustomizationSettings = Omit<
   dashboardCustomizationSettings,
