@@ -222,7 +222,7 @@ export default function AffiliateCommissionTable({
   ];
   const router = useRouter();
   const pathname = usePathname();
-
+  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [yearValue, setYearValue] = useState<number | undefined>(undefined);
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);

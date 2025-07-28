@@ -175,6 +175,8 @@ export default function Links({
     },
   ];
   const [isFakeLoading, setIsFakeLoading] = useState(false);
+  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
+  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const mutation = useMutation({
     mutationFn: createAffiliateLink,
     onSuccess: async (newLink: string) => {
@@ -294,12 +296,25 @@ export default function Links({
               <Table>
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
+                    <TableRow
+                      key={headerGroup.id}
+                      onMouseEnter={() => setIsHeaderHovered(true)}
+                      onMouseLeave={() => setIsHeaderHovered(false)}
+                      style={{
+                        backgroundColor: isHeaderHovered
+                          ? customization?.tableHoverBackgroundColor ||
+                            "#f9fafb"
+                          : undefined,
+                        transition: "background-color 0.2s ease",
+                      }}
+                    >
                       {headerGroup.headers.map((header) => (
                         <TableHead
                           key={header.id}
                           style={{
                             borderBottom: `1px solid ${customization?.tableBorderColor || "#e5e7eb"}`,
+                            color:
+                              customization?.tableHeaderTextColor || undefined,
                           }}
                         >
                           {flexRender(
@@ -312,26 +327,38 @@ export default function Links({
                   ))}
                 </TableHeader>
                 <TableBody>
-                  {table.getRowModel().rows.map((row, idx, allRows) => (
-                    <TableRow
-                      key={row.id}
-                      style={{
-                        borderBottom:
-                          idx !== allRows.length - 1
-                            ? `1px solid ${customization?.tableBorderColor || "#e5e7eb"}`
-                            : "none",
-                      }}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
+                  {table.getRowModel().rows.map((row, idx, allRows) => {
+                    const isHovered = hoveredRowId === row.id;
+                    const defaultHoverBg = "#f9fafb"; // fallback light gray
+
+                    return (
+                      <TableRow
+                        key={row.id}
+                        onMouseEnter={() => setHoveredRowId(row.id)}
+                        onMouseLeave={() => setHoveredRowId(null)}
+                        style={{
+                          backgroundColor: isHovered
+                            ? customization?.tableHoverBackgroundColor ||
+                              defaultHoverBg
+                            : undefined,
+                          transition: "background-color 0.2s ease",
+                          borderBottom:
+                            idx !== allRows.length - 1
+                              ? `1px solid ${customization?.tableBorderColor || "#e5e7eb"}`
+                              : "none",
+                        }}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
