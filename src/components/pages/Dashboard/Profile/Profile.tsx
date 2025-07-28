@@ -295,7 +295,12 @@ export default function Profile({
                 profile
               />
 
-              <div className="pt-6 border-t mt-8">
+              <div
+                className="pt-6 border-t mt-8"
+                style={{
+                  borderTop: `1px solid ${customization?.separatorColor || "#e5e7eb"}`,
+                }}
+              >
                 <h3
                   className="font-medium mb-4"
                   style={{
@@ -319,7 +324,12 @@ export default function Profile({
             </form>
           </Form>
         </CardContent>
-        <CardFooter className="flex justify-end border-t pt-6">
+        <CardFooter
+          className="flex justify-end border-t pt-6"
+          style={{
+            borderTop: `1px solid ${customization?.separatorColor || "#e5e7eb"}`,
+          }}
+        >
           <Button
             form="profile-form"
             type="submit"
@@ -344,9 +354,17 @@ export default function Profile({
       </Card>
 
       <Dialog open={showPasswordModal} onOpenChange={resetPasswordModal}>
-        <DialogContent>
+        <DialogContent
+          dialogBackgroundColor={customization?.dialogBackgroundColor}
+          dialogCloseIconColor={customization?.dialogCloseIconColor}
+          dialogCloseIconBorderColor={customization?.dialogCloseIconBorderColor}
+        >
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle
+              style={{
+                color: customization?.headerNameColor || undefined,
+              }}
+            >
               {step === "current"
                 ? "Verify Current Password"
                 : "Set New Password"}

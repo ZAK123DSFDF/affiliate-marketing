@@ -35,6 +35,10 @@ export interface dashboardCustomizationSettings {
   tableRowBadgePendingBackgroundColor: string;
   tableRowBadgePaidTextColor: string;
   tableRowBadgePaidBackgroundColor: string;
+  separatorColor: string;
+  dialogBackgroundColor: string;
+  dialogCloseIconColor: string;
+  dialogCloseIconBorderColor: string;
 }
 export type localDashboardCustomizationSettings = Omit<
   dashboardCustomizationSettings,

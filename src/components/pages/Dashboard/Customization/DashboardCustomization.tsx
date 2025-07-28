@@ -69,6 +69,10 @@ export function DashboardCustomization() {
       tableRowBadgePendingBackgroundColor: "",
       tableRowBadgePaidTextColor: "",
       tableRowBadgePaidBackgroundColor: "",
+      separatorColor: "",
+      dialogBackgroundColor: "",
+      dialogCloseIconColor: "",
+      dialogCloseIconBorderColor: "",
     });
   const { setMainBackgroundColor, mainBackgroundColor } =
     useMainBackgroundColor();
@@ -185,6 +189,13 @@ export function DashboardCustomization() {
     {
       key: "tableRowBadgePaidBackgroundColor",
       label: "Table Row Badge Paid Background Color",
+    },
+    { key: "separatorColor", label: "Separator Color" },
+    { key: "dialogBackgroundColor", label: "Dialog Background Color" },
+    { key: "dialogCloseIconColor", label: "Dialog Close Icon Color" },
+    {
+      key: "dialogCloseIconBorderColor",
+      label: "Dialog Close Icon Border Color",
     },
   ];
   return (
