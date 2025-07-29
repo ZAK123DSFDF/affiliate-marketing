@@ -1,7 +1,12 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-const InvalidToken = () => {
+import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
+type Props = {
+  orgId?: string;
+  customization?: AuthCustomizationSettings;
+  isPreview?: boolean;
+};
+const InvalidToken = ({ orgId, customization, isPreview }: Props) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
       <div className="w-full max-w-md">

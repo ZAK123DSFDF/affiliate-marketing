@@ -9,6 +9,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -29,11 +30,16 @@ import {
   passwordSchema,
 } from "@/lib/schema/passwordSchema";
 import InvalidToken from "@/components/pages/InvalidToken";
-
-const ResetPassword = () => {
+import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
+type Props = {
+  orgId?: string;
+  customization?: AuthCustomizationSettings;
+  isPreview?: boolean;
+};
+const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  if (!token) {
+  if (!token && !isPreview) {
     return <InvalidToken />;
   }
   const form = useForm<ResetPasswordFormValues>({
@@ -114,17 +120,18 @@ const ResetPassword = () => {
               </form>
             </Form>
           </CardContent>
+          <CardFooter className="flex flex-col space-y-4">
+            <div className="mt-4 text-center text-sm">
+              Remember your password?{" "}
+              <Link
+                href="/login"
+                className="font-medium text-primary underline-offset-4 hover:underline"
+              >
+                Log in
+              </Link>
+            </div>
+          </CardFooter>
         </Card>
-
-        <div className="mt-4 text-center text-sm">
-          Remember your password?{" "}
-          <Link
-            href="/login"
-            className="font-medium text-primary underline-offset-4 hover:underline"
-          >
-            Log in
-          </Link>
-        </div>
       </div>
     </div>
   );

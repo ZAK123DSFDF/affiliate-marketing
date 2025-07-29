@@ -17,6 +17,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import ForgotPassword from "@/components/pages/Forgot-password";
+import ResetPassword from "@/components/pages/Reset-password";
+import InvalidToken from "@/components/pages/InvalidToken";
 
 export const AuthCustomization = () => {
   const [customization, setCustomization] = useState<AuthCustomizationSettings>(
@@ -179,16 +182,28 @@ export const AuthCustomization = () => {
 
       <div className="border rounded-lg p-4 transition-all duration-300 mt-6 shadow-md">
         <Tabs defaultValue="login">
-          <TabsList className="w-full grid grid-cols-2 mb-4">
+          <TabsList className="flex flex-wrap gap-2 mb-4 overflow-x-auto whitespace-nowrap">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="signup">Signup</TabsTrigger>
+            <TabsTrigger value="forgot-password">Forgot Password</TabsTrigger>
+            <TabsTrigger value="reset-password">Reset Password</TabsTrigger>
+            <TabsTrigger value="invalid-token">Invalid Token</TabsTrigger>
           </TabsList>
 
           <TabsContent value="login">
             <Login customization={customization} isPreview />
           </TabsContent>
           <TabsContent value="signup">
-            <Signup customization={customization} />
+            <Signup customization={customization} isPreview />
+          </TabsContent>
+          <TabsContent value="forgot-password">
+            <ForgotPassword customization={customization} isPreview />
+          </TabsContent>
+          <TabsContent value="reset-password">
+            <ResetPassword customization={customization} isPreview />
+          </TabsContent>
+          <TabsContent value="invalid-token">
+            <InvalidToken customization={customization} isPreview />
           </TabsContent>
         </Tabs>
       </div>
