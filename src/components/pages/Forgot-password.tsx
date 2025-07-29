@@ -163,10 +163,16 @@ const ForgotPassword = ({ orgId, customization, isPreview }: Props) => {
           }}
         >
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">
+            <CardTitle
+              className="text-2xl font-bold text-center"
+              style={{ color: customization?.primaryTextColor || undefined }}
+            >
               Forgot Password
             </CardTitle>
-            <CardDescription className="text-center">
+            <CardDescription
+              className="text-center"
+              style={{ color: customization?.tertiaryTextColor || undefined }}
+            >
               Enter your email to receive a password reset link
             </CardDescription>
           </CardHeader>

@@ -13,14 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -31,6 +24,7 @@ import {
 } from "@/lib/schema/passwordSchema";
 import InvalidToken from "@/components/pages/InvalidToken";
 import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
+import { getShadowWithColor } from "@/util/GetShadowWithColor";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -54,10 +48,88 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
   const router = useRouter();
   const { toast } = useToast();
 
-  const onSubmit = async (data: ResetPasswordFormValues) => {};
+  const onSubmit = async (data: ResetPasswordFormValues) => {
+    if (isPreview) {
+      setPending(true);
+      await new Promise((res) => setTimeout(res, 1500));
+      setPending(false);
+
+      if (data.password === "notcorrect123") {
+        toast({
+          title: (
+            <span
+              className="font-semibold"
+              style={{
+                color: customization?.toastErrorTextColor || undefined,
+              }}
+            >
+              Something went wrong
+            </span>
+          ) as unknown as string,
+          description: (
+            <span
+              className="text-sm"
+              style={{
+                color:
+                  customization?.toastErrorSecondaryTextColor ||
+                  customization?.toastErrorTextColor ||
+                  undefined,
+              }}
+            >
+              something went wrong
+            </span>
+          ),
+          ...(customization?.toastErrorBackgroundColor && {
+            style: { backgroundColor: customization.toastErrorBackgroundColor },
+          }),
+        });
+      } else {
+        // Simulate success
+        toast({
+          title: (
+            <span
+              className="font-semibold"
+              style={{
+                color: customization?.toastTextColor || undefined,
+              }}
+            >
+              Password Changed Successfully
+            </span>
+          ) as unknown as string,
+          description: (
+            <span
+              className="text-sm"
+              style={{
+                color:
+                  customization?.toastSecondaryTextColor ||
+                  customization?.toastTextColor ||
+                  undefined,
+              }}
+            >
+              Password Changed successfully
+            </span>
+          ),
+          ...(customization?.toastBackgroundColor && {
+            style: { backgroundColor: customization.toastBackgroundColor },
+          }),
+        });
+      }
+
+      return;
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
+    <div
+      className={`min-h-screen flex items-center justify-center p-4 ${
+        customization?.backgroundColor
+          ? ""
+          : "bg-gradient-to-b from-background to-background/80"
+      }`}
+      style={{
+        backgroundColor: customization?.backgroundColor || undefined,
+      }}
+    >
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
@@ -70,12 +142,39 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
           </Link>
         </div>
 
-        <Card className="border-none shadow-lg">
+        <Card
+          className={`transition-shadow duration-300 ${
+            customization?.showShadow && customization?.shadowThickness
+              ? `shadow-${customization.shadowThickness}`
+              : customization?.showShadow
+                ? "shadow-lg"
+                : ""
+          } ${customization?.showBorder ? "border" : "border-none"}`}
+          style={{
+            backgroundColor: customization?.cardBackgroundColor || undefined,
+            ...(customization?.showShadow && {
+              boxShadow: getShadowWithColor(
+                customization.shadowThickness || "lg",
+                customization.shadowColor,
+              ),
+            }),
+            borderColor:
+              customization?.showBorder && customization?.borderColor
+                ? customization.borderColor
+                : undefined,
+          }}
+        >
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">
+            <CardTitle
+              className="text-2xl font-bold text-center"
+              style={{ color: customization?.primaryTextColor || undefined }}
+            >
               Reset Password
             </CardTitle>
-            <CardDescription className="text-center">
+            <CardDescription
+              className="text-center"
+              style={{ color: customization?.tertiaryTextColor || undefined }}
+            >
               Enter your new password
             </CardDescription>
           </CardHeader>
@@ -86,6 +185,7 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
                 className="space-y-4"
               >
                 <InputField
+                  key={`newPassword-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="password"
                   label="New Password"
@@ -93,9 +193,11 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
                   type="password"
                   icon={Lock}
                   showPasswordToggle={true}
+                  customization={customization}
                 />
 
                 <InputField
+                  key={`newConfirmPassword-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="confirmPassword"
                   label="Confirm New Password"
@@ -103,17 +205,43 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
                   type="password"
                   icon={Lock}
                   showPasswordToggle={true}
+                  customization={customization}
                 />
 
-                <Button type="submit" className="w-full" disabled={pending}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={pending}
+                  style={{
+                    backgroundColor: pending
+                      ? customization?.buttonDisabledBackgroundColor ||
+                        undefined
+                      : customization?.buttonBackgroundColor || undefined,
+                    color: pending
+                      ? customization?.buttonDisabledTextColor || undefined
+                      : customization?.buttonTextColor || undefined,
+                  }}
+                >
                   {pending ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      <Loader2
+                        className="h-4 w-4 animate-spin mr-2"
+                        style={{
+                          color:
+                            customization?.buttonDisabledTextColor || undefined,
+                        }}
+                      />
                       Updating password...
                     </>
                   ) : (
                     <>
-                      Reset Password <ArrowRight className="h-4 w-4 ml-2" />
+                      Reset Password{" "}
+                      <ArrowRight
+                        className="h-4 w-4 ml-2"
+                        style={{
+                          color: customization?.buttonTextColor || undefined,
+                        }}
+                      />
                     </>
                   )}
                 </Button>
@@ -121,11 +249,19 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
             </Form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <div className="mt-4 text-center text-sm">
+            <div
+              className="mt-4 text-center text-sm"
+              style={{
+                color: customization?.secondaryTextColor || undefined,
+              }}
+            >
               Remember your password?{" "}
               <Link
                 href="/login"
                 className="font-medium text-primary underline-offset-4 hover:underline"
+                style={{
+                  color: customization?.linkTextColor || undefined,
+                }}
               >
                 Log in
               </Link>

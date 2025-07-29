@@ -11,6 +11,7 @@ export type AuthCustomizationSettings = {
   primaryTextColor: string;
   linkTextColor: string;
   secondaryTextColor: string;
+  tertiaryTextColor: string;
   errorColor: string;
   inputBorderColor: string;
   inputBorderErrorColor: string;
