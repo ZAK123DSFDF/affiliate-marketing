@@ -16,7 +16,6 @@ import { Label } from "@/components/ui/label";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import {
   ColorCustomizationSettings,
-  dashboardCustomizationSettings,
   localDashboardCustomizationSettings,
 } from "@/lib/types/dashboardCustomization";
 import { useMainBackgroundColor } from "@/store/useMainBackgroundColor";
