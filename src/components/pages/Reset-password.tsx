@@ -5,7 +5,6 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -29,29 +28,13 @@ import {
   ResetPasswordFormValues,
   passwordSchema,
 } from "@/lib/schema/passwordSchema";
+import InvalidToken from "@/components/pages/InvalidToken";
 
 const ResetPassword = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   if (!token) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
-        <div className="w-full max-w-md">
-          <Card className="border-none shadow-lg">
-            <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl font-bold text-center text-destructive">
-                Invalid Token
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <p className="text-muted-foreground mb-4">
-                The password reset link is invalid or has expired.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
+    return <InvalidToken />;
   }
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(passwordSchema),
