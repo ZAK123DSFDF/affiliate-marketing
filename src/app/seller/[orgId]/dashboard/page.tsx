@@ -1,10 +1,9 @@
-// app/dashboard/page.tsx
-import Dashboard from "@/components/pages/Dashboard/Dashboard";
+import Overview from "@/components/pages/Dashboard/Overview/Overview";
 
 const DashboardPage = async () => {
   return (
     <>
-      <Dashboard />
+      <Overview />
     </>
   );
 };
