@@ -188,12 +188,25 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
           }}
         >
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">
-              Create an account
-            </CardTitle>
-            <CardDescription className="text-center">
-              Enter your information to create your account
-            </CardDescription>
+            {(!customization?.customNotesSignup ||
+              customization?.customNotesSignup === "") && (
+              <>
+                <CardTitle className="text-2xl font-bold text-center">
+                  Create An Account
+                </CardTitle>
+                <CardDescription className="text-center">
+                  Enter Your Information to Sign Up
+                </CardDescription>
+              </>
+            )}
+            {customization?.customNotesSignup?.trim() && (
+              <div
+                className="rich-text-preview text-sm"
+                dangerouslySetInnerHTML={{
+                  __html: customization?.customNotesSignup,
+                }}
+              />
+            )}
           </CardHeader>
           <CardContent>
             <Form {...form}>

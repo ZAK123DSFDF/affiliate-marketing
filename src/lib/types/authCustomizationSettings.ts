@@ -19,6 +19,8 @@ export type AuthCustomizationSettings = {
   inputTextColor: string;
   placeholderTextColor: string;
   iconColor: string;
+  errorPagePrimaryTextColor: string;
+  errorPageSecondaryTextColor: string;
   toastBackgroundColor: string;
   toastTextColor: string;
   toastSecondaryTextColor: string;
@@ -31,5 +33,6 @@ export type AuthCustomizationSettings = {
   buttonDisabledTextColor: string;
   checkboxActiveColor: string;
   checkboxInactiveColor: string;
-  customNotes: string;
+  customNotesLogin: string;
+  customNotesSignup: string;
 };

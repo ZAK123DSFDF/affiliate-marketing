@@ -191,8 +191,8 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
           }}
         >
           <CardHeader className="space-y-1">
-            {(!customization?.customNotes ||
-              customization?.customNotes === "") && (
+            {(!customization?.customNotesLogin ||
+              customization?.customNotesLogin === "") && (
               <>
                 <CardTitle className="text-2xl font-bold text-center">
                   Welcome back
@@ -202,10 +202,12 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
                 </CardDescription>
               </>
             )}
-            {customization?.customNotes?.trim() && (
+            {customization?.customNotesLogin?.trim() && (
               <div
                 className="rich-text-preview text-sm"
-                dangerouslySetInnerHTML={{ __html: customization.customNotes }}
+                dangerouslySetInnerHTML={{
+                  __html: customization.customNotesLogin,
+                }}
               />
             )}
           </CardHeader>

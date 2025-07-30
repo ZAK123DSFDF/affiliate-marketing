@@ -179,8 +179,16 @@
   margin-right: 0.2rem;
   display: inline-block;
 }
-[data-hyphen="true"]::before {
-  content: "-";
-  margin-right: 0.2rem;
-  display: inline-block;
+.rich-text-area h1 {
+  font-size: 1.75rem;
+  font-weight: bold;
 }
+.rich-text-area h2 {
+  font-size: 1.5rem;
+  font-weight: normal;
+}
+.rich-text-area h3 {
+  font-size: 1.25rem;
+  font-weight: normal;
+}
+

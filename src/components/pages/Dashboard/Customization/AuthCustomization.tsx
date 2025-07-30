@@ -45,6 +45,8 @@ export const AuthCustomization = () => {
       inputTextColor: "",
       placeholderTextColor: "",
       iconColor: "",
+      errorPagePrimaryTextColor: "",
+      errorPageSecondaryTextColor: "",
       toastBackgroundColor: "",
       toastTextColor: "",
       toastSecondaryTextColor: "",
@@ -57,8 +59,8 @@ export const AuthCustomization = () => {
       buttonDisabledTextColor: "",
       checkboxActiveColor: "",
       checkboxInactiveColor: "",
-
-      customNotes: "",
+      customNotesLogin: "",
+      customNotesSignup: "",
     },
   );
 
@@ -114,10 +116,17 @@ export const AuthCustomization = () => {
 
         {/* Rich Text Placeholder */}
         <div className="col-span-2">
-          <Label>Custom Notes</Label>
+          <Label>Custom Notes on Login</Label>
           <RichTextEditor
-            content={customization.customNotes}
-            onChange={(val) => handleChange("customNotes", val)}
+            content={customization.customNotesLogin}
+            onChange={(val) => handleChange("customNotesLogin", val)}
+          />
+        </div>
+        <div className="col-span-2">
+          <Label>Custom Notes on Signup</Label>
+          <RichTextEditor
+            content={customization.customNotesSignup}
+            onChange={(val) => handleChange("customNotesSignup", val)}
           />
         </div>
 
@@ -160,6 +169,8 @@ export const AuthCustomization = () => {
           ["inputTextColor", "Input Text Color"],
           ["placeholderTextColor", "Placeholder Text Color"],
           ["iconColor", "Icon Color"],
+          ["errorPagePrimaryTextColor", "Error Page Primary Text Color"],
+          ["errorPageSecondaryTextColor", "Error Page Secondary Text Color"],
           ["toastBackgroundColor", "Toast Background Color"],
           ["toastTextColor", "Toast Text Color"],
           ["toastSecondaryTextColor", "Toast Secondary Text Color"],

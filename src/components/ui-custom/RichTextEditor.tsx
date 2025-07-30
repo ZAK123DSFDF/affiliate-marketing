@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ParagraphSpacing } from "@/lib/extensions/paragraphSpacing";
-import { HyphenBullet } from "@/lib/extensions/hyphenBullet";
 import { Color } from "@tiptap/extension-color";
 import { TextStyle } from "@tiptap/extension-text-style";
 
@@ -23,9 +22,6 @@ declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     paragraphSpacing: {
       setSpacing: (spacing: "medium" | "large" | null) => ReturnType;
-    };
-    hyphenBullet: {
-      toggleHyphen: () => ReturnType;
     };
   }
 }
@@ -36,6 +32,7 @@ type Props = {
 };
 
 export const RichTextEditor = ({ content, onChange }: Props) => {
+  const [textColor, setTextColor] = useState("#000000");
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -46,7 +43,6 @@ export const RichTextEditor = ({ content, onChange }: Props) => {
         types: ["heading", "paragraph"],
       }),
       ParagraphSpacing,
-      HyphenBullet,
       Color,
       TextStyle,
     ],
@@ -75,6 +71,42 @@ export const RichTextEditor = ({ content, onChange }: Props) => {
     <div className="w-full max-w-xl">
       {/* Toolbar */}
       <div className="flex flex-wrap gap-2 mb-2 border border-input rounded-md p-2 bg-muted">
+        <Button
+          type="button"
+          variant={
+            editor.isActive("heading", { level: 1 }) ? "default" : "outline"
+          }
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 1 }).run()
+          }
+          size="sm"
+        >
+          H1
+        </Button>
+        <Button
+          type="button"
+          variant={
+            editor.isActive("heading", { level: 2 }) ? "default" : "outline"
+          }
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
+          size="sm"
+        >
+          H2
+        </Button>
+        <Button
+          type="button"
+          variant={
+            editor.isActive("heading", { level: 3 }) ? "default" : "outline"
+          }
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 3 }).run()
+          }
+          size="sm"
+        >
+          H3
+        </Button>
         {/* Text styles */}
         <Button
           type="button"
@@ -171,28 +203,28 @@ export const RichTextEditor = ({ content, onChange }: Props) => {
         >
           Large Spacing
         </Button>
-
-        {/* Hyphen Toggle */}
-        <Button
-          type="button"
-          variant={
-            editor.isActive("paragraph", { dataHyphen: "true" })
-              ? "default"
-              : "outline"
-          }
-          onClick={() => editor.chain().focus().toggleHyphen().run()}
-          size="sm"
-        >
-          <Minus className="w-4 h-4" />
-        </Button>
         <input
           type="color"
+          value={textColor}
           onChange={(e) => {
-            editor.chain().focus().setColor(e.target.value).run();
+            const color = e.target.value;
+            setTextColor(color);
+            editor.chain().focus().setColor(color).run();
           }}
           className="w-8 h-8 border rounded"
           title="Text color"
         />
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            editor.chain().focus().unsetColor().run();
+            setTextColor("#000000");
+          }}
+          size="sm"
+        >
+          Reset Color
+        </Button>
       </div>
 
       {/* Editor */}
