@@ -24,6 +24,7 @@ import {
   ChartTooltipContent,
   ChartConfig,
 } from "@/components/ui/chart";
+import MonthSelect from "@/components/ui-custom/MonthSelect";
 
 // Dummy data (social platforms)
 const chartData = [
@@ -65,10 +66,10 @@ const months = [
 const years = [2022, 2023, 2024, 2025];
 
 export default function SocialTrafficCharts() {
-  const [selectedMonth, setSelectedMonth] = useState<string | undefined>();
-  const [selectedYear, setSelectedYear] = useState<string | undefined>();
-
-  const showAllTime = !selectedMonth && !selectedYear;
+  const [selectedDate, setSelectedDate] = useState<{
+    month?: number;
+    year?: number;
+  }>({});
 
   return (
     <Card>
@@ -76,39 +77,11 @@ export default function SocialTrafficCharts() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <CardTitle>Social Traffic Insights</CardTitle>
-            <CardDescription>
-              {showAllTime
-                ? "Showing all-time data"
-                : `Showing data for ${selectedMonth || ""} ${selectedYear || ""}`}
-            </CardDescription>
           </div>
-          <div className="flex gap-4 flex-wrap">
-            <Select onValueChange={setSelectedMonth} value={selectedMonth}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Select Month" />
-              </SelectTrigger>
-              <SelectContent>
-                {months.map((month) => (
-                  <SelectItem key={month} value={month}>
-                    {month}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select onValueChange={setSelectedYear} value={selectedYear}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Select Year" />
-              </SelectTrigger>
-              <SelectContent>
-                {years.map((year) => (
-                  <SelectItem key={year} value={year.toString()}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <MonthSelect
+            value={selectedDate}
+            onChange={(month, year) => setSelectedDate({ month, year })}
+          />
         </div>
       </CardHeader>
 
@@ -209,17 +182,6 @@ export default function SocialTrafficCharts() {
           </Card>
         </div>
       </CardContent>
-
-      <CardFooter className="flex flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="text-muted-foreground leading-none">
-          {showAllTime
-            ? "Showing total visitors across all platforms"
-            : "Filtered by selected time period"}
-        </div>
-      </CardFooter>
     </Card>
   );
 }

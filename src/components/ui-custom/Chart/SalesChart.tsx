@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import MonthSelect from "@/components/ui-custom/MonthSelect";
 
 interface ChartDailyMetricsProps {
   affiliate?: boolean;
@@ -57,7 +58,10 @@ export function ChartDailyMetrics({
   affiliate = false,
 }: ChartDailyMetricsProps) {
   const [timeRange, setTimeRange] = React.useState("7d");
-
+  const [selectedDate, setSelectedDate] = React.useState<{
+    month?: number;
+    year?: number;
+  }>({});
   // Transform data
   const data = rawMetricsData.map((item) => ({
     ...item,
@@ -93,16 +97,10 @@ export function ChartDailyMetrics({
             {affiliate ? "Commission" : "Revenue"}
           </CardDescription>
         </div>
-        <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
-            <SelectValue placeholder="Last 7 days" />
-          </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            <SelectItem value="90d">Last 3 months</SelectItem>
-            <SelectItem value="30d">Last 30 days</SelectItem>
-            <SelectItem value="7d">Last 7 days</SelectItem>
-          </SelectContent>
-        </Select>
+        <MonthSelect
+          value={selectedDate}
+          onChange={(month, year) => setSelectedDate({ month, year })}
+        />
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer config={chartConfig} className="h-[300px] w-full">

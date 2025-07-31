@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOverview/AffiliateOverview";
 
 export function DashboardCustomization() {
   const [selectedPage, setSelectedPage] = useState("dashboard");
@@ -300,7 +301,7 @@ export function DashboardCustomization() {
               backgroundColor: mainBackgroundColor || undefined,
             }}
           >
-            {selectedPage === "dashboard" && <Dashboard />}
+            {selectedPage === "dashboard" && <AffiliateOverview isPreview />}
             {selectedPage === "links" && (
               <Links
                 isPreview
