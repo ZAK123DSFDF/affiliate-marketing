@@ -7,4 +7,5 @@ export interface AffiliateStats {
   paid: number;
   unpaid: number;
   links: string[];
+  conversionRate?: number;
 }

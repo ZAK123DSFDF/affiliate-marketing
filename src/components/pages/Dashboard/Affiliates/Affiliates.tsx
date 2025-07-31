@@ -103,6 +103,14 @@ export const columns: ColumnDef<AffiliateStats>[] = [
     cell: ({ row }) => <div>{row.getValue("sales")}</div>,
   },
   {
+    accessorKey: "conversionRate",
+    header: "Conversion Rate",
+    cell: ({ row }) => {
+      const rate = parseFloat(row.getValue("conversionRate"));
+      return <div>{rate.toFixed(2)}%</div>;
+    },
+  },
+  {
     accessorKey: "commission",
     header: () => <div className="text-right">Commission</div>,
     cell: ({ row }) => {
