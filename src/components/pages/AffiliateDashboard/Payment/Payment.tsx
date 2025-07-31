@@ -81,7 +81,7 @@ export default function AffiliateCommissionTable({
         }).format(amount);
         return (
           <div
-            className="text-right font-medium"
+            className=" font-medium"
             style={{
               color: customization?.tableRowPrimaryTextColor || undefined,
             }}
@@ -110,7 +110,7 @@ export default function AffiliateCommissionTable({
         }).format(amount);
         return (
           <div
-            className="text-right font-medium"
+            className=" font-medium"
             style={{
               color: customization?.tableRowPrimaryTextColor || undefined,
             }}
@@ -139,7 +139,7 @@ export default function AffiliateCommissionTable({
         }).format(amount);
         return (
           <div
-            className="text-right font-medium"
+            className=" font-medium"
             style={{
               color: customization?.tableRowPrimaryTextColor || undefined,
             }}
@@ -222,7 +222,6 @@ export default function AffiliateCommissionTable({
   ];
   const router = useRouter();
   const pathname = usePathname();
-  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [yearValue, setYearValue] = useState<number | undefined>(undefined);
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -290,15 +289,6 @@ export default function AffiliateCommissionTable({
           </p>
         </div>
       </div>
-
-      <div className="flex justify-between items-center">
-        <YearSelect
-          value={yearValue !== undefined ? { year: yearValue } : {}}
-          onChange={OnYearChange}
-          customization={customization}
-        />
-      </div>
-
       <Card
         style={{
           backgroundColor: customization?.cardBackgroundColor || undefined,
@@ -314,7 +304,7 @@ export default function AffiliateCommissionTable({
             : "",
         }}
       >
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle
             style={{
               color: customization?.headerNameColor || undefined,
@@ -322,6 +312,11 @@ export default function AffiliateCommissionTable({
           >
             Monthly Commission Stats
           </CardTitle>
+          <YearSelect
+            value={yearValue !== undefined ? { year: yearValue } : {}}
+            onChange={OnYearChange}
+            customization={customization}
+          />
         </CardHeader>
         <CardContent>
           {yearValue !== undefined && isPending && !isPreview ? (

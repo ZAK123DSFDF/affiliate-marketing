@@ -31,43 +31,66 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const dailyMetricsData = [
-  { date: "2024-06-01", visits: 340, sales: 45, amount: 1200 },
-  { date: "2024-06-02", visits: 380, sales: 60, amount: 1600 },
-  { date: "2024-06-03", visits: 420, sales: 58, amount: 1800 },
-  { date: "2024-06-04", visits: 390, sales: 62, amount: 1900 },
-  { date: "2024-06-05", visits: 410, sales: 40, amount: 1000 },
-  { date: "2024-06-06", visits: 500, sales: 78, amount: 2200 },
-  { date: "2024-06-07", visits: 460, sales: 65, amount: 1700 },
-].map((item) => ({
-  ...item,
-  conversionRate: parseFloat(((item.sales / item.visits) * 100).toFixed(2)),
-}));
+interface ChartDailyMetricsProps {
+  affiliate?: boolean;
+}
 
-const chartColors: any = {
+const rawMetricsData = [
+  { date: "2024-06-01", visits: 340, sales: 45, amount: 1200, commission: 240 },
+  { date: "2024-06-02", visits: 380, sales: 60, amount: 1600, commission: 320 },
+  { date: "2024-06-03", visits: 420, sales: 58, amount: 1800, commission: 290 },
+  { date: "2024-06-04", visits: 390, sales: 62, amount: 1900, commission: 310 },
+  { date: "2024-06-05", visits: 410, sales: 40, amount: 1000, commission: 200 },
+  { date: "2024-06-06", visits: 500, sales: 78, amount: 2200, commission: 430 },
+  { date: "2024-06-07", visits: 460, sales: 65, amount: 1700, commission: 300 },
+];
+
+const baseColors: any = {
   visits: "#60A5FA",
   sales: "#A78BFA",
   conversionRate: "#5EEAD4",
   amount: "#C4B5FD",
+  commission: "#F97316", // orange
 };
-const chartConfig = {
-  visits: { label: "Visits", color: "var(--chart-1)" },
-  sales: { label: "Sales", color: "var(--chart-2)" },
-  conversionRate: { label: "Conversion Rate (%)", color: "var(--chart-3)" },
-  amount: { label: "Total Amount ($)", color: "var(--chart-4)" },
-} satisfies ChartConfig;
-export function ChartDailyMetrics() {
+
+export function ChartDailyMetrics({
+  affiliate = false,
+}: ChartDailyMetricsProps) {
   const [timeRange, setTimeRange] = React.useState("7d");
+
+  // Transform data
+  const data = rawMetricsData.map((item) => ({
+    ...item,
+    conversionRate: parseFloat(((item.sales / item.visits) * 100).toFixed(2)),
+  }));
+
+  // Chart config (dynamic based on affiliate mode)
+  const chartConfig: ChartConfig = {
+    visits: { label: "Visits", color: "var(--chart-1)" },
+    sales: { label: "Sales", color: "var(--chart-2)" },
+    conversionRate: {
+      label: "Conversion Rate (%)",
+      color: "var(--chart-3)",
+    },
+    ...(affiliate
+      ? {
+          commission: { label: "Commission ($)", color: "var(--chart-4)" },
+        }
+      : {
+          amount: { label: "Total Amount ($)", color: "var(--chart-4)" },
+        }),
+  };
+
+  const chartKeys = Object.keys(chartConfig);
 
   return (
     <Card className="pt-0 mt-8">
-      {" "}
-      {/* Add margin to separate from KPI section */}
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
         <div className="grid flex-1 gap-1">
           <CardTitle>Daily Metrics</CardTitle>
           <CardDescription>
-            Visits, Sales, Conversion Rate, and Revenue
+            Visits, Sales, Conversion Rate, and{" "}
+            {affiliate ? "Commission" : "Revenue"}
           </CardDescription>
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>
@@ -82,15 +105,12 @@ export function ChartDailyMetrics() {
         </Select>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[300px] w-full"
-        >
+        <ChartContainer config={chartConfig} className="h-[300px] w-full">
           <div className="h-[320px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={dailyMetricsData}>
+              <AreaChart data={data}>
                 <defs>
-                  {Object.keys(chartColors).map((key) => (
+                  {chartKeys.map((key) => (
                     <linearGradient
                       id={`fill-${key}`}
                       key={key}
@@ -101,18 +121,17 @@ export function ChartDailyMetrics() {
                     >
                       <stop
                         offset="0%"
-                        stopColor={chartColors[key]}
+                        stopColor={baseColors[key]}
                         stopOpacity={0.5}
                       />
                       <stop
                         offset="100%"
-                        stopColor={chartColors[key]}
+                        stopColor={baseColors[key]}
                         stopOpacity={0.05}
                       />
                     </linearGradient>
                   ))}
                 </defs>
-
                 <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="date"
@@ -120,13 +139,12 @@ export function ChartDailyMetrics() {
                   axisLine={false}
                   tickMargin={8}
                   minTickGap={32}
-                  tickFormatter={(value) => {
-                    const date = new Date(value);
-                    return date.toLocaleDateString("en-US", {
+                  tickFormatter={(value) =>
+                    new Date(value).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
-                    });
-                  }}
+                    })
+                  }
                 />
                 <ChartTooltip
                   cursor={false}
@@ -142,13 +160,13 @@ export function ChartDailyMetrics() {
                     />
                   }
                 />
-                {Object.keys(chartColors).map((key) => (
+                {chartKeys.map((key) => (
                   <Area
                     key={key}
                     dataKey={key}
                     type="monotone"
                     fill={`url(#fill-${key})`}
-                    stroke={chartColors[key]}
+                    stroke={baseColors[key]}
                     strokeWidth={2}
                   />
                 ))}

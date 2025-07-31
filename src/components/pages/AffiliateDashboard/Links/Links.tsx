@@ -31,16 +31,19 @@ import {
   localDashboardCustomizationSettings,
 } from "@/lib/types/dashboardCustomization";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
+import MonthSelect from "@/components/ui-custom/MonthSelect";
 
 interface AffiliateLinkProps {
   data: AffiliateLinkWithStats[];
   isPreview?: boolean;
   customization?: localDashboardCustomizationSettings;
+  isTopLinksView?: boolean;
 }
 export default function Links({
   data,
   isPreview,
   customization,
+  isTopLinksView = false,
 }: AffiliateLinkProps) {
   const columns: ColumnDef<AffiliateLinkWithStats>[] = [
     {
@@ -153,6 +156,27 @@ export default function Links({
       ),
     },
     {
+      accessorKey: "conversionRate",
+      header: () => (
+        <span
+          style={{
+            color: customization?.tableHeaderTextColor || undefined,
+          }}
+        >
+          Conversion Rate
+        </span>
+      ),
+      cell: ({ row }) => (
+        <div
+          style={{
+            color: customization?.tableRowTertiaryTextColor || undefined,
+          }}
+        >
+          {row.getValue("conversionRate")}%
+        </div>
+      ),
+    },
+    {
       accessorKey: "createdAt",
       header: () => (
         <span
@@ -177,6 +201,10 @@ export default function Links({
   const [isFakeLoading, setIsFakeLoading] = useState(false);
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<{
+    year?: number;
+    month?: number;
+  }>({});
   const mutation = useMutation({
     mutationFn: createAffiliateLink,
     onSuccess: async (newLink: string) => {
@@ -216,44 +244,42 @@ export default function Links({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1
-            className="text-3xl font-bold"
+      {!isTopLinksView && (
+        <div className="flex justify-between items-center">
+          <div>
+            <h1
+              className="text-3xl font-bold"
+              style={{ color: customization?.headerNameColor || undefined }}
+            >
+              Affiliate Links
+            </h1>
+            <p
+              className="text-muted-foreground"
+              style={{ color: customization?.headerDescColor || undefined }}
+            >
+              Track your referral links and their performance
+            </p>
+          </div>
+          <Button
+            onClick={handleCreate}
+            disabled={mutation.isPending || isFakeLoading}
             style={{
-              color: customization?.headerNameColor || undefined,
+              backgroundColor:
+                mutation.isPending || isFakeLoading
+                  ? customization?.buttonDisabledBackgroundColor || undefined
+                  : customization?.buttonBackgroundColor || undefined,
+              color:
+                mutation.isPending || isFakeLoading
+                  ? customization?.buttonDisabledTextColor || undefined
+                  : customization?.buttonTextColor || undefined,
             }}
           >
-            Affiliate Links
-          </h1>
-          <p
-            className="text-muted-foreground"
-            style={{
-              color: customization?.headerDescColor || undefined,
-            }}
-          >
-            Track your referral links and their performance
-          </p>
+            {mutation.isPending || isFakeLoading
+              ? "Creating..."
+              : "Create New Link"}
+          </Button>
         </div>
-        <Button
-          onClick={handleCreate}
-          disabled={mutation.isPending || isFakeLoading}
-          style={{
-            backgroundColor:
-              mutation.isPending || isFakeLoading
-                ? customization?.buttonDisabledBackgroundColor || undefined
-                : customization?.buttonBackgroundColor || undefined,
-            color:
-              mutation.isPending || isFakeLoading
-                ? customization?.buttonDisabledTextColor || undefined
-                : customization?.buttonTextColor || undefined,
-          }}
-        >
-          {mutation.isPending || isFakeLoading
-            ? "Creating..."
-            : "Create New Link"}
-        </Button>
-      </div>
+      )}
 
       <Card
         style={{
@@ -264,21 +290,25 @@ export default function Links({
                   customization?.cardShadow,
                   customization?.cardShadowColor,
                 )
-              : "none",
+              : "",
           border: customization?.cardBorder
             ? `1px solid ${customization?.cardBorderColor}`
             : "",
         }}
       >
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle
-            style={{
-              color: customization?.headerNameColor || undefined,
-            }}
+            style={{ color: customization?.headerNameColor || undefined }}
+            className="text-lg"
           >
-            Link Stats
+            {isTopLinksView ? "Top Performing Links" : "Link Stats"}
           </CardTitle>
+          <MonthSelect
+            value={selectedDate}
+            onChange={(month, year) => setSelectedDate({ month, year })}
+          />
         </CardHeader>
+
         <CardContent>
           {data.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">

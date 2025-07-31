@@ -1,10 +1,10 @@
 // app/dashboard/page.tsx
-import Dashboard from "@/components/pages/Dashboard/Dashboard";
+import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOverview/AffiliateOverview";
 
 const DashboardPage = async () => {
   return (
     <>
-      <Dashboard />
+      <AffiliateOverview />
     </>
   );
 };

@@ -9,9 +9,18 @@ import {
 import { initialKpiData, months, years } from "@/lib/types/dummyKpiData";
 import { Card, CardContent } from "@/components/ui/card";
 
-const Cards = () => {
+interface CardsProps {
+  affiliate?: boolean;
+}
+const Cards = ({ affiliate = false }: CardsProps) => {
   const [selectedMonth, setSelectedMonth] = useState<string | undefined>();
   const [selectedYear, setSelectedYear] = useState<string | undefined>();
+  const filteredData = affiliate
+    ? initialKpiData.filter(
+        (item) =>
+          item.label !== "Total Affiliates" && item.label !== "Total Amount",
+      )
+    : initialKpiData;
   return (
     <div className="space-y-6">
       <Card>
@@ -47,7 +56,7 @@ const Cards = () => {
 
           {/* KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {initialKpiData.map(({ label, value, icon: Icon, color, bg }) => (
+            {filteredData.map(({ label, value, icon: Icon, color, bg }) => (
               <div
                 key={label}
                 className="p-4 border rounded-lg shadow-sm flex items-center gap-4"

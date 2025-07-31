@@ -50,6 +50,8 @@ import {
 } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AffiliateStats } from "@/lib/types/affiliateStats";
+import MonthSelect from "@/components/ui-custom/MonthSelect";
+import { useState } from "react";
 
 export const columns: ColumnDef<AffiliateStats>[] = [
   {
@@ -152,8 +154,14 @@ export const columns: ColumnDef<AffiliateStats>[] = [
 ];
 interface AffiliatesTableProps {
   data: AffiliateStats[];
+  cardTitle?: string;
+  showHeader?: boolean;
 }
-export default function AffiliatesTable({ data }: AffiliatesTableProps) {
+export default function AffiliatesTable({
+  data,
+  cardTitle = "Overview of all affiliate activities",
+  showHeader = false,
+}: AffiliatesTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -161,7 +169,10 @@ export default function AffiliatesTable({ data }: AffiliatesTableProps) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
+  const [selectedDate, setSelectedDate] = useState<{
+    year?: number;
+    month?: number;
+  }>({});
   const table = useReactTable({
     data,
     columns,
@@ -184,21 +195,28 @@ export default function AffiliatesTable({ data }: AffiliatesTableProps) {
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <SidebarTrigger className="md:hidden" />
-          <div>
-            <h1 className="text-3xl font-bold">Payments</h1>
-            <p className="text-muted-foreground">Manage your payment records</p>
+      {showHeader && (
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <SidebarTrigger className="md:hidden" />
+            <div>
+              <h1 className="text-3xl font-bold">Affiliates</h1>
+              <p className="text-muted-foreground">
+                Track and manage your affiliate performance metrics
+              </p>
+            </div>
           </div>
         </div>
-        <Button>Add Payment</Button>
-      </div>
+      )}
 
       {/* Table Card */}
       <Card>
-        <CardHeader>
-          <CardTitle>Payment Records</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-lg">{cardTitle}</CardTitle>
+          <MonthSelect
+            value={selectedDate}
+            onChange={(month, year) => setSelectedDate({ month, year })}
+          />
         </CardHeader>
         <CardContent>
           <div className="flex items-center py-4">
