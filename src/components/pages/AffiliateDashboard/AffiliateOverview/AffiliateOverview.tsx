@@ -10,10 +10,18 @@ const AffiliateOverview = ({ isPreview = false }: { isPreview?: boolean }) => {
   return (
     <div className="space-y-8">
       <Cards affiliate isPreview={isPreview} />
-      <ChartDailyMetrics affiliate />
-      <SocialTrafficCharts />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="h-full">
+          <ChartDailyMetrics affiliate isPreview={isPreview} />
+        </div>
+        <div className="h-full">
+          <SocialTrafficCharts isPreview={isPreview} />
+        </div>
+      </div>
+
       <Links data={dummyLinksData} isTopLinksView />
     </div>
   );
 };
+
 export default AffiliateOverview;

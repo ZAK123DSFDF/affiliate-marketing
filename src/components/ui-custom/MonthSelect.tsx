@@ -13,9 +13,15 @@ interface Props {
   value: { month?: number; year?: number };
   onChange: (month?: number, year?: number) => void;
   disabled?: boolean;
+  isPreview?: boolean;
 }
 
-export default function MonthSelect({ value, onChange, disabled }: Props) {
+export default function MonthSelect({
+  value,
+  onChange,
+  disabled,
+  isPreview = false,
+}: Props) {
   const now = new Date();
   const START_YEAR = 1990;
   const years = Array.from(
@@ -24,7 +30,7 @@ export default function MonthSelect({ value, onChange, disabled }: Props) {
   );
 
   return (
-    <div className="flex gap-2">
+    <div className={`flex gap-2 ${isPreview ? "text-xs" : ""}`}>
       {/* Year Select */}
       <Select
         value={value.year ? value.year.toString() : "all"}
@@ -36,7 +42,10 @@ export default function MonthSelect({ value, onChange, disabled }: Props) {
         }
         disabled={disabled}
       >
-        <SelectTrigger className="w-[100px]" aria-disabled={disabled}>
+        <SelectTrigger
+          className={`${isPreview ? "w-[72px] h-8 px-2 text-xs" : "w-[100px]"}`}
+          aria-disabled={disabled}
+        >
           <SelectValue placeholder="Year" />
         </SelectTrigger>
         <SelectContent>
@@ -61,7 +70,7 @@ export default function MonthSelect({ value, onChange, disabled }: Props) {
         disabled={!value.year || disabled}
       >
         <SelectTrigger
-          className="w-[100px]"
+          className={`${isPreview ? "w-[72px] h-8 px-2 text-xs" : "w-[100px]"}`}
           aria-disabled={!value.year || disabled}
         >
           <SelectValue placeholder="Month" />

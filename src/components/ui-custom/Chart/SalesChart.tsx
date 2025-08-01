@@ -34,6 +34,7 @@ import MonthSelect from "@/components/ui-custom/MonthSelect";
 
 interface ChartDailyMetricsProps {
   affiliate?: boolean;
+  isPreview?: boolean;
 }
 
 const rawMetricsData = [
@@ -56,6 +57,7 @@ const baseColors: any = {
 
 export function ChartDailyMetrics({
   affiliate = false,
+  isPreview = false,
 }: ChartDailyMetricsProps) {
   const [timeRange, setTimeRange] = React.useState("7d");
   const [selectedDate, setSelectedDate] = React.useState<{
@@ -88,23 +90,35 @@ export function ChartDailyMetrics({
   const chartKeys = Object.keys(chartConfig);
 
   return (
-    <Card className="pt-0 mt-8">
-      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+    <Card className={`${isPreview ? "h-[300px]" : "h-[480px]"} flex flex-col`}>
+      <CardHeader
+        className={`flex items-center gap-2 space-y-0 border-b ${
+          isPreview ? "py-2" : "py-5"
+        } sm:flex-row`}
+      >
         <div className="grid flex-1 gap-1">
-          <CardTitle>Daily Metrics</CardTitle>
-          <CardDescription>
+          <CardTitle className={isPreview ? "text-sm" : "text-lg"}>
+            Daily Metrics
+          </CardTitle>
+          <CardDescription className={isPreview ? "text-xs" : "text-sm"}>
             Visits, Sales, Conversion Rate, and{" "}
             {affiliate ? "Commission" : "Revenue"}
           </CardDescription>
         </div>
         <MonthSelect
+          isPreview={isPreview}
           value={selectedDate}
           onChange={(month, year) => setSelectedDate({ month, year })}
         />
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
-          <div className="h-[320px] w-full">
+        <ChartContainer
+          config={chartConfig}
+          className={`${
+            isPreview ? "h-[180px] max-w-[260px] mx-auto" : "h-[300px] w-full"
+          }`}
+        >
+          <div className={isPreview ? "h-[200px]" : "h-[320px] w-full"}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data}>
                 <defs>
@@ -168,7 +182,9 @@ export function ChartDailyMetrics({
                     strokeWidth={2}
                   />
                 ))}
-                <ChartLegend content={<ChartLegendContent />} />
+                <ChartLegend
+                  content={<ChartLegendContent isPreview={isPreview} />}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
