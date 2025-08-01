@@ -23,13 +23,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import MonthSelect from "@/components/ui-custom/MonthSelect";
 
 interface ChartDailyMetricsProps {
