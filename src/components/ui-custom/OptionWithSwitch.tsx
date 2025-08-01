@@ -1,0 +1,103 @@
+import { Switch } from "@/components/ui/switch";
+import { ResettableColorInput } from "./ResettableColorInput";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+
+type ColorProperty = {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+};
+
+type SwitchProperty = {
+  label: string;
+  enabled: boolean;
+  onToggle: (val: boolean) => void;
+  children?: Record<string, ColorProperty | SwitchProperty>;
+};
+
+type OptionProps<T> = {
+  properties: T;
+};
+
+export const OptionWithSwitch = <
+  T extends Record<string, ColorProperty | SwitchProperty>,
+>({
+  properties,
+}: OptionProps<T>) => {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline">⚙️ Open Options</Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[300px] max-h-[400px] overflow-auto">
+        <div className="space-y-4">
+          {Object.entries(properties).map(([key, prop]) => {
+            if ("value" in prop) {
+              return (
+                <ResettableColorInput
+                  key={key}
+                  label={prop.label}
+                  value={prop.value}
+                  onChange={prop.onChange}
+                />
+              );
+            }
+
+            if ("enabled" in prop) {
+              return (
+                <div key={key} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">{prop.label}</span>
+                    <Switch
+                      checked={prop.enabled}
+                      onCheckedChange={prop.onToggle}
+                    />
+                  </div>
+                  {prop.children &&
+                    Object.entries(prop.children).map(
+                      ([childKey, childProp]) => {
+                        if ("value" in childProp) {
+                          return (
+                            <ResettableColorInput
+                              key={childKey}
+                              label={childProp.label}
+                              value={childProp.value}
+                              onChange={childProp.onChange}
+                              disabled={!prop.enabled}
+                            />
+                          );
+                        }
+                        if ("enabled" in childProp) {
+                          return (
+                            <div
+                              key={childKey}
+                              className="flex items-center justify-between pl-4"
+                            >
+                              <span className="text-sm">{childProp.label}</span>
+                              <Switch
+                                checked={childProp.enabled}
+                                onCheckedChange={childProp.onToggle}
+                                disabled={!prop.enabled}
+                              />
+                            </div>
+                          );
+                        }
+                        return null;
+                      },
+                    )}
+                </div>
+              );
+            }
+
+            return null;
+          })}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+};

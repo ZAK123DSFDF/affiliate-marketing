@@ -23,6 +23,8 @@ import { LoginAffiliateServer } from "@/app/affiliate/[orgId]/login/action";
 import { LoginServer } from "@/app/login/action";
 import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
+import { useBackgroundColor } from "@/hooks/useCustomization";
+import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -40,6 +42,7 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
       rememberMe: false,
     },
   });
+  const { backgroundColor, setColor } = useBackgroundColor();
   const affiliateMutation = useMutation({
     mutationFn: LoginAffiliateServer,
     onSuccess: (data: any) => {
@@ -147,13 +150,13 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
   };
   return (
     <div
-      className={`min-h-screen flex items-center justify-center p-4 ${
-        customization?.backgroundColor
+      className={`relative min-h-screen flex items-center justify-center p-4 ${
+        backgroundColor
           ? ""
           : "bg-gradient-to-b from-background to-background/80"
       }`}
       style={{
-        backgroundColor: customization?.backgroundColor || undefined,
+        backgroundColor: backgroundColor || undefined,
       }}
     >
       <div className="w-full max-w-md">
@@ -326,6 +329,15 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
           </CardFooter>
         </Card>
       </div>
+      {isPreview && (
+        <div className="absolute bottom-0 left-0 z-50">
+          <ResettableColorInput
+            label="Background"
+            value={backgroundColor}
+            onChange={(val) => setColor("backgroundColor", val)}
+          />
+        </div>
+      )}
     </div>
   );
 };

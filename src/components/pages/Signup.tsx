@@ -30,6 +30,8 @@ import { SignupAffiliateServer } from "@/app/affiliate/[orgId]/signup/action";
 import { SignupServer } from "@/app/signup/action";
 import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
+import { useBackgroundColor } from "@/hooks/useCustomization";
+import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -47,6 +49,7 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
     },
   });
   const { toast } = useToast();
+  const { backgroundColor, setColor } = useBackgroundColor();
   const affiliateMutation = useMutation({
     mutationFn: SignupAffiliateServer,
     onSuccess: (data) => console.log("Affiliate signup success", data),
@@ -144,13 +147,13 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
 
   return (
     <div
-      className={`min-h-screen flex items-center justify-center p-4 ${
-        customization?.backgroundColor
+      className={`relative min-h-screen flex items-center justify-center p-4 ${
+        backgroundColor
           ? ""
           : "bg-gradient-to-b from-background to-background/80"
       }`}
       style={{
-        backgroundColor: customization?.backgroundColor || undefined,
+        backgroundColor: backgroundColor || undefined,
       }}
     >
       <div className="w-full max-w-md">
@@ -326,6 +329,15 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
           </CardFooter>
         </Card>
       </div>
+      {isPreview && (
+        <div className="absolute bottom-0 left-0 z-50">
+          <ResettableColorInput
+            label="Background"
+            value={backgroundColor}
+            onChange={(val) => setColor("backgroundColor", val)}
+          />
+        </div>
+      )}
     </div>
   );
 };

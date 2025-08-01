@@ -25,11 +25,7 @@ import { createAffiliateLink } from "@/app/affiliate/[orgId]/dashboard/links/act
 import { toast } from "@/hooks/use-toast";
 import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
 import { Check, Copy } from "lucide-react";
-import { cn } from "@/lib/utils";
-import {
-  dashboardCustomizationSettings,
-  localDashboardCustomizationSettings,
-} from "@/lib/types/dashboardCustomization";
+import { localDashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import MonthSelect from "@/components/ui-custom/MonthSelect";
 

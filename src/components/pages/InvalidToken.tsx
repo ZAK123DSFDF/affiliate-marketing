@@ -2,21 +2,24 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
+import { useBackgroundColor } from "@/hooks/useCustomization";
+import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
   isPreview?: boolean;
 };
 const InvalidToken = ({ orgId, customization, isPreview }: Props) => {
+  const { backgroundColor, setColor } = useBackgroundColor();
   return (
     <div
-      className={`min-h-screen flex items-center justify-center p-4 ${
-        customization?.backgroundColor
+      className={`relative min-h-screen flex items-center justify-center p-4 ${
+        backgroundColor
           ? ""
           : "bg-gradient-to-b from-background to-background/80"
       }`}
       style={{
-        backgroundColor: customization?.backgroundColor || undefined,
+        backgroundColor: backgroundColor || undefined,
       }}
     >
       <div className="w-full max-w-md">
@@ -64,6 +67,15 @@ const InvalidToken = ({ orgId, customization, isPreview }: Props) => {
           </CardContent>
         </Card>
       </div>
+      {isPreview && (
+        <div className="absolute bottom-0 left-0 z-50">
+          <ResettableColorInput
+            label="Background"
+            value={backgroundColor}
+            onChange={(val) => setColor("backgroundColor", val)}
+          />
+        </div>
+      )}
     </div>
   );
 };
