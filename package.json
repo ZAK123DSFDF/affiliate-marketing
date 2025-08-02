@@ -19,6 +19,7 @@
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@paypal/paypal-server-sdk": "^1.0.0",
     "@paypal/react-paypal-js": "^8.8.3",
+    "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-checkbox": "^1.1.4",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-dropdown-menu": "^2.1.12",

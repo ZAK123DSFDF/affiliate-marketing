@@ -23,8 +23,12 @@ import { LoginAffiliateServer } from "@/app/affiliate/[orgId]/login/action";
 import { LoginServer } from "@/app/login/action";
 import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
-import { useBackgroundColor } from "@/hooks/useCustomization";
+import {
+  useBackgroundColor,
+  useCardCustomizationOption,
+} from "@/hooks/useCustomization";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -43,6 +47,15 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
     },
   });
   const { backgroundColor, setColor } = useBackgroundColor();
+  const {
+    cardShadow,
+    cardShadowColor,
+    cardBorder,
+    cardBorderColor,
+    cardBackgroundColor,
+    setCardSwitch,
+    setCardColor,
+  } = useCardCustomizationOption();
   const affiliateMutation = useMutation({
     mutationFn: LoginAffiliateServer,
     onSuccess: (data: any) => {
@@ -172,7 +185,7 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
         </div>
 
         <Card
-          className={`transition-shadow duration-300 ${
+          className={`relative transition-shadow duration-300 ${
             customization?.showShadow && customization?.shadowThickness
               ? `shadow-${customization.shadowThickness}`
               : customization?.showShadow
@@ -327,6 +340,43 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
               </Link>
             </div>
           </CardFooter>
+          {isPreview && (
+            <div className="absolute bottom-0 left-0 z-50 p-2">
+              <OptionWithSwitch
+                properties={{
+                  shadow: {
+                    label: "Enable Card Shadow",
+                    enabled: cardShadow,
+                    onToggle: (val) => setCardSwitch("cardShadow", val),
+                    children: {
+                      shadowColor: {
+                        label: "Shadow Color",
+                        value: cardShadowColor,
+                        onChange: (val) => setCardColor("cardShadowColor", val),
+                      },
+                    },
+                  },
+                  border: {
+                    label: "Enable Card Border",
+                    enabled: cardBorder,
+                    onToggle: (val) => setCardSwitch("cardBorder", val),
+                    children: {
+                      borderColor: {
+                        label: "Border Color",
+                        value: cardBorderColor,
+                        onChange: (val) => setCardColor("cardBorderColor", val),
+                      },
+                    },
+                  },
+                  backgroundColor: {
+                    label: "Card Background Color",
+                    value: cardBackgroundColor,
+                    onChange: (val) => setCardColor("cardBackgroundColor", val),
+                  },
+                }}
+              />
+            </div>
+          )}
         </Card>
       </div>
       {isPreview && (
@@ -335,6 +385,7 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
             label="Background"
             value={backgroundColor}
             onChange={(val) => setColor("backgroundColor", val)}
+            showLabel={false}
           />
         </div>
       )}

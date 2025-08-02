@@ -1,11 +1,16 @@
-import { Input } from "@/components/ui/input";
+"use client";
+
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { useRef } from "react";
 
 type ResettableColorInputProps = {
   label: string;
   value: string;
   onChange: (val: string) => void;
   disabled?: boolean;
+  showLabel?: boolean;
+  buttonSize?: string;
 };
 
 export const ResettableColorInput = ({
@@ -13,27 +18,55 @@ export const ResettableColorInput = ({
   value,
   onChange,
   disabled = false,
-}: ResettableColorInputProps) => (
-  <div>
-    <Label className="mb-1 block">{label}</Label>
-    <div className="flex items-center gap-2">
-      <Input
-        type="color"
-        value={value || "#ffffff"}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-10 h-10 p-0 cursor-pointer rounded-sm border-none"
-        disabled={disabled}
-      />
-      {value && (
-        <button
+  showLabel = true,
+  buttonSize = "w-8 h-8",
+}: ResettableColorInputProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const openColorPicker = () => {
+    if (inputRef.current) {
+      inputRef.current.click();
+    }
+  };
+
+  return (
+    <div>
+      {showLabel && <Label className="mb-1 block text-xs">{label}</Label>}
+      <div className="flex items-center gap-2">
+        {/* Hidden color input */}
+        <input
+          ref={inputRef}
+          type="color"
+          value={value || "#84C5F4"}
+          onChange={(e) => onChange(e.target.value)}
+          id="style-color-input"
+          disabled={disabled}
+          className="absolute opacity-0 w-0 h-0"
+        />
+
+        {/* Palette icon button triggers the input */}
+        <Button
+          variant="outline"
+          size="icon"
           type="button"
-          onClick={() => onChange("")}
-          className="text-sm text-muted-foreground hover:text-destructive"
+          className={`p-1 text-base ${buttonSize}`}
+          onClick={openColorPicker}
           disabled={disabled}
         >
-          Reset
-        </button>
-      )}
+          🎨
+        </Button>
+
+        {value && (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="text-xs text-muted-foreground hover:text-destructive"
+            disabled={disabled}
+          >
+            Reset
+          </button>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};

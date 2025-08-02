@@ -27,14 +27,19 @@ export const createCustomizationStore = <
         [key]: val,
       })),
   }));
-interface BackgroundCustomizationStore {
-  backgroundColor: string;
-  setColor: (key: "backgroundColor", val: string) => void;
-}
 
-export const useBackgroundCustomization = create<BackgroundCustomizationStore>(
-  (set) => ({
-    backgroundColor: "",
-    setColor: (key, val) => set({ [key]: val }),
-  }),
+export const useBackgroundCustomization = createCustomizationStore(
+  { backgroundColor: "" },
+  {},
+);
+export const useCardCustomization = createCustomizationStore(
+  {
+    cardShadowColor: "",
+    cardBorderColor: "",
+    cardBackgroundColor: "",
+  },
+  {
+    cardShadow: true,
+    cardBorder: true,
+  },
 );

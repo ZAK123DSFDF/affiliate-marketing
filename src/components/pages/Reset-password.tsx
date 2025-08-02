@@ -277,6 +277,7 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
             label="Background"
             value={backgroundColor}
             onChange={(val) => setColor("backgroundColor", val)}
+            showLabel={false}
           />
         </div>
       )}
