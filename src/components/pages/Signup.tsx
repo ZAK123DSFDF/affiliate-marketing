@@ -39,6 +39,9 @@ import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInpu
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/CardCustomizationOptions";
 import { InputCustomizationOptions } from "@/components/ui-custom/Customization/InputCustomizationOptions";
+import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
+import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/ButtonCustomizationOptions";
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/ThemeCustomizationOptions";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -199,25 +202,7 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
           }}
         >
           <CardHeader className="space-y-1">
-            {(!customization?.customNotesSignup ||
-              customization?.customNotesSignup === "") && (
-              <>
-                <CardTitle className="text-2xl font-bold text-center">
-                  Create An Account
-                </CardTitle>
-                <CardDescription className="text-center">
-                  Enter Your Information to Sign Up
-                </CardDescription>
-              </>
-            )}
-            {customization?.customNotesSignup?.trim() && (
-              <div
-                className="rich-text-preview text-sm"
-                dangerouslySetInnerHTML={{
-                  __html: customization?.customNotesSignup,
-                }}
-              />
-            )}
+            {isPreview && <InlineNotesEditor name="customNotesSignup" />}
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -227,7 +212,7 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
               >
                 {isPreview && (
                   <div className="absolute top-[-10] right-0 z-50">
-                    <InputCustomizationOptions />
+                    <InputCustomizationOptions size="w-6 h-6" />
                   </div>
                 )}
                 <InputField
@@ -313,48 +298,57 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
                     </>
                   )}
                 </Button>
+                {isPreview && <ButtonCustomizationOptions size="w-6 h-6" />}
               </form>
             </Form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-            </div>
             <div
               className="text-center text-sm"
               style={{
                 color: customization?.secondaryTextColor || undefined,
               }}
             >
-              Already have an account?{" "}
-              <Link
-                href={`login`}
-                className="font-medium text-primary underline-offset-4 hover:underline"
-                style={{
-                  color: customization?.linkTextColor || undefined,
-                }}
-              >
-                Log in
-              </Link>
+              <div className="flex flex-row gap-2">
+                {isPreview && (
+                  <ThemeCustomizationOptions
+                    name="tertiaryTextColor"
+                    showLabel={false}
+                    buttonSize="w-4 h-4"
+                  />
+                )}
+                <span>Already have an account?</span>
+              </div>
+              <div className="flex flex-row gap-2 justify-center">
+                {isPreview && (
+                  <ThemeCustomizationOptions
+                    name="linkTextColor"
+                    showLabel={false}
+                    buttonSize="w-4 h-4"
+                  />
+                )}
+                <Link
+                  href={`login`}
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                  style={{
+                    color: customization?.linkTextColor || undefined,
+                  }}
+                >
+                  Log in
+                </Link>
+              </div>
             </div>
           </CardFooter>
           {isPreview && (
             <div className="absolute bottom-0 left-0 z-50 p-2">
-              <CardCustomizationOptions />
+              <CardCustomizationOptions size="w-6 h-6" />
             </div>
           )}
         </Card>
       </div>
       {isPreview && (
         <div className="absolute bottom-0 left-0 z-50">
-          <ResettableColorInput
-            label="Background"
-            value={backgroundColor}
-            onChange={(val) => setColor("backgroundColor", val)}
-            showLabel={false}
-          />
+          <ThemeCustomizationOptions name="backgroundColor" showLabel={false} />
         </div>
       )}
     </div>

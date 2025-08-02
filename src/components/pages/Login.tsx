@@ -37,6 +37,7 @@ import { CheckboxCustomizationOptions } from "@/components/ui-custom/Customizati
 import { InputCustomizationOptions } from "@/components/ui-custom/Customization/InputCustomizationOptions";
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/ButtonCustomizationOptions";
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/ThemeCustomizationOptions";
+import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -206,25 +207,7 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
           }}
         >
           <CardHeader className="space-y-1">
-            {(!customization?.customNotesLogin ||
-              customization?.customNotesLogin === "") && (
-              <>
-                <CardTitle className="text-2xl font-bold text-center">
-                  Welcome back
-                </CardTitle>
-                <CardDescription className="text-center">
-                  Enter your credentials to access your account
-                </CardDescription>
-              </>
-            )}
-            {customization?.customNotesLogin?.trim() && (
-              <div
-                className="rich-text-preview text-sm"
-                dangerouslySetInnerHTML={{
-                  __html: customization.customNotesLogin,
-                }}
-              />
-            )}
+            {isPreview && <InlineNotesEditor name="customNotesLogin" />}
           </CardHeader>
 
           <CardContent>
@@ -235,7 +218,7 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
               >
                 {isPreview && (
                   <div className="absolute top-[-10] right-0 z-50">
-                    <InputCustomizationOptions />
+                    <InputCustomizationOptions size="w-6 h-6" />
                   </div>
                 )}
                 <InputField
@@ -269,17 +252,28 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
                       label="Remember me"
                       customization={customization}
                     />
-                    {isPreview && <CheckboxCustomizationOptions />}
+                    {isPreview && (
+                      <CheckboxCustomizationOptions size="w-6 h-6" />
+                    )}
                   </div>
-                  <Link
-                    href="/forgot-password"
-                    className="text-sm font-medium text-primary hover:underline"
-                    style={{
-                      color: customization?.linkTextColor || undefined,
-                    }}
-                  >
-                    Forgot password?
-                  </Link>
+                  <div className="flex flex-row gap-2">
+                    {isPreview && (
+                      <ThemeCustomizationOptions
+                        name="linkTextColor"
+                        showLabel={false}
+                        buttonSize="w-4 h-4"
+                      />
+                    )}
+                    <Link
+                      href="/forgot-password"
+                      className="text-sm font-medium text-primary hover:underline"
+                      style={{
+                        color: customization?.linkTextColor || undefined,
+                      }}
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
                 </div>
 
                 <Button
@@ -324,18 +318,23 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
             </Form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-            </div>
             <div
               className="text-center text-sm"
               style={{
                 color: customization?.secondaryTextColor || undefined,
               }}
             >
-              Don't have an account?{" "}
+              <div className="flex flex-row gap-2">
+                {isPreview && (
+                  <ThemeCustomizationOptions
+                    name="tertiaryTextColor"
+                    showLabel={false}
+                    buttonSize="w-4 h-4"
+                  />
+                )}
+                <span>Don't have an account? </span>
+              </div>
+
               <Link
                 href={`signup`}
                 className="font-medium text-primary underline-offset-4 hover:underline"
@@ -349,7 +348,7 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
           </CardFooter>
           {isPreview && (
             <div className="absolute bottom-0 left-0 z-50 p-2">
-              <CardCustomizationOptions />
+              <CardCustomizationOptions size="w-6 h-6" />
             </div>
           )}
         </Card>

@@ -4,6 +4,8 @@ import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { useBackgroundColor } from "@/hooks/useCustomization";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/ThemeCustomizationOptions";
+import { CardCustomizationOptions } from "@/components/ui-custom/Customization/CardCustomizationOptions";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -24,7 +26,7 @@ const InvalidToken = ({ orgId, customization, isPreview }: Props) => {
     >
       <div className="w-full max-w-md">
         <Card
-          className={`transition-shadow duration-300 ${
+          className={`relative transition-shadow duration-300 ${
             customization?.showShadow && customization?.shadowThickness
               ? `shadow-${customization.shadowThickness}`
               : customization?.showShadow
@@ -46,35 +48,54 @@ const InvalidToken = ({ orgId, customization, isPreview }: Props) => {
           }}
         >
           <CardHeader className="space-y-1">
-            <CardTitle
-              className="text-2xl font-bold text-center text-destructive"
-              style={{
-                color: customization?.errorPagePrimaryTextColor || undefined,
-              }}
-            >
-              Invalid Token
-            </CardTitle>
+            <div className="flex flex-row gap-2 justify-center">
+              <CardTitle
+                className="text-2xl font-bold text-center text-destructive"
+                style={{
+                  color: customization?.errorPagePrimaryTextColor || undefined,
+                }}
+              >
+                Invalid Token
+              </CardTitle>
+              {isPreview && (
+                <ThemeCustomizationOptions
+                  name="InvalidPrimaryCustomization"
+                  showLabel={false}
+                  buttonSize="w-4 h-4"
+                />
+              )}
+            </div>
           </CardHeader>
           <CardContent className="text-center">
-            <p
-              className="text-muted-foreground mb-4"
-              style={{
-                color: customization?.errorPageSecondaryTextColor || undefined,
-              }}
-            >
-              The password reset link is invalid or has expired.
-            </p>
+            <div className="flex flex-row gap-2 justify-center">
+              <p
+                className="text-muted-foreground mb-4"
+                style={{
+                  color:
+                    customization?.errorPageSecondaryTextColor || undefined,
+                }}
+              >
+                The password reset link is invalid or has expired.
+              </p>
+              {isPreview && (
+                <ThemeCustomizationOptions
+                  name="InvalidSecondaryCustomization"
+                  showLabel={false}
+                  buttonSize="w-4 h-4"
+                />
+              )}
+            </div>
           </CardContent>
+          {isPreview && (
+            <div className="absolute bottom-0 left-0 z-50 p-2">
+              <CardCustomizationOptions size="w-6 h-6" />
+            </div>
+          )}
         </Card>
       </div>
       {isPreview && (
         <div className="absolute bottom-0 left-0 z-50">
-          <ResettableColorInput
-            label="Background"
-            value={backgroundColor}
-            onChange={(val) => setColor("backgroundColor", val)}
-            showLabel={false}
-          />
+          <ThemeCustomizationOptions name="backgroundColor" showLabel={false} />
         </div>
       )}
     </div>

@@ -16,11 +16,13 @@ type ThemeKeys =
 type Props = {
   name: ThemeKeys;
   showLabel?: boolean;
+  buttonSize?: string;
 };
 
 export const ThemeCustomizationOptions = ({
   name,
   showLabel = false,
+  buttonSize = "w-8 h-8",
 }: Props) => {
   const {
     backgroundColor,
@@ -59,6 +61,7 @@ export const ThemeCustomizationOptions = ({
       value={valueMap[name]}
       onChange={(val) => setThemeColor(name, val)}
       showLabel={showLabel}
+      buttonSize={buttonSize}
     />
   );
 };

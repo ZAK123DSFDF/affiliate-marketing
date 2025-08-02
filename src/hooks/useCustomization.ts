@@ -4,6 +4,7 @@ import {
   useCardCustomization,
   useCheckboxCustomization,
   useInputCustomization,
+  useNotesCustomization,
   useThemeCustomization,
 } from "@/store/useCustomizationStore";
 
@@ -134,5 +135,17 @@ export const useThemeCustomizationOption = () => {
     InvalidPrimaryCustomization,
     InvalidSecondaryCustomization,
     setThemeColor,
+  };
+};
+export const useNotesCustomizationOption = () => {
+  const customNotesLogin = useNotesCustomization((s) => s.customNotesLogin);
+  const customNotesSignup = useNotesCustomization((s) => s.customNotesSignup);
+
+  const setNote = useNotesCustomization((s) => s.setNote);
+
+  return {
+    customNotesLogin,
+    customNotesSignup,
+    setNote,
   };
 };

@@ -40,6 +40,8 @@ import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInpu
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/CardCustomizationOptions";
 import { InputCustomizationOptions } from "@/components/ui-custom/Customization/InputCustomizationOptions";
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/ThemeCustomizationOptions";
+import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/ButtonCustomizationOptions";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -173,18 +175,36 @@ const ForgotPassword = ({ orgId, customization, isPreview }: Props) => {
           }}
         >
           <CardHeader className="space-y-1">
-            <CardTitle
-              className="text-2xl font-bold text-center"
-              style={{ color: customization?.primaryTextColor || undefined }}
-            >
-              Forgot Password
-            </CardTitle>
-            <CardDescription
-              className="text-center"
-              style={{ color: customization?.tertiaryTextColor || undefined }}
-            >
-              Enter your email to receive a password reset link
-            </CardDescription>
+            <div className="flex flex-row gap-2 justify-center">
+              <CardTitle
+                className="text-2xl font-bold text-center"
+                style={{ color: customization?.primaryTextColor || undefined }}
+              >
+                Forgot Password
+              </CardTitle>
+              {isPreview && (
+                <ThemeCustomizationOptions
+                  name="primaryCustomization"
+                  showLabel={false}
+                  buttonSize="w-4 h-4"
+                />
+              )}
+            </div>
+            <div className="flex flex-row gap-2 justify-center">
+              <CardDescription
+                className="text-center"
+                style={{ color: customization?.tertiaryTextColor || undefined }}
+              >
+                Enter your email to receive a password reset link
+              </CardDescription>
+              {isPreview && (
+                <ThemeCustomizationOptions
+                  name="secondaryCustomization"
+                  showLabel={false}
+                  buttonSize="w-4 h-4"
+                />
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -194,7 +214,7 @@ const ForgotPassword = ({ orgId, customization, isPreview }: Props) => {
               >
                 {isPreview && (
                   <div className="absolute top-[-10] right-0 z-50">
-                    <InputCustomizationOptions />
+                    <InputCustomizationOptions size="w-6 h-6" />
                   </div>
                 )}
                 <InputField
@@ -245,6 +265,7 @@ const ForgotPassword = ({ orgId, customization, isPreview }: Props) => {
                     </>
                   )}
                 </Button>
+                {isPreview && <ButtonCustomizationOptions size="w-6 h-6" />}
               </form>
             </Form>
           </CardContent>
@@ -255,33 +276,46 @@ const ForgotPassword = ({ orgId, customization, isPreview }: Props) => {
                 color: customization?.secondaryTextColor || undefined,
               }}
             >
-              Remember your password?{" "}
-              <Link
-                href="/login"
-                className="font-medium text-primary underline-offset-4 hover:underline"
-                style={{
-                  color: customization?.linkTextColor || undefined,
-                }}
-              >
-                Log in
-              </Link>
+              <div className="flex flex-row gap-2">
+                {isPreview && (
+                  <ThemeCustomizationOptions
+                    name="tertiaryTextColor"
+                    showLabel={false}
+                    buttonSize="w-4 h-4"
+                  />
+                )}
+                <span>Remember your password?</span>
+              </div>
+              <div className="flex flex-row gap-2 justify-center">
+                {isPreview && (
+                  <ThemeCustomizationOptions
+                    name="linkTextColor"
+                    showLabel={false}
+                    buttonSize="w-4 h-4"
+                  />
+                )}
+                <Link
+                  href="/login"
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                  style={{
+                    color: customization?.linkTextColor || undefined,
+                  }}
+                >
+                  Log in
+                </Link>
+              </div>
             </div>
           </CardFooter>
           {isPreview && (
             <div className="absolute bottom-0 left-0 z-50 p-2">
-              <CardCustomizationOptions />
+              <CardCustomizationOptions size="w-6 h-6" />
             </div>
           )}
         </Card>
       </div>
       {isPreview && (
         <div className="absolute bottom-0 left-0 z-50">
-          <ResettableColorInput
-            label="Background"
-            value={backgroundColor}
-            onChange={(val) => setColor("backgroundColor", val)}
-            showLabel={false}
-          />
+          <ThemeCustomizationOptions name="backgroundColor" showLabel={false} />
         </div>
       )}
     </div>
