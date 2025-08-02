@@ -26,6 +26,7 @@ import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import {
   useBackgroundColor,
   useCardCustomizationOption,
+  useInputCustomizationOption,
 } from "@/hooks/useCustomization";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
@@ -56,6 +57,17 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
     setCardSwitch,
     setCardColor,
   } = useCardCustomizationOption();
+  const {
+    inputLabelColor,
+    inputLabelErrorColor,
+    inputIconColor,
+    inputTextColor,
+    inputErrorTextColor,
+    inputBorderColor,
+    inputErrorBorderColor,
+    inputPlaceholderTextColor,
+    setInputColor,
+  } = useInputCustomizationOption();
   const affiliateMutation = useMutation({
     mutationFn: LoginAffiliateServer,
     onSuccess: (data: any) => {
@@ -232,8 +244,64 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
+                className="relative space-y-4"
               >
+                {isPreview && (
+                  <div className="absolute top-[-10] right-0 z-50">
+                    <OptionWithSwitch
+                      properties={{
+                        inputLabelColor: {
+                          label: "Input Label Color",
+                          value: inputLabelColor,
+                          onChange: (val) =>
+                            setInputColor("inputLabelColor", val),
+                        },
+                        inputLabelErrorColor: {
+                          label: "Input Label Error Color",
+                          value: inputLabelErrorColor,
+                          onChange: (val) =>
+                            setInputColor("inputLabelErrorColor", val),
+                        },
+                        inputIconColor: {
+                          label: "Input Icon Color",
+                          value: inputIconColor,
+                          onChange: (val) =>
+                            setInputColor("inputIconColor", val),
+                        },
+                        inputTextColor: {
+                          label: "Input Text Color",
+                          value: inputTextColor,
+                          onChange: (val) =>
+                            setInputColor("inputTextColor", val),
+                        },
+                        inputErrorTextColor: {
+                          label: "Input Error Text Color",
+                          value: inputErrorTextColor,
+                          onChange: (val) =>
+                            setInputColor("inputErrorTextColor", val),
+                        },
+                        inputBorderColor: {
+                          label: "Input Border Color",
+                          value: inputBorderColor,
+                          onChange: (val) =>
+                            setInputColor("inputBorderColor", val),
+                        },
+                        inputErrorBorderColor: {
+                          label: "Input Error Border Color",
+                          value: inputErrorBorderColor,
+                          onChange: (val) =>
+                            setInputColor("inputErrorBorderColor", val),
+                        },
+                        inputPlaceholderTextColor: {
+                          label: "Input Placeholder Color",
+                          value: inputPlaceholderTextColor,
+                          onChange: (val) =>
+                            setInputColor("inputPlaceholderTextColor", val),
+                        },
+                      }}
+                    />
+                  </div>
+                )}
                 <InputField
                   key={`email-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}

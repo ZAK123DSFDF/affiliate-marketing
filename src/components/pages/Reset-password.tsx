@@ -26,7 +26,12 @@ import InvalidToken from "@/components/pages/InvalidToken";
 import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
-import { useBackgroundColor } from "@/hooks/useCustomization";
+import {
+  useBackgroundColor,
+  useCardCustomizationOption,
+  useInputCustomizationOption,
+} from "@/hooks/useCustomization";
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -50,6 +55,26 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
   const router = useRouter();
   const { toast } = useToast();
   const { backgroundColor, setColor } = useBackgroundColor();
+  const {
+    cardShadow,
+    cardShadowColor,
+    cardBorder,
+    cardBorderColor,
+    cardBackgroundColor,
+    setCardSwitch,
+    setCardColor,
+  } = useCardCustomizationOption();
+  const {
+    inputLabelColor,
+    inputLabelErrorColor,
+    inputIconColor,
+    inputTextColor,
+    inputErrorTextColor,
+    inputBorderColor,
+    inputErrorBorderColor,
+    inputPlaceholderTextColor,
+    setInputColor,
+  } = useInputCustomizationOption();
   const onSubmit = async (data: ResetPasswordFormValues) => {
     if (isPreview) {
       setPending(true);
@@ -145,7 +170,7 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
         </div>
 
         <Card
-          className={`transition-shadow duration-300 ${
+          className={`relative transition-shadow duration-300 ${
             customization?.showShadow && customization?.shadowThickness
               ? `shadow-${customization.shadowThickness}`
               : customization?.showShadow
@@ -184,8 +209,64 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
+                className="relative space-y-4"
               >
+                {isPreview && (
+                  <div className="absolute top-[-10] right-0 z-50">
+                    <OptionWithSwitch
+                      properties={{
+                        inputLabelColor: {
+                          label: "Input Label Color",
+                          value: inputLabelColor,
+                          onChange: (val) =>
+                            setInputColor("inputLabelColor", val),
+                        },
+                        inputLabelErrorColor: {
+                          label: "Input Label Error Color",
+                          value: inputLabelErrorColor,
+                          onChange: (val) =>
+                            setInputColor("inputLabelErrorColor", val),
+                        },
+                        inputIconColor: {
+                          label: "Input Icon Color",
+                          value: inputIconColor,
+                          onChange: (val) =>
+                            setInputColor("inputIconColor", val),
+                        },
+                        inputTextColor: {
+                          label: "Input Text Color",
+                          value: inputTextColor,
+                          onChange: (val) =>
+                            setInputColor("inputTextColor", val),
+                        },
+                        inputErrorTextColor: {
+                          label: "Input Error Text Color",
+                          value: inputErrorTextColor,
+                          onChange: (val) =>
+                            setInputColor("inputErrorTextColor", val),
+                        },
+                        inputBorderColor: {
+                          label: "Input Border Color",
+                          value: inputBorderColor,
+                          onChange: (val) =>
+                            setInputColor("inputBorderColor", val),
+                        },
+                        inputErrorBorderColor: {
+                          label: "Input Error Border Color",
+                          value: inputErrorBorderColor,
+                          onChange: (val) =>
+                            setInputColor("inputErrorBorderColor", val),
+                        },
+                        inputPlaceholderTextColor: {
+                          label: "Input Placeholder Color",
+                          value: inputPlaceholderTextColor,
+                          onChange: (val) =>
+                            setInputColor("inputPlaceholderTextColor", val),
+                        },
+                      }}
+                    />
+                  </div>
+                )}
                 <InputField
                   key={`newPassword-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
@@ -269,6 +350,43 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
               </Link>
             </div>
           </CardFooter>
+          {isPreview && (
+            <div className="absolute bottom-0 left-0 z-50 p-2">
+              <OptionWithSwitch
+                properties={{
+                  shadow: {
+                    label: "Enable Card Shadow",
+                    enabled: cardShadow,
+                    onToggle: (val) => setCardSwitch("cardShadow", val),
+                    children: {
+                      shadowColor: {
+                        label: "Shadow Color",
+                        value: cardShadowColor,
+                        onChange: (val) => setCardColor("cardShadowColor", val),
+                      },
+                    },
+                  },
+                  border: {
+                    label: "Enable Card Border",
+                    enabled: cardBorder,
+                    onToggle: (val) => setCardSwitch("cardBorder", val),
+                    children: {
+                      borderColor: {
+                        label: "Border Color",
+                        value: cardBorderColor,
+                        onChange: (val) => setCardColor("cardBorderColor", val),
+                      },
+                    },
+                  },
+                  backgroundColor: {
+                    label: "Card Background Color",
+                    value: cardBackgroundColor,
+                    onChange: (val) => setCardColor("cardBackgroundColor", val),
+                  },
+                }}
+              />
+            </div>
+          )}
         </Card>
       </div>
       {isPreview && (

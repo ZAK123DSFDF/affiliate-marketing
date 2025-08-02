@@ -1,6 +1,7 @@
 import {
   useBackgroundCustomization,
   useCardCustomization,
+  useInputCustomization,
 } from "@/store/useCustomizationStore";
 
 export const useBackgroundColor = () => {
@@ -28,5 +29,37 @@ export const useCardCustomizationOption = () => {
     cardBorder,
     setCardColor,
     setCardSwitch,
+  };
+};
+export const useInputCustomizationOption = () => {
+  const inputLabelColor = useInputCustomization((s) => s.inputLabelColor);
+  const inputLabelErrorColor = useInputCustomization(
+    (s) => s.inputLabelErrorColor,
+  );
+  const inputIconColor = useInputCustomization((s) => s.inputIconColor);
+  const inputTextColor = useInputCustomization((s) => s.inputTextColor);
+  const inputErrorTextColor = useInputCustomization(
+    (s) => s.inputErrorTextColor,
+  );
+  const inputBorderColor = useInputCustomization((s) => s.inputBorderColor);
+  const inputErrorBorderColor = useInputCustomization(
+    (s) => s.inputErrorBorderColor,
+  );
+  const inputPlaceholderTextColor = useInputCustomization(
+    (s) => s.inputPlaceholderTextColor,
+  );
+
+  const setInputColor = useInputCustomization((s) => s.setColor);
+
+  return {
+    inputLabelColor,
+    inputLabelErrorColor,
+    inputIconColor,
+    inputTextColor,
+    inputErrorTextColor,
+    inputBorderColor,
+    inputErrorBorderColor,
+    inputPlaceholderTextColor,
+    setInputColor,
   };
 };

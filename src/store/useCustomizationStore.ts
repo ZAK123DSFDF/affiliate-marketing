@@ -43,3 +43,16 @@ export const useCardCustomization = createCustomizationStore(
     cardBorder: true,
   },
 );
+export const useInputCustomization = createCustomizationStore(
+  {
+    inputLabelColor: "",
+    inputLabelErrorColor: "",
+    inputIconColor: "",
+    inputTextColor: "",
+    inputErrorTextColor: "",
+    inputBorderColor: "",
+    inputErrorBorderColor: "",
+    inputPlaceholderTextColor: "",
+  },
+  {},
+);
