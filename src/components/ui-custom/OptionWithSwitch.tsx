@@ -16,6 +16,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Settings } from "lucide-react";
 
 type ColorProperty = {
   label: string;
@@ -32,24 +33,35 @@ type SwitchProperty = {
 
 type OptionProps<T> = {
   properties: T;
+  triggerSize?: string;
 };
 
 export const OptionWithSwitch = <
   T extends Record<string, ColorProperty | SwitchProperty>,
 >({
   properties,
+  triggerSize = "w-8 h-8",
 }: OptionProps<T>) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          type="button"
-          className="p-1 text-base"
+        <div
+          className={cn(
+            "rounded-md border bg-background p-1",
+            "hover:bg-accent hover:text-accent-foreground",
+            "cursor-pointer transition-colors",
+            "flex items-center justify-center",
+            triggerSize,
+          )}
         >
-          ⚙️
-        </Button>
+          <Settings
+            className={cn(
+              "w-4 h-4",
+              triggerSize,
+              "text-blue-600 dark:text-blue-400",
+            )}
+          />
+        </div>
       </PopoverTrigger>
       <PopoverContent className="w-[300px] max-h-[400px] overflow-auto">
         <Accordion type="multiple" className="flex flex-col gap-2">

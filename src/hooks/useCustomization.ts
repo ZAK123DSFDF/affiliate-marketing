@@ -1,7 +1,10 @@
 import {
   useBackgroundCustomization,
+  useButtonCustomization,
   useCardCustomization,
+  useCheckboxCustomization,
   useInputCustomization,
+  useThemeCustomization,
 } from "@/store/useCustomizationStore";
 
 export const useBackgroundColor = () => {
@@ -61,5 +64,75 @@ export const useInputCustomizationOption = () => {
     inputErrorBorderColor,
     inputPlaceholderTextColor,
     setInputColor,
+  };
+};
+export const useCheckboxCustomizationOption = () => {
+  const checkboxLabelColor = useCheckboxCustomization(
+    (s) => s.checkboxLabelColor,
+  );
+  const checkboxActiveColor = useCheckboxCustomization(
+    (s) => s.checkboxActiveColor,
+  );
+  const checkboxInactiveColor = useCheckboxCustomization(
+    (s) => s.checkboxInactiveColor,
+  );
+  const setCheckboxColor = useCheckboxCustomization((s) => s.setColor);
+
+  return {
+    checkboxLabelColor,
+    checkboxActiveColor,
+    checkboxInactiveColor,
+    setCheckboxColor,
+  };
+};
+export const useButtonCustomizationOption = () => {
+  const buttonTextColor = useButtonCustomization((s) => s.buttonTextColor);
+  const buttonBackgroundColor = useButtonCustomization(
+    (s) => s.buttonBackgroundColor,
+  );
+  const buttonDisabledTextColor = useButtonCustomization(
+    (s) => s.buttonDisabledTextColor,
+  );
+  const buttonDisabledBackgroundColor = useButtonCustomization(
+    (s) => s.buttonDisabledBackgroundColor,
+  );
+  const setButtonColor = useButtonCustomization((s) => s.setColor);
+
+  return {
+    buttonTextColor,
+    buttonBackgroundColor,
+    buttonDisabledTextColor,
+    buttonDisabledBackgroundColor,
+    setButtonColor,
+  };
+};
+export const useThemeCustomizationOption = () => {
+  const backgroundColor = useThemeCustomization((s) => s.backgroundColor);
+  const linkTextColor = useThemeCustomization((s) => s.linkTextColor);
+  const tertiaryTextColor = useThemeCustomization((s) => s.tertiaryTextColor);
+  const primaryCustomization = useThemeCustomization(
+    (s) => s.primaryCustomization,
+  );
+  const secondaryCustomization = useThemeCustomization(
+    (s) => s.secondaryCustomization,
+  );
+  const InvalidPrimaryCustomization = useThemeCustomization(
+    (s) => s.InvalidPrimaryCustomization,
+  );
+  const InvalidSecondaryCustomization = useThemeCustomization(
+    (s) => s.InvalidSecondaryCustomization,
+  );
+
+  const setThemeColor = useThemeCustomization((s) => s.setColor);
+
+  return {
+    backgroundColor,
+    linkTextColor,
+    tertiaryTextColor,
+    primaryCustomization,
+    secondaryCustomization,
+    InvalidPrimaryCustomization,
+    InvalidSecondaryCustomization,
+    setThemeColor,
   };
 };

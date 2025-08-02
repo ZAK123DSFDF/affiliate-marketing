@@ -56,3 +56,33 @@ export const useInputCustomization = createCustomizationStore(
   },
   {},
 );
+export const useCheckboxCustomization = createCustomizationStore(
+  {
+    checkboxLabelColor: "",
+    checkboxActiveColor: "",
+    checkboxInactiveColor: "",
+  },
+  {},
+);
+export const useButtonCustomization = createCustomizationStore(
+  {
+    buttonTextColor: "",
+    buttonBackgroundColor: "",
+    buttonDisabledTextColor: "",
+    buttonDisabledBackgroundColor: "",
+  },
+  {},
+);
+
+export const useThemeCustomization = createCustomizationStore(
+  {
+    backgroundColor: "",
+    linkTextColor: "",
+    tertiaryTextColor: "",
+    primaryCustomization: "",
+    secondaryCustomization: "",
+    InvalidPrimaryCustomization: "",
+    InvalidSecondaryCustomization: "",
+  },
+  {},
+);

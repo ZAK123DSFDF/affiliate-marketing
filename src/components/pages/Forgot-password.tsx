@@ -38,6 +38,8 @@ import {
 } from "@/hooks/useCustomization";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
+import { CardCustomizationOptions } from "@/components/ui-custom/Customization/CardCustomizationOptions";
+import { InputCustomizationOptions } from "@/components/ui-custom/Customization/InputCustomizationOptions";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -53,26 +55,7 @@ const ForgotPassword = ({ orgId, customization, isPreview }: Props) => {
   const [pending, setPending] = useState(false);
   const { toast } = useToast();
   const { backgroundColor, setColor } = useBackgroundColor();
-  const {
-    cardShadow,
-    cardShadowColor,
-    cardBorder,
-    cardBorderColor,
-    cardBackgroundColor,
-    setCardSwitch,
-    setCardColor,
-  } = useCardCustomizationOption();
-  const {
-    inputLabelColor,
-    inputLabelErrorColor,
-    inputIconColor,
-    inputTextColor,
-    inputErrorTextColor,
-    inputBorderColor,
-    inputErrorBorderColor,
-    inputPlaceholderTextColor,
-    setInputColor,
-  } = useInputCustomizationOption();
+
   const onSubmit = async (data: ForgotPasswordFormValues) => {
     if (isPreview) {
       setPending(true);
@@ -211,58 +194,7 @@ const ForgotPassword = ({ orgId, customization, isPreview }: Props) => {
               >
                 {isPreview && (
                   <div className="absolute top-[-10] right-0 z-50">
-                    <OptionWithSwitch
-                      properties={{
-                        inputLabelColor: {
-                          label: "Input Label Color",
-                          value: inputLabelColor,
-                          onChange: (val) =>
-                            setInputColor("inputLabelColor", val),
-                        },
-                        inputLabelErrorColor: {
-                          label: "Input Label Error Color",
-                          value: inputLabelErrorColor,
-                          onChange: (val) =>
-                            setInputColor("inputLabelErrorColor", val),
-                        },
-                        inputIconColor: {
-                          label: "Input Icon Color",
-                          value: inputIconColor,
-                          onChange: (val) =>
-                            setInputColor("inputIconColor", val),
-                        },
-                        inputTextColor: {
-                          label: "Input Text Color",
-                          value: inputTextColor,
-                          onChange: (val) =>
-                            setInputColor("inputTextColor", val),
-                        },
-                        inputErrorTextColor: {
-                          label: "Input Error Text Color",
-                          value: inputErrorTextColor,
-                          onChange: (val) =>
-                            setInputColor("inputErrorTextColor", val),
-                        },
-                        inputBorderColor: {
-                          label: "Input Border Color",
-                          value: inputBorderColor,
-                          onChange: (val) =>
-                            setInputColor("inputBorderColor", val),
-                        },
-                        inputErrorBorderColor: {
-                          label: "Input Error Border Color",
-                          value: inputErrorBorderColor,
-                          onChange: (val) =>
-                            setInputColor("inputErrorBorderColor", val),
-                        },
-                        inputPlaceholderTextColor: {
-                          label: "Input Placeholder Color",
-                          value: inputPlaceholderTextColor,
-                          onChange: (val) =>
-                            setInputColor("inputPlaceholderTextColor", val),
-                        },
-                      }}
-                    />
+                    <InputCustomizationOptions />
                   </div>
                 )}
                 <InputField
@@ -337,39 +269,7 @@ const ForgotPassword = ({ orgId, customization, isPreview }: Props) => {
           </CardFooter>
           {isPreview && (
             <div className="absolute bottom-0 left-0 z-50 p-2">
-              <OptionWithSwitch
-                properties={{
-                  shadow: {
-                    label: "Enable Card Shadow",
-                    enabled: cardShadow,
-                    onToggle: (val) => setCardSwitch("cardShadow", val),
-                    children: {
-                      shadowColor: {
-                        label: "Shadow Color",
-                        value: cardShadowColor,
-                        onChange: (val) => setCardColor("cardShadowColor", val),
-                      },
-                    },
-                  },
-                  border: {
-                    label: "Enable Card Border",
-                    enabled: cardBorder,
-                    onToggle: (val) => setCardSwitch("cardBorder", val),
-                    children: {
-                      borderColor: {
-                        label: "Border Color",
-                        value: cardBorderColor,
-                        onChange: (val) => setCardColor("cardBorderColor", val),
-                      },
-                    },
-                  },
-                  backgroundColor: {
-                    label: "Card Background Color",
-                    value: cardBackgroundColor,
-                    onChange: (val) => setCardColor("cardBackgroundColor", val),
-                  },
-                }}
-              />
+              <CardCustomizationOptions />
             </div>
           )}
         </Card>
