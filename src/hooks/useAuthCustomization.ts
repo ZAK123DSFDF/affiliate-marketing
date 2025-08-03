@@ -5,7 +5,7 @@ import {
   useInputCustomization,
   useNotesCustomization,
   useThemeCustomization,
-} from "@/store/useCustomizationStore";
+} from "@/store/useAuthCustomizationStore";
 
 export const useCardCustomizationOption = () => {
   const cardShadowThickness = useCardCustomization(

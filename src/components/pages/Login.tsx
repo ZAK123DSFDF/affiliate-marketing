@@ -24,13 +24,13 @@ import {
   useButtonCustomizationOption,
   useCardCustomizationOption,
   useThemeCustomizationOption,
-} from "@/hooks/useCustomization";
+} from "@/hooks/useAuthCustomization";
 
-import { CardCustomizationOptions } from "@/components/ui-custom/Customization/CardCustomizationOptions";
-import { CheckboxCustomizationOptions } from "@/components/ui-custom/Customization/CheckboxCustomizationOptions";
-import { InputCustomizationOptions } from "@/components/ui-custom/Customization/InputCustomizationOptions";
-import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/ButtonCustomizationOptions";
-import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/ThemeCustomizationOptions";
+import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
+import { CheckboxCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CheckboxCustomizationOptions";
+import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions";
+import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
 import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 type Props = {

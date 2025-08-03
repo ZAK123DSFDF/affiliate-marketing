@@ -24,13 +24,13 @@ import {
   useButtonCustomizationOption,
   useCardCustomizationOption,
   useThemeCustomizationOption,
-} from "@/hooks/useCustomization";
+} from "@/hooks/useAuthCustomization";
 
-import { CardCustomizationOptions } from "@/components/ui-custom/Customization/CardCustomizationOptions";
-import { InputCustomizationOptions } from "@/components/ui-custom/Customization/InputCustomizationOptions";
+import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
+import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions";
 import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
-import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/ButtonCustomizationOptions";
-import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/ThemeCustomizationOptions";
+import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 type Props = {
   orgId?: string;

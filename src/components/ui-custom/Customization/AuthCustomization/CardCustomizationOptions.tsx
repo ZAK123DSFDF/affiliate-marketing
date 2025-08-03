@@ -1,6 +1,6 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import React from "react";
-import { useCardCustomizationOption } from "@/hooks/useCustomization";
+import { useCardCustomizationOption } from "@/hooks/useAuthCustomization";
 
 export const CardCustomizationOptions = ({
   triggerSize,

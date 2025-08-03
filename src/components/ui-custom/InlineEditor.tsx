@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Pencil } from "lucide-react";
 import { RichTextEditor } from "@/components/ui-custom/RichTextEditor";
-import { useNotesCustomizationOption } from "@/hooks/useCustomization";
+import { useNotesCustomizationOption } from "@/hooks/useAuthCustomization";
 
 type NotesKey = "customNotesLogin" | "customNotesSignup";
 

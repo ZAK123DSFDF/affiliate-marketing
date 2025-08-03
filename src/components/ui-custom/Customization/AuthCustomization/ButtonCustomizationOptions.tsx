@@ -1,7 +1,7 @@
 "use client";
 
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
-import { useButtonCustomizationOption } from "@/hooks/useCustomization";
+import { useButtonCustomizationOption } from "@/hooks/useAuthCustomization";
 
 export const ButtonCustomizationOptions = ({
   size,

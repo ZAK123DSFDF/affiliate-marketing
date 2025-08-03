@@ -18,7 +18,7 @@ import {
   ColorCustomizationSettings,
   localDashboardCustomizationSettings,
 } from "@/lib/types/dashboardCustomization";
-import { useMainBackgroundColor } from "@/store/useMainBackgroundColor";
+import { useDashboardCustomizationStore } from "@/store/useDashboardCustomizationStore";
 import {
   Select,
   SelectContent,
@@ -85,7 +85,7 @@ export function DashboardCustomization() {
       yearSelectDropDownHoverTextColor: "",
     });
   const { setMainBackgroundColor, mainBackgroundColor } =
-    useMainBackgroundColor();
+    useDashboardCustomizationStore();
   const handleChange = (
     key: keyof localDashboardCustomizationSettings | "mainBackgroundColor",
     val: string,

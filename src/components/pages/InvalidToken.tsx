@@ -5,10 +5,10 @@ import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import {
   useCardCustomizationOption,
   useThemeCustomizationOption,
-} from "@/hooks/useCustomization";
+} from "@/hooks/useAuthCustomization";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
-import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/ThemeCustomizationOptions";
-import { CardCustomizationOptions } from "@/components/ui-custom/Customization/CardCustomizationOptions";
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
+import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 type Props = {
   orgId?: string;

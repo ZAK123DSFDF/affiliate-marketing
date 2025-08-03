@@ -1,0 +1,104 @@
+import { create } from "zustand";
+import { createCustomizationStore } from "@/store/CreateCustomizationStore";
+
+interface MainBackgroundColorStore {
+  mainBackgroundColor: string;
+  setMainBackgroundColor: (color: string) => void;
+}
+
+export const useDashboardCustomizationStore = create<MainBackgroundColorStore>(
+  (set) => ({
+    mainBackgroundColor: "",
+    setMainBackgroundColor: (color) => set({ mainBackgroundColor: color }),
+  }),
+);
+export const useSidebarCustomization = createCustomizationStore(
+  {
+    sideBarBackgroundColor: "",
+    sideBarActiveNavigationTextColor: "",
+    sideBarInActiveNavigationTextColor: "",
+    sideBarActiveNavigationBackgroundColor: "",
+    sideBarHoverNavigationBackgroundColor: "",
+    sideBarHoverNavigationTextColor: "",
+    sideBarProfileBackgroundColor: "",
+    sideBarProfileTextPrimaryColor: "",
+    sideBarProfileTextSecondaryColor: "",
+  },
+  {},
+  {},
+);
+export const useDashboardCardCustomization = createCustomizationStore(
+  {
+    dashboardCardShadowThickness: "sm",
+    dashboardCardBorderColor: "",
+    dashboardCardBackgroundColor: "",
+    dashboardCardShadowColor: "",
+  },
+  { dashboardCardBorder: false, dashboardCardShadow: false },
+  {},
+);
+export const useDashboardHeaderCustomization = createCustomizationStore(
+  {
+    mainBackgroundColor: "",
+    dashboardHeaderNameColor: "",
+    dashboardHeaderDescColor: "",
+  },
+  {},
+  {},
+);
+export const useDashboardButtonCustomization = createCustomizationStore(
+  {
+    dashboardButtonBackgroundColor: "",
+    dashboardButtonTextColor: "",
+    dashboardButtonDisabledBackgroundColor: "",
+    dashboardButtonDisabledTextColor: "",
+  },
+  {},
+  {},
+);
+export const useTableCustomization = createCustomizationStore(
+  {
+    tableHeaderTextColor: "",
+    tableHoverBackgroundColor: "",
+    tableIconColor: "",
+    tableIconHoverColor: "",
+    tableIconHoverBackgroundColor: "",
+    tableRowPrimaryTextColor: "",
+    tableRowSecondaryTextColor: "",
+    tableRowTertiaryTextColor: "",
+    tableRowBadgeOverDueTextColor: "",
+    tableRowBadgeOverDueBackgroundColor: "",
+    tableRowBadgePendingTextColor: "",
+    tableRowBadgePendingBackgroundColor: "",
+    tableRowBadgePaidTextColor: "",
+    tableRowBadgePaidBackgroundColor: "",
+  },
+  {},
+  {},
+);
+export const useDialogCustomization = createCustomizationStore(
+  {
+    separatorColor: "",
+    dialogBackgroundColor: "",
+    dialogCloseIconColor: "",
+    dialogCloseIconBorderColor: "",
+  },
+  {},
+  {},
+);
+export const useYearSelectCustomization = createCustomizationStore(
+  {
+    yearSelectBackgroundColor: "",
+    yearSelectTextColor: "",
+    yearSelectActiveBorderColor: "",
+    yearSelectDropDownBackgroundColor: "",
+    yearSelectDropDownTextColor: "",
+    yearSelectDropDownActiveTextColor: "",
+    yearSelectDropDownActiveBackgroundColor: "",
+    yearSelectDropDownIconColor: "",
+    yearSelectDropDownHoverBackgroundColor: "",
+    yearSelectDropDownHoverTextColor: "",
+  },
+  {},
+  {},
+);

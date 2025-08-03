@@ -15,7 +15,7 @@ import {
   useCardCustomizationOption,
   useCheckboxCustomizationOption,
   useInputCustomizationOption,
-} from "@/hooks/useCustomization";
+} from "@/hooks/useAuthCustomization";
 
 type InputFieldProps = {
   control: any;

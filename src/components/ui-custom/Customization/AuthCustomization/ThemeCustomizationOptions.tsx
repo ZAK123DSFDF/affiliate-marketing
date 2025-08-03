@@ -1,7 +1,7 @@
 "use client";
 
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
-import { useThemeCustomizationOption } from "@/hooks/useCustomization";
+import { useThemeCustomizationOption } from "@/hooks/useAuthCustomization";
 
 // These are the valid keys
 type ThemeKeys =

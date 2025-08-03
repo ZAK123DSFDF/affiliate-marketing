@@ -1,4 +1,4 @@
-import { useCheckboxCustomizationOption } from "@/hooks/useCustomization";
+import { useCheckboxCustomizationOption } from "@/hooks/useAuthCustomization";
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import React from "react";
 
