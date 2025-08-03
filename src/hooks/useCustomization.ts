@@ -1,5 +1,4 @@
 import {
-  useBackgroundCustomization,
   useButtonCustomization,
   useCardCustomization,
   useCheckboxCustomization,
@@ -8,12 +7,6 @@ import {
   useThemeCustomization,
 } from "@/store/useCustomizationStore";
 
-export const useBackgroundColor = () => {
-  const backgroundColor = useBackgroundCustomization((s) => s.backgroundColor);
-  const setColor = useBackgroundCustomization((s) => s.setColor);
-
-  return { backgroundColor, setColor };
-};
 export const useCardCustomizationOption = () => {
   const cardShadowThickness = useCardCustomization(
     (s) => s.cardShadowThickness,
@@ -131,7 +124,15 @@ export const useThemeCustomizationOption = () => {
   const InvalidSecondaryCustomization = useThemeCustomization(
     (s) => s.InvalidSecondaryCustomization,
   );
-
+  const emailVerifiedPrimaryColor = useThemeCustomization(
+    (s) => s.emailVerifiedPrimaryColor,
+  );
+  const emailVerifiedSecondaryColor = useThemeCustomization(
+    (s) => s.emailVerifiedSecondaryColor,
+  );
+  const emailVerifiedIconColor = useThemeCustomization(
+    (s) => s.emailVerifiedIconColor,
+  );
   const setThemeColor = useThemeCustomization((s) => s.setColor);
 
   return {
@@ -142,6 +143,9 @@ export const useThemeCustomizationOption = () => {
     secondaryCustomization,
     InvalidPrimaryCustomization,
     InvalidSecondaryCustomization,
+    emailVerifiedPrimaryColor,
+    emailVerifiedSecondaryColor,
+    emailVerifiedIconColor,
     setThemeColor,
   };
 };

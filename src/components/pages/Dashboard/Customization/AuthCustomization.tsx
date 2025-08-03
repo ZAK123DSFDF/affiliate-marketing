@@ -20,6 +20,7 @@ import {
 import ForgotPassword from "@/components/pages/Forgot-password";
 import ResetPassword from "@/components/pages/Reset-password";
 import InvalidToken from "@/components/pages/InvalidToken";
+import EmailVerified from "@/components/pages/Email-verified";
 
 export const AuthCustomization = () => {
   const [customization, setCustomization] = useState<AuthCustomizationSettings>(
@@ -201,8 +202,8 @@ export const AuthCustomization = () => {
             <TabsTrigger value="forgot-password">Forgot Password</TabsTrigger>
             <TabsTrigger value="reset-password">Reset Password</TabsTrigger>
             <TabsTrigger value="invalid-token">Invalid Token</TabsTrigger>
+            <TabsTrigger value="email-verified">Email Verified</TabsTrigger>
           </TabsList>
-
           <TabsContent value="login">
             <Login customization={customization} isPreview />
           </TabsContent>
@@ -217,6 +218,9 @@ export const AuthCustomization = () => {
           </TabsContent>
           <TabsContent value="invalid-token">
             <InvalidToken customization={customization} isPreview />
+          </TabsContent>{" "}
+          <TabsContent value="email-verified">
+            <EmailVerified customization={customization} isPreview />
           </TabsContent>
         </Tabs>
       </div>

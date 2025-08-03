@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import {
-  useBackgroundColor,
   useCardCustomizationOption,
   useThemeCustomizationOption,
 } from "@/hooks/useCustomization";
@@ -17,9 +16,11 @@ type Props = {
   isPreview?: boolean;
 };
 const InvalidToken = ({ orgId, customization, isPreview }: Props) => {
-  const { backgroundColor } = useThemeCustomizationOption();
-  const { InvalidPrimaryCustomization, InvalidSecondaryCustomization } =
-    useThemeCustomizationOption();
+  const {
+    backgroundColor,
+    InvalidPrimaryCustomization,
+    InvalidSecondaryCustomization,
+  } = useThemeCustomizationOption();
   const {
     cardShadow,
     cardShadowColor,

@@ -38,11 +38,6 @@ export const createCustomizationStore = <
       })),
   }));
 
-export const useBackgroundCustomization = createCustomizationStore(
-  { backgroundColor: "" },
-  {},
-  {},
-);
 export const useCardCustomization = createCustomizationStore(
   {
     cardShadowColor: "",
@@ -100,6 +95,9 @@ export const useThemeCustomization = createCustomizationStore(
     secondaryCustomization: "",
     InvalidPrimaryCustomization: "",
     InvalidSecondaryCustomization: "",
+    emailVerifiedPrimaryColor: "",
+    emailVerifiedSecondaryColor: "",
+    emailVerifiedIconColor: "",
   },
   {},
   {},

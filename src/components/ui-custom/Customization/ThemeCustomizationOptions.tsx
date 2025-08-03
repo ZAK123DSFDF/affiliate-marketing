@@ -11,7 +11,10 @@ type ThemeKeys =
   | "primaryCustomization"
   | "secondaryCustomization"
   | "InvalidPrimaryCustomization"
-  | "InvalidSecondaryCustomization";
+  | "InvalidSecondaryCustomization"
+  | "emailVerifiedPrimaryColor"
+  | "emailVerifiedSecondaryColor"
+  | "emailVerifiedIconColor";
 
 type Props = {
   name: ThemeKeys;
@@ -32,6 +35,9 @@ export const ThemeCustomizationOptions = ({
     secondaryCustomization,
     InvalidPrimaryCustomization,
     InvalidSecondaryCustomization,
+    emailVerifiedPrimaryColor,
+    emailVerifiedSecondaryColor,
+    emailVerifiedIconColor,
     setThemeColor,
   } = useThemeCustomizationOption();
 
@@ -43,6 +49,9 @@ export const ThemeCustomizationOptions = ({
     secondaryCustomization,
     InvalidPrimaryCustomization,
     InvalidSecondaryCustomization,
+    emailVerifiedPrimaryColor,
+    emailVerifiedSecondaryColor,
+    emailVerifiedIconColor,
   };
 
   const labelMap: Record<ThemeKeys, string> = {
@@ -53,6 +62,9 @@ export const ThemeCustomizationOptions = ({
     secondaryCustomization: "Secondary",
     InvalidPrimaryCustomization: "Invalid Primary",
     InvalidSecondaryCustomization: "Invalid Secondary",
+    emailVerifiedPrimaryColor: "Email Verified Primary",
+    emailVerifiedSecondaryColor: "Email Verified Secondary",
+    emailVerifiedIconColor: "Email Verified Icon",
   };
 
   return (
