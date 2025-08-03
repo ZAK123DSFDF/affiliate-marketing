@@ -39,7 +39,6 @@ export const ResettableColorInput = ({
           type="color"
           value={value || "#84C5F4"}
           onChange={(e) => onChange(e.target.value)}
-          id="style-color-input"
           disabled={disabled}
           className="absolute opacity-0 w-0 h-0"
         />

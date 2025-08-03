@@ -28,8 +28,10 @@ import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import {
   useBackgroundColor,
+  useButtonCustomizationOption,
   useCardCustomizationOption,
   useInputCustomizationOption,
+  useThemeCustomizationOption,
 } from "@/hooks/useCustomization";
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/CardCustomizationOptions";
@@ -58,7 +60,23 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
   const [pending, setPending] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { backgroundColor, setColor } = useBackgroundColor();
+  const { backgroundColor, linkTextColor, tertiaryTextColor } =
+    useThemeCustomizationOption();
+  const {
+    cardBackgroundColor,
+    cardBorderColor,
+    cardShadowColor,
+    cardBorder,
+    cardShadow,
+  } = useCardCustomizationOption();
+  const {
+    buttonDisabledTextColor,
+    buttonBackgroundColor,
+    buttonDisabledBackgroundColor,
+    buttonTextColor,
+  } = useButtonCustomizationOption();
+  const { primaryCustomization, secondaryCustomization } =
+    useThemeCustomizationOption();
 
   const onSubmit = async (data: ResetPasswordFormValues) => {
     if (isPreview) {
@@ -180,7 +198,7 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
             <div className="flex flex-row gap-2 justify-center">
               <CardTitle
                 className="text-2xl font-bold text-center"
-                style={{ color: customization?.primaryTextColor || undefined }}
+                style={{ color: primaryCustomization || undefined }}
               >
                 Reset Password
               </CardTitle>
@@ -195,7 +213,7 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
             <div className="flex flex-row gap-2 justify-center">
               <CardDescription
                 className="text-center"
-                style={{ color: customization?.tertiaryTextColor || undefined }}
+                style={{ color: secondaryCustomization || undefined }}
               >
                 Enter your new password
               </CardDescription>
@@ -249,12 +267,11 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
                   disabled={pending}
                   style={{
                     backgroundColor: pending
-                      ? customization?.buttonDisabledBackgroundColor ||
-                        undefined
-                      : customization?.buttonBackgroundColor || undefined,
+                      ? buttonDisabledBackgroundColor || undefined
+                      : buttonBackgroundColor || undefined,
                     color: pending
-                      ? customization?.buttonDisabledTextColor || undefined
-                      : customization?.buttonTextColor || undefined,
+                      ? buttonDisabledTextColor || undefined
+                      : buttonTextColor || undefined,
                   }}
                 >
                   {pending ? (
@@ -262,8 +279,7 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
                       <Loader2
                         className="h-4 w-4 animate-spin mr-2"
                         style={{
-                          color:
-                            customization?.buttonDisabledTextColor || undefined,
+                          color: buttonDisabledTextColor || undefined,
                         }}
                       />
                       Updating password...
@@ -274,7 +290,7 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
                       <ArrowRight
                         className="h-4 w-4 ml-2"
                         style={{
-                          color: customization?.buttonTextColor || undefined,
+                          color: buttonTextColor || undefined,
                         }}
                       />
                     </>
@@ -288,7 +304,7 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
             <div
               className="mt-4 text-center text-sm"
               style={{
-                color: customization?.secondaryTextColor || undefined,
+                color: tertiaryTextColor || undefined,
               }}
             >
               <div className="flex flex-row gap-2">
@@ -313,7 +329,7 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
                   href="/login"
                   className="font-medium text-primary underline-offset-4 hover:underline"
                   style={{
-                    color: customization?.linkTextColor || undefined,
+                    color: linkTextColor || undefined,
                   }}
                 >
                   Log in

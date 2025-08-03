@@ -7,15 +7,16 @@ import React from "react";
 
 export const InputCustomizationOptions = ({ size }: { size?: string }) => {
   const {
+    inputPlaceholderTextColor,
     inputLabelColor,
-    inputLabelErrorColor,
     inputIconColor,
     inputTextColor,
     inputErrorTextColor,
     inputBorderColor,
     inputErrorBorderColor,
-    inputPlaceholderTextColor,
-    setInputColor,
+    inputBorderFocusColor,
+    inputLabelErrorColor,
+    setColor,
   } = useInputCustomizationOption();
   return (
     <OptionWithSwitch
@@ -24,42 +25,47 @@ export const InputCustomizationOptions = ({ size }: { size?: string }) => {
         inputLabelColor: {
           label: "Input Label Color",
           value: inputLabelColor,
-          onChange: (val) => setInputColor("inputLabelColor", val),
-        },
-        inputLabelErrorColor: {
-          label: "Input Label Error Color",
-          value: inputLabelErrorColor,
-          onChange: (val) => setInputColor("inputLabelErrorColor", val),
+          onChange: (val) => setColor("inputLabelColor", val),
         },
         inputIconColor: {
           label: "Input Icon Color",
           value: inputIconColor,
-          onChange: (val) => setInputColor("inputIconColor", val),
+          onChange: (val) => setColor("inputIconColor", val),
         },
         inputTextColor: {
           label: "Input Text Color",
           value: inputTextColor,
-          onChange: (val) => setInputColor("inputTextColor", val),
+          onChange: (val) => setColor("inputTextColor", val),
         },
         inputErrorTextColor: {
           label: "Input Error Text Color",
           value: inputErrorTextColor,
-          onChange: (val) => setInputColor("inputErrorTextColor", val),
+          onChange: (val) => setColor("inputErrorTextColor", val),
         },
         inputBorderColor: {
           label: "Input Border Color",
           value: inputBorderColor,
-          onChange: (val) => setInputColor("inputBorderColor", val),
-        },
-        inputErrorBorderColor: {
-          label: "Input Error Border Color",
-          value: inputErrorBorderColor,
-          onChange: (val) => setInputColor("inputErrorBorderColor", val),
+          onChange: (val) => setColor("inputBorderColor", val),
         },
         inputPlaceholderTextColor: {
           label: "Input Placeholder Color",
           value: inputPlaceholderTextColor,
-          onChange: (val) => setInputColor("inputPlaceholderTextColor", val),
+          onChange: (val) => setColor("inputPlaceholderTextColor", val),
+        },
+        inputErrorBorderColor: {
+          label: "Input Error Border Color",
+          value: inputErrorBorderColor,
+          onChange: (val) => setColor("inputErrorBorderColor", val),
+        },
+        inputBorderFocusColor: {
+          label: "Input Border Focus Color",
+          value: inputBorderFocusColor,
+          onChange: (val) => setColor("inputBorderFocusColor", val),
+        },
+        inputLabelErrorColor: {
+          label: "Input Label Error Color",
+          value: inputLabelErrorColor,
+          onChange: (val) => setColor("inputLabelErrorColor", val),
         },
       }}
     />

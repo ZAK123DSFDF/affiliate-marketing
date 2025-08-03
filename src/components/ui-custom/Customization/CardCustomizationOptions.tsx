@@ -2,7 +2,13 @@ import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import React from "react";
 import { useCardCustomizationOption } from "@/hooks/useCustomization";
 
-export const CardCustomizationOptions = ({ size }: { size?: string }) => {
+export const CardCustomizationOptions = ({
+  triggerSize,
+  dropdownSize,
+}: {
+  triggerSize?: string;
+  dropdownSize?: string;
+}) => {
   const {
     cardShadow,
     cardShadowColor,
@@ -11,10 +17,12 @@ export const CardCustomizationOptions = ({ size }: { size?: string }) => {
     cardBackgroundColor,
     setCardSwitch,
     setCardColor,
+    cardShadowThickness,
   } = useCardCustomizationOption();
   return (
     <OptionWithSwitch
-      triggerSize={size}
+      triggerSize={triggerSize}
+      dropdownSize={dropdownSize}
       properties={{
         shadow: {
           label: "Enable Card Shadow",
@@ -25,6 +33,17 @@ export const CardCustomizationOptions = ({ size }: { size?: string }) => {
               label: "Shadow Color",
               value: cardShadowColor,
               onChange: (val) => setCardColor("cardShadowColor", val),
+            },
+            shadowThickness: {
+              label: "Shadow Thickness",
+              value: cardShadowThickness,
+              options: [
+                { label: "Small", value: "sm" },
+                { label: "Medium", value: "md" },
+                { label: "Large", value: "lg" },
+                { label: "Extra Large", value: "xl" },
+              ],
+              onChange: (val) => setCardColor("cardShadowThickness", val),
             },
           },
         },

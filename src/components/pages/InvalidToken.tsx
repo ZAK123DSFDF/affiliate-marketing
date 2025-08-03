@@ -2,7 +2,10 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
-import { useBackgroundColor } from "@/hooks/useCustomization";
+import {
+  useBackgroundColor,
+  useThemeCustomizationOption,
+} from "@/hooks/useCustomization";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/ThemeCustomizationOptions";
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/CardCustomizationOptions";
@@ -12,7 +15,9 @@ type Props = {
   isPreview?: boolean;
 };
 const InvalidToken = ({ orgId, customization, isPreview }: Props) => {
-  const { backgroundColor, setColor } = useBackgroundColor();
+  const { backgroundColor } = useThemeCustomizationOption();
+  const { InvalidPrimaryCustomization, InvalidSecondaryCustomization } =
+    useThemeCustomizationOption();
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${
@@ -52,7 +57,7 @@ const InvalidToken = ({ orgId, customization, isPreview }: Props) => {
               <CardTitle
                 className="text-2xl font-bold text-center text-destructive"
                 style={{
-                  color: customization?.errorPagePrimaryTextColor || undefined,
+                  color: InvalidPrimaryCustomization || undefined,
                 }}
               >
                 Invalid Token
@@ -71,8 +76,7 @@ const InvalidToken = ({ orgId, customization, isPreview }: Props) => {
               <p
                 className="text-muted-foreground mb-4"
                 style={{
-                  color:
-                    customization?.errorPageSecondaryTextColor || undefined,
+                  color: InvalidSecondaryCustomization || undefined,
                 }}
               >
                 The password reset link is invalid or has expired.

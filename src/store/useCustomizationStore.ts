@@ -48,6 +48,7 @@ export const useCardCustomization = createCustomizationStore(
     cardShadowColor: "",
     cardBorderColor: "",
     cardBackgroundColor: "",
+    cardShadowThickness: "md",
   },
   {
     cardShadow: true,
@@ -65,6 +66,7 @@ export const useInputCustomization = createCustomizationStore(
     inputBorderColor: "",
     inputErrorBorderColor: "",
     inputPlaceholderTextColor: "",
+    inputBorderFocusColor: "",
   },
   {},
   {},

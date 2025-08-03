@@ -29,6 +29,7 @@ import {
   useCardCustomizationOption,
   useCheckboxCustomizationOption,
   useInputCustomizationOption,
+  useThemeCustomizationOption,
 } from "@/hooks/useCustomization";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
@@ -55,7 +56,21 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
       rememberMe: false,
     },
   });
-  const { backgroundColor, setColor } = useBackgroundColor();
+  const { backgroundColor, linkTextColor, tertiaryTextColor } =
+    useThemeCustomizationOption();
+  const {
+    cardBackgroundColor,
+    cardBorderColor,
+    cardShadowColor,
+    cardBorder,
+    cardShadow,
+  } = useCardCustomizationOption();
+  const {
+    buttonDisabledTextColor,
+    buttonBackgroundColor,
+    buttonDisabledBackgroundColor,
+    buttonTextColor,
+  } = useButtonCustomizationOption();
   const affiliateMutation = useMutation({
     mutationFn: LoginAffiliateServer,
     onSuccess: (data: any) => {
@@ -268,7 +283,7 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
                       href="/forgot-password"
                       className="text-sm font-medium text-primary hover:underline"
                       style={{
-                        color: customization?.linkTextColor || undefined,
+                        color: linkTextColor || undefined,
                       }}
                     >
                       Forgot password?
@@ -282,12 +297,11 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
                   disabled={isLoading}
                   style={{
                     backgroundColor: isLoading
-                      ? customization?.buttonDisabledBackgroundColor ||
-                        undefined
-                      : customization?.buttonBackgroundColor || undefined,
+                      ? buttonDisabledBackgroundColor || undefined
+                      : buttonBackgroundColor || undefined,
                     color: isLoading
-                      ? customization?.buttonDisabledTextColor || undefined
-                      : customization?.buttonTextColor || undefined,
+                      ? buttonDisabledTextColor || undefined
+                      : buttonTextColor || undefined,
                   }}
                 >
                   {isLoading ? (
@@ -295,8 +309,7 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
                       <Loader2
                         className="h-4 w-4 animate-spin"
                         style={{
-                          color:
-                            customization?.buttonDisabledTextColor || undefined,
+                          color: buttonDisabledTextColor || undefined,
                         }}
                       />
                       Please wait...
@@ -307,7 +320,7 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
                       <ArrowRight
                         className="h-4 w-4"
                         style={{
-                          color: customization?.buttonTextColor || undefined,
+                          color: buttonTextColor || undefined,
                         }}
                       />
                     </>
@@ -321,7 +334,7 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
             <div
               className="text-center text-sm"
               style={{
-                color: customization?.secondaryTextColor || undefined,
+                color: tertiaryTextColor || undefined,
               }}
             >
               <div className="flex flex-row gap-2">
@@ -339,7 +352,7 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
                 href={`signup`}
                 className="font-medium text-primary underline-offset-4 hover:underline"
                 style={{
-                  color: customization?.linkTextColor || undefined,
+                  color: linkTextColor || undefined,
                 }}
               >
                 Sign up
@@ -348,7 +361,10 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
           </CardFooter>
           {isPreview && (
             <div className="absolute bottom-0 left-0 z-50 p-2">
-              <CardCustomizationOptions size="w-6 h-6" />
+              <CardCustomizationOptions
+                triggerSize="w-6 h-6"
+                dropdownSize="w-[150px]"
+              />
             </div>
           )}
         </Card>

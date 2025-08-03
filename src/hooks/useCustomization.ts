@@ -15,6 +15,9 @@ export const useBackgroundColor = () => {
   return { backgroundColor, setColor };
 };
 export const useCardCustomizationOption = () => {
+  const cardShadowThickness = useCardCustomization(
+    (s) => s.cardShadowThickness,
+  );
   const cardShadowColor = useCardCustomization((s) => s.cardShadowColor);
   const cardBorderColor = useCardCustomization((s) => s.cardBorderColor);
   const cardBackgroundColor = useCardCustomization(
@@ -26,6 +29,7 @@ export const useCardCustomizationOption = () => {
   const setCardSwitch = useCardCustomization((s) => s.setSwitch);
 
   return {
+    cardShadowThickness,
     cardShadowColor,
     cardBorderColor,
     cardBackgroundColor,
@@ -46,6 +50,9 @@ export const useInputCustomizationOption = () => {
     (s) => s.inputErrorTextColor,
   );
   const inputBorderColor = useInputCustomization((s) => s.inputBorderColor);
+  const inputBorderFocusColor = useInputCustomization(
+    (s) => s.inputBorderFocusColor,
+  );
   const inputErrorBorderColor = useInputCustomization(
     (s) => s.inputErrorBorderColor,
   );
@@ -53,18 +60,19 @@ export const useInputCustomizationOption = () => {
     (s) => s.inputPlaceholderTextColor,
   );
 
-  const setInputColor = useInputCustomization((s) => s.setColor);
+  const setColor = useInputCustomization((s) => s.setColor);
 
   return {
     inputLabelColor,
     inputLabelErrorColor,
     inputIconColor,
     inputTextColor,
+    inputBorderFocusColor,
     inputErrorTextColor,
     inputBorderColor,
     inputErrorBorderColor,
     inputPlaceholderTextColor,
-    setInputColor,
+    setColor,
   };
 };
 export const useCheckboxCustomizationOption = () => {
