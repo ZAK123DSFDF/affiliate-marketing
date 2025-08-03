@@ -1,21 +1,18 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
 import { InputField, CheckboxField } from "@/components/Auth/FormFields";
 import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema";
 import { useMutation } from "@tanstack/react-query";
@@ -24,21 +21,18 @@ import { LoginServer } from "@/app/login/action";
 import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import {
-  useBackgroundColor,
   useButtonCustomizationOption,
   useCardCustomizationOption,
-  useCheckboxCustomizationOption,
-  useInputCustomizationOption,
   useThemeCustomizationOption,
 } from "@/hooks/useCustomization";
-import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
-import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
+
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/CardCustomizationOptions";
 import { CheckboxCustomizationOptions } from "@/components/ui-custom/Customization/CheckboxCustomizationOptions";
 import { InputCustomizationOptions } from "@/components/ui-custom/Customization/InputCustomizationOptions";
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/ButtonCustomizationOptions";
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/ThemeCustomizationOptions";
 import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
+import { toValidShadowSize } from "@/util/ValidateShadowColor";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -46,7 +40,7 @@ type Props = {
 };
 const Login = ({ orgId, customization, isPreview = false }: Props) => {
   const { toast } = useToast();
-  const router = useRouter();
+
   const [previewLoading, setPreviewLoading] = useState(false);
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -59,11 +53,12 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
     useThemeCustomizationOption();
   const {
-    cardBackgroundColor,
-    cardBorderColor,
+    cardShadow,
     cardShadowColor,
     cardBorder,
-    cardShadow,
+    cardBorderColor,
+    cardBackgroundColor,
+    cardShadowThickness,
   } = useCardCustomizationOption();
   const {
     buttonDisabledTextColor,
@@ -201,24 +196,22 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
 
         <Card
           className={`relative transition-shadow duration-300 ${
-            customization?.showShadow && customization?.shadowThickness
-              ? `shadow-${customization.shadowThickness}`
-              : customization?.showShadow
+            cardShadow && cardShadowThickness
+              ? `shadow-${cardShadowThickness}`
+              : cardShadow
                 ? "shadow-lg"
                 : ""
-          } ${customization?.showBorder ? "border" : "border-none"}`}
+          } ${cardBorder ? "border" : "border-none"}`}
           style={{
-            backgroundColor: customization?.cardBackgroundColor || undefined,
-            ...(customization?.showShadow && {
+            backgroundColor: cardBackgroundColor || undefined,
+            ...(cardShadow && {
               boxShadow: getShadowWithColor(
-                customization.shadowThickness || "lg",
-                customization.shadowColor,
+                toValidShadowSize(cardShadowThickness),
+                cardShadowColor,
               ),
             }),
             borderColor:
-              customization?.showBorder && customization?.borderColor
-                ? customization.borderColor
-                : undefined,
+              cardBorder && cardBorderColor ? cardBorderColor : undefined,
           }}
         >
           <CardHeader className="space-y-1">

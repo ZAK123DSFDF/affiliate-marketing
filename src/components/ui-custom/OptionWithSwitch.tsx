@@ -16,8 +16,6 @@ import {
 } from "@/components/ui/accordion";
 import { Settings } from "lucide-react";
 import { DropdownInput } from "@/components/ui-custom/DropDownInput";
-import { useState } from "react";
-
 type ColorProperty = {
   label: string;
   value: string;

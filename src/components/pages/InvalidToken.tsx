@@ -4,11 +4,13 @@ import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import {
   useBackgroundColor,
+  useCardCustomizationOption,
   useThemeCustomizationOption,
 } from "@/hooks/useCustomization";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/ThemeCustomizationOptions";
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/CardCustomizationOptions";
+import { toValidShadowSize } from "@/util/ValidateShadowColor";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -18,6 +20,14 @@ const InvalidToken = ({ orgId, customization, isPreview }: Props) => {
   const { backgroundColor } = useThemeCustomizationOption();
   const { InvalidPrimaryCustomization, InvalidSecondaryCustomization } =
     useThemeCustomizationOption();
+  const {
+    cardShadow,
+    cardShadowColor,
+    cardBorder,
+    cardBorderColor,
+    cardBackgroundColor,
+    cardShadowThickness,
+  } = useCardCustomizationOption();
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${
@@ -32,24 +42,22 @@ const InvalidToken = ({ orgId, customization, isPreview }: Props) => {
       <div className="w-full max-w-md">
         <Card
           className={`relative transition-shadow duration-300 ${
-            customization?.showShadow && customization?.shadowThickness
-              ? `shadow-${customization.shadowThickness}`
-              : customization?.showShadow
+            cardShadow && cardShadowThickness
+              ? `shadow-${cardShadowThickness}`
+              : cardShadow
                 ? "shadow-lg"
                 : ""
-          } ${customization?.showBorder ? "border" : "border-none"}`}
+          } ${cardBorder ? "border" : "border-none"}`}
           style={{
-            backgroundColor: customization?.cardBackgroundColor || undefined,
-            ...(customization?.showShadow && {
+            backgroundColor: cardBackgroundColor || undefined,
+            ...(cardShadow && {
               boxShadow: getShadowWithColor(
-                customization.shadowThickness || "lg",
-                customization.shadowColor,
+                toValidShadowSize(cardShadowThickness),
+                cardShadowColor,
               ),
             }),
             borderColor:
-              customization?.showBorder && customization?.borderColor
-                ? customization.borderColor
-                : undefined,
+              cardBorder && cardBorderColor ? cardBorderColor : undefined,
           }}
         >
           <CardHeader className="space-y-1">
@@ -92,7 +100,10 @@ const InvalidToken = ({ orgId, customization, isPreview }: Props) => {
           </CardContent>
           {isPreview && (
             <div className="absolute bottom-0 left-0 z-50 p-2">
-              <CardCustomizationOptions size="w-6 h-6" />
+              <CardCustomizationOptions
+                triggerSize="w-6 h-6"
+                dropdownSize="w-[150px]"
+              />
             </div>
           )}
         </Card>
