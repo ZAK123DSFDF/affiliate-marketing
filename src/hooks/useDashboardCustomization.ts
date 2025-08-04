@@ -103,6 +103,12 @@ export const useDashboardThemeCustomizationOption = () => {
   const dashboardHeaderDescColor = useDashboardThemeCustomization(
     (s) => s.dashboardHeaderDescColor,
   );
+  const cardHeaderPrimaryTextColor = useDashboardThemeCustomization(
+    (s) => s.cardHeaderPrimaryTextColor,
+  );
+  const cardHeaderSecondaryTextColor = useDashboardThemeCustomization(
+    (s) => s.cardHeaderSecondaryTextColor,
+  );
 
   const setDashboardThemeColor = useDashboardThemeCustomization(
     (s) => s.setColor,
@@ -114,6 +120,8 @@ export const useDashboardThemeCustomizationOption = () => {
     dashboardHeaderDescColor,
     setDashboardThemeColor,
     separatorColor,
+    cardHeaderPrimaryTextColor,
+    cardHeaderSecondaryTextColor,
   };
 };
 export const useDashboardButtonCustomizationOption = () => {

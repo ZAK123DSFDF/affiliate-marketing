@@ -28,6 +28,11 @@ import { useQuery } from "@tanstack/react-query";
 import { getAffiliateCommissionByMonth } from "@/app/affiliate/[orgId]/dashboard/payment/action";
 import { localDashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
+import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
+import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions";
+import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions";
+import { cn } from "@/lib/utils";
+import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions";
 
 interface AffiliateCommissionTableProps {
   data: AffiliatePaymentRow[];
@@ -271,25 +276,42 @@ export default function AffiliateCommissionTable({
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1
-            className="text-3xl font-bold"
-            style={{
-              color: customization?.headerNameColor || undefined,
-            }}
-          >
-            Affiliate Earnings
-          </h1>
-          <p
-            className="text-muted-foreground"
-            style={{
-              color: customization?.headerDescColor || undefined,
-            }}
-          >
-            Monthly breakdown of your affiliate commissions
-          </p>
+          <div className="flex flex-row gap-2 items-center">
+            <h1
+              className="text-3xl font-bold"
+              style={{
+                color: customization?.headerNameColor || undefined,
+              }}
+            >
+              Affiliate Earnings
+            </h1>
+            {isPreview && (
+              <DashboardThemeCustomizationOptions
+                name="dashboardHeaderNameColor"
+                buttonSize="w-4 h-4"
+              />
+            )}
+          </div>
+          <div className="flex flex-row gap-2 items-center">
+            <p
+              className="text-muted-foreground"
+              style={{
+                color: customization?.headerDescColor || undefined,
+              }}
+            >
+              Monthly breakdown of your affiliate commissions
+            </p>
+            {isPreview && (
+              <DashboardThemeCustomizationOptions
+                name="dashboardHeaderDescColor"
+                buttonSize="w-4 h-4"
+              />
+            )}
+          </div>
         </div>
       </div>
       <Card
+        className="relative"
         style={{
           backgroundColor: customization?.cardBackgroundColor || undefined,
           boxShadow:
@@ -304,19 +326,45 @@ export default function AffiliateCommissionTable({
             : "",
         }}
       >
+        {isPreview && (
+          <div className="absolute bottom-0 left-0 z-50 p-2">
+            <DashboardCardCustomizationOptions
+              triggerSize="w-6 h-6"
+              dropdownSize="w-[150px]"
+            />
+          </div>
+        )}{" "}
+        {isPreview && (
+          <div className="absolute bottom-0 right-0 z-50 p-2">
+            <TableCustomizationOptions triggerSize="w-6 h-6" />
+          </div>
+        )}
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle
             style={{
               color: customization?.headerNameColor || undefined,
             }}
           >
-            Monthly Commission Stats
+            <div className="flex flex-row gap-2 items-center">
+              Monthly Commission Stats
+              {isPreview && (
+                <DashboardThemeCustomizationOptions
+                  name="dashboardHeaderDescColor"
+                  buttonSize="w-4 h-4"
+                />
+              )}
+            </div>
           </CardTitle>
-          <YearSelect
-            value={yearValue !== undefined ? { year: yearValue } : {}}
-            onChange={OnYearChange}
-            customization={customization}
-          />
+          <div className="flex flex-row gap-2 items-center">
+            {isPreview && (
+              <YearSelectCustomizationOptions triggerSize="w-6 h-6" />
+            )}
+            <YearSelect
+              value={yearValue !== undefined ? { year: yearValue } : {}}
+              onChange={OnYearChange}
+              customization={customization}
+            />
+          </div>
         </CardHeader>
         <CardContent>
           {yearValue !== undefined && isPending && !isPreview ? (
@@ -344,7 +392,7 @@ export default function AffiliateCommissionTable({
               No commission data available.
             </div>
           ) : (
-            <div className="rounded-md border">
+            <div className={cn("rounded-md border", isPreview && "mb-4")}>
               <Table>
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (

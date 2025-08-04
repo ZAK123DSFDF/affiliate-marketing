@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/accordion";
 import { Settings } from "lucide-react";
 import { DropdownInput } from "@/components/ui-custom/DropDownInput";
+import { useState } from "react";
 type ColorProperty = {
   label: string;
   value: string;
@@ -50,8 +51,10 @@ export const OptionWithSwitch = <
   triggerSize = "w-8 h-8",
   dropdownSize,
 }: OptionProps<T>) => {
+  const [open, setOpen] = useState(false);
+  const [selectOpen, setSelectOpen] = useState(false);
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={(v) => !selectOpen && setOpen(v)}>
       <PopoverTrigger asChild>
         <div
           className={cn(
@@ -71,10 +74,7 @@ export const OptionWithSwitch = <
           />
         </div>
       </PopoverTrigger>
-      <PopoverContent
-        className="w-[300px] max-h-[400px] overflow-auto"
-        onInteractOutside={(e) => e.preventDefault()}
-      >
+      <PopoverContent className="w-[300px] max-h-[400px] overflow-auto">
         <Accordion type="multiple" className="flex flex-col gap-2">
           {Object.entries(properties).map(([key, prop]) => {
             if ("value" in prop && "options" in prop) {
@@ -86,6 +86,8 @@ export const OptionWithSwitch = <
                   options={prop.options}
                   onChange={prop.onChange}
                   width={prop.size || dropdownSize}
+                  selectOpen={selectOpen}
+                  setSelectOpen={setSelectOpen}
                 />
               );
             }
@@ -139,6 +141,8 @@ export const OptionWithSwitch = <
                                   onChange={childProp.onChange}
                                   disabled={!prop.enabled}
                                   width={childProp.size || dropdownSize}
+                                  selectOpen={selectOpen}
+                                  setSelectOpen={setSelectOpen}
                                 />
                               );
                             }

@@ -28,6 +28,12 @@ import { Check, Copy } from "lucide-react";
 import { localDashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import MonthSelect from "@/components/ui-custom/MonthSelect";
+import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
+import { DashboardButtonCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardButtonCustomizationOptions";
+import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions";
+import { cn } from "@/lib/utils";
+import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions";
+import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions";
 
 interface AffiliateLinkProps {
   data: AffiliateLinkWithStats[];
@@ -243,41 +249,63 @@ export default function Links({
       {!isTopLinksView && (
         <div className="flex justify-between items-center">
           <div>
-            <h1
-              className="text-3xl font-bold"
-              style={{ color: customization?.headerNameColor || undefined }}
-            >
-              Affiliate Links
-            </h1>
-            <p
-              className="text-muted-foreground"
-              style={{ color: customization?.headerDescColor || undefined }}
-            >
-              Track your referral links and their performance
-            </p>
+            <div className="flex flex-row gap-2 items-center">
+              <h1
+                className="text-3xl font-bold"
+                style={{ color: customization?.headerNameColor || undefined }}
+              >
+                Affiliate Links
+              </h1>
+              {isPreview && (
+                <DashboardThemeCustomizationOptions
+                  name="dashboardHeaderNameColor"
+                  buttonSize="w-4 h-4"
+                />
+              )}
+            </div>
+            <div className="flex flex-row gap-2 items-center">
+              <p
+                className="text-muted-foreground"
+                style={{ color: customization?.headerDescColor || undefined }}
+              >
+                Track your referral links and their performance
+              </p>
+              {isPreview && (
+                <DashboardThemeCustomizationOptions
+                  name="dashboardHeaderDescColor"
+                  buttonSize="w-4 h-4"
+                />
+              )}
+            </div>
           </div>
-          <Button
-            onClick={handleCreate}
-            disabled={mutation.isPending || isFakeLoading}
-            style={{
-              backgroundColor:
-                mutation.isPending || isFakeLoading
-                  ? customization?.buttonDisabledBackgroundColor || undefined
-                  : customization?.buttonBackgroundColor || undefined,
-              color:
-                mutation.isPending || isFakeLoading
-                  ? customization?.buttonDisabledTextColor || undefined
-                  : customization?.buttonTextColor || undefined,
-            }}
-          >
-            {mutation.isPending || isFakeLoading
-              ? "Creating..."
-              : "Create New Link"}
-          </Button>
+          <div className="flex flex-row gap-2 items-center">
+            {isPreview && (
+              <DashboardButtonCustomizationOptions triggerSize="w-6 h-6" />
+            )}
+            <Button
+              onClick={handleCreate}
+              disabled={mutation.isPending || isFakeLoading}
+              style={{
+                backgroundColor:
+                  mutation.isPending || isFakeLoading
+                    ? customization?.buttonDisabledBackgroundColor || undefined
+                    : customization?.buttonBackgroundColor || undefined,
+                color:
+                  mutation.isPending || isFakeLoading
+                    ? customization?.buttonDisabledTextColor || undefined
+                    : customization?.buttonTextColor || undefined,
+              }}
+            >
+              {mutation.isPending || isFakeLoading
+                ? "Creating..."
+                : "Create New Link"}
+            </Button>
+          </div>
         </div>
       )}
 
       <Card
+        className="relative"
         style={{
           backgroundColor: customization?.cardBackgroundColor || undefined,
           boxShadow:
@@ -292,19 +320,45 @@ export default function Links({
             : "",
         }}
       >
+        {isPreview && (
+          <div className="absolute bottom-0 left-0 z-50 p-2">
+            <DashboardCardCustomizationOptions
+              triggerSize="w-6 h-6"
+              dropdownSize="w-[150px]"
+            />
+          </div>
+        )}{" "}
+        {isPreview && (
+          <div className="absolute bottom-0 right-0 z-50 p-2">
+            <TableCustomizationOptions triggerSize="w-6 h-6" />
+          </div>
+        )}
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle
             style={{ color: customization?.headerNameColor || undefined }}
             className="text-lg"
           >
-            {isTopLinksView ? "Top Performing Links" : "Link Stats"}
-          </CardTitle>
-          <MonthSelect
-            value={selectedDate}
-            onChange={(month, year) => setSelectedDate({ month, year })}
-          />
-        </CardHeader>
+            <div className="flex flex-row items-center gap-2">
+              {isTopLinksView ? "Top Performing Links" : "Link Stats"}
 
+              {isPreview && (
+                <DashboardThemeCustomizationOptions
+                  name="dashboardHeaderDescColor"
+                  buttonSize="w-4 h-4"
+                />
+              )}
+            </div>
+          </CardTitle>
+          <div className="flex flex-row gap-2 items-center">
+            {isPreview && (
+              <YearSelectCustomizationOptions triggerSize="w-6 h-6" />
+            )}
+            <MonthSelect
+              value={selectedDate}
+              onChange={(month, year) => setSelectedDate({ month, year })}
+            />
+          </div>
+        </CardHeader>
         <CardContent>
           {data.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">
@@ -312,7 +366,7 @@ export default function Links({
             </div>
           ) : (
             <div
-              className="rounded-md border"
+              className={cn("rounded-md border", isPreview && "mb-4")}
               style={{
                 borderColor: customization?.tableBorderColor || undefined,
                 borderWidth: "1px",

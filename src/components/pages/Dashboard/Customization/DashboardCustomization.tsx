@@ -18,7 +18,10 @@ import {
   ColorCustomizationSettings,
   localDashboardCustomizationSettings,
 } from "@/lib/types/dashboardCustomization";
-import { useDashboardCustomizationStore } from "@/store/useDashboardCustomizationStore";
+import {
+  useDashboardCustomizationStore,
+  useDashboardThemeCustomization,
+} from "@/store/useDashboardCustomizationStore";
 import {
   Select,
   SelectContent,
@@ -28,6 +31,9 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOverview/AffiliateOverview";
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
+import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization";
+import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
 
 export function DashboardCustomization() {
   const [selectedPage, setSelectedPage] = useState("dashboard");
@@ -84,21 +90,8 @@ export function DashboardCustomization() {
       yearSelectDropDownHoverBackgroundColor: "",
       yearSelectDropDownHoverTextColor: "",
     });
-  const { setMainBackgroundColor, mainBackgroundColor } =
-    useDashboardCustomizationStore();
-  const handleChange = (
-    key: keyof localDashboardCustomizationSettings | "mainBackgroundColor",
-    val: string,
-  ) => {
-    if (key === "mainBackgroundColor") {
-      setMainBackgroundColor(val);
-    } else {
-      setCustomization((prev) => ({
-        ...prev,
-        [key]: val,
-      }));
-    }
-  };
+  const { mainBackgroundColor } = useDashboardThemeCustomizationOption();
+
   const params = useParams();
   const orgId = params?.orgId as string;
 
@@ -246,10 +239,7 @@ export function DashboardCustomization() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Label>Shadow Thickness</Label>
-        <Select
-          value={customization.cardShadow}
-          onValueChange={(val) => handleChange("cardShadow", val)}
-        >
+        <Select value={customization.cardShadow}>
           <SelectTrigger className="w-40">
             <SelectValue placeholder="Select shadow thickness" />
           </SelectTrigger>
@@ -262,13 +252,7 @@ export function DashboardCustomization() {
           </SelectContent>
         </Select>
         <div className="flex items-center space-x-2 mt-4">
-          <Switch
-            id="card-border"
-            checked={customization.cardBorder}
-            onCheckedChange={(checked: any) =>
-              handleChange("cardBorder", checked)
-            }
-          />
+          <Switch id="card-border" checked={customization.cardBorder} />
           <Label htmlFor="card-border">Enable Card Border</Label>
         </div>
         {colorInputs.map(({ key, label }) => {
@@ -281,7 +265,9 @@ export function DashboardCustomization() {
               key={key}
               label={label}
               value={value}
-              onChange={(val) => handleChange(key, val)}
+              onChange={(val) => {
+                console.log("hi");
+              }}
             />
           );
         })}
@@ -301,6 +287,7 @@ export function DashboardCustomization() {
               backgroundColor: mainBackgroundColor || undefined,
             }}
           >
+            <DashboardThemeCustomizationOptions name="mainBackgroundColor" />
             {selectedPage === "dashboard" && <AffiliateOverview isPreview />}
             {selectedPage === "links" && (
               <Links

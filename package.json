@@ -72,20 +72,20 @@
     "zustand": "^5.0.6"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
+    "@eslint/eslintrc": "^3.3.1",
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-typescript": "^12.1.4",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.9",
-    "@types/node": "^20",
+    "@types/node": "^20.17.27",
     "@types/nodemailer": "^6.4.17",
     "@types/paypal__checkout-server-sdk": "^1.0.8",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "^19.0.12",
+    "@types/react-dom": "^19.0.4",
     "autoprefixer": "^10.4.21",
     "drizzle-kit": "^0.31.1",
-    "eslint": "^9",
+    "eslint": "^9.23.0",
     "eslint-config-next": "15.2.4",
     "postcss": "^8.5.3",
     "rollup": "^4.44.2",
@@ -94,6 +94,6 @@
     "tailwindcss-animate": "^1.0.7",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.4",
-    "typescript": "^5"
+    "typescript": "^5.8.2"
   }
 }

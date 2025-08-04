@@ -21,7 +21,7 @@ const Cards = ({ affiliate = false, isPreview = false }: CardsProps) => {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className={isPreview ? "mt-2" : ""}>
         <CardContent className="space-y-6 pt-6">
           <MonthSelect
             value={{

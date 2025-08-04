@@ -43,6 +43,8 @@ export const useDashboardThemeCustomization = createCustomizationStore(
     separatorColor: "",
     dashboardHeaderNameColor: "",
     dashboardHeaderDescColor: "",
+    cardHeaderPrimaryTextColor: "",
+    cardHeaderSecondaryTextColor: "",
   },
   {},
   {},

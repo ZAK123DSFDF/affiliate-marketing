@@ -14,10 +14,12 @@ type DropdownInputProps = {
   label: string;
   value: string;
   options: { label: string; value: string }[];
-  onChange: (val: string) => void;
+  onChange?: (val: string) => void;
   disabled?: boolean;
   placeholder?: string;
   width?: string;
+  selectOpen?: boolean;
+  setSelectOpen?: (open: boolean) => void;
 };
 
 export const DropdownInput = ({
@@ -28,10 +30,18 @@ export const DropdownInput = ({
   disabled,
   placeholder = "Select an option",
   width,
+  selectOpen,
+  setSelectOpen,
 }: DropdownInputProps) => (
   <div className="space-y-1">
     <Label className="text-xs font-medium">{label}</Label>
-    <Select value={value} onValueChange={onChange} disabled={disabled}>
+    <Select
+      value={value}
+      onValueChange={onChange}
+      disabled={disabled}
+      open={selectOpen}
+      onOpenChange={setSelectOpen}
+    >
       <SelectTrigger className={cn("w-full", width)} disabled={disabled}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>

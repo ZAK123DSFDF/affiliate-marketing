@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -45,6 +45,11 @@ import {
   localDashboardCustomizationSettings,
 } from "@/lib/types/dashboardCustomization";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
+import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
+import { DashboardButtonCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardButtonCustomizationOptions";
+import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions";
+import { Separator } from "@/components/ui/separator";
+import { DialogCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DialogCustomizationOptions";
 
 interface CommonData {
   id: string;
@@ -211,40 +216,60 @@ export default function Profile({
   const onSubmitUpdatePassword = (data: any) => {
     updatePassword.mutate(data.newPassword);
   };
+
   const resetPasswordModal = () => {
     setShowPasswordModal(false);
     setStep("current");
     currrentPasswordForm.reset();
     newPasswordForm.reset();
   };
-
+  useEffect(() => {
+    console.log("show open modal", showPasswordModal);
+  }, [showPasswordModal]);
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <SidebarTrigger className="md:hidden" />
           <div>
-            <h1
-              className="text-3xl font-bold"
-              style={{
-                color: customization?.headerNameColor || undefined,
-              }}
-            >
-              Profile Settings
-            </h1>
-            <p
-              className="text-muted-foreground"
-              style={{
-                color: customization?.headerDescColor || undefined,
-              }}
-            >
-              Manage your account information
-            </p>
+            <div className="flex flex-row gap-2 items-center">
+              <h1
+                className="text-3xl font-bold"
+                style={{
+                  color: customization?.headerNameColor || undefined,
+                }}
+              >
+                Profile Settings
+              </h1>
+              {isPreview && (
+                <DashboardThemeCustomizationOptions
+                  name="dashboardHeaderNameColor"
+                  buttonSize="w-4 h-4"
+                />
+              )}
+            </div>
+            <div className="flex flex-row gap-2 items-center">
+              <p
+                className="text-muted-foreground"
+                style={{
+                  color: customization?.headerDescColor || undefined,
+                }}
+              >
+                Manage your account information
+              </p>
+              {isPreview && (
+                <DashboardThemeCustomizationOptions
+                  name="dashboardHeaderDescColor"
+                  buttonSize="w-4 h-4"
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       <Card
+        className="relative"
         style={{
           backgroundColor: customization?.cardBackgroundColor || undefined,
           boxShadow:
@@ -259,14 +284,30 @@ export default function Profile({
             : "",
         }}
       >
+        {isPreview && (
+          <div className="absolute bottom-0 left-0 z-50 p-2">
+            <DashboardCardCustomizationOptions
+              triggerSize="w-6 h-6"
+              dropdownSize="w-[150px]"
+            />
+          </div>
+        )}{" "}
         <CardHeader>
-          <CardTitle
-            style={{
-              color: customization?.headerNameColor || undefined,
-            }}
-          >
-            Account Information
-          </CardTitle>
+          <div className="flex flex-row gap-2 items-center">
+            <CardTitle
+              style={{
+                color: customization?.headerNameColor || undefined,
+              }}
+            >
+              Account Information
+            </CardTitle>
+            {isPreview && (
+              <DashboardThemeCustomizationOptions
+                name="cardHeaderPrimaryTextColor"
+                buttonSize="w-4 h-4"
+              />
+            )}
+          </div>
         </CardHeader>
         <CardContent className="space-y-8">
           <Form {...profileForm}>
@@ -295,20 +336,40 @@ export default function Profile({
                 profile
               />
 
-              <div
-                className="pt-6 border-t mt-8"
-                style={{
-                  borderTop: `1px solid ${customization?.separatorColor || "#e5e7eb"}`,
-                }}
-              >
-                <h3
-                  className="font-medium mb-4"
-                  style={{
-                    color: customization?.headerNameColor || undefined,
-                  }}
-                >
-                  Password
-                </h3>
+              <div>
+                <div className="flex flex-row items-center justify-between mb-4 gap-1">
+                  <Separator
+                    className="flex-1"
+                    style={{
+                      backgroundColor:
+                        customization?.separatorColor || "#e5e7eb",
+                    }}
+                  />
+                  {isPreview && (
+                    <DashboardThemeCustomizationOptions
+                      name="separatorColor"
+                      buttonSize="w-4 h-4"
+                    />
+                  )}
+                </div>
+
+                <div className="flex flex-row gap-2 mt-4">
+                  <h3
+                    className="font-medium mb-4"
+                    style={{
+                      color: customization?.headerNameColor || undefined,
+                    }}
+                  >
+                    Password
+                  </h3>
+                  {isPreview && (
+                    <DashboardThemeCustomizationOptions
+                      name="cardHeaderSecondaryTextColor"
+                      buttonSize="w-4 h-4"
+                    />
+                  )}
+                </div>
+
                 <Button
                   type="button"
                   onClick={() => setShowPasswordModal(true)}
@@ -320,36 +381,43 @@ export default function Profile({
                 >
                   Change Password
                 </Button>
+
+                <Separator
+                  className="flex-1 mt-4"
+                  style={{
+                    backgroundColor: customization?.separatorColor || "#e5e7eb",
+                  }}
+                />
               </div>
             </form>
           </Form>
         </CardContent>
-        <CardFooter
-          className="flex justify-end border-t pt-6"
-          style={{
-            borderTop: `1px solid ${customization?.separatorColor || "#e5e7eb"}`,
-          }}
-        >
-          <Button
-            form="profile-form"
-            type="submit"
-            disabled={updateProfile.isPending || isFormUnchanged}
-            style={{
-              backgroundColor:
-                updateProfile.isPending || isFormUnchanged
-                  ? customization?.buttonDisabledBackgroundColor || undefined
-                  : customization?.buttonBackgroundColor || undefined,
-              color:
-                updateProfile.isPending || isFormUnchanged
-                  ? customization?.buttonDisabledTextColor || undefined
-                  : customization?.buttonTextColor || undefined,
-            }}
-          >
-            {updateProfile.isPending && (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+        <CardFooter className="flex justify-end pt-6">
+          <div className="flex flex-row gap-2 items-center">
+            {isPreview && (
+              <DashboardButtonCustomizationOptions triggerSize="w-6 h-6" />
             )}
-            Save Changes
-          </Button>
+            <Button
+              form="profile-form"
+              type="submit"
+              disabled={updateProfile.isPending || isFormUnchanged}
+              style={{
+                backgroundColor:
+                  updateProfile.isPending || isFormUnchanged
+                    ? customization?.buttonDisabledBackgroundColor || undefined
+                    : customization?.buttonBackgroundColor || undefined,
+                color:
+                  updateProfile.isPending || isFormUnchanged
+                    ? customization?.buttonDisabledTextColor || undefined
+                    : customization?.buttonTextColor || undefined,
+              }}
+            >
+              {updateProfile.isPending && (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              )}
+              Save Changes
+            </Button>
+          </div>
         </CardFooter>
       </Card>
 
@@ -360,6 +428,11 @@ export default function Profile({
           dialogCloseIconBorderColor={customization?.dialogCloseIconBorderColor}
         >
           <DialogHeader>
+            {isPreview && (
+              <div className="absolute bottom-0 left-0 z-50 p-2">
+                <DialogCustomizationOptions triggerSize="w-6 h-6" />
+              </div>
+            )}
             <DialogTitle
               style={{
                 color: customization?.headerNameColor || undefined,
