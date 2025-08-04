@@ -1,7 +1,7 @@
 import {
   useDashboardButtonCustomization,
   useDashboardCardCustomization,
-  useDashboardHeaderCustomization,
+  useDashboardThemeCustomization,
   useDialogCustomization,
   useSidebarCustomization,
   useTableCustomization,
@@ -90,18 +90,21 @@ export const useDashboardCardCustomizationOption = () => {
     setDashboardCardSwitch,
   };
 };
-export const useDashboardHeaderCustomizationOption = () => {
-  const mainBackgroundColor = useDashboardHeaderCustomization(
+export const useDashboardThemeCustomizationOption = () => {
+  const separatorColor = useDashboardThemeCustomization(
+    (s) => s.separatorColor,
+  );
+  const mainBackgroundColor = useDashboardThemeCustomization(
     (s) => s.mainBackgroundColor,
   );
-  const dashboardHeaderNameColor = useDashboardHeaderCustomization(
+  const dashboardHeaderNameColor = useDashboardThemeCustomization(
     (s) => s.dashboardHeaderNameColor,
   );
-  const dashboardHeaderDescColor = useDashboardHeaderCustomization(
+  const dashboardHeaderDescColor = useDashboardThemeCustomization(
     (s) => s.dashboardHeaderDescColor,
   );
 
-  const setDashboardHeaderColor = useDashboardHeaderCustomization(
+  const setDashboardThemeColor = useDashboardThemeCustomization(
     (s) => s.setColor,
   );
 
@@ -109,7 +112,8 @@ export const useDashboardHeaderCustomizationOption = () => {
     mainBackgroundColor,
     dashboardHeaderNameColor,
     dashboardHeaderDescColor,
-    setDashboardHeaderColor,
+    setDashboardThemeColor,
+    separatorColor,
   };
 };
 export const useDashboardButtonCustomizationOption = () => {
@@ -202,7 +206,6 @@ export const useTableCustomizationOption = () => {
   };
 };
 export const useDialogCustomizationOption = () => {
-  const separatorColor = useDialogCustomization((s) => s.separatorColor);
   const dialogBackgroundColor = useDialogCustomization(
     (s) => s.dialogBackgroundColor,
   );
@@ -216,7 +219,6 @@ export const useDialogCustomizationOption = () => {
   const setDialogColor = useDialogCustomization((s) => s.setColor);
 
   return {
-    separatorColor,
     dialogBackgroundColor,
     dialogCloseIconColor,
     dialogCloseIconBorderColor,

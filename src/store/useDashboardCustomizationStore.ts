@@ -37,9 +37,10 @@ export const useDashboardCardCustomization = createCustomizationStore(
   { dashboardCardBorder: false, dashboardCardShadow: false },
   {},
 );
-export const useDashboardHeaderCustomization = createCustomizationStore(
+export const useDashboardThemeCustomization = createCustomizationStore(
   {
     mainBackgroundColor: "",
+    separatorColor: "",
     dashboardHeaderNameColor: "",
     dashboardHeaderDescColor: "",
   },
@@ -78,7 +79,6 @@ export const useTableCustomization = createCustomizationStore(
 );
 export const useDialogCustomization = createCustomizationStore(
   {
-    separatorColor: "",
     dialogBackgroundColor: "",
     dialogCloseIconColor: "",
     dialogCloseIconBorderColor: "",
