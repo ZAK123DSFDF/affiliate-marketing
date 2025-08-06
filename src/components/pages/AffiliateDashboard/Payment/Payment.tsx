@@ -362,7 +362,6 @@ export default function AffiliateCommissionTable({
             <YearSelect
               value={yearValue !== undefined ? { year: yearValue } : {}}
               onChange={OnYearChange}
-              customization={customization}
             />
           </div>
         </CardHeader>

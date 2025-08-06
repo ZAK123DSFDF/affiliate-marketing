@@ -19,10 +19,6 @@ import {
   localDashboardCustomizationSettings,
 } from "@/lib/types/dashboardCustomization";
 import {
-  useDashboardCustomizationStore,
-  useDashboardThemeCustomization,
-} from "@/store/useDashboardCustomizationStore";
-import {
   Select,
   SelectContent,
   SelectItem,

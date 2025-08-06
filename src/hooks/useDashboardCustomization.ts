@@ -193,6 +193,7 @@ export const useTableCustomizationOption = () => {
   const tableRowBadgePaidTextColor = useTableCustomization(
     (s) => s.tableRowBadgePaidTextColor,
   );
+  const tableBorderColor = useTableCustomization((s) => s.tableBorderColor);
   const tableRowBadgePaidBackgroundColor = useTableCustomization(
     (s) => s.tableRowBadgePaidBackgroundColor,
   );
@@ -214,6 +215,7 @@ export const useTableCustomizationOption = () => {
     tableRowBadgePendingBackgroundColor,
     tableRowBadgePaidTextColor,
     tableRowBadgePaidBackgroundColor,
+    tableBorderColor,
     setTableColor,
   };
 };

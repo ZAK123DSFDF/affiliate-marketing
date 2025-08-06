@@ -1,17 +1,6 @@
 import { create } from "zustand";
 import { createCustomizationStore } from "@/store/CreateCustomizationStore";
 
-interface MainBackgroundColorStore {
-  mainBackgroundColor: string;
-  setMainBackgroundColor: (color: string) => void;
-}
-
-export const useDashboardCustomizationStore = create<MainBackgroundColorStore>(
-  (set) => ({
-    mainBackgroundColor: "",
-    setMainBackgroundColor: (color) => set({ mainBackgroundColor: color }),
-  }),
-);
 export const useSidebarCustomization = createCustomizationStore(
   {
     sideBarBackgroundColor: "",
@@ -76,6 +65,7 @@ export const useTableCustomization = createCustomizationStore(
     tableRowBadgePendingBackgroundColor: "",
     tableRowBadgePaidTextColor: "",
     tableRowBadgePaidBackgroundColor: "",
+    tableBorderColor: "",
   },
   {},
   {},

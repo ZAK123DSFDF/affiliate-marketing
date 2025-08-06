@@ -26,6 +26,7 @@ export const TableCustomizationOptions = ({
     tableRowBadgePendingBackgroundColor,
     tableRowBadgePaidTextColor,
     tableRowBadgePaidBackgroundColor,
+    tableBorderColor,
     setTableColor,
   } = useTableCustomizationOption();
 
@@ -40,75 +41,80 @@ export const TableCustomizationOptions = ({
           onChange: (val) => setTableColor("tableHeaderTextColor", val),
         },
         tableHoverBackgroundColor: {
-          label: "Row Hover Background",
+          label: "Table Row Hover Background",
           value: tableHoverBackgroundColor,
           onChange: (val) => setTableColor("tableHoverBackgroundColor", val),
         },
         tableIconColor: {
-          label: "Icon Color",
+          label: "Table Icon Color",
           value: tableIconColor,
           onChange: (val) => setTableColor("tableIconColor", val),
         },
         tableIconHoverColor: {
-          label: "Icon Hover Color",
+          label: " Table Icon Hover Color",
           value: tableIconHoverColor,
           onChange: (val) => setTableColor("tableIconHoverColor", val),
         },
         tableIconHoverBackgroundColor: {
-          label: "Icon Hover Background",
+          label: "Table Icon Hover Background",
           value: tableIconHoverBackgroundColor,
           onChange: (val) =>
             setTableColor("tableIconHoverBackgroundColor", val),
         },
         tableRowPrimaryTextColor: {
-          label: "Row Primary Text Color",
+          label: "Table Row Primary Text Color",
           value: tableRowPrimaryTextColor,
           onChange: (val) => setTableColor("tableRowPrimaryTextColor", val),
         },
         tableRowSecondaryTextColor: {
-          label: "Row Secondary Text Color",
+          label: "Table Row Secondary Text Color",
           value: tableRowSecondaryTextColor,
           onChange: (val) => setTableColor("tableRowSecondaryTextColor", val),
         },
         tableRowTertiaryTextColor: {
-          label: "Row Tertiary Text Color",
+          label: "Table Row Tertiary Text Color",
           value: tableRowTertiaryTextColor,
           onChange: (val) => setTableColor("tableRowTertiaryTextColor", val),
         },
         tableRowBadgeOverDueTextColor: {
-          label: "Badge Overdue Text Color",
+          label: "Table Badge Overdue Text Color",
           value: tableRowBadgeOverDueTextColor,
           onChange: (val) =>
             setTableColor("tableRowBadgeOverDueTextColor", val),
         },
         tableRowBadgeOverDueBackgroundColor: {
-          label: "Badge Overdue Background",
+          label: " Table Badge Overdue Background",
           value: tableRowBadgeOverDueBackgroundColor,
           onChange: (val) =>
             setTableColor("tableRowBadgeOverDueBackgroundColor", val),
         },
         tableRowBadgePendingTextColor: {
-          label: "Badge Pending Text Color",
+          label: "Table Badge Pending Text Color",
           value: tableRowBadgePendingTextColor,
           onChange: (val) =>
             setTableColor("tableRowBadgePendingTextColor", val),
         },
         tableRowBadgePendingBackgroundColor: {
-          label: "Badge Pending Background",
+          label: "Table Badge Pending Background",
           value: tableRowBadgePendingBackgroundColor,
           onChange: (val) =>
             setTableColor("tableRowBadgePendingBackgroundColor", val),
         },
         tableRowBadgePaidTextColor: {
-          label: "Badge Paid Text Color",
+          label: "Table Badge Paid Text Color",
           value: tableRowBadgePaidTextColor,
           onChange: (val) => setTableColor("tableRowBadgePaidTextColor", val),
         },
         tableRowBadgePaidBackgroundColor: {
-          label: "Badge Paid Background",
+          label: "Table Badge Paid Background",
           value: tableRowBadgePaidBackgroundColor,
           onChange: (val) =>
             setTableColor("tableRowBadgePaidBackgroundColor", val),
+        },
+        tableBorderColor: {
+          label: "Table Border Color",
+          value: tableBorderColor,
+          onChange: (val) => setTableColor("tableBorderColor", val),
         },
       }}
     />
