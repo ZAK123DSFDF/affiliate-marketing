@@ -350,7 +350,7 @@ export default function Links({
         )}{" "}
         {isPreview && (
           <div className="absolute bottom-0 right-0 p-2">
-            <TableCustomizationOptions triggerSize="w-6 h-6" />
+            <TableCustomizationOptions triggerSize="w-6 h-6" type="link" />
           </div>
         )}
         <CardHeader className="flex flex-row items-center justify-between">
