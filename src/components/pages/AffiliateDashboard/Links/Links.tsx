@@ -321,7 +321,7 @@ export default function Links({
         }}
       >
         {isPreview && (
-          <div className="absolute bottom-0 left-0 z-50 p-2">
+          <div className="absolute bottom-0 left-0 p-2">
             <DashboardCardCustomizationOptions
               triggerSize="w-6 h-6"
               dropdownSize="w-[150px]"
@@ -329,7 +329,7 @@ export default function Links({
           </div>
         )}{" "}
         {isPreview && (
-          <div className="absolute bottom-0 right-0 z-50 p-2">
+          <div className="absolute bottom-0 right-0 p-2">
             <TableCustomizationOptions triggerSize="w-6 h-6" />
           </div>
         )}
@@ -343,7 +343,7 @@ export default function Links({
 
               {isPreview && (
                 <DashboardThemeCustomizationOptions
-                  name="dashboardHeaderDescColor"
+                  name="cardHeaderPrimaryTextColor"
                   buttonSize="w-4 h-4"
                 />
               )}

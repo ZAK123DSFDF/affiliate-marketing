@@ -40,16 +40,14 @@ import {
 } from "@/lib/schema/passwordSchema";
 import { cn } from "@/lib/utils";
 import { InputField } from "@/components/Auth/FormFields";
-import {
-  dashboardCustomizationSettings,
-  localDashboardCustomizationSettings,
-} from "@/lib/types/dashboardCustomization";
+import { localDashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
 import { DashboardButtonCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardButtonCustomizationOptions";
 import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions";
 import { Separator } from "@/components/ui/separator";
 import { DialogCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DialogCustomizationOptions";
+import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions";
 
 interface CommonData {
   id: string;
@@ -285,7 +283,7 @@ export default function Profile({
         }}
       >
         {isPreview && (
-          <div className="absolute bottom-0 left-0 z-50 p-2">
+          <div className="absolute bottom-0 left-0 p-2">
             <DashboardCardCustomizationOptions
               triggerSize="w-6 h-6"
               dropdownSize="w-[150px]"
@@ -314,8 +312,13 @@ export default function Profile({
             <form
               id="profile-form"
               onSubmit={profileForm.handleSubmit(onSubmit)}
-              className="space-y-6"
+              className="space-y-6 relative"
             >
+              {isPreview && (
+                <div className="absolute top-0 left-[16rem]">
+                  <InputCustomizationOptions size="w-6 h-6" />
+                </div>
+              )}
               <InputField
                 control={profileForm.control}
                 name="name"
@@ -429,7 +432,7 @@ export default function Profile({
         >
           <DialogHeader>
             {isPreview && (
-              <div className="absolute bottom-0 left-0 z-50 p-2">
+              <div className="absolute bottom-0 left-0 p-2">
                 <DialogCustomizationOptions triggerSize="w-6 h-6" />
               </div>
             )}
@@ -438,9 +441,17 @@ export default function Profile({
                 color: customization?.headerNameColor || undefined,
               }}
             >
-              {step === "current"
-                ? "Verify Current Password"
-                : "Set New Password"}
+              <div className="flex flex-row gap-2 items-center">
+                {step === "current"
+                  ? "Verify Current Password"
+                  : "Set New Password"}
+                {isPreview && (
+                  <DashboardThemeCustomizationOptions
+                    name="cardHeaderSecondaryTextColor"
+                    buttonSize="w-4 h-4"
+                  />
+                )}
+              </div>
             </DialogTitle>
           </DialogHeader>
 
@@ -450,8 +461,13 @@ export default function Profile({
                 onSubmit={currrentPasswordForm.handleSubmit(
                   onSubmitValidateCurrent,
                 )}
-                className="space-y-4"
+                className=" relative space-y-4"
               >
+                {isPreview && (
+                  <div className="absolute top-[20px] right-0 z-50">
+                    <InputCustomizationOptions size="w-6 h-6" />
+                  </div>
+                )}
                 <InputField
                   control={currrentPasswordForm.control}
                   name="currentPassword"
@@ -462,28 +478,33 @@ export default function Profile({
                   showPasswordToggle={true}
                 />
                 <DialogFooter>
-                  <Button
-                    type="submit"
-                    disabled={validatePassword.isPending}
-                    style={{
-                      backgroundColor: validatePassword.isPending
-                        ? customization?.buttonDisabledBackgroundColor ||
-                          undefined
-                        : customization?.buttonBackgroundColor || undefined,
-                      color: validatePassword.isPending
-                        ? customization?.buttonDisabledTextColor || undefined
-                        : customization?.buttonTextColor || undefined,
-                    }}
-                  >
-                    {validatePassword.isPending ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Validating
-                      </>
-                    ) : (
-                      "Continue"
+                  <div className="flex flex-row gap-2 items-center">
+                    {isPreview && (
+                      <DashboardButtonCustomizationOptions triggerSize="w-6 h-6" />
                     )}
-                  </Button>
+                    <Button
+                      type="submit"
+                      disabled={validatePassword.isPending}
+                      style={{
+                        backgroundColor: validatePassword.isPending
+                          ? customization?.buttonDisabledBackgroundColor ||
+                            undefined
+                          : customization?.buttonBackgroundColor || undefined,
+                        color: validatePassword.isPending
+                          ? customization?.buttonDisabledTextColor || undefined
+                          : customization?.buttonTextColor || undefined,
+                      }}
+                    >
+                      {validatePassword.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Validating
+                        </>
+                      ) : (
+                        "Continue"
+                      )}
+                    </Button>
+                  </div>
                 </DialogFooter>
               </form>
             </Form>
@@ -492,8 +513,13 @@ export default function Profile({
               <form
                 key={step}
                 onSubmit={newPasswordForm.handleSubmit(onSubmitUpdatePassword)}
-                className="space-y-4"
+                className="space-y-4 relative"
               >
+                {isPreview && (
+                  <div className="absolute top-[20px] right-0 z-50">
+                    <InputCustomizationOptions size="w-6 h-6" />
+                  </div>
+                )}
                 <InputField
                   control={newPasswordForm.control}
                   name="newPassword"
@@ -515,28 +541,33 @@ export default function Profile({
                 />
 
                 <DialogFooter>
-                  <Button
-                    type="submit"
-                    disabled={updatePassword.isPending}
-                    style={{
-                      backgroundColor: updatePassword.isPending
-                        ? customization?.buttonDisabledBackgroundColor ||
-                          undefined
-                        : customization?.buttonBackgroundColor || undefined,
-                      color: updatePassword.isPending
-                        ? customization?.buttonDisabledTextColor || undefined
-                        : customization?.buttonTextColor || undefined,
-                    }}
-                  >
-                    {updatePassword.isPending ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Updating
-                      </>
-                    ) : (
-                      "Update Password"
+                  <div className="flex flex-row gap-2 items-center">
+                    {isPreview && (
+                      <DashboardButtonCustomizationOptions triggerSize="w-6 h-6" />
                     )}
-                  </Button>
+                    <Button
+                      type="submit"
+                      disabled={updatePassword.isPending}
+                      style={{
+                        backgroundColor: updatePassword.isPending
+                          ? customization?.buttonDisabledBackgroundColor ||
+                            undefined
+                          : customization?.buttonBackgroundColor || undefined,
+                        color: updatePassword.isPending
+                          ? customization?.buttonDisabledTextColor || undefined
+                          : customization?.buttonTextColor || undefined,
+                      }}
+                    >
+                      {updatePassword.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Updating
+                        </>
+                      ) : (
+                        "Update Password"
+                      )}
+                    </Button>
+                  </div>
                 </DialogFooter>
               </form>
             </Form>

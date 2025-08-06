@@ -21,6 +21,7 @@ export const SidebarCustomizationOptions = ({
     sideBarProfileBackgroundColor,
     sideBarProfileTextPrimaryColor,
     sideBarProfileTextSecondaryColor,
+    sideBarNavigationFocusRingColor,
     setSidebarColor,
   } = useSidebarCustomizationOption();
 
@@ -81,6 +82,12 @@ export const SidebarCustomizationOptions = ({
           value: sideBarProfileTextSecondaryColor,
           onChange: (val) =>
             setSidebarColor("sideBarProfileTextSecondaryColor", val),
+        },
+        sideBarNavigationFocusRingColor: {
+          label: "Focus Ring Color",
+          value: sideBarNavigationFocusRingColor,
+          onChange: (val) =>
+            setSidebarColor("sideBarNavigationFocusRingColor", val),
         },
       }}
     />

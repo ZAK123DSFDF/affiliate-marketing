@@ -21,6 +21,7 @@ import {
 } from "@/lib/types/dashboardCustomization";
 import { SidebarCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/SidebarCustomizationOptions";
 import { useSidebarCustomization } from "@/store/useDashboardCustomizationStore";
+import { cn } from "@/lib/utils";
 
 type Props = {
   orgId?: string;
@@ -125,17 +126,26 @@ const AffiliateDashboardSidebar = ({
                           onClick={() => onSelectPage && onSelectPage(item.key)}
                           onMouseEnter={() => setHoveredKey(item.key)}
                           onMouseLeave={() => setHoveredKey(null)}
-                          className="flex items-center gap-2 w-full px-2 py-1.5 text-sm rounded-md transition-colors"
+                          className={cn(
+                            "flex items-center gap-2 w-full px-2 py-1.5 text-sm rounded-md transition-colors",
+                            "focus:outline-none focus-visible:outline-none",
+                            "focus-visible:ring-2 focus-visible:ring-red-500",
+                          )}
                           style={{
                             backgroundColor: backgroundColor || undefined,
                             color: textColor || undefined,
+                            ["--tw-ring-color" as any]:
+                              sidebar.sideBarNavigationFocusRingColor ||
+                              "hsl(var(--sidebar-ring))",
                           }}
                         >
                           <item.icon
-                            className="w-5 h-5"
+                            className={cn("w-5 h-5", isActive && "font-medium")}
                             style={{ color: textColor || undefined }}
                           />
-                          <span>{item.title}</span>
+                          <span className={cn(isActive && "font-medium")}>
+                            {item.title}
+                          </span>
                         </button>
                       ) : (
                         <Link href={item.url}>

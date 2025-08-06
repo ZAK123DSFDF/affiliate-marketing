@@ -23,6 +23,7 @@ export const useSidebarCustomization = createCustomizationStore(
     sideBarProfileBackgroundColor: "",
     sideBarProfileTextPrimaryColor: "",
     sideBarProfileTextSecondaryColor: "",
+    sideBarNavigationFocusRingColor: "",
   },
   {},
   {},

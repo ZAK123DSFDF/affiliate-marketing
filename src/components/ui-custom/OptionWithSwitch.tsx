@@ -62,6 +62,7 @@ export const OptionWithSwitch = <
             "hover:bg-accent hover:text-accent-foreground",
             "cursor-pointer transition-colors",
             "flex items-center justify-center",
+            "relative",
             triggerSize,
           )}
         >
@@ -74,7 +75,7 @@ export const OptionWithSwitch = <
           />
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] max-h-[400px] overflow-auto">
+      <PopoverContent className="w-[300px] max-h-[250px] overflow-auto">
         <Accordion type="multiple" className="flex flex-col gap-2">
           {Object.entries(properties).map(([key, prop]) => {
             if ("value" in prop && "options" in prop) {

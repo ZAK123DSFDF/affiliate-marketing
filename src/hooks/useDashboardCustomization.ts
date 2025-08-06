@@ -36,6 +36,9 @@ export const useSidebarCustomizationOption = () => {
   const sideBarProfileTextSecondaryColor = useSidebarCustomization(
     (s) => s.sideBarProfileTextSecondaryColor,
   );
+  const sideBarNavigationFocusRingColor = useSidebarCustomization(
+    (s) => s.sideBarNavigationFocusRingColor,
+  );
   const setSidebarColor = useSidebarCustomization((s) => s.setColor);
 
   return {
@@ -48,6 +51,7 @@ export const useSidebarCustomizationOption = () => {
     sideBarProfileBackgroundColor,
     sideBarProfileTextPrimaryColor,
     sideBarProfileTextSecondaryColor,
+    sideBarNavigationFocusRingColor,
     setSidebarColor,
   };
 };
