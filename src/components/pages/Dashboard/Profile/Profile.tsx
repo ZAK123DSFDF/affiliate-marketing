@@ -48,6 +48,12 @@ import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Custom
 import { Separator } from "@/components/ui/separator";
 import { DialogCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DialogCustomizationOptions";
 import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions";
+import {
+  useDashboardButtonCustomizationOption,
+  useDashboardCardCustomizationOption,
+  useDashboardThemeCustomizationOption,
+} from "@/hooks/useDashboardCustomization";
+import { toValidShadowSize } from "@/util/ValidateShadowColor";
 
 interface CommonData {
   id: string;
@@ -75,7 +81,9 @@ export default function Profile({
   const initialEmail = AffiliateData
     ? AffiliateData.email
     : (UserData?.email ?? "");
-
+  const dashboardTheme = useDashboardThemeCustomizationOption();
+  const dashboardCard = useDashboardCardCustomizationOption();
+  const dashboardButton = useDashboardButtonCustomizationOption();
   const profileForm = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -234,7 +242,7 @@ export default function Profile({
               <h1
                 className="text-3xl font-bold"
                 style={{
-                  color: customization?.headerNameColor || undefined,
+                  color: dashboardTheme.dashboardHeaderNameColor || undefined,
                 }}
               >
                 Profile Settings
@@ -250,7 +258,7 @@ export default function Profile({
               <p
                 className="text-muted-foreground"
                 style={{
-                  color: customization?.headerDescColor || undefined,
+                  color: dashboardTheme.dashboardHeaderDescColor || undefined,
                 }}
               >
                 Manage your account information
@@ -269,17 +277,19 @@ export default function Profile({
       <Card
         className="relative"
         style={{
-          backgroundColor: customization?.cardBackgroundColor || undefined,
+          backgroundColor:
+            dashboardCard.dashboardCardBackgroundColor || undefined,
           boxShadow:
-            customization?.cardShadow && customization?.cardShadow !== "none"
+            dashboardCard.dashboardCardShadow &&
+            dashboardCard.dashboardCardShadow !== "none"
               ? getShadowWithColor(
-                  customization?.cardShadow,
-                  customization?.cardShadowColor,
+                  toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
+                  dashboardCard.dashboardCardShadowColor,
                 )
-              : "none",
-          border: customization?.cardBorder
-            ? `1px solid ${customization?.cardBorderColor}`
-            : "",
+              : "",
+          border: dashboardCard.dashboardCardBorder
+            ? `1px solid ${dashboardCard.dashboardCardBorderColor}`
+            : "none",
         }}
       >
         {isPreview && (
@@ -294,7 +304,7 @@ export default function Profile({
           <div className="flex flex-row gap-2 items-center">
             <CardTitle
               style={{
-                color: customization?.headerNameColor || undefined,
+                color: dashboardTheme.cardHeaderPrimaryTextColor || undefined,
               }}
             >
               Account Information
@@ -345,7 +355,7 @@ export default function Profile({
                     className="flex-1"
                     style={{
                       backgroundColor:
-                        customization?.separatorColor || "#e5e7eb",
+                        dashboardTheme.separatorColor || "#e5e7eb",
                     }}
                   />
                   {isPreview && (
@@ -356,11 +366,13 @@ export default function Profile({
                   )}
                 </div>
 
-                <div className="flex flex-row gap-2 mt-4">
+                <div className="flex flex-row gap-2 mt-4 ">
                   <h3
                     className="font-medium mb-4"
                     style={{
-                      color: customization?.headerNameColor || undefined,
+                      color:
+                        dashboardTheme.cardHeaderSecondaryTextColor ||
+                        undefined,
                     }}
                   >
                     Password
@@ -378,8 +390,10 @@ export default function Profile({
                   onClick={() => setShowPasswordModal(true)}
                   style={{
                     backgroundColor:
-                      customization?.buttonBackgroundColor || undefined,
-                    color: customization?.buttonTextColor || undefined,
+                      dashboardButton.dashboardButtonBackgroundColor ||
+                      undefined,
+                    color:
+                      dashboardButton.dashboardButtonTextColor || undefined,
                   }}
                 >
                   Change Password
@@ -388,7 +402,7 @@ export default function Profile({
                 <Separator
                   className="flex-1 mt-4"
                   style={{
-                    backgroundColor: customization?.separatorColor || "#e5e7eb",
+                    backgroundColor: dashboardTheme.separatorColor || "#e5e7eb",
                   }}
                 />
               </div>
@@ -407,12 +421,15 @@ export default function Profile({
               style={{
                 backgroundColor:
                   updateProfile.isPending || isFormUnchanged
-                    ? customization?.buttonDisabledBackgroundColor || undefined
-                    : customization?.buttonBackgroundColor || undefined,
+                    ? dashboardButton.dashboardButtonDisabledBackgroundColor ||
+                      undefined
+                    : dashboardButton.dashboardButtonBackgroundColor ||
+                      undefined,
                 color:
                   updateProfile.isPending || isFormUnchanged
-                    ? customization?.buttonDisabledTextColor || undefined
-                    : customization?.buttonTextColor || undefined,
+                    ? dashboardButton.dashboardButtonDisabledTextColor ||
+                      undefined
+                    : dashboardButton.dashboardButtonTextColor || undefined,
               }}
             >
               {updateProfile.isPending && (
@@ -425,11 +442,7 @@ export default function Profile({
       </Card>
 
       <Dialog open={showPasswordModal} onOpenChange={resetPasswordModal}>
-        <DialogContent
-          dialogBackgroundColor={customization?.dialogBackgroundColor}
-          dialogCloseIconColor={customization?.dialogCloseIconColor}
-          dialogCloseIconBorderColor={customization?.dialogCloseIconBorderColor}
-        >
+        <DialogContent>
           <DialogHeader>
             {isPreview && (
               <div className="absolute bottom-0 left-0 p-2">
@@ -438,7 +451,7 @@ export default function Profile({
             )}
             <DialogTitle
               style={{
-                color: customization?.headerNameColor || undefined,
+                color: dashboardTheme.dialogHeaderColor || undefined,
               }}
             >
               <div className="flex flex-row gap-2 items-center">
@@ -447,7 +460,7 @@ export default function Profile({
                   : "Set New Password"}
                 {isPreview && (
                   <DashboardThemeCustomizationOptions
-                    name="cardHeaderSecondaryTextColor"
+                    name="dialogHeaderColor"
                     buttonSize="w-4 h-4"
                   />
                 )}
@@ -487,12 +500,15 @@ export default function Profile({
                       disabled={validatePassword.isPending}
                       style={{
                         backgroundColor: validatePassword.isPending
-                          ? customization?.buttonDisabledBackgroundColor ||
+                          ? dashboardButton.dashboardButtonDisabledBackgroundColor ||
                             undefined
-                          : customization?.buttonBackgroundColor || undefined,
+                          : dashboardButton.dashboardButtonBackgroundColor ||
+                            undefined,
                         color: validatePassword.isPending
-                          ? customization?.buttonDisabledTextColor || undefined
-                          : customization?.buttonTextColor || undefined,
+                          ? dashboardButton.dashboardButtonDisabledTextColor ||
+                            undefined
+                          : dashboardButton.dashboardButtonTextColor ||
+                            undefined,
                       }}
                     >
                       {validatePassword.isPending ? (
@@ -550,12 +566,15 @@ export default function Profile({
                       disabled={updatePassword.isPending}
                       style={{
                         backgroundColor: updatePassword.isPending
-                          ? customization?.buttonDisabledBackgroundColor ||
+                          ? dashboardButton.dashboardButtonDisabledBackgroundColor ||
                             undefined
-                          : customization?.buttonBackgroundColor || undefined,
+                          : dashboardButton.dashboardButtonBackgroundColor ||
+                            undefined,
                         color: updatePassword.isPending
-                          ? customization?.buttonDisabledTextColor || undefined
-                          : customization?.buttonTextColor || undefined,
+                          ? dashboardButton.dashboardButtonDisabledTextColor ||
+                            undefined
+                          : dashboardButton.dashboardButtonTextColor ||
+                            undefined,
                       }}
                     >
                       {updatePassword.isPending ? (

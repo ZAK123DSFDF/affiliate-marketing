@@ -10,7 +10,8 @@ type DashboardThemeKeys =
   | "dashboardHeaderDescColor"
   | "separatorColor"
   | "cardHeaderPrimaryTextColor"
-  | "cardHeaderSecondaryTextColor";
+  | "cardHeaderSecondaryTextColor"
+  | "dialogHeaderColor";
 
 type Props = {
   name: DashboardThemeKeys;
@@ -31,6 +32,7 @@ export const DashboardThemeCustomizationOptions = ({
     setDashboardThemeColor,
     cardHeaderPrimaryTextColor,
     cardHeaderSecondaryTextColor,
+    dialogHeaderColor,
   } = useDashboardThemeCustomizationOption();
 
   const valueMap: Record<DashboardThemeKeys, string> = {
@@ -40,6 +42,7 @@ export const DashboardThemeCustomizationOptions = ({
     separatorColor,
     cardHeaderPrimaryTextColor,
     cardHeaderSecondaryTextColor,
+    dialogHeaderColor,
   };
 
   const labelMap: Record<DashboardThemeKeys, string> = {
@@ -49,6 +52,7 @@ export const DashboardThemeCustomizationOptions = ({
     separatorColor: "Separator",
     cardHeaderPrimaryTextColor: "Card Header Primary Text",
     cardHeaderSecondaryTextColor: "Card Header Secondary Text",
+    dialogHeaderColor: "Dialog Header",
   };
 
   return (

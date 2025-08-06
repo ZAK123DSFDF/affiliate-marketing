@@ -113,7 +113,9 @@ export const useDashboardThemeCustomizationOption = () => {
   const cardHeaderSecondaryTextColor = useDashboardThemeCustomization(
     (s) => s.cardHeaderSecondaryTextColor,
   );
-
+  const dialogHeaderColor = useDashboardThemeCustomization(
+    (s) => s.dialogHeaderColor,
+  );
   const setDashboardThemeColor = useDashboardThemeCustomization(
     (s) => s.setColor,
   );
@@ -124,6 +126,7 @@ export const useDashboardThemeCustomizationOption = () => {
     dashboardHeaderDescColor,
     setDashboardThemeColor,
     separatorColor,
+    dialogHeaderColor,
     cardHeaderPrimaryTextColor,
     cardHeaderSecondaryTextColor,
   };

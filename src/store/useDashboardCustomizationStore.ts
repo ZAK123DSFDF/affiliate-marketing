@@ -35,6 +35,7 @@ export const useDashboardThemeCustomization = createCustomizationStore(
     dashboardHeaderDescColor: "",
     cardHeaderPrimaryTextColor: "",
     cardHeaderSecondaryTextColor: "",
+    dialogHeaderColor: "",
   },
   {},
   {},
