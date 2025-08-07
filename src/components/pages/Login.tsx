@@ -31,11 +31,13 @@ import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/
 import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
+import { LinkButton } from "@/components/ui-custom/LinkButton";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
+  setTab?: (tab: string) => void;
 };
-const Login = ({ orgId, isPreview = false }: Props) => {
+const Login = ({ orgId, isPreview = false, setTab }: Props) => {
   const { showCustomToast } = useCustomToast();
   const [previewLoading, setPreviewLoading] = useState(false);
   const form = useForm<LoginFormValues>({
@@ -212,15 +214,14 @@ const Login = ({ orgId, isPreview = false }: Props) => {
                         buttonSize="w-4 h-4"
                       />
                     )}
-                    <Link
+                    <LinkButton
+                      isPreview={isPreview}
+                      label="Forgot Password"
+                      tabName="forgot-password"
                       href="/forgot-password"
-                      className="text-sm font-medium text-primary hover:underline"
-                      style={{
-                        color: linkTextColor || undefined,
-                      }}
-                    >
-                      Forgot password?
-                    </Link>
+                      setTab={setTab}
+                      linkTextColor={linkTextColor}
+                    />
                   </div>
                 </div>
 
@@ -281,15 +282,14 @@ const Login = ({ orgId, isPreview = false }: Props) => {
                 <span>Don't have an account? </span>
               </div>
 
-              <Link
-                href={`signup`}
-                className="font-medium text-primary underline-offset-4 hover:underline"
-                style={{
-                  color: linkTextColor || undefined,
-                }}
-              >
-                Sign up
-              </Link>
+              <LinkButton
+                isPreview={isPreview}
+                label="Sign up"
+                tabName="signup"
+                href="/signup"
+                setTab={setTab}
+                linkTextColor={linkTextColor}
+              />
             </div>
           </CardFooter>
           {isPreview && (

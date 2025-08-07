@@ -35,11 +35,13 @@ import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
+import { LinkButton } from "@/components/ui-custom/LinkButton";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
+  setTab?: (tab: string) => void;
 };
-const ResetPassword = ({ orgId, isPreview }: Props) => {
+const ResetPassword = ({ orgId, isPreview = false, setTab }: Props) => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   if (!token && !isPreview) {
@@ -269,15 +271,14 @@ const ResetPassword = ({ orgId, isPreview }: Props) => {
                     buttonSize="w-4 h-4"
                   />
                 )}
-                <Link
+                <LinkButton
+                  isPreview={isPreview}
+                  label="Login"
+                  tabName="login"
                   href="/login"
-                  className="font-medium text-primary underline-offset-4 hover:underline"
-                  style={{
-                    color: linkTextColor || undefined,
-                  }}
-                >
-                  Log in
-                </Link>
+                  setTab={setTab}
+                  linkTextColor={linkTextColor}
+                />
               </div>
             </div>
           </CardFooter>

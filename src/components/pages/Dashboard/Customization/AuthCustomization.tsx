@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 import Login from "@/components/pages/Login";
@@ -10,12 +10,15 @@ import ForgotPassword from "@/components/pages/Forgot-password";
 import ResetPassword from "@/components/pages/Reset-password";
 import InvalidToken from "@/components/pages/InvalidToken";
 import EmailVerified from "@/components/pages/Email-verified";
-
-export const AuthCustomization = () => {
+interface AuthCustomizationProps {
+  setMainTab?: (tab: string) => void;
+}
+export const AuthCustomization = ({ setMainTab }: AuthCustomizationProps) => {
+  const [tab, setTab] = useState("login");
   return (
     <>
       <div className="border rounded-lg p-4 transition-all duration-300 mt-6 shadow-md">
-        <Tabs defaultValue="login">
+        <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="flex flex-wrap gap-2 mb-4 overflow-x-auto whitespace-nowrap">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="signup">Signup</TabsTrigger>
@@ -25,22 +28,22 @@ export const AuthCustomization = () => {
             <TabsTrigger value="email-verified">Email Verified</TabsTrigger>
           </TabsList>
           <TabsContent value="login">
-            <Login isPreview />
+            <Login isPreview setTab={setTab} />
           </TabsContent>
           <TabsContent value="signup">
-            <Signup isPreview />
+            <Signup isPreview setTab={setTab} />
           </TabsContent>
           <TabsContent value="forgot-password">
-            <ForgotPassword isPreview />
+            <ForgotPassword isPreview setTab={setTab} />
           </TabsContent>
           <TabsContent value="reset-password">
-            <ResetPassword isPreview />
+            <ResetPassword isPreview setTab={setTab} />
           </TabsContent>
           <TabsContent value="invalid-token">
             <InvalidToken isPreview />
           </TabsContent>{" "}
           <TabsContent value="email-verified">
-            <EmailVerified isPreview />
+            <EmailVerified isPreview setTab={setTab} setMainTab={setMainTab} />
           </TabsContent>
         </Tabs>
       </div>

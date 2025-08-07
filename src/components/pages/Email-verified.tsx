@@ -1,6 +1,5 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import {
   useButtonCustomizationOption,
@@ -14,13 +13,15 @@ import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
+import { useRouter } from "next/navigation";
 
 type Props = {
   orgId?: string;
   isPreview?: boolean;
+  setMainTab?: (tab: string) => void;
 };
 
-const EmailVerified = ({ orgId, isPreview }: Props) => {
+const EmailVerified = ({ orgId, isPreview, setMainTab }: Props) => {
   const { backgroundColor } = useThemeCustomizationOption();
   const {
     emailVerifiedPrimaryColor,
@@ -37,7 +38,14 @@ const EmailVerified = ({ orgId, isPreview }: Props) => {
   } = useCardCustomizationOption();
   const { buttonBackgroundColor, buttonTextColor } =
     useButtonCustomizationOption();
-
+  const router = useRouter();
+  const handleClick = () => {
+    if (isPreview) {
+      setMainTab?.("sidebar");
+    } else {
+      router.push("/dashboard");
+    }
+  };
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${
@@ -124,18 +132,17 @@ const EmailVerified = ({ orgId, isPreview }: Props) => {
               )}
             </div>
 
-            <Link href="/dashboard" className="w-full block">
-              <Button
-                className="w-full mb-6"
-                size="lg"
-                style={{
-                  backgroundColor: buttonBackgroundColor || undefined,
-                  color: buttonTextColor || undefined,
-                }}
-              >
-                Go to Dashboard
-              </Button>
-            </Link>
+            <Button
+              className="w-full mb-6"
+              size="lg"
+              onClick={handleClick}
+              style={{
+                backgroundColor: buttonBackgroundColor || undefined,
+                color: buttonTextColor || undefined,
+              }}
+            >
+              Go to Dashboard
+            </Button>
           </CardContent>
         </Card>
 

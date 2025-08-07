@@ -32,11 +32,13 @@ import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
+import { LinkButton } from "@/components/ui-custom/LinkButton";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
+  setTab?: (tab: string) => void;
 };
-const Signup = ({ orgId, isPreview }: Props) => {
+const Signup = ({ orgId, isPreview = false, setTab }: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false);
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -271,15 +273,14 @@ const Signup = ({ orgId, isPreview }: Props) => {
                     buttonSize="w-4 h-4"
                   />
                 )}
-                <Link
-                  href={`login`}
-                  className="font-medium text-primary underline-offset-4 hover:underline"
-                  style={{
-                    color: linkTextColor || undefined,
-                  }}
-                >
-                  Log in
-                </Link>
+                <LinkButton
+                  isPreview={isPreview}
+                  label="Login"
+                  tabName="login"
+                  href="/login"
+                  setTab={setTab}
+                  linkTextColor={linkTextColor}
+                />
               </div>
             </div>
           </CardFooter>

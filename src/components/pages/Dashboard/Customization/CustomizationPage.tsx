@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AuthCustomization } from "@/components/pages/Dashboard/Customization/AuthCustomization";
 import { DashboardCustomization } from "@/components/pages/Dashboard/Customization/DashboardCustomization";
@@ -24,7 +24,7 @@ const customizationFields: { key: ToastColorKey; label: string }[] = [
 
 export default function CustomizationPage() {
   const customization = useToastCustomizationOption();
-
+  const [mainTab, setMainTab] = useState("sidebar");
   return (
     <div className="p-6 space-y-6">
       <div>
@@ -63,7 +63,7 @@ export default function CustomizationPage() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="sidebar" className="space-y-4">
+      <Tabs value={mainTab} onValueChange={setMainTab} className="space-y-4">
         <TabsList>
           <TabsTrigger value="sidebar">Sidebar</TabsTrigger>
           <TabsTrigger value="auth">Auth Pages</TabsTrigger>
@@ -73,7 +73,7 @@ export default function CustomizationPage() {
           <DashboardCustomization />
         </TabsContent>
         <TabsContent value="auth">
-          <AuthCustomization />
+          <AuthCustomization setMainTab={setMainTab} />
         </TabsContent>
       </Tabs>
     </div>
