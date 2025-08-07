@@ -37,10 +37,9 @@ import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 type Props = {
   orgId?: string;
-  customization?: AuthCustomizationSettings;
   isPreview?: boolean;
 };
-const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
+const ResetPassword = ({ orgId, isPreview }: Props) => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   if (!token && !isPreview) {
@@ -187,7 +186,6 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
                   </div>
                 )}
                 <InputField
-                  key={`newPassword-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="password"
                   label="New Password"
@@ -195,11 +193,9 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
                   type="password"
                   icon={Lock}
                   showPasswordToggle={true}
-                  customization={customization}
                 />
 
                 <InputField
-                  key={`newConfirmPassword-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="confirmPassword"
                   label="Confirm New Password"
@@ -207,7 +203,6 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
                   type="password"
                   icon={Lock}
                   showPasswordToggle={true}
-                  customization={customization}
                 />
 
                 <Button
@@ -287,7 +282,7 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
             </div>
           </CardFooter>
           {isPreview && (
-            <div className="absolute bottom-0 left-0 z-50 p-2">
+            <div className="absolute bottom-0 left-0 p-2">
               <CardCustomizationOptions
                 triggerSize="w-6 h-6"
                 dropdownSize="w-[150px]"

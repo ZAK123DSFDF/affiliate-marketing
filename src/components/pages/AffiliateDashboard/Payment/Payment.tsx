@@ -43,13 +43,11 @@ import { toValidShadowSize } from "@/util/ValidateShadowColor";
 interface AffiliateCommissionTableProps {
   data: AffiliatePaymentRow[];
   isPreview?: boolean;
-  customization?: localDashboardCustomizationSettings;
 }
 
 export default function AffiliateCommissionTable({
   data,
   isPreview,
-  customization,
 }: AffiliateCommissionTableProps) {
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();

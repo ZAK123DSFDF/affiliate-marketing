@@ -45,13 +45,11 @@ import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 interface AffiliateLinkProps {
   data: AffiliateLinkWithStats[];
   isPreview?: boolean;
-  customization?: localDashboardCustomizationSettings;
   isTopLinksView?: boolean;
 }
 export default function Links({
   data,
   isPreview,
-  customization,
   isTopLinksView = false,
 }: AffiliateLinkProps) {
   const dashboardTheme = useDashboardThemeCustomizationOption();

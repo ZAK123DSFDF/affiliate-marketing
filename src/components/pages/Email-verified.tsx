@@ -17,11 +17,10 @@ import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization
 
 type Props = {
   orgId?: string;
-  customization?: AuthCustomizationSettings;
   isPreview?: boolean;
 };
 
-const EmailVerified = ({ orgId, customization, isPreview }: Props) => {
+const EmailVerified = ({ orgId, isPreview }: Props) => {
   const { backgroundColor } = useThemeCustomizationOption();
   const {
     emailVerifiedPrimaryColor,
@@ -141,13 +140,13 @@ const EmailVerified = ({ orgId, customization, isPreview }: Props) => {
         </Card>
 
         {isPreview && (
-          <div className="absolute bottom-0 right-0 z-50 p-2">
+          <div className="absolute bottom-0 right-0 p-2">
             <ButtonCustomizationOptions onlyShowEnabled size="w-6 h-6" />
           </div>
         )}
 
         {isPreview && (
-          <div className="absolute bottom-0 left-0 z-50 p-2">
+          <div className="absolute bottom-0 left-0 p-2">
             <CardCustomizationOptions
               triggerSize="w-6 h-6"
               dropdownSize="w-[150px]"

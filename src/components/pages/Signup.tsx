@@ -34,10 +34,9 @@ import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 type Props = {
   orgId?: string;
-  customization?: AuthCustomizationSettings;
   isPreview?: boolean;
 };
-const Signup = ({ orgId, customization, isPreview }: Props) => {
+const Signup = ({ orgId, isPreview }: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false);
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -171,29 +170,24 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
                   </div>
                 )}
                 <InputField
-                  key={`name-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="name"
                   label="Full name"
                   placeholder="john doe"
                   type="text"
                   icon={User}
-                  customization={customization}
                 />
 
                 <InputField
-                  key={`email-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="email"
                   label="Email"
                   placeholder="john.doe@example.com"
                   type="email"
                   icon={Mail}
-                  customization={customization}
                 />
 
                 <InputField
-                  key={`password-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="password"
                   label="Password"
@@ -201,11 +195,9 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
                   type="password"
                   icon={Lock}
                   showPasswordToggle={true}
-                  customization={customization}
                 />
 
                 <InputField
-                  key={`confirmPassword-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="confirmPassword"
                   label="Confirm Password"
@@ -213,7 +205,6 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
                   type="password"
                   icon={Lock}
                   showPasswordToggle={true}
-                  customization={customization}
                 />
 
                 <Button
@@ -293,7 +284,7 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
             </div>
           </CardFooter>
           {isPreview && (
-            <div className="absolute bottom-0 left-0 z-50 p-2">
+            <div className="absolute bottom-0 left-0 p-2">
               <CardCustomizationOptions
                 triggerSize="w-6 h-6"
                 dropdownSize="w-[150px]"

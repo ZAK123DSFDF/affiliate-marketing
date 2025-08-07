@@ -35,10 +35,9 @@ import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 type Props = {
   orgId?: string;
-  customization?: AuthCustomizationSettings;
   isPreview?: boolean;
 };
-const ForgotPassword = ({ orgId, customization, isPreview }: Props) => {
+const ForgotPassword = ({ orgId, isPreview }: Props) => {
   const form = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
@@ -177,14 +176,12 @@ const ForgotPassword = ({ orgId, customization, isPreview }: Props) => {
                   </div>
                 )}
                 <InputField
-                  key={`email-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="email"
                   label="Email"
                   placeholder="john.doe@example.com"
                   type="email"
                   icon={Mail}
-                  customization={customization}
                 />
 
                 <Button
@@ -264,7 +261,7 @@ const ForgotPassword = ({ orgId, customization, isPreview }: Props) => {
             </div>
           </CardFooter>
           {isPreview && (
-            <div className="absolute bottom-0 left-0 z-50 p-2">
+            <div className="absolute bottom-0 left-0 p-2">
               <CardCustomizationOptions
                 triggerSize="w-6 h-6"
                 dropdownSize="w-[150px]"

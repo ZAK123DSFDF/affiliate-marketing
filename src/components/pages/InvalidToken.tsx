@@ -6,16 +6,14 @@ import {
   useCardCustomizationOption,
   useThemeCustomizationOption,
 } from "@/hooks/useAuthCustomization";
-import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 type Props = {
   orgId?: string;
-  customization?: AuthCustomizationSettings;
   isPreview?: boolean;
 };
-const InvalidToken = ({ orgId, customization, isPreview }: Props) => {
+const InvalidToken = ({ orgId, isPreview }: Props) => {
   const {
     backgroundColor,
     InvalidPrimaryCustomization,
@@ -100,7 +98,7 @@ const InvalidToken = ({ orgId, customization, isPreview }: Props) => {
             </div>
           </CardContent>
           {isPreview && (
-            <div className="absolute bottom-0 left-0 z-50 p-2">
+            <div className="absolute bottom-0 left-0 p-2">
               <CardCustomizationOptions
                 triggerSize="w-6 h-6"
                 dropdownSize="w-[150px]"

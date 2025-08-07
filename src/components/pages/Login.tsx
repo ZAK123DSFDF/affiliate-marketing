@@ -17,7 +17,6 @@ import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema";
 import { useMutation } from "@tanstack/react-query";
 import { LoginAffiliateServer } from "@/app/affiliate/[orgId]/login/action";
 import { LoginServer } from "@/app/login/action";
-import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import {
   useButtonCustomizationOption,
@@ -31,14 +30,12 @@ import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
 import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { useToastCustomizationOption } from "@/hooks/useDashboardCustomization";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 type Props = {
   orgId?: string;
-  customization?: AuthCustomizationSettings;
   isPreview?: boolean;
 };
-const Login = ({ orgId, customization, isPreview = false }: Props) => {
+const Login = ({ orgId, isPreview = false }: Props) => {
   const { showCustomToast } = useCustomToast();
   const [previewLoading, setPreviewLoading] = useState(false);
   const form = useForm<LoginFormValues>({
@@ -178,18 +175,15 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
                   </div>
                 )}
                 <InputField
-                  key={`email-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="email"
                   label="Email"
                   placeholder="john.doe@example.com"
                   type="email"
                   icon={Mail}
-                  customization={customization}
                 />
 
                 <InputField
-                  key={`password-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="password"
                   label="Password"
@@ -197,7 +191,6 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
                   type="password"
                   icon={Lock}
                   showPasswordToggle={true}
-                  customization={customization}
                 />
 
                 <div className="flex items-center justify-between">
@@ -206,7 +199,6 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
                       control={form.control}
                       name="rememberMe"
                       label="Remember me"
-                      customization={customization}
                     />
                     {isPreview && (
                       <CheckboxCustomizationOptions size="w-6 h-6" />
@@ -301,7 +293,7 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
             </div>
           </CardFooter>
           {isPreview && (
-            <div className="absolute bottom-0 left-0 z-50 p-2">
+            <div className="absolute bottom-0 left-0 p-2">
               <CardCustomizationOptions
                 triggerSize="w-6 h-6"
                 dropdownSize="w-[150px]"

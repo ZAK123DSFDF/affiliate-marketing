@@ -25,7 +25,6 @@ type InputFieldProps = {
   type: "email" | "password" | "text";
   icon?: React.ElementType;
   showPasswordToggle?: boolean;
-  customization?: AuthCustomizationSettings;
   profile?: boolean;
 };
 
@@ -37,7 +36,6 @@ export const InputField = ({
   type,
   icon,
   showPasswordToggle = false,
-  customization,
   profile = false,
 }: InputFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -122,7 +120,7 @@ export const InputField = ({
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
-                  style={{ color: customization?.iconColor || undefined }}
+                  style={{ color: inputIconColor || undefined }}
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" />
@@ -155,15 +153,9 @@ type CheckboxFieldProps = {
   control: any;
   name: string;
   label: string;
-  customization?: AuthCustomizationSettings;
 };
 
-export const CheckboxField = ({
-  control,
-  name,
-  label,
-  customization,
-}: CheckboxFieldProps) => {
+export const CheckboxField = ({ control, name, label }: CheckboxFieldProps) => {
   const { checkboxActiveColor, checkboxInactiveColor, checkboxLabelColor } =
     useCheckboxCustomizationOption();
   return (
