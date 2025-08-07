@@ -12,7 +12,6 @@ import { CardCustomizationOptions } from "@/components/ui-custom/Customization/A
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
 import { useRouter } from "next/navigation";
 
