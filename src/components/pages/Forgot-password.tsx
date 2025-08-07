@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import Link from "next/link";
-import { useToast } from "@/hooks/use-toast";
 import { InputField } from "@/components/Auth/FormFields";
 import {
   ForgotPasswordFormValues,
@@ -33,6 +32,7 @@ import { InputCustomizationOptions } from "@/components/ui-custom/Customization/
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -46,7 +46,7 @@ const ForgotPassword = ({ orgId, customization, isPreview }: Props) => {
     },
   });
   const [pending, setPending] = useState(false);
-  const { toast } = useToast();
+  const { showCustomToast } = useCustomToast();
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
     useThemeCustomizationOption();
   const {
@@ -72,63 +72,17 @@ const ForgotPassword = ({ orgId, customization, isPreview }: Props) => {
       setPending(false);
 
       if (data.email === "notfound@gmail.com") {
-        toast({
-          title: (
-            <span
-              className="font-semibold"
-              style={{
-                color: customization?.toastErrorTextColor || undefined,
-              }}
-            >
-              Email Not Found
-            </span>
-          ) as unknown as string,
-          description: (
-            <span
-              className="text-sm"
-              style={{
-                color:
-                  customization?.toastErrorSecondaryTextColor ||
-                  customization?.toastErrorTextColor ||
-                  undefined,
-              }}
-            >
-              We couldn’t find an account with that email address.
-            </span>
-          ),
-          ...(customization?.toastErrorBackgroundColor && {
-            style: { backgroundColor: customization.toastErrorBackgroundColor },
-          }),
+        showCustomToast({
+          type: "error",
+          title: "Email Not Found",
+          description: "We couldn't find an account with this email.",
         });
       } else {
         // Simulate success
-        toast({
-          title: (
-            <span
-              className="font-semibold"
-              style={{
-                color: customization?.toastTextColor || undefined,
-              }}
-            >
-              Email Sent
-            </span>
-          ) as unknown as string,
-          description: (
-            <span
-              className="text-sm"
-              style={{
-                color:
-                  customization?.toastSecondaryTextColor ||
-                  customization?.toastTextColor ||
-                  undefined,
-              }}
-            >
-              If the email exists, a reset link has been sent.
-            </span>
-          ),
-          ...(customization?.toastBackgroundColor && {
-            style: { backgroundColor: customization.toastBackgroundColor },
-          }),
+        showCustomToast({
+          type: "success",
+          title: "Email Sent",
+          description: "If the email exists, a reset link has been sent.",
         });
       }
 

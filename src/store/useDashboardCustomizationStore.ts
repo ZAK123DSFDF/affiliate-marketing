@@ -96,3 +96,15 @@ export const useYearSelectCustomization = createCustomizationStore(
   {},
   {},
 );
+export const useToastCustomization = createCustomizationStore(
+  {
+    toastBackgroundColor: "",
+    toastTitleColor: "",
+    toastDescriptionColor: "",
+    toastErrorBackgroundColor: "",
+    toastErrorTitleColor: "",
+    toastErrorDescriptionColor: "",
+  },
+  {},
+  {},
+);

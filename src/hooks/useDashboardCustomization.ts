@@ -5,6 +5,7 @@ import {
   useDialogCustomization,
   useSidebarCustomization,
   useTableCustomization,
+  useToastCustomization,
   useYearSelectCustomization,
 } from "@/store/useDashboardCustomizationStore";
 
@@ -288,5 +289,36 @@ export const useYearSelectCustomizationOption = () => {
     yearSelectDropDownHoverBackgroundColor,
     yearSelectDropDownHoverTextColor,
     setYearSelectColor,
+  };
+};
+export const useToastCustomizationOption = () => {
+  const toastBackgroundColor = useToastCustomization(
+    (s) => s.toastBackgroundColor,
+  );
+  const toastTitleColor = useToastCustomization((s) => s.toastTitleColor);
+  const toastDescriptionColor = useToastCustomization(
+    (s) => s.toastDescriptionColor,
+  );
+
+  const toastErrorBackgroundColor = useToastCustomization(
+    (s) => s.toastErrorBackgroundColor,
+  );
+  const toastErrorTitleColor = useToastCustomization(
+    (s) => s.toastErrorTitleColor,
+  );
+  const toastErrorDescriptionColor = useToastCustomization(
+    (s) => s.toastErrorDescriptionColor,
+  );
+
+  const setToastColor = useToastCustomization((s) => s.setColor);
+
+  return {
+    toastBackgroundColor,
+    toastTitleColor,
+    toastDescriptionColor,
+    toastErrorBackgroundColor,
+    toastErrorTitleColor,
+    toastErrorDescriptionColor,
+    setToastColor,
   };
 };

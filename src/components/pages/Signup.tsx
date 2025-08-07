@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import Link from "next/link";
-import { useToast } from "@/hooks/use-toast";
 import { InputField } from "@/components/Auth/FormFields";
 import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema";
 import { useMutation } from "@tanstack/react-query";
@@ -32,6 +31,7 @@ import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -64,7 +64,7 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
     buttonDisabledBackgroundColor,
     buttonTextColor,
   } = useButtonCustomizationOption();
-  const { toast } = useToast();
+  const { showCustomToast } = useCustomToast();
   const affiliateMutation = useMutation({
     mutationFn: SignupAffiliateServer,
     onSuccess: (data) => console.log("Affiliate signup success", data),
@@ -87,63 +87,16 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
       setPreviewLoading(false);
 
       if (data.email === "already@used.com") {
-        toast({
-          title: (
-            <span
-              className="font-semibold"
-              style={{ color: customization?.toastErrorTextColor || undefined }}
-            >
-              Signup Failed
-            </span>
-          ) as unknown as string,
-          description: (
-            <span
-              className="text-sm"
-              style={{
-                color:
-                  customization?.toastErrorSecondaryTextColor ||
-                  customization?.toastErrorTextColor ||
-                  undefined,
-              }}
-            >
-              This email is already registered.
-            </span>
-          ),
-          ...(!customization?.toastErrorBackgroundColor &&
-          !customization?.toastErrorTextColor &&
-          !customization?.toastErrorSecondaryTextColor
-            ? { variant: "destructive" }
-            : {}),
-          ...(customization?.toastErrorBackgroundColor && {
-            style: { backgroundColor: customization.toastErrorBackgroundColor },
-          }),
+        showCustomToast({
+          type: "error",
+          title: "Signup Failed",
+          description: "This Email Already Registered",
         });
       } else {
-        toast({
-          title: (
-            <span
-              className="font-semibold"
-              style={{ color: customization?.toastTextColor || undefined }}
-            >
-              Signup Successful
-            </span>
-          ) as unknown as string,
-          description: (
-            <span
-              className="text-sm"
-              style={{
-                color:
-                  customization?.toastSecondaryTextColor ||
-                  customization?.toastTextColor ||
-                  undefined,
-              }}
-            >
-              Your account has been created!
-            </span>
-          ),
-          ...(customization?.toastBackgroundColor && {
-            style: { backgroundColor: customization.toastBackgroundColor },
-          }),
+        showCustomToast({
+          type: "success",
+          title: "Signup Successful",
+          description: "Your Account Have Created",
         });
       }
 

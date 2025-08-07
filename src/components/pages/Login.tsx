@@ -12,7 +12,6 @@ import {
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { useToast } from "@/hooks/use-toast";
 import { InputField, CheckboxField } from "@/components/Auth/FormFields";
 import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema";
 import { useMutation } from "@tanstack/react-query";
@@ -25,7 +24,6 @@ import {
   useCardCustomizationOption,
   useThemeCustomizationOption,
 } from "@/hooks/useAuthCustomization";
-
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
 import { CheckboxCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CheckboxCustomizationOptions";
 import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions";
@@ -33,14 +31,15 @@ import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
 import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
+import { useToastCustomizationOption } from "@/hooks/useDashboardCustomization";
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
   isPreview?: boolean;
 };
 const Login = ({ orgId, customization, isPreview = false }: Props) => {
-  const { toast } = useToast();
-
+  const { showCustomToast } = useCustomToast();
   const [previewLoading, setPreviewLoading] = useState(false);
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -95,67 +94,16 @@ const Login = ({ orgId, customization, isPreview = false }: Props) => {
 
       // Simulate error if password is "incorrect123"
       if (data.password === "incorrect123") {
-        toast({
-          title: (
-            <span
-              className="font-semibold"
-              style={{
-                color: customization?.toastErrorTextColor || undefined,
-              }}
-            >
-              Login Failed
-            </span>
-          ) as unknown as string,
-          description: (
-            <span
-              className="text-sm"
-              style={{
-                color:
-                  customization?.toastErrorSecondaryTextColor ||
-                  customization?.toastErrorTextColor ||
-                  undefined,
-              }}
-            >
-              The password you entered is incorrect.
-            </span>
-          ),
-          ...(!customization?.toastErrorBackgroundColor &&
-          !customization?.toastErrorTextColor &&
-          !customization?.toastErrorSecondaryTextColor
-            ? { variant: "destructive" }
-            : {}),
-          ...(customization?.toastErrorBackgroundColor && {
-            style: { backgroundColor: customization.toastErrorBackgroundColor },
-          }),
+        showCustomToast({
+          type: "error",
+          title: "Login Failed",
+          description: "The password you entered is incorrect.",
         });
       } else {
-        toast({
-          title: (
-            <span
-              className="font-semibold"
-              style={{
-                color: customization?.toastTextColor || undefined,
-              }}
-            >
-              Login Successful
-            </span>
-          ) as unknown as string,
-          description: (
-            <span
-              className="text-sm"
-              style={{
-                color:
-                  customization?.toastSecondaryTextColor ||
-                  customization?.toastTextColor ||
-                  undefined,
-              }}
-            >
-              Welcome back!
-            </span>
-          ),
-          ...(customization?.toastBackgroundColor && {
-            style: { backgroundColor: customization.toastBackgroundColor },
-          }),
+        showCustomToast({
+          type: "success",
+          title: "Login Successful",
+          description: "Welcome back!",
         });
       }
 

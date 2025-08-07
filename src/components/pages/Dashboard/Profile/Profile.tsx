@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
+
 import {
   updateAffiliatePassword,
   updateAffiliateProfile,
@@ -38,7 +38,6 @@ import {
   currentPasswordSchema,
   newPasswordSchema,
 } from "@/lib/schema/passwordSchema";
-import { cn } from "@/lib/utils";
 import { InputField } from "@/components/Auth/FormFields";
 import { localDashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
@@ -54,6 +53,7 @@ import {
   useDashboardThemeCustomizationOption,
 } from "@/hooks/useDashboardCustomization";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 
 interface CommonData {
   id: string;
@@ -109,11 +109,10 @@ export default function Profile({
   const isFormUnchanged =
     currentName.trim() === initialName.trim() &&
     currentEmail.trim() === initialEmail.trim();
-  const { toast } = useToast();
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [step, setStep] = useState<"current" | "new">("current");
-
+  const { showCustomToast } = useCustomToast();
   const updateProfile = useMutation({
     mutationFn: async (data: any) => {
       if (isPreview) {
@@ -126,14 +125,15 @@ export default function Profile({
         : updateUserProfile(data);
     },
     onSuccess: () => {
-      toast({
+      showCustomToast({
+        type: "success",
         title: "Profile updated successfully",
         description: "Your profile was updated.",
       });
     },
     onError: (err: any) => {
-      toast({
-        variant: "destructive",
+      showCustomToast({
+        type: "error",
         title: "Update Error",
         description: err.message ?? "Something went wrong.",
       });
@@ -156,21 +156,22 @@ export default function Profile({
       if (res?.ok) {
         setStep("new");
         newPasswordForm.reset({ newPassword: "", confirmPassword: "" });
-        toast({
+        showCustomToast({
+          type: "success",
           title: "Password validated",
           description: "Enter your new password below.",
         });
       } else {
-        toast({
-          variant: "destructive",
+        showCustomToast({
+          type: "error",
           title: "Invalid Password",
           description: "Incorrect password.",
         });
       }
     },
     onError: () => {
-      toast({
-        variant: "destructive",
+      showCustomToast({
+        type: "error",
         title: "Something went wrong",
         description: "Unexpected error. Please try again.",
       });
@@ -191,22 +192,23 @@ export default function Profile({
     },
     onSuccess: (res: any) => {
       if (res?.ok) {
-        toast({
+        showCustomToast({
+          type: "success",
           title: "Password updated successfully",
           description: "You can now use your new password.",
         });
         resetPasswordModal();
       } else {
-        toast({
-          variant: "destructive",
+        showCustomToast({
+          type: "error",
           title: "Update Failed",
           description: "Unable to change password.",
         });
       }
     },
     onError: () => {
-      toast({
-        variant: "destructive",
+      showCustomToast({
+        type: "error",
         title: "Unexpected Error",
         description: "Please try again later.",
       });

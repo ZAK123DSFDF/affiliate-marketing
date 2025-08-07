@@ -34,6 +34,7 @@ import { InputCustomizationOptions } from "@/components/ui-custom/Customization/
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 type Props = {
   orgId?: string;
   customization?: AuthCustomizationSettings;
@@ -54,7 +55,7 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
   });
 
   const [pending, setPending] = useState(false);
-  const { toast } = useToast();
+  const { showCustomToast } = useCustomToast();
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
     useThemeCustomizationOption();
   const {
@@ -81,63 +82,17 @@ const ResetPassword = ({ orgId, customization, isPreview }: Props) => {
       setPending(false);
 
       if (data.password === "notcorrect123") {
-        toast({
-          title: (
-            <span
-              className="font-semibold"
-              style={{
-                color: customization?.toastErrorTextColor || undefined,
-              }}
-            >
-              Something went wrong
-            </span>
-          ) as unknown as string,
-          description: (
-            <span
-              className="text-sm"
-              style={{
-                color:
-                  customization?.toastErrorSecondaryTextColor ||
-                  customization?.toastErrorTextColor ||
-                  undefined,
-              }}
-            >
-              something went wrong
-            </span>
-          ),
-          ...(customization?.toastErrorBackgroundColor && {
-            style: { backgroundColor: customization.toastErrorBackgroundColor },
-          }),
+        showCustomToast({
+          type: "error",
+          title: "something went wrong",
+          description: "something went wrong",
         });
       } else {
         // Simulate success
-        toast({
-          title: (
-            <span
-              className="font-semibold"
-              style={{
-                color: customization?.toastTextColor || undefined,
-              }}
-            >
-              Password Changed Successfully
-            </span>
-          ) as unknown as string,
-          description: (
-            <span
-              className="text-sm"
-              style={{
-                color:
-                  customization?.toastSecondaryTextColor ||
-                  customization?.toastTextColor ||
-                  undefined,
-              }}
-            >
-              Password Changed successfully
-            </span>
-          ),
-          ...(customization?.toastBackgroundColor && {
-            style: { backgroundColor: customization.toastBackgroundColor },
-          }),
+        showCustomToast({
+          type: "success",
+          title: "Password Changed Successfully",
+          description: "Password Changed Successfully",
         });
       }
 

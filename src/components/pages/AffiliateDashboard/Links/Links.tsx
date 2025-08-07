@@ -22,7 +22,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { createAffiliateLink } from "@/app/affiliate/[orgId]/dashboard/links/action";
-import { toast } from "@/hooks/use-toast";
 import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
 import { Check, Copy } from "lucide-react";
 import { localDashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
@@ -41,6 +40,7 @@ import {
   useTableCustomizationOption,
 } from "@/hooks/useDashboardCustomization";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 
 interface AffiliateLinkProps {
   data: AffiliateLinkWithStats[];
@@ -58,6 +58,7 @@ export default function Links({
   const dashboardButton = useDashboardButtonCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
   const dashboardTable = useTableCustomizationOption();
+  const { showCustomToast } = useCustomToast();
   const columns: ColumnDef<AffiliateLinkWithStats>[] = [
     {
       accessorKey: "fullUrl",
@@ -221,13 +222,17 @@ export default function Links({
   const mutation = useMutation({
     mutationFn: createAffiliateLink,
     onSuccess: async (newLink: string) => {
-      toast({ title: "Link created!", description: newLink });
+      showCustomToast({
+        type: "success",
+        title: "Link created!",
+        description: newLink,
+      });
     },
     onError: () => {
-      toast({
+      showCustomToast({
+        type: "error",
         title: "Something went wrong",
         description: "We couldn't create the affiliate link.",
-        variant: "destructive",
       });
     },
   });
@@ -237,7 +242,8 @@ export default function Links({
       setIsFakeLoading(true);
       setTimeout(() => {
         setIsFakeLoading(false);
-        toast({
+        showCustomToast({
+          type: "success",
           title: "Preview Mode",
           description: "Simulated link creation.",
         });
