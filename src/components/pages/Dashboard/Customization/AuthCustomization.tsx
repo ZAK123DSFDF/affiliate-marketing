@@ -43,7 +43,7 @@ export const AuthCustomization = ({ setMainTab }: AuthCustomizationProps) => {
             <InvalidToken isPreview />
           </TabsContent>{" "}
           <TabsContent value="email-verified">
-            <EmailVerified isPreview setTab={setTab} setMainTab={setMainTab} />
+            <EmailVerified isPreview setMainTab={setMainTab} />
           </TabsContent>
         </Tabs>
       </div>
