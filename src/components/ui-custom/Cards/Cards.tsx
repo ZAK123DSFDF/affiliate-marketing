@@ -1,17 +1,47 @@
-import { Card, CardContent } from "@/components/ui/card";
+"use client";
+
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import MonthSelect from "@/components/ui-custom/MonthSelect";
 import { initialKpiData } from "@/lib/types/dummyKpiData";
-import { useState } from "react";
+import React, { useState } from "react";
+import {
+  useDashboardCardCustomizationOption,
+  useDashboardThemeCustomizationOption,
+  useKpiCardCustomizationOption,
+} from "@/hooks/useDashboardCustomization";
+import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
+import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions";
+import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions";
+import { cn } from "@/lib/utils";
+import { KpiCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/KpiCardCustomizationOptions";
+import { getShadowWithColor } from "@/util/GetShadowWithColor";
+import { toValidShadowSize } from "@/util/ValidateShadowColor";
 
 interface CardsProps {
-  affiliate?: boolean;
+  affiliate: boolean;
   isPreview?: boolean;
 }
+
+const affiliateColorPairs = [
+  { iconBg: "bg-blue-100", iconColor: "text-blue-600" },
+  { iconBg: "bg-green-100", iconColor: "text-green-600" },
+  { iconBg: "bg-purple-100", iconColor: "text-purple-600" },
+];
+
+const sellerColorPairs = [
+  { iconBg: "bg-blue-100", iconColor: "text-blue-600" },
+  { iconBg: "bg-green-100", iconColor: "text-green-600" },
+  { iconBg: "bg-purple-100", iconColor: "text-purple-600" },
+  { iconBg: "bg-yellow-100", iconColor: "text-yellow-600" },
+];
 
 const Cards = ({ affiliate = false, isPreview = false }: CardsProps) => {
   const [selectedMonth, setSelectedMonth] = useState<string | undefined>();
   const [selectedYear, setSelectedYear] = useState<string | undefined>();
 
+  const dashboardTheme = useDashboardThemeCustomizationOption();
+  const kpiCard = useKpiCardCustomizationOption();
+  const dashboardCard = useDashboardCardCustomizationOption();
   const filteredData = affiliate
     ? initialKpiData.filter(
         (item) =>
@@ -19,20 +49,88 @@ const Cards = ({ affiliate = false, isPreview = false }: CardsProps) => {
       )
     : initialKpiData;
 
+  const colorTypes = ["Primary", "Secondary", "Tertiary"] as const;
+  const colorPairs = affiliate ? affiliateColorPairs : sellerColorPairs;
+
   return (
     <div className="space-y-6">
-      <Card className={isPreview ? "mt-2" : ""}>
-        <CardContent className="space-y-6 pt-6">
-          <MonthSelect
-            value={{
-              month: selectedMonth ? parseInt(selectedMonth) : undefined,
-              year: selectedYear ? parseInt(selectedYear) : undefined,
-            }}
-            onChange={(month, year) => {
-              setSelectedMonth(month ? month.toString() : undefined);
-              setSelectedYear(year ? year.toString() : undefined);
-            }}
-          />
+      <Card
+        className={cn(isPreview && "mt-2", "relative")}
+        style={{
+          backgroundColor:
+            (affiliate && dashboardCard.dashboardCardBackgroundColor) ||
+            undefined,
+          boxShadow:
+            affiliate &&
+            dashboardCard.dashboardCardShadow &&
+            dashboardCard.dashboardCardShadow !== "none"
+              ? affiliate &&
+                getShadowWithColor(
+                  toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
+                  dashboardCard.dashboardCardShadowColor,
+                )
+              : "",
+          border:
+            affiliate && dashboardCard.dashboardCardBorder
+              ? `1px solid ${affiliate && dashboardCard.dashboardCardBorderColor}`
+              : "none",
+        }}
+      >
+        {isPreview && affiliate && (
+          <div className="absolute bottom-0 left-0 p-2">
+            <DashboardCardCustomizationOptions
+              triggerSize="w-6 h-6"
+              dropdownSize="w-[150px]"
+            />
+          </div>
+        )}
+        {isPreview && affiliate && (
+          <div className="absolute bottom-0 right-0 p-2">
+            <KpiCardCustomizationOptions
+              triggerSize="w-6 h-6"
+              dropdownSize="w-[180px]"
+            />
+          </div>
+        )}
+
+        <CardContent className={cn("space-y-6 pt-6", isPreview && "pb-10")}>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <CardTitle
+              style={{
+                color:
+                  (affiliate && dashboardTheme.cardHeaderPrimaryTextColor) ||
+                  undefined,
+              }}
+              className="text-lg"
+            >
+              <div className="flex flex-row items-center gap-2">
+                <h2 className="text-lg font-semibold">Performance Overview</h2>
+                {isPreview && (
+                  <DashboardThemeCustomizationOptions
+                    name="cardHeaderPrimaryTextColor"
+                    buttonSize="w-4 h-4"
+                  />
+                )}
+              </div>
+            </CardTitle>
+            <div className="flex flex-row gap-2 items-center">
+              {isPreview && (
+                <YearSelectCustomizationOptions triggerSize="w-6 h-6" />
+              )}
+              <MonthSelect
+                value={{
+                  month: selectedMonth ? parseInt(selectedMonth) : undefined,
+                  year: selectedYear ? parseInt(selectedYear) : undefined,
+                }}
+                onChange={(month, year) => {
+                  setSelectedMonth(month ? month.toString() : undefined);
+                  setSelectedYear(year ? year.toString() : undefined);
+                }}
+                affiliate={affiliate}
+              />
+            </div>
+          </div>
+
           <div
             className={`grid ${
               isPreview
@@ -40,36 +138,160 @@ const Cards = ({ affiliate = false, isPreview = false }: CardsProps) => {
                 : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
             }`}
           >
-            {filteredData.map(({ label, value, icon: Icon, color, bg }) => (
-              <div
-                key={label}
-                className={`p-3 ${
-                  isPreview ? "text-sm" : "text-base"
-                } border rounded-lg shadow-sm flex items-center gap-4`}
-              >
+            {filteredData.map(({ label, value, icon: Icon }, index) => {
+              const colorIndex = index % colorPairs.length;
+              const defaultColorPair = colorPairs[colorIndex];
+
+              if (!affiliate) {
+                return (
+                  <div
+                    key={label}
+                    className={cn(
+                      "p-3 flex items-center gap-4 rounded-lg bg-white border shadow-sm",
+                      isPreview ? "text-sm" : "text-base",
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "flex-shrink-0 rounded-xl flex items-center justify-center",
+                        isPreview ? "w-8 h-8" : "p-3",
+                        affiliate && defaultColorPair.iconBg,
+                      )}
+                    >
+                      <Icon
+                        className={cn(
+                          isPreview ? "w-4 h-4" : "w-8 h-8",
+                          affiliate && defaultColorPair.iconColor,
+                        )}
+                      />
+                    </div>
+                    <div className="space-y-1 overflow-hidden">
+                      <div className="text-muted-foreground font-medium truncate">
+                        {label}
+                      </div>
+                      <div className="font-bold leading-tight truncate">
+                        {value}
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
+              const colorType = colorTypes[colorIndex % colorTypes.length];
+              const iconBgColor =
+                kpiCard[
+                  `cardIcon${colorType}BackgroundColor` as keyof typeof kpiCard
+                ] ||
+                (affiliate && defaultColorPair.iconBg);
+
+              const iconTextColor =
+                kpiCard[`cardIcon${colorType}Color` as keyof typeof kpiCard] ||
+                (affiliate && defaultColorPair.iconColor);
+
+              const borderColor =
+                (affiliate && kpiCard.cardBorderColor) || "#e5e7eb";
+              const shadowColor =
+                (affiliate && kpiCard.cardShadowColor) || "rgba(0, 0, 0, 0.1)";
+              const primaryTextColor =
+                (affiliate && kpiCard.cardPrimaryTextColor) || "inherit";
+              const secondaryTextColor =
+                (affiliate && kpiCard.cardSecondaryTextColor) || "#6b7280";
+
+              return (
                 <div
-                  className={`p-2 ${
-                    isPreview ? "w-8 h-8" : "p-3"
-                  } rounded-xl ${bg} flex-shrink-0`}
+                  key={label}
+                  className={cn(
+                    "p-3 flex items-center gap-4 rounded-lg bg-white",
+                    isPreview ? "text-sm" : "text-base",
+                    affiliate && kpiCard.cardBorder && "border",
+                    affiliate &&
+                      kpiCard.cardShadow &&
+                      `shadow-${(affiliate && kpiCard.cardShadowThickness) || "sm"}`,
+                  )}
+                  style={{
+                    borderColor:
+                      affiliate && kpiCard.cardBorder
+                        ? affiliate && borderColor
+                        : undefined,
+                    boxShadow:
+                      affiliate && kpiCard.cardShadow
+                        ? `${
+                            affiliate && kpiCard.cardShadowThickness === "xl"
+                              ? "0 10px 20px"
+                              : affiliate &&
+                                  kpiCard.cardShadowThickness === "lg"
+                                ? "0 6px 12px"
+                                : affiliate &&
+                                    kpiCard.cardShadowThickness === "md"
+                                  ? "0 4px 8px"
+                                  : "0 2px 4px"
+                          } ${affiliate && shadowColor}`
+                        : undefined,
+                    background:
+                      (affiliate && kpiCard.cardBackgroundColor) || undefined,
+                  }}
                 >
-                  <Icon
-                    className={`${isPreview ? "w-4 h-4" : "w-8 h-8"} ${color}`}
-                  />
-                </div>
-                <div className="space-y-1 overflow-hidden">
-                  <div className="text-muted-foreground font-medium truncate">
-                    {label}
+                  <div
+                    className={cn(
+                      "flex-shrink-0 rounded-xl flex items-center justify-center",
+                      isPreview ? "w-8 h-8" : "p-3",
+                      typeof iconBgColor === "string" &&
+                        affiliate &&
+                        iconBgColor.startsWith("bg-")
+                        ? affiliate && iconBgColor
+                        : "",
+                    )}
+                    style={{
+                      backgroundColor:
+                        typeof iconBgColor === "string" &&
+                        affiliate &&
+                        !iconBgColor.startsWith("bg-")
+                          ? affiliate && iconBgColor
+                          : undefined,
+                    }}
+                  >
+                    <Icon
+                      className={cn(
+                        isPreview ? "w-4 h-4" : "w-8 h-8",
+                        typeof iconTextColor === "string" &&
+                          affiliate &&
+                          iconTextColor.startsWith("text-")
+                          ? affiliate && iconTextColor
+                          : "",
+                      )}
+                      style={{
+                        color:
+                          typeof iconTextColor === "string" &&
+                          affiliate &&
+                          !iconTextColor.startsWith("text-")
+                            ? affiliate && iconTextColor
+                            : undefined,
+                      }}
+                    />
                   </div>
-                  <div className="font-bold leading-tight truncate">
-                    {value}
+
+                  <div className="space-y-1 overflow-hidden">
+                    <div
+                      className="truncate font-medium"
+                      style={{ color: affiliate && secondaryTextColor }}
+                    >
+                      {label}
+                    </div>
+                    <div
+                      className="font-bold leading-tight truncate"
+                      style={{ color: affiliate && primaryTextColor }}
+                    >
+                      {value}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>
     </div>
   );
 };
+
 export default Cards;

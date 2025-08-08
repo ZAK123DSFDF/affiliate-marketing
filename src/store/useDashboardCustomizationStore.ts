@@ -36,6 +36,7 @@ export const useDashboardThemeCustomization = createCustomizationStore(
     cardHeaderPrimaryTextColor: "",
     cardHeaderSecondaryTextColor: "",
     dialogHeaderColor: "",
+    cardHeaderDescriptionTextColor: "",
   },
   {},
   {},
@@ -104,6 +105,60 @@ export const useToastCustomization = createCustomizationStore(
     toastErrorBackgroundColor: "",
     toastErrorTitleColor: "",
     toastErrorDescriptionColor: "",
+  },
+  {},
+  {},
+);
+
+export const useKpiCardCustomization = createCustomizationStore(
+  {
+    cardShadowColor: "",
+    cardBorderColor: "",
+    cardPrimaryTextColor: "",
+    cardSecondaryTextColor: "",
+    cardIconPrimaryColor: "",
+    cardIconSecondaryColor: "",
+    cardIconTertiaryColor: "",
+    cardIconPrimaryBackgroundColor: "",
+    cardIconSecondaryBackgroundColor: "",
+    cardIconTertiaryBackgroundColor: "",
+    cardShadowThickness: "sm",
+    cardBackgroundColor: "",
+  },
+  {
+    cardShadow: true,
+    cardBorder: true,
+  },
+  {},
+);
+export const useChartCustomization = createCustomizationStore(
+  {
+    chartHorizontalLineColor: "",
+    chartDateColor: "",
+    chartPrimaryColor: "",
+    chartSecondaryColor: "",
+    chartTertiaryColor: "",
+    chartFourthColor: "",
+    chartLegendTextColor: "",
+    toolTipChartDateColor: "",
+    toolTipBackgroundColor: "",
+    toolTipTextColor: "",
+    toolTipNumberColor: "",
+  },
+  {},
+  {},
+);
+export const usePieChartColorCustomization = createCustomizationStore(
+  {
+    pieColor1: "",
+    pieColor2: "",
+    pieColor3: "",
+    pieColor4: "",
+    pieColor5: "",
+    pieColor6: "",
+    pieColor7: "",
+    pieColor8: "",
+    pieFallbackColor: "",
   },
   {},
   {},

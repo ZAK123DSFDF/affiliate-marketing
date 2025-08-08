@@ -1,8 +1,11 @@
 import {
+  useChartCustomization,
   useDashboardButtonCustomization,
   useDashboardCardCustomization,
   useDashboardThemeCustomization,
   useDialogCustomization,
+  useKpiCardCustomization,
+  usePieChartColorCustomization,
   useSidebarCustomization,
   useTableCustomization,
   useToastCustomization,
@@ -117,6 +120,9 @@ export const useDashboardThemeCustomizationOption = () => {
   const dialogHeaderColor = useDashboardThemeCustomization(
     (s) => s.dialogHeaderColor,
   );
+  const cardHeaderDescriptionTextColor = useDashboardThemeCustomization(
+    (s) => s.cardHeaderDescriptionTextColor,
+  );
   const setDashboardThemeColor = useDashboardThemeCustomization(
     (s) => s.setColor,
   );
@@ -129,6 +135,7 @@ export const useDashboardThemeCustomizationOption = () => {
     separatorColor,
     dialogHeaderColor,
     cardHeaderPrimaryTextColor,
+    cardHeaderDescriptionTextColor,
     cardHeaderSecondaryTextColor,
   };
 };
@@ -320,5 +327,130 @@ export const useToastCustomizationOption = () => {
     toastErrorTitleColor,
     toastErrorDescriptionColor,
     setToastColor,
+  };
+};
+export const useKpiCardCustomizationOption = () => {
+  const cardShadowColor = useKpiCardCustomization((s) => s.cardShadowColor);
+  const cardBorderColor = useKpiCardCustomization((s) => s.cardBorderColor);
+  const cardPrimaryTextColor = useKpiCardCustomization(
+    (s) => s.cardPrimaryTextColor,
+  );
+  const cardSecondaryTextColor = useKpiCardCustomization(
+    (s) => s.cardSecondaryTextColor,
+  );
+  const cardIconPrimaryColor = useKpiCardCustomization(
+    (s) => s.cardIconPrimaryColor,
+  );
+  const cardIconSecondaryColor = useKpiCardCustomization(
+    (s) => s.cardIconSecondaryColor,
+  );
+  const cardIconTertiaryColor = useKpiCardCustomization(
+    (s) => s.cardIconTertiaryColor,
+  );
+  const cardIconPrimaryBackgroundColor = useKpiCardCustomization(
+    (s) => s.cardIconPrimaryBackgroundColor,
+  );
+  const cardIconSecondaryBackgroundColor = useKpiCardCustomization(
+    (s) => s.cardIconSecondaryBackgroundColor,
+  );
+  const cardIconTertiaryBackgroundColor = useKpiCardCustomization(
+    (s) => s.cardIconTertiaryBackgroundColor,
+  );
+  const cardShadowThickness = useKpiCardCustomization(
+    (s) => s.cardShadowThickness,
+  );
+
+  const cardShadow = useKpiCardCustomization((s) => s.cardShadow);
+  const cardBorder = useKpiCardCustomization((s) => s.cardBorder);
+
+  const setCardColor = useKpiCardCustomization((s) => s.setColor);
+  const setCardSwitch = useKpiCardCustomization((s) => s.setSwitch);
+  const cardBackgroundColor = useKpiCardCustomization(
+    (s) => s.cardBackgroundColor,
+  );
+  return {
+    cardShadowColor,
+    cardBorderColor,
+    cardPrimaryTextColor,
+    cardSecondaryTextColor,
+    cardIconPrimaryColor,
+    cardIconSecondaryColor,
+    cardIconTertiaryColor,
+    cardIconPrimaryBackgroundColor,
+    cardIconSecondaryBackgroundColor,
+    cardIconTertiaryBackgroundColor,
+    cardBackgroundColor,
+    cardShadowThickness,
+    cardShadow,
+    cardBorder,
+    setCardColor,
+    setCardSwitch,
+  };
+};
+export const useChartCustomizationOption = () => {
+  const chartHorizontalLineColor = useChartCustomization(
+    (s) => s.chartHorizontalLineColor,
+  );
+  const chartDateColor = useChartCustomization((s) => s.chartDateColor);
+  const chartPrimaryColor = useChartCustomization((s) => s.chartPrimaryColor);
+  const chartSecondaryColor = useChartCustomization(
+    (s) => s.chartSecondaryColor,
+  );
+  const chartTertiaryColor = useChartCustomization((s) => s.chartTertiaryColor);
+  const chartFourthColor = useChartCustomization((s) => s.chartFourthColor);
+  const chartLegendTextColor = useChartCustomization(
+    (s) => s.chartLegendTextColor,
+  );
+  const toolTipChartDateColor = useChartCustomization(
+    (s) => s.toolTipChartDateColor,
+  );
+  const toolTipBackgroundColor = useChartCustomization(
+    (s) => s.toolTipBackgroundColor,
+  );
+  const toolTipTextColor = useChartCustomization((s) => s.toolTipTextColor);
+  const toolTipNumberColor = useChartCustomization((s) => s.toolTipNumberColor);
+  const setChartThemeColor = useChartCustomization((s) => s.setColor);
+
+  return {
+    chartHorizontalLineColor,
+    chartDateColor,
+    chartPrimaryColor,
+    chartSecondaryColor,
+    chartTertiaryColor,
+    chartFourthColor,
+    chartLegendTextColor,
+    toolTipChartDateColor,
+    toolTipBackgroundColor,
+    toolTipTextColor,
+    toolTipNumberColor,
+    setChartThemeColor,
+  };
+};
+export const usePieChartCustomizationOption = () => {
+  const pieColor1 = usePieChartColorCustomization((s) => s.pieColor1);
+  const pieColor2 = usePieChartColorCustomization((s) => s.pieColor2);
+  const pieColor3 = usePieChartColorCustomization((s) => s.pieColor3);
+  const pieColor4 = usePieChartColorCustomization((s) => s.pieColor4);
+  const pieColor5 = usePieChartColorCustomization((s) => s.pieColor5);
+  const pieColor6 = usePieChartColorCustomization((s) => s.pieColor6);
+  const pieColor7 = usePieChartColorCustomization((s) => s.pieColor7);
+  const pieColor8 = usePieChartColorCustomization((s) => s.pieColor8);
+  const pieFallbackColor = usePieChartColorCustomization(
+    (s) => s.pieFallbackColor,
+  );
+
+  const setPieChartColor = usePieChartColorCustomization((s) => s.setColor);
+
+  return {
+    pieColor1,
+    pieColor2,
+    pieColor3,
+    pieColor4,
+    pieColor5,
+    pieColor6,
+    pieColor7,
+    pieColor8,
+    pieFallbackColor,
+    setPieChartColor,
   };
 };

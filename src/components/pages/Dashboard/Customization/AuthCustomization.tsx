@@ -28,22 +28,22 @@ export const AuthCustomization = ({ setMainTab }: AuthCustomizationProps) => {
             <TabsTrigger value="email-verified">Email Verified</TabsTrigger>
           </TabsList>
           <TabsContent value="login">
-            <Login isPreview setTab={setTab} />
+            <Login affiliate isPreview setTab={setTab} />
           </TabsContent>
           <TabsContent value="signup">
-            <Signup isPreview setTab={setTab} />
+            <Signup affiliate isPreview setTab={setTab} />
           </TabsContent>
           <TabsContent value="forgot-password">
-            <ForgotPassword isPreview setTab={setTab} />
+            <ForgotPassword affiliate isPreview setTab={setTab} />
           </TabsContent>
           <TabsContent value="reset-password">
-            <ResetPassword isPreview setTab={setTab} />
+            <ResetPassword affiliate isPreview setTab={setTab} />
           </TabsContent>
           <TabsContent value="invalid-token">
-            <InvalidToken isPreview />
+            <InvalidToken affiliate isPreview />
           </TabsContent>{" "}
           <TabsContent value="email-verified">
-            <EmailVerified isPreview setMainTab={setMainTab} />
+            <EmailVerified affiliate isPreview setMainTab={setMainTab} />
           </TabsContent>
         </Tabs>
       </div>

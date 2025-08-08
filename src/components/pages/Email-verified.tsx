@@ -19,9 +19,10 @@ type Props = {
   orgId?: string;
   isPreview?: boolean;
   setMainTab?: (tab: string) => void;
+  affiliate: boolean;
 };
 
-const EmailVerified = ({ orgId, isPreview, setMainTab }: Props) => {
+const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
   const { backgroundColor } = useThemeCustomizationOption();
   const {
     emailVerifiedPrimaryColor,
@@ -38,6 +39,7 @@ const EmailVerified = ({ orgId, isPreview, setMainTab }: Props) => {
   } = useCardCustomizationOption();
   const { buttonBackgroundColor, buttonTextColor } =
     useButtonCustomizationOption();
+
   const router = useRouter();
   const handleClick = () => {
     if (isPreview) {
@@ -49,33 +51,38 @@ const EmailVerified = ({ orgId, isPreview, setMainTab }: Props) => {
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${
-        backgroundColor
+        affiliate && backgroundColor
           ? ""
           : "bg-gradient-to-b from-background to-background/80"
       }`}
       style={{
-        backgroundColor: backgroundColor || undefined,
+        backgroundColor: (affiliate && backgroundColor) || undefined,
       }}
     >
       <div className="relative w-full max-w-md">
         <Card
           className={`relative transition-shadow duration-300 ${
-            cardShadow && cardShadowThickness
-              ? `shadow-${cardShadowThickness}`
-              : cardShadow
+            affiliate && cardShadow && cardShadowThickness
+              ? `shadow-${affiliate && cardShadowThickness}`
+              : affiliate && cardShadow
                 ? "shadow-lg"
                 : ""
-          } ${cardBorder ? "border" : "border-none"}`}
+          } ${affiliate && cardBorder ? "border" : "border-none"}`}
           style={{
-            backgroundColor: cardBackgroundColor || undefined,
-            ...(cardShadow && {
-              boxShadow: getShadowWithColor(
-                toValidShadowSize(cardShadowThickness),
-                cardShadowColor,
-              ),
-            }),
+            backgroundColor: (affiliate && cardBackgroundColor) || undefined,
+            ...(affiliate &&
+              cardShadow && {
+                boxShadow:
+                  affiliate &&
+                  getShadowWithColor(
+                    toValidShadowSize(cardShadowThickness),
+                    cardShadowColor,
+                  ),
+              }),
             borderColor:
-              cardBorder && cardBorderColor ? cardBorderColor : undefined,
+              affiliate && cardBorder && cardBorderColor
+                ? affiliate && cardBorderColor
+                : undefined,
           }}
         >
           <CardHeader className="space-y-1 flex flex-col items-center">
@@ -83,7 +90,7 @@ const EmailVerified = ({ orgId, isPreview, setMainTab }: Props) => {
               <CheckCircle2
                 className="w-16 h-16 text-green-500"
                 style={{
-                  color: emailVerifiedIconColor || undefined,
+                  color: (affiliate && emailVerifiedIconColor) || undefined,
                 }}
               />
               {isPreview && (
@@ -98,7 +105,7 @@ const EmailVerified = ({ orgId, isPreview, setMainTab }: Props) => {
               <CardTitle
                 className="text-2xl font-bold text-center text-green-600"
                 style={{
-                  color: emailVerifiedPrimaryColor || undefined,
+                  color: (affiliate && emailVerifiedPrimaryColor) || undefined,
                 }}
               >
                 Email Verified!
@@ -117,7 +124,8 @@ const EmailVerified = ({ orgId, isPreview, setMainTab }: Props) => {
               <p
                 className="text-muted-foreground mb-4"
                 style={{
-                  color: emailVerifiedSecondaryColor || undefined,
+                  color:
+                    (affiliate && emailVerifiedSecondaryColor) || undefined,
                 }}
               >
                 Your email address has been successfully verified. You can now
@@ -137,8 +145,9 @@ const EmailVerified = ({ orgId, isPreview, setMainTab }: Props) => {
               size="lg"
               onClick={handleClick}
               style={{
-                backgroundColor: buttonBackgroundColor || undefined,
-                color: buttonTextColor || undefined,
+                backgroundColor:
+                  (affiliate && buttonBackgroundColor) || undefined,
+                color: (affiliate && buttonTextColor) || undefined,
               }}
             >
               Go to Dashboard

@@ -11,6 +11,7 @@ type DashboardThemeKeys =
   | "separatorColor"
   | "cardHeaderPrimaryTextColor"
   | "cardHeaderSecondaryTextColor"
+  | "cardHeaderDescriptionTextColor"
   | "dialogHeaderColor";
 
 type Props = {
@@ -32,6 +33,7 @@ export const DashboardThemeCustomizationOptions = ({
     setDashboardThemeColor,
     cardHeaderPrimaryTextColor,
     cardHeaderSecondaryTextColor,
+    cardHeaderDescriptionTextColor,
     dialogHeaderColor,
   } = useDashboardThemeCustomizationOption();
 
@@ -42,6 +44,7 @@ export const DashboardThemeCustomizationOptions = ({
     separatorColor,
     cardHeaderPrimaryTextColor,
     cardHeaderSecondaryTextColor,
+    cardHeaderDescriptionTextColor,
     dialogHeaderColor,
   };
 
@@ -52,6 +55,7 @@ export const DashboardThemeCustomizationOptions = ({
     separatorColor: "Separator",
     cardHeaderPrimaryTextColor: "Card Header Primary Text",
     cardHeaderSecondaryTextColor: "Card Header Secondary Text",
+    cardHeaderDescriptionTextColor: "Card Header Description Text",
     dialogHeaderColor: "Dialog Header",
   };
 

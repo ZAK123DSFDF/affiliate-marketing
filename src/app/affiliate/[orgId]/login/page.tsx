@@ -12,7 +12,7 @@ const AffiliateLoginPage = async ({ params }: OrgIdProps) => {
   }
   return (
     <>
-      <Login orgId={orgId} />
+      <Login affiliate orgId={orgId} />
     </>
   );
 };

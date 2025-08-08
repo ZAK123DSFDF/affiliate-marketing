@@ -24,9 +24,18 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import MonthSelect from "@/components/ui-custom/MonthSelect";
-
+import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
+import { Separator } from "@/components/ui/separator";
+import {
+  useChartCustomizationOption,
+  useDashboardCardCustomizationOption,
+} from "@/hooks/useDashboardCustomization";
+import { useDashboardThemeCustomization } from "@/store/useDashboardCustomizationStore";
+import { ChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/ChartCustomizationOptions";
+import { getShadowWithColor } from "@/util/GetShadowWithColor";
+import { toValidShadowSize } from "@/util/ValidateShadowColor";
 interface ChartDailyMetricsProps {
-  affiliate?: boolean;
+  affiliate: boolean;
   isPreview?: boolean;
 }
 
@@ -40,23 +49,25 @@ const rawMetricsData = [
   { date: "2024-06-07", visits: 460, sales: 65, amount: 1700, commission: 300 },
 ];
 
-const baseColors: any = {
-  visits: "#60A5FA",
-  sales: "#A78BFA",
-  conversionRate: "#5EEAD4",
-  amount: "#C4B5FD",
-  commission: "#F97316", // orange
-};
-
 export function ChartDailyMetrics({
   affiliate = false,
   isPreview = false,
 }: ChartDailyMetricsProps) {
-  const [timeRange, setTimeRange] = React.useState("7d");
   const [selectedDate, setSelectedDate] = React.useState<{
     month?: number;
     year?: number;
   }>({});
+  const ChartCustomization = useChartCustomizationOption();
+  const ThemeCustomization = useDashboardThemeCustomization();
+  const dashboardCard = useDashboardCardCustomizationOption();
+  const baseColors: any = {
+    visits: (affiliate && ChartCustomization.chartPrimaryColor) || "#60A5FA",
+    sales: (affiliate && ChartCustomization.chartSecondaryColor) || "#A78BFA",
+    conversionRate:
+      (affiliate && ChartCustomization.chartTertiaryColor) || "#5EEAD4",
+    amount: "#C4B5FD",
+    commission: (affiliate && ChartCustomization.chartFourthColor) || "#F97316",
+  };
   // Transform data
   const data = rawMetricsData.map((item) => ({
     ...item,
@@ -83,27 +94,82 @@ export function ChartDailyMetrics({
   const chartKeys = Object.keys(chartConfig);
 
   return (
-    <Card className={`${isPreview ? "h-[300px]" : "h-[480px]"} flex flex-col`}>
+    <Card
+      className={`${isPreview ? "h-[340px]" : "h-[480px]"} flex flex-col relative`}
+      style={{
+        backgroundColor:
+          (affiliate && dashboardCard.dashboardCardBackgroundColor) ||
+          undefined,
+        boxShadow:
+          affiliate &&
+          dashboardCard.dashboardCardShadow &&
+          dashboardCard.dashboardCardShadow !== "none"
+            ? affiliate &&
+              getShadowWithColor(
+                toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
+                dashboardCard.dashboardCardShadowColor,
+              )
+            : "",
+        border:
+          affiliate && dashboardCard.dashboardCardBorder
+            ? `1px solid ${affiliate && dashboardCard.dashboardCardBorderColor}`
+            : "none",
+      }}
+    >
       <CardHeader
-        className={`flex items-center gap-2 space-y-0 border-b ${
-          isPreview ? "py-2" : "py-5"
-        } sm:flex-row`}
+        className={`flex items-center gap-2 space-y-0 ${isPreview ? "py-2" : "py-5"} sm:flex-row`}
       >
         <div className="grid flex-1 gap-1">
-          <CardTitle className={isPreview ? "text-sm" : "text-lg"}>
-            Daily Metrics
-          </CardTitle>
-          <CardDescription className={isPreview ? "text-xs" : "text-sm"}>
-            Visits, Sales, Conversion Rate, and{" "}
-            {affiliate ? "Commission" : "Revenue"}
-          </CardDescription>
+          <div className="flex flex-row gap-1 items-center">
+            <CardTitle
+              className={isPreview ? "text-sm" : "text-lg"}
+              style={{
+                color:
+                  (affiliate &&
+                    ThemeCustomization.cardHeaderPrimaryTextColor) ||
+                  undefined,
+              }}
+            >
+              Daily Metrics
+            </CardTitle>
+          </div>
+          <div className="flex flex-row items-center">
+            <CardDescription
+              className={isPreview ? "text-xs" : "text-sm"}
+              style={{
+                color:
+                  (affiliate &&
+                    ThemeCustomization.cardHeaderDescriptionTextColor) ||
+                  undefined,
+              }}
+            >
+              Visits, Sales, Conversion Rate, and{" "}
+              {affiliate ? "Commission" : "Revenue"}
+            </CardDescription>
+          </div>
         </div>
         <MonthSelect
           isPreview={isPreview}
           value={selectedDate}
           onChange={(month, year) => setSelectedDate({ month, year })}
+          affiliate={affiliate}
         />
       </CardHeader>
+
+      <Separator
+        style={{
+          backgroundColor:
+            (affiliate && ThemeCustomization.separatorColor) || undefined,
+        }}
+      />
+      {isPreview && (
+        <div className="flex justify-end px-4 pt-2">
+          <DashboardThemeCustomizationOptions
+            name="separatorColor"
+            buttonSize="w-4 h-4"
+          />
+        </div>
+      )}
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer
           config={chartConfig}
@@ -137,13 +203,27 @@ export function ChartDailyMetrics({
                     </linearGradient>
                   ))}
                 </defs>
-                <CartesianGrid vertical={false} />
+                <CartesianGrid
+                  vertical={false}
+                  stroke={
+                    (affiliate &&
+                      ChartCustomization.chartHorizontalLineColor) ||
+                    "#E5E7EB"
+                  }
+                />
                 <XAxis
                   dataKey="date"
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
                   minTickGap={32}
+                  tick={{
+                    style: {
+                      fill:
+                        (affiliate && ChartCustomization.chartDateColor) ||
+                        "#6B7280",
+                    },
+                  }}
                   tickFormatter={(value) =>
                     new Date(value).toLocaleDateString("en-US", {
                       month: "short",
@@ -155,6 +235,7 @@ export function ChartDailyMetrics({
                   cursor={false}
                   content={
                     <ChartTooltipContent
+                      affiliate={affiliate}
                       labelFormatter={(value) =>
                         new Date(value).toLocaleDateString("en-US", {
                           month: "short",
@@ -176,13 +257,23 @@ export function ChartDailyMetrics({
                   />
                 ))}
                 <ChartLegend
-                  content={<ChartLegendContent isPreview={isPreview} />}
+                  content={
+                    <ChartLegendContent
+                      affiliate={affiliate}
+                      isPreview={isPreview}
+                    />
+                  }
                 />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </ChartContainer>
       </CardContent>
+      {isPreview && (
+        <div className="absolute bottom-1 left-1 pt-2">
+          <ChartCustomizationOptions triggerSize="w-5 h-5" dropdownSize="sm" />
+        </div>
+      )}
     </Card>
   );
 }

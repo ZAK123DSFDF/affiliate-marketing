@@ -11,7 +11,7 @@ const linksPage = async () => {
   }
   return (
     <>
-      <Links data={links.data} />
+      <Links affiliate data={links.data} />
     </>
   );
 };

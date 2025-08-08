@@ -4,6 +4,7 @@ import * as React from "react";
 import * as RechartsPrimitive from "recharts";
 
 import { cn } from "@/lib/utils";
+import { useChartCustomizationOption } from "@/hooks/useDashboardCustomization";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
@@ -111,6 +112,7 @@ const ChartTooltipContent = React.forwardRef<
       indicator?: "line" | "dot" | "dashed";
       nameKey?: string;
       labelKey?: string;
+      affiliate: boolean;
     }
 >(
   (
@@ -128,11 +130,12 @@ const ChartTooltipContent = React.forwardRef<
       color,
       nameKey,
       labelKey,
+      affiliate,
     },
     ref,
   ) => {
     const { config } = useChart();
-
+    const customization = useChartCustomizationOption();
     const tooltipLabel = React.useMemo(() => {
       if (hideLabel || !payload?.length) {
         return null;
@@ -148,7 +151,13 @@ const ChartTooltipContent = React.forwardRef<
 
       if (labelFormatter) {
         return (
-          <div className={cn("font-medium", labelClassName)}>
+          <div
+            className={cn("font-medium", labelClassName)}
+            style={{
+              color:
+                (affiliate && customization.toolTipChartDateColor) || undefined,
+            }}
+          >
             {labelFormatter(value, payload)}
           </div>
         );
@@ -179,9 +188,15 @@ const ChartTooltipContent = React.forwardRef<
       <div
         ref={ref}
         className={cn(
-          "grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl",
+          "grid min-w-[8rem] items-start gap-1.5 rounded-lg  bg-background px-2.5 py-1.5 text-xs shadow-xl",
           className,
         )}
+        style={
+          {
+            background:
+              (affiliate && customization.toolTipBackgroundColor) || undefined,
+          } as React.CSSProperties
+        }
       >
         {!nestLabel ? tooltipLabel : null}
         <div className="grid gap-1.5">
@@ -234,12 +249,31 @@ const ChartTooltipContent = React.forwardRef<
                     >
                       <div className="grid gap-1.5">
                         {nestLabel ? tooltipLabel : null}
-                        <span className="text-muted-foreground">
+                        <span
+                          className="text-muted-foreground"
+                          style={
+                            {
+                              color:
+                                (affiliate && customization.toolTipTextColor) ||
+                                undefined,
+                            } as React.CSSProperties
+                          }
+                        >
                           {itemConfig?.label || item.name}
                         </span>
                       </div>
                       {item.value && (
-                        <span className="font-mono font-medium tabular-nums text-foreground">
+                        <span
+                          className="font-mono font-medium tabular-nums text-foreground"
+                          style={
+                            {
+                              color:
+                                (affiliate &&
+                                  customization.toolTipNumberColor) ||
+                                undefined,
+                            } as React.CSSProperties
+                          }
+                        >
                           {item.value.toLocaleString()}
                         </span>
                       )}
@@ -265,6 +299,7 @@ const ChartLegendContent = React.forwardRef<
       hideIcon?: boolean;
       nameKey?: string;
       isPreview?: boolean;
+      affiliate: boolean;
     }
 >(
   (
@@ -275,11 +310,12 @@ const ChartLegendContent = React.forwardRef<
       verticalAlign = "bottom",
       nameKey,
       isPreview = false,
+      affiliate = false,
     },
     ref,
   ) => {
     const { config } = useChart();
-
+    const customization = useChartCustomizationOption();
     if (!payload?.length) {
       return null;
     }
@@ -304,6 +340,13 @@ const ChartLegendContent = React.forwardRef<
               className={cn(
                 "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground",
               )}
+              style={
+                {
+                  color:
+                    (affiliate && customization.chartLegendTextColor) ||
+                    undefined,
+                } as React.CSSProperties
+              }
             >
               {itemConfig?.icon && !hideIcon ? (
                 <itemConfig.icon />

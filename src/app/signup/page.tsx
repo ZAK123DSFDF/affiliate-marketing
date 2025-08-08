@@ -4,7 +4,7 @@ import Signup from "@/components/pages/Signup";
 const signupPage = () => {
   return (
     <>
-      <Signup />
+      <Signup affiliate={false} />
     </>
   );
 };

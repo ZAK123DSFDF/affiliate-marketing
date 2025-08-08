@@ -10,13 +10,13 @@ import React from "react";
 const Overview = () => {
   return (
     <div className="space-y-8">
-      <Cards />
+      <Cards affiliate={false} />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="h-full">
-          <ChartDailyMetrics />
+          <ChartDailyMetrics affiliate={false} />
         </div>
         <div className="h-full">
-          <SocialTrafficCharts />
+          <SocialTrafficCharts affiliate={false} />
         </div>
       </div>
       <AffiliatesTable

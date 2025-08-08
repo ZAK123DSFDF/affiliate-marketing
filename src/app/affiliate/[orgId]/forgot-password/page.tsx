@@ -4,7 +4,7 @@ import ForgotPassword from "@/components/pages/Forgot-password";
 const forgetPasswordPage = () => {
   return (
     <>
-      <ForgotPassword affiliate={false} />
+      <ForgotPassword affiliate />
     </>
   );
 };

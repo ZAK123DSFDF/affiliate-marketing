@@ -93,13 +93,19 @@ export default function PayPalMassPayout() {
             Default Currency
           </label>
           <Select value={defaultCurrency} onValueChange={setDefaultCurrency}>
-            <SelectTrigger>
+            <SelectTrigger affiliate={false}>
               <SelectValue placeholder="Select currency" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="USD">USD ($)</SelectItem>
-              <SelectItem value="EUR">EUR (€)</SelectItem>
-              <SelectItem value="GBP">GBP (£)</SelectItem>
+            <SelectContent affiliate={false}>
+              <SelectItem affiliate={false} value="USD">
+                USD ($)
+              </SelectItem>
+              <SelectItem affiliate={false} value="EUR">
+                EUR (€)
+              </SelectItem>
+              <SelectItem affiliate={false} value="GBP">
+                GBP (£)
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -108,12 +114,16 @@ export default function PayPalMassPayout() {
             Default Wallet
           </label>
           <Select value={defaultWallet} onValueChange={setDefaultWallet}>
-            <SelectTrigger>
+            <SelectTrigger affiliate={false}>
               <SelectValue placeholder="Select wallet" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="PayPal">PayPal</SelectItem>
-              <SelectItem value="Venmo">Venmo</SelectItem>
+            <SelectContent affiliate={false}>
+              <SelectItem affiliate={false} value="PayPal">
+                PayPal
+              </SelectItem>
+              <SelectItem affiliate={false} value="Venmo">
+                Venmo
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -161,13 +171,19 @@ export default function PayPalMassPayout() {
                       updateRecipient(index, "currency", value)
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger affiliate={false}>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="USD">USD</SelectItem>
-                      <SelectItem value="EUR">EUR</SelectItem>
-                      <SelectItem value="GBP">GBP</SelectItem>
+                    <SelectContent affiliate={false}>
+                      <SelectItem affiliate={false} value="USD">
+                        USD
+                      </SelectItem>
+                      <SelectItem affiliate={false} value="EUR">
+                        EUR
+                      </SelectItem>
+                      <SelectItem affiliate={false} value="GBP">
+                        GBP
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </TableCell>
@@ -178,12 +194,16 @@ export default function PayPalMassPayout() {
                       updateRecipient(index, "wallet", value)
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger affiliate={false}>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="PayPal">PayPal</SelectItem>
-                      <SelectItem value="Venmo">Venmo</SelectItem>
+                    <SelectContent affiliate={false}>
+                      <SelectItem affiliate={false} value="PayPal">
+                        PayPal
+                      </SelectItem>
+                      <SelectItem affiliate={false} value="Venmo">
+                        Venmo
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </TableCell>

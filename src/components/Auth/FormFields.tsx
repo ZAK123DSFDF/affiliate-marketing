@@ -26,6 +26,7 @@ type InputFieldProps = {
   icon?: React.ElementType;
   showPasswordToggle?: boolean;
   profile?: boolean;
+  affiliate: boolean;
 };
 
 export const InputField = ({
@@ -37,6 +38,7 @@ export const InputField = ({
   icon,
   showPasswordToggle = false,
   profile = false,
+  affiliate,
 }: InputFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const Icon = icon;
@@ -62,8 +64,8 @@ export const InputField = ({
             className={fieldState.error ? "text-destructive" : ""}
             style={{
               color: fieldState.error
-                ? inputLabelErrorColor || undefined
-                : inputLabelColor || undefined,
+                ? (affiliate && inputLabelErrorColor) || undefined
+                : (affiliate && inputLabelColor) || undefined,
             }}
           >
             {label}
@@ -74,7 +76,7 @@ export const InputField = ({
                 <Icon
                   className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground"
                   style={{
-                    color: inputIconColor || undefined,
+                    color: (affiliate && inputIconColor) || undefined,
                   }}
                 />
               )}
@@ -90,28 +92,28 @@ export const InputField = ({
                 }`}
                 style={{
                   color: fieldState.error
-                    ? inputErrorTextColor || undefined
-                    : inputTextColor || undefined,
+                    ? (affiliate && inputErrorTextColor) || undefined
+                    : (affiliate && inputTextColor) || undefined,
                   borderColor: fieldState.error
-                    ? inputErrorBorderColor || undefined
-                    : inputBorderColor || undefined,
+                    ? (affiliate && inputErrorBorderColor) || undefined
+                    : (affiliate && inputBorderColor) || undefined,
                 }}
                 {...field}
               />
 
               <style>{`
                  .auth-input-placeholder::placeholder {
-                      color: ${inputPlaceholderTextColor || undefined} !important;
+                      color: ${(affiliate && inputPlaceholderTextColor) || undefined} !important;
                           }
                   input:focus.auth-input-placeholder {
                       outline: none !important;
-                      border-color: ${inputBorderFocusColor || undefined} !important;
-                      box-shadow: 0 0 0 1px ${inputBorderFocusColor || undefined} !important;
+                      border-color: ${(affiliate && inputBorderFocusColor) || undefined} !important;
+                      box-shadow: 0 0 0 1px ${(affiliate && inputBorderFocusColor) || undefined} !important;
                            }
                      input.auth-input-placeholder:-webkit-autofill {
-                         box-shadow: 0 0 0px 1000px ${cardBackgroundColor || undefined} inset !important;
-                         -webkit-box-shadow: 0 0 0px 1000px ${cardBackgroundColor || undefined} inset !important;
-                         -webkit-text-fill-color: ${inputTextColor || undefined} !important;
+                         box-shadow: 0 0 0px 1000px ${(affiliate && cardBackgroundColor) || undefined} inset !important;
+                         -webkit-box-shadow: 0 0 0px 1000px ${(affiliate && cardBackgroundColor) || undefined} inset !important;
+                         -webkit-text-fill-color: ${(affiliate && inputTextColor) || undefined} !important;
                           transition: background-color 9999s ease-in-out 0s;
                             }
                   `}</style>
@@ -120,7 +122,7 @@ export const InputField = ({
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
-                  style={{ color: inputIconColor || undefined }}
+                  style={{ color: (affiliate && inputIconColor) || undefined }}
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" />
@@ -134,7 +136,7 @@ export const InputField = ({
           {fieldState.error && (
             <div
               style={{
-                color: inputLabelErrorColor || "red",
+                color: (affiliate && inputLabelErrorColor) || "red",
                 fontSize: "0.875rem",
                 fontWeight: 500,
                 marginTop: "0.25rem",
@@ -153,9 +155,15 @@ type CheckboxFieldProps = {
   control: any;
   name: string;
   label: string;
+  affiliate?: boolean;
 };
 
-export const CheckboxField = ({ control, name, label }: CheckboxFieldProps) => {
+export const CheckboxField = ({
+  control,
+  name,
+  label,
+  affiliate,
+}: CheckboxFieldProps) => {
   const { checkboxActiveColor, checkboxInactiveColor, checkboxLabelColor } =
     useCheckboxCustomizationOption();
   return (
@@ -173,10 +181,10 @@ export const CheckboxField = ({ control, name, label }: CheckboxFieldProps) => {
                   className="border-2 rounded"
                   style={{
                     borderColor: field.value
-                      ? checkboxActiveColor || undefined
-                      : checkboxInactiveColor || undefined,
+                      ? (affiliate && checkboxActiveColor) || undefined
+                      : (affiliate && checkboxInactiveColor) || undefined,
                     backgroundColor: field.value
-                      ? checkboxActiveColor || undefined
+                      ? (affiliate && checkboxActiveColor) || undefined
                       : "transparent",
                   }}
                 />
@@ -184,7 +192,7 @@ export const CheckboxField = ({ control, name, label }: CheckboxFieldProps) => {
               <FormLabel
                 className="!mt-0 cursor-pointer"
                 style={{
-                  color: checkboxLabelColor || undefined,
+                  color: (affiliate && checkboxLabelColor) || undefined,
                 }}
               >
                 {label}

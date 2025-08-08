@@ -14,6 +14,7 @@ interface Props {
   onChange: (month?: number, year?: number) => void;
   disabled?: boolean;
   isPreview?: boolean;
+  affiliate: boolean;
 }
 
 export default function MonthSelect({
@@ -21,6 +22,7 @@ export default function MonthSelect({
   onChange,
   disabled,
   isPreview = false,
+  affiliate,
 }: Props) {
   const now = new Date();
   const START_YEAR = 1990;
@@ -43,15 +45,18 @@ export default function MonthSelect({
         disabled={disabled}
       >
         <SelectTrigger
+          affiliate={affiliate}
           className={`${isPreview ? "w-[72px] h-8 px-2 text-xs" : "w-[100px]"}`}
           aria-disabled={disabled}
         >
           <SelectValue placeholder="Year" />
         </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All</SelectItem>
+        <SelectContent affiliate={affiliate}>
+          <SelectItem affiliate={affiliate} value="all">
+            All
+          </SelectItem>
           {years.map((y) => (
-            <SelectItem key={y} value={y.toString()}>
+            <SelectItem affiliate={affiliate} key={y} value={y.toString()}>
               {y}
             </SelectItem>
           ))}
@@ -70,15 +75,22 @@ export default function MonthSelect({
         disabled={!value.year || disabled}
       >
         <SelectTrigger
+          affiliate={affiliate}
           className={`${isPreview ? "w-[72px] h-8 px-2 text-xs" : "w-[100px]"}`}
           aria-disabled={!value.year || disabled}
         >
           <SelectValue placeholder="Month" />
         </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All</SelectItem>
+        <SelectContent affiliate={affiliate}>
+          <SelectItem affiliate={affiliate} value="all">
+            All
+          </SelectItem>
           {Array.from({ length: 12 }, (_, i) => (
-            <SelectItem key={i + 1} value={(i + 1).toString()}>
+            <SelectItem
+              affiliate={affiliate}
+              key={i + 1}
+              value={(i + 1).toString()}
+            >
               {new Date(0, i).toLocaleString("default", { month: "short" })}
             </SelectItem>
           ))}

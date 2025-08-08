@@ -3,8 +3,7 @@ import Profile from "@/components/pages/Dashboard/Profile/Profile";
 import { validateOrg } from "@/util/ValidateOrg";
 import { redirect } from "next/navigation";
 import { OrgIdProps } from "@/lib/types/orgId";
-import {getAffiliateData} from "@/app/affiliate/[orgId]/dashboard/profile/action";
-
+import { getAffiliateData } from "@/app/affiliate/[orgId]/dashboard/profile/action";
 
 const profilePage = async ({ params }: OrgIdProps) => {
   const { orgId } = await params;
@@ -22,7 +21,7 @@ const profilePage = async ({ params }: OrgIdProps) => {
   }
   return (
     <>
-      <Profile AffiliateData={affiliateResponse.data} />
+      <Profile affiliate AffiliateData={affiliateResponse.data} />
     </>
   );
 };

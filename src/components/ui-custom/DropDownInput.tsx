@@ -42,12 +42,16 @@ export const DropdownInput = ({
       open={selectOpen}
       onOpenChange={setSelectOpen}
     >
-      <SelectTrigger className={cn("w-full", width)} disabled={disabled}>
+      <SelectTrigger
+        affiliate={false}
+        className={cn("w-full", width)}
+        disabled={disabled}
+      >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent affiliate={false}>
         {options.map((opt) => (
-          <SelectItem key={opt.value} value={opt.value}>
+          <SelectItem affiliate={false} key={opt.value} value={opt.value}>
             {opt.label}
           </SelectItem>
         ))}

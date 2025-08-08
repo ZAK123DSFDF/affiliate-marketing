@@ -1,6 +1,5 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import {
   useCardCustomizationOption,
@@ -12,8 +11,9 @@ import { toValidShadowSize } from "@/util/ValidateShadowColor";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
+  affiliate: boolean;
 };
-const InvalidToken = ({ orgId, isPreview }: Props) => {
+const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
   const {
     backgroundColor,
     InvalidPrimaryCustomization,
@@ -30,33 +30,38 @@ const InvalidToken = ({ orgId, isPreview }: Props) => {
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${
-        backgroundColor
+        affiliate && backgroundColor
           ? ""
           : "bg-gradient-to-b from-background to-background/80"
       }`}
       style={{
-        backgroundColor: backgroundColor || undefined,
+        backgroundColor: (affiliate && backgroundColor) || undefined,
       }}
     >
       <div className="w-full max-w-md">
         <Card
           className={`relative transition-shadow duration-300 ${
-            cardShadow && cardShadowThickness
-              ? `shadow-${cardShadowThickness}`
-              : cardShadow
+            affiliate && cardShadow && cardShadowThickness
+              ? `shadow-${affiliate && cardShadowThickness}`
+              : affiliate && cardShadow
                 ? "shadow-lg"
                 : ""
-          } ${cardBorder ? "border" : "border-none"}`}
+          } ${affiliate && cardBorder ? "border" : "border-none"}`}
           style={{
-            backgroundColor: cardBackgroundColor || undefined,
-            ...(cardShadow && {
-              boxShadow: getShadowWithColor(
-                toValidShadowSize(cardShadowThickness),
-                cardShadowColor,
-              ),
-            }),
+            backgroundColor: (affiliate && cardBackgroundColor) || undefined,
+            ...(affiliate &&
+              cardShadow && {
+                boxShadow:
+                  affiliate &&
+                  getShadowWithColor(
+                    toValidShadowSize(cardShadowThickness),
+                    cardShadowColor,
+                  ),
+              }),
             borderColor:
-              cardBorder && cardBorderColor ? cardBorderColor : undefined,
+              affiliate && cardBorder && cardBorderColor
+                ? affiliate && cardBorderColor
+                : undefined,
           }}
         >
           <CardHeader className="space-y-1">
@@ -64,7 +69,8 @@ const InvalidToken = ({ orgId, isPreview }: Props) => {
               <CardTitle
                 className="text-2xl font-bold text-center text-destructive"
                 style={{
-                  color: InvalidPrimaryCustomization || undefined,
+                  color:
+                    (affiliate && InvalidPrimaryCustomization) || undefined,
                 }}
               >
                 Invalid Token
@@ -83,7 +89,8 @@ const InvalidToken = ({ orgId, isPreview }: Props) => {
               <p
                 className="text-muted-foreground mb-4"
                 style={{
-                  color: InvalidSecondaryCustomization || undefined,
+                  color:
+                    (affiliate && InvalidSecondaryCustomization) || undefined,
                 }}
               >
                 The password reset link is invalid or has expired.

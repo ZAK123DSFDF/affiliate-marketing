@@ -66,12 +66,14 @@ interface ProfileProps {
   AffiliateData?: CommonData;
   UserData?: CommonData;
   isPreview?: boolean;
+  affiliate: boolean;
 }
 
 export default function Profile({
   AffiliateData,
   UserData,
   isPreview = false,
+  affiliate = false,
 }: ProfileProps) {
   const initialName = AffiliateData
     ? AffiliateData.name
@@ -242,7 +244,9 @@ export default function Profile({
               <h1
                 className="text-3xl font-bold"
                 style={{
-                  color: dashboardTheme.dashboardHeaderNameColor || undefined,
+                  color:
+                    (affiliate && dashboardTheme.dashboardHeaderNameColor) ||
+                    undefined,
                 }}
               >
                 Profile Settings
@@ -258,7 +262,9 @@ export default function Profile({
               <p
                 className="text-muted-foreground"
                 style={{
-                  color: dashboardTheme.dashboardHeaderDescColor || undefined,
+                  color:
+                    (affiliate && dashboardTheme.dashboardHeaderDescColor) ||
+                    undefined,
                 }}
               >
                 Manage your account information
@@ -278,18 +284,22 @@ export default function Profile({
         className="relative"
         style={{
           backgroundColor:
-            dashboardCard.dashboardCardBackgroundColor || undefined,
+            (affiliate && dashboardCard.dashboardCardBackgroundColor) ||
+            undefined,
           boxShadow:
+            affiliate &&
             dashboardCard.dashboardCardShadow &&
             dashboardCard.dashboardCardShadow !== "none"
-              ? getShadowWithColor(
+              ? affiliate &&
+                getShadowWithColor(
                   toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
                   dashboardCard.dashboardCardShadowColor,
                 )
               : "",
-          border: dashboardCard.dashboardCardBorder
-            ? `1px solid ${dashboardCard.dashboardCardBorderColor}`
-            : "none",
+          border:
+            affiliate && dashboardCard.dashboardCardBorder
+              ? `1px solid ${affiliate && dashboardCard.dashboardCardBorderColor}`
+              : "none",
         }}
       >
         {isPreview && (
@@ -304,7 +314,9 @@ export default function Profile({
           <div className="flex flex-row gap-2 items-center">
             <CardTitle
               style={{
-                color: dashboardTheme.cardHeaderPrimaryTextColor || undefined,
+                color:
+                  (affiliate && dashboardTheme.cardHeaderPrimaryTextColor) ||
+                  undefined,
               }}
             >
               Account Information
@@ -337,6 +349,7 @@ export default function Profile({
                 type="text"
                 icon={User}
                 profile
+                affiliate={affiliate}
               />
 
               <InputField
@@ -347,6 +360,7 @@ export default function Profile({
                 type="email"
                 icon={Mail}
                 profile
+                affiliate={affiliate}
               />
 
               <div>
@@ -355,7 +369,8 @@ export default function Profile({
                     className="flex-1"
                     style={{
                       backgroundColor:
-                        dashboardTheme.separatorColor || "#e5e7eb",
+                        (affiliate && dashboardTheme.separatorColor) ||
+                        "#e5e7eb",
                     }}
                   />
                   {isPreview && (
@@ -371,7 +386,8 @@ export default function Profile({
                     className="font-medium mb-4"
                     style={{
                       color:
-                        dashboardTheme.cardHeaderSecondaryTextColor ||
+                        (affiliate &&
+                          dashboardTheme.cardHeaderSecondaryTextColor) ||
                         undefined,
                     }}
                   >
@@ -390,10 +406,12 @@ export default function Profile({
                   onClick={() => setShowPasswordModal(true)}
                   style={{
                     backgroundColor:
-                      dashboardButton.dashboardButtonBackgroundColor ||
+                      (affiliate &&
+                        dashboardButton.dashboardButtonBackgroundColor) ||
                       undefined,
                     color:
-                      dashboardButton.dashboardButtonTextColor || undefined,
+                      (affiliate && dashboardButton.dashboardButtonTextColor) ||
+                      undefined,
                   }}
                 >
                   Change Password
@@ -402,7 +420,8 @@ export default function Profile({
                 <Separator
                   className="flex-1 mt-4"
                   style={{
-                    backgroundColor: dashboardTheme.separatorColor || "#e5e7eb",
+                    backgroundColor:
+                      (affiliate && dashboardTheme.separatorColor) || "#e5e7eb",
                   }}
                 />
               </div>
@@ -421,15 +440,19 @@ export default function Profile({
               style={{
                 backgroundColor:
                   updateProfile.isPending || isFormUnchanged
-                    ? dashboardButton.dashboardButtonDisabledBackgroundColor ||
+                    ? (affiliate &&
+                        dashboardButton.dashboardButtonDisabledBackgroundColor) ||
                       undefined
-                    : dashboardButton.dashboardButtonBackgroundColor ||
+                    : (affiliate &&
+                        dashboardButton.dashboardButtonBackgroundColor) ||
                       undefined,
                 color:
                   updateProfile.isPending || isFormUnchanged
-                    ? dashboardButton.dashboardButtonDisabledTextColor ||
+                    ? (affiliate &&
+                        dashboardButton.dashboardButtonDisabledTextColor) ||
                       undefined
-                    : dashboardButton.dashboardButtonTextColor || undefined,
+                    : (affiliate && dashboardButton.dashboardButtonTextColor) ||
+                      undefined,
               }}
             >
               {updateProfile.isPending && (
@@ -442,7 +465,7 @@ export default function Profile({
       </Card>
 
       <Dialog open={showPasswordModal} onOpenChange={resetPasswordModal}>
-        <DialogContent>
+        <DialogContent affiliate={affiliate}>
           <DialogHeader>
             {isPreview && (
               <div className="absolute bottom-0 left-0 p-2">
@@ -451,7 +474,8 @@ export default function Profile({
             )}
             <DialogTitle
               style={{
-                color: dashboardTheme.dialogHeaderColor || undefined,
+                color:
+                  (affiliate && dashboardTheme.dialogHeaderColor) || undefined,
               }}
             >
               <div className="flex flex-row gap-2 items-center">
@@ -489,6 +513,7 @@ export default function Profile({
                   type="password"
                   icon={Lock}
                   showPasswordToggle={true}
+                  affiliate={affiliate}
                 />
                 <DialogFooter>
                   <div className="flex flex-row gap-2 items-center">
@@ -500,14 +525,18 @@ export default function Profile({
                       disabled={validatePassword.isPending}
                       style={{
                         backgroundColor: validatePassword.isPending
-                          ? dashboardButton.dashboardButtonDisabledBackgroundColor ||
+                          ? (affiliate &&
+                              dashboardButton.dashboardButtonDisabledBackgroundColor) ||
                             undefined
-                          : dashboardButton.dashboardButtonBackgroundColor ||
+                          : (affiliate &&
+                              dashboardButton.dashboardButtonBackgroundColor) ||
                             undefined,
                         color: validatePassword.isPending
-                          ? dashboardButton.dashboardButtonDisabledTextColor ||
+                          ? (affiliate &&
+                              dashboardButton.dashboardButtonDisabledTextColor) ||
                             undefined
-                          : dashboardButton.dashboardButtonTextColor ||
+                          : (affiliate &&
+                              dashboardButton.dashboardButtonTextColor) ||
                             undefined,
                       }}
                     >
@@ -544,6 +573,7 @@ export default function Profile({
                   type="password"
                   icon={Lock}
                   showPasswordToggle
+                  affiliate={affiliate}
                 />
 
                 <InputField
@@ -554,6 +584,7 @@ export default function Profile({
                   type="password"
                   icon={Lock}
                   showPasswordToggle
+                  affiliate={affiliate}
                 />
 
                 <DialogFooter>
@@ -566,14 +597,18 @@ export default function Profile({
                       disabled={updatePassword.isPending}
                       style={{
                         backgroundColor: updatePassword.isPending
-                          ? dashboardButton.dashboardButtonDisabledBackgroundColor ||
+                          ? (affiliate &&
+                              dashboardButton.dashboardButtonDisabledBackgroundColor) ||
                             undefined
-                          : dashboardButton.dashboardButtonBackgroundColor ||
+                          : (affiliate &&
+                              dashboardButton.dashboardButtonBackgroundColor) ||
                             undefined,
                         color: updatePassword.isPending
-                          ? dashboardButton.dashboardButtonDisabledTextColor ||
+                          ? (affiliate &&
+                              dashboardButton.dashboardButtonDisabledTextColor) ||
                             undefined
-                          : dashboardButton.dashboardButtonTextColor ||
+                          : (affiliate &&
+                              dashboardButton.dashboardButtonTextColor) ||
                             undefined,
                       }}
                     >

@@ -71,7 +71,7 @@ export const columns: ColumnDef<AffiliateStats>[] = [
               View Links
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent affiliate={false}>
             <DialogHeader>
               <DialogTitle>Links</DialogTitle>
             </DialogHeader>
@@ -216,6 +216,7 @@ export default function AffiliatesTable({
           <MonthSelect
             value={selectedDate}
             onChange={(month, year) => setSelectedDate({ month, year })}
+            affiliate={false}
           />
         </CardHeader>
         <CardContent>

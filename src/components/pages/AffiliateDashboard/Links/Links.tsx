@@ -46,11 +46,13 @@ interface AffiliateLinkProps {
   data: AffiliateLinkWithStats[];
   isPreview?: boolean;
   isTopLinksView?: boolean;
+  affiliate: boolean;
 }
 export default function Links({
   data,
   isPreview,
   isTopLinksView = false,
+  affiliate,
 }: AffiliateLinkProps) {
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const dashboardButton = useDashboardButtonCustomizationOption();
@@ -63,7 +65,8 @@ export default function Links({
       header: () => (
         <span
           style={{
-            color: dashboardTable.tableHeaderTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
           }}
         >
           Affiliate Link
@@ -81,21 +84,24 @@ export default function Links({
           });
         };
         const iconColor = copied
-          ? dashboardTable.tableIconHoverColor || "#2563eb"
+          ? (affiliate && dashboardTable.tableIconHoverColor) || "#2563eb"
           : isHovered
-            ? dashboardTable.tableIconHoverColor || "#2563eb"
-            : dashboardTable.tableIconColor || "";
+            ? (affiliate && dashboardTable.tableIconHoverColor) || "#2563eb"
+            : (affiliate && dashboardTable.tableIconColor) || "";
 
         const iconBgColor = copied
           ? "transparent"
           : isHovered
-            ? dashboardTable.tableIconHoverBackgroundColor || "#dbeafe"
+            ? (affiliate && dashboardTable.tableIconHoverBackgroundColor) ||
+              "#dbeafe"
             : "transparent";
         return (
           <div
             className="flex items-center"
             style={{
-              color: dashboardTable.tableRowSecondaryTextColor || undefined,
+              color:
+                (affiliate && dashboardTable.tableRowSecondaryTextColor) ||
+                undefined,
             }}
           >
             <span className="break-all">{url}</span>
@@ -130,7 +136,8 @@ export default function Links({
       header: () => (
         <span
           style={{
-            color: dashboardTable.tableHeaderTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
           }}
         >
           Clicks
@@ -139,7 +146,9 @@ export default function Links({
       cell: ({ row }) => (
         <div
           style={{
-            color: dashboardTable.tableRowTertiaryTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableRowTertiaryTextColor) ||
+              undefined,
           }}
         >
           {row.getValue("clicks")}
@@ -151,7 +160,8 @@ export default function Links({
       header: () => (
         <span
           style={{
-            color: dashboardTable.tableHeaderTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
           }}
         >
           Sales
@@ -160,7 +170,9 @@ export default function Links({
       cell: ({ row }) => (
         <div
           style={{
-            color: dashboardTable.tableRowTertiaryTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableRowTertiaryTextColor) ||
+              undefined,
           }}
         >
           {row.getValue("sales")}
@@ -172,7 +184,8 @@ export default function Links({
       header: () => (
         <span
           style={{
-            color: dashboardTable.tableHeaderTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
           }}
         >
           Conversion Rate
@@ -181,7 +194,9 @@ export default function Links({
       cell: ({ row }) => (
         <div
           style={{
-            color: dashboardTable.tableRowTertiaryTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableRowTertiaryTextColor) ||
+              undefined,
           }}
         >
           {row.getValue("conversionRate")}%
@@ -193,7 +208,8 @@ export default function Links({
       header: () => (
         <span
           style={{
-            color: dashboardTable.tableHeaderTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
           }}
         >
           Created
@@ -202,7 +218,9 @@ export default function Links({
       cell: ({ row }) => (
         <div
           style={{
-            color: dashboardTable.tableRowTertiaryTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableRowTertiaryTextColor) ||
+              undefined,
           }}
         >
           {new Date(row.getValue("createdAt")).toLocaleDateString()}
@@ -268,7 +286,9 @@ export default function Links({
               <h1
                 className="text-3xl font-bold"
                 style={{
-                  color: dashboardTheme.dashboardHeaderNameColor || undefined,
+                  color:
+                    (affiliate && dashboardTheme.dashboardHeaderNameColor) ||
+                    undefined,
                 }}
               >
                 Affiliate Links
@@ -284,7 +304,9 @@ export default function Links({
               <p
                 className="text-muted-foreground"
                 style={{
-                  color: dashboardTheme.dashboardHeaderDescColor || undefined,
+                  color:
+                    (affiliate && dashboardTheme.dashboardHeaderDescColor) ||
+                    undefined,
                 }}
               >
                 Track your referral links and their performance
@@ -307,15 +329,19 @@ export default function Links({
               style={{
                 backgroundColor:
                   mutation.isPending || isFakeLoading
-                    ? dashboardButton.dashboardButtonDisabledBackgroundColor ||
+                    ? (affiliate &&
+                        dashboardButton.dashboardButtonDisabledBackgroundColor) ||
                       undefined
-                    : dashboardButton.dashboardButtonBackgroundColor ||
+                    : (affiliate &&
+                        dashboardButton.dashboardButtonBackgroundColor) ||
                       undefined,
                 color:
                   mutation.isPending || isFakeLoading
-                    ? dashboardButton.dashboardButtonDisabledTextColor ||
+                    ? (affiliate &&
+                        dashboardButton.dashboardButtonDisabledTextColor) ||
                       undefined
-                    : dashboardButton.dashboardButtonTextColor || undefined,
+                    : (affiliate && dashboardButton.dashboardButtonTextColor) ||
+                      undefined,
               }}
             >
               {mutation.isPending || isFakeLoading
@@ -330,18 +356,22 @@ export default function Links({
         className="relative"
         style={{
           backgroundColor:
-            dashboardCard.dashboardCardBackgroundColor || undefined,
+            (affiliate && dashboardCard.dashboardCardBackgroundColor) ||
+            undefined,
           boxShadow:
+            affiliate &&
             dashboardCard.dashboardCardShadow &&
             dashboardCard.dashboardCardShadow !== "none"
-              ? getShadowWithColor(
+              ? affiliate &&
+                getShadowWithColor(
                   toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
                   dashboardCard.dashboardCardShadowColor,
                 )
               : "",
-          border: dashboardCard.dashboardCardBorder
-            ? `1px solid ${dashboardCard.dashboardCardBorderColor}`
-            : "none",
+          border:
+            affiliate && dashboardCard.dashboardCardBorder
+              ? `1px solid ${affiliate && dashboardCard.dashboardCardBorderColor}`
+              : "none",
         }}
       >
         {isPreview && (
@@ -360,7 +390,9 @@ export default function Links({
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle
             style={{
-              color: dashboardTheme.cardHeaderPrimaryTextColor || undefined,
+              color:
+                (affiliate && dashboardTheme.cardHeaderPrimaryTextColor) ||
+                undefined,
             }}
             className="text-lg"
           >
@@ -382,6 +414,7 @@ export default function Links({
             <MonthSelect
               value={selectedDate}
               onChange={(month, year) => setSelectedDate({ month, year })}
+              affiliate={affiliate}
             />
           </div>
         </CardHeader>
@@ -397,7 +430,8 @@ export default function Links({
                 isPreview && "mb-4",
               )}
               style={{
-                borderColor: dashboardTable.tableBorderColor || undefined,
+                borderColor:
+                  (affiliate && dashboardTable.tableBorderColor) || undefined,
                 borderWidth: "1px",
                 borderStyle: "solid",
               }}
@@ -411,7 +445,8 @@ export default function Links({
                       onMouseLeave={() => setIsHeaderHovered(false)}
                       style={{
                         backgroundColor: isHeaderHovered
-                          ? dashboardTable.tableHoverBackgroundColor ||
+                          ? (affiliate &&
+                              dashboardTable.tableHoverBackgroundColor) ||
                             "#f9fafb"
                           : undefined,
                         transition: "background-color 0.2s ease",
@@ -421,9 +456,11 @@ export default function Links({
                         <TableHead
                           key={header.id}
                           style={{
-                            borderBottom: `1px solid ${dashboardTable.tableBorderColor || "#e5e7eb"}`,
+                            borderBottom: `1px solid ${(affiliate && dashboardTable.tableBorderColor) || "#e5e7eb"}`,
                             color:
-                              dashboardTable.tableHeaderTextColor || undefined,
+                              (affiliate &&
+                                dashboardTable.tableHeaderTextColor) ||
+                              undefined,
                           }}
                         >
                           {flexRender(
@@ -453,13 +490,14 @@ export default function Links({
                         )}
                         style={{
                           backgroundColor: isHovered
-                            ? dashboardTable.tableHoverBackgroundColor ||
+                            ? (affiliate &&
+                                dashboardTable.tableHoverBackgroundColor) ||
                               defaultHoverBg
                             : undefined,
                           transition: "background-color 0.2s ease",
                           borderBottom:
                             idx !== allRows.length - 1
-                              ? `1px solid ${dashboardTable.tableBorderColor || "#e5e7eb"}`
+                              ? `1px solid ${(affiliate && dashboardTable.tableBorderColor) || "#e5e7eb"}`
                               : "none",
                         }}
                       >

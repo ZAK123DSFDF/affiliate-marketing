@@ -15,10 +15,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import {
-  dashboardCustomizationSettings,
-  localDashboardCustomizationSettings,
-} from "@/lib/types/dashboardCustomization";
 import { SidebarCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/SidebarCustomizationOptions";
 import { useSidebarCustomization } from "@/store/useDashboardCustomizationStore";
 import { cn } from "@/lib/utils";
@@ -28,7 +24,7 @@ type Props = {
   isPreview?: boolean;
   onSelectPage?: (page: string) => void;
   currentPage?: string;
-  customization?: localDashboardCustomizationSettings;
+  affiliate: boolean;
 };
 
 const AffiliateDashboardSidebar = ({
@@ -36,7 +32,7 @@ const AffiliateDashboardSidebar = ({
   isPreview = false,
   onSelectPage,
   currentPage,
-  customization,
+  affiliate,
 }: Props) => {
   const pathname = usePathname();
   const items = [
@@ -73,7 +69,8 @@ const AffiliateDashboardSidebar = ({
         className="flex items-center justify-center py-4"
         style={{
           backgroundColor:
-            sidebar.sideBarBackgroundColor || "hsl(var(--sidebar-background))",
+            (affiliate && sidebar.sideBarBackgroundColor) ||
+            "hsl(var(--sidebar-background))",
         }}
       >
         <div className="flex items-center space-x-2">
@@ -90,7 +87,8 @@ const AffiliateDashboardSidebar = ({
       <SidebarContent
         style={{
           backgroundColor:
-            sidebar.sideBarBackgroundColor || "hsl(var(--sidebar-background))",
+            (affiliate && sidebar.sideBarBackgroundColor) ||
+            "hsl(var(--sidebar-background))",
         }}
       >
         <SidebarGroup>
@@ -101,17 +99,24 @@ const AffiliateDashboardSidebar = ({
                 const isHovered = hoveredKey === item.key;
 
                 const backgroundColor = isActive
-                  ? sidebar.sideBarActiveNavigationBackgroundColor ||
+                  ? (affiliate &&
+                      sidebar.sideBarActiveNavigationBackgroundColor) ||
                     "hsl(var(--sidebar-accent))"
                   : isHovered
-                    ? sidebar.sideBarHoverNavigationBackgroundColor || undefined
+                    ? (affiliate &&
+                        sidebar.sideBarHoverNavigationBackgroundColor) ||
+                      undefined
                     : undefined;
 
                 const textColor = isActive
-                  ? sidebar.sideBarActiveNavigationTextColor || undefined
+                  ? (affiliate && sidebar.sideBarActiveNavigationTextColor) ||
+                    undefined
                   : isHovered
-                    ? sidebar.sideBarHoverNavigationTextColor || undefined
-                    : sidebar.sideBarInActiveNavigationTextColor || undefined;
+                    ? (affiliate && sidebar.sideBarHoverNavigationTextColor) ||
+                      undefined
+                    : (affiliate &&
+                        sidebar.sideBarInActiveNavigationTextColor) ||
+                      undefined;
 
                 return (
                   <SidebarMenuItem key={item.title}>
@@ -135,7 +140,8 @@ const AffiliateDashboardSidebar = ({
                             backgroundColor: backgroundColor || undefined,
                             color: textColor || undefined,
                             ["--tw-ring-color" as any]:
-                              sidebar.sideBarNavigationFocusRingColor ||
+                              (affiliate &&
+                                sidebar.sideBarNavigationFocusRingColor) ||
                               "hsl(var(--sidebar-ring))",
                           }}
                         >
@@ -168,7 +174,8 @@ const AffiliateDashboardSidebar = ({
         className="p-4"
         style={{
           backgroundColor:
-            sidebar.sideBarBackgroundColor || "hsl(var(--sidebar-background))",
+            (affiliate && sidebar.sideBarBackgroundColor) ||
+            "hsl(var(--sidebar-background))",
         }}
       >
         {isPreview ? (
@@ -177,7 +184,8 @@ const AffiliateDashboardSidebar = ({
             onClick={setProfile}
             style={{
               backgroundColor:
-                sidebar.sideBarProfileBackgroundColor || undefined,
+                (affiliate && sidebar.sideBarProfileBackgroundColor) ||
+                undefined,
             }}
           >
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
@@ -187,7 +195,9 @@ const AffiliateDashboardSidebar = ({
               <p
                 className="text-sm font-medium truncate"
                 style={{
-                  color: sidebar.sideBarProfileTextPrimaryColor || undefined,
+                  color:
+                    (affiliate && sidebar.sideBarProfileTextPrimaryColor) ||
+                    undefined,
                 }}
               >
                 John Doe
@@ -195,7 +205,9 @@ const AffiliateDashboardSidebar = ({
               <p
                 className="text-xs text-muted-foreground truncate"
                 style={{
-                  color: sidebar.sideBarProfileTextSecondaryColor || undefined,
+                  color:
+                    (affiliate && sidebar.sideBarProfileTextSecondaryColor) ||
+                    undefined,
                 }}
               >
                 john.doe@example.com
@@ -204,7 +216,9 @@ const AffiliateDashboardSidebar = ({
             <User
               className="w-4 h-4 text-muted-foreground"
               style={{
-                color: sidebar.sideBarProfileTextSecondaryColor || undefined,
+                color:
+                  (affiliate && sidebar.sideBarProfileTextSecondaryColor) ||
+                  undefined,
               }}
             />
           </div>

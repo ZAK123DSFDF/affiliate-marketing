@@ -85,7 +85,7 @@ export const columns: ColumnDef<AffiliatePayout>[] = [
               View Links
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent affiliate={false}>
             <DialogHeader>
               <DialogTitle>Links</DialogTitle>
             </DialogHeader>
@@ -331,6 +331,7 @@ export default function PayoutTable({
             value={monthYear}
             onChange={onMonthChange}
             disabled={isUnpaidMode && selectedMonths.length > 0}
+            affiliate={false}
           />
           {isUnpaidMode && selectedMonths.length > 0 && (
             <div className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">

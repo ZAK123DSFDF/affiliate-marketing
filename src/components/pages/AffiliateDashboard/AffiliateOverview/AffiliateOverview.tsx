@@ -6,20 +6,31 @@ import { ChartDailyMetrics } from "@/components/ui-custom/Chart/SalesChart";
 import Links from "@/components/pages/AffiliateDashboard/Links/Links";
 import { dummyLinksData } from "@/lib/types/dummyLInksData";
 
-const AffiliateOverview = ({ isPreview = false }: { isPreview?: boolean }) => {
+const AffiliateOverview = ({
+  isPreview = false,
+  affiliate = false,
+}: {
+  isPreview?: boolean;
+  affiliate: boolean;
+}) => {
   return (
     <div className="space-y-8">
-      <Cards affiliate isPreview={isPreview} />
+      <Cards affiliate={affiliate} isPreview={isPreview} />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="h-full">
-          <ChartDailyMetrics affiliate isPreview={isPreview} />
+          <ChartDailyMetrics affiliate={affiliate} isPreview={isPreview} />
         </div>
         <div className="h-full">
-          <SocialTrafficCharts isPreview={isPreview} />
+          <SocialTrafficCharts isPreview={isPreview} affiliate={affiliate} />
         </div>
       </div>
 
-      <Links data={dummyLinksData} isTopLinksView />
+      <Links
+        data={dummyLinksData}
+        affiliate={affiliate}
+        isTopLinksView
+        isPreview={isPreview}
+      />
     </div>
   );
 };

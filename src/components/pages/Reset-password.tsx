@@ -22,7 +22,6 @@ import {
   passwordSchema,
 } from "@/lib/schema/passwordSchema";
 import InvalidToken from "@/components/pages/InvalidToken";
-import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import {
   useButtonCustomizationOption,
@@ -40,12 +39,18 @@ type Props = {
   orgId?: string;
   isPreview?: boolean;
   setTab?: (tab: string) => void;
+  affiliate: boolean;
 };
-const ResetPassword = ({ orgId, isPreview = false, setTab }: Props) => {
+const ResetPassword = ({
+  orgId,
+  isPreview = false,
+  setTab,
+  affiliate,
+}: Props) => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   if (!token && !isPreview) {
-    return <InvalidToken />;
+    return <InvalidToken affiliate={affiliate} />;
   }
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(passwordSchema),
@@ -104,12 +109,12 @@ const ResetPassword = ({ orgId, isPreview = false, setTab }: Props) => {
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${
-        backgroundColor
+        affiliate && backgroundColor
           ? ""
           : "bg-gradient-to-b from-background to-background/80"
       }`}
       style={{
-        backgroundColor: backgroundColor || undefined,
+        backgroundColor: (affiliate && backgroundColor) || undefined,
       }}
     >
       <div className="w-full max-w-md">
@@ -126,29 +131,36 @@ const ResetPassword = ({ orgId, isPreview = false, setTab }: Props) => {
 
         <Card
           className={`relative transition-shadow duration-300 ${
-            cardShadow && cardShadowThickness
-              ? `shadow-${cardShadowThickness}`
-              : cardShadow
+            affiliate && cardShadow && cardShadowThickness
+              ? `shadow-${affiliate && cardShadowThickness}`
+              : affiliate && cardShadow
                 ? "shadow-lg"
                 : ""
-          } ${cardBorder ? "border" : "border-none"}`}
+          } ${affiliate && cardBorder ? "border" : "border-none"}`}
           style={{
-            backgroundColor: cardBackgroundColor || undefined,
-            ...(cardShadow && {
-              boxShadow: getShadowWithColor(
-                toValidShadowSize(cardShadowThickness),
-                cardShadowColor,
-              ),
-            }),
+            backgroundColor: (affiliate && cardBackgroundColor) || undefined,
+            ...(affiliate &&
+              cardShadow && {
+                boxShadow:
+                  affiliate &&
+                  getShadowWithColor(
+                    toValidShadowSize(cardShadowThickness),
+                    cardShadowColor,
+                  ),
+              }),
             borderColor:
-              cardBorder && cardBorderColor ? cardBorderColor : undefined,
+              affiliate && cardBorder && cardBorderColor
+                ? affiliate && cardBorderColor
+                : undefined,
           }}
         >
           <CardHeader className="space-y-1">
             <div className="flex flex-row gap-2 justify-center">
               <CardTitle
                 className="text-2xl font-bold text-center"
-                style={{ color: primaryCustomization || undefined }}
+                style={{
+                  color: (affiliate && primaryCustomization) || undefined,
+                }}
               >
                 Reset Password
               </CardTitle>
@@ -163,7 +175,9 @@ const ResetPassword = ({ orgId, isPreview = false, setTab }: Props) => {
             <div className="flex flex-row gap-2 justify-center">
               <CardDescription
                 className="text-center"
-                style={{ color: secondaryCustomization || undefined }}
+                style={{
+                  color: (affiliate && secondaryCustomization) || undefined,
+                }}
               >
                 Enter your new password
               </CardDescription>
@@ -195,6 +209,7 @@ const ResetPassword = ({ orgId, isPreview = false, setTab }: Props) => {
                   type="password"
                   icon={Lock}
                   showPasswordToggle={true}
+                  affiliate={affiliate}
                 />
 
                 <InputField
@@ -205,6 +220,7 @@ const ResetPassword = ({ orgId, isPreview = false, setTab }: Props) => {
                   type="password"
                   icon={Lock}
                   showPasswordToggle={true}
+                  affiliate={affiliate}
                 />
 
                 <Button
@@ -213,11 +229,12 @@ const ResetPassword = ({ orgId, isPreview = false, setTab }: Props) => {
                   disabled={pending}
                   style={{
                     backgroundColor: pending
-                      ? buttonDisabledBackgroundColor || undefined
-                      : buttonBackgroundColor || undefined,
+                      ? (affiliate && buttonDisabledBackgroundColor) ||
+                        undefined
+                      : (affiliate && buttonBackgroundColor) || undefined,
                     color: pending
-                      ? buttonDisabledTextColor || undefined
-                      : buttonTextColor || undefined,
+                      ? (affiliate && buttonDisabledTextColor) || undefined
+                      : (affiliate && buttonTextColor) || undefined,
                   }}
                 >
                   {pending ? (
@@ -225,7 +242,8 @@ const ResetPassword = ({ orgId, isPreview = false, setTab }: Props) => {
                       <Loader2
                         className="h-4 w-4 animate-spin mr-2"
                         style={{
-                          color: buttonDisabledTextColor || undefined,
+                          color:
+                            (affiliate && buttonDisabledTextColor) || undefined,
                         }}
                       />
                       Updating password...
@@ -236,7 +254,7 @@ const ResetPassword = ({ orgId, isPreview = false, setTab }: Props) => {
                       <ArrowRight
                         className="h-4 w-4 ml-2"
                         style={{
-                          color: buttonTextColor || undefined,
+                          color: (affiliate && buttonTextColor) || undefined,
                         }}
                       />
                     </>
@@ -250,7 +268,7 @@ const ResetPassword = ({ orgId, isPreview = false, setTab }: Props) => {
             <div
               className="mt-4 text-center text-sm"
               style={{
-                color: tertiaryTextColor || undefined,
+                color: (affiliate && tertiaryTextColor) || undefined,
               }}
             >
               <div className="flex flex-row gap-2">

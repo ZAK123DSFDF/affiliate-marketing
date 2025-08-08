@@ -14,18 +14,19 @@ const SelectGroup = SelectPrimitive.Group;
 const SelectValue = SelectPrimitive.Value;
 type SelectTriggerProps = React.ComponentPropsWithoutRef<
   typeof SelectPrimitive.Trigger
->;
+> & { affiliate: boolean };
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   SelectTriggerProps
->(({ className, children, ...props }, ref) => {
+>(({ className, children, affiliate, ...props }, ref) => {
   const yearSelect = useYearSelectCustomizationOption();
   const style = {
-    backgroundColor: yearSelect.yearSelectBackgroundColor,
-    color: yearSelect.yearSelectTextColor,
-    ...(yearSelect.yearSelectActiveBorderColor
+    backgroundColor: affiliate && yearSelect.yearSelectBackgroundColor,
+    color: affiliate && yearSelect.yearSelectTextColor,
+    ...(affiliate && yearSelect.yearSelectActiveBorderColor
       ? {
-          "--tw-ring-color": yearSelect.yearSelectActiveBorderColor,
+          "--tw-ring-color":
+            affiliate && yearSelect.yearSelectActiveBorderColor,
         }
       : {}),
   } as React.CSSProperties;
@@ -54,11 +55,11 @@ const SelectTrigger = React.forwardRef<
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 type SelectScrollUpButtonProps = React.ComponentPropsWithoutRef<
   typeof SelectPrimitive.ScrollUpButton
->;
+> & { affiliate: boolean };
 const SelectScrollUpButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollUpButton>,
   SelectScrollUpButtonProps
->(({ className, ...props }, ref) => {
+>(({ className, affiliate, ...props }, ref) => {
   const yearSelect = useYearSelectCustomizationOption();
   return (
     <SelectPrimitive.ScrollUpButton
@@ -72,7 +73,8 @@ const SelectScrollUpButton = React.forwardRef<
       <ChevronUp
         className="h-4 w-4"
         style={{
-          color: yearSelect.yearSelectDropDownIconColor || "#9ca3af",
+          color:
+            (affiliate && yearSelect.yearSelectDropDownIconColor) || "#9ca3af",
         }}
       />
     </SelectPrimitive.ScrollUpButton>
@@ -81,11 +83,11 @@ const SelectScrollUpButton = React.forwardRef<
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
 type SelectScrollDownButtonProps = React.ComponentPropsWithoutRef<
   typeof SelectPrimitive.ScrollDownButton
->;
+> & { affiliate: boolean };
 const SelectScrollDownButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollDownButton>,
   SelectScrollDownButtonProps
->(({ className, ...props }, ref) => {
+>(({ className, affiliate, ...props }, ref) => {
   const yearSelect = useYearSelectCustomizationOption();
   return (
     <SelectPrimitive.ScrollDownButton
@@ -99,7 +101,8 @@ const SelectScrollDownButton = React.forwardRef<
       <ChevronDown
         className="h-4 w-4"
         style={{
-          color: yearSelect.yearSelectDropDownIconColor || "#9ca3af",
+          color:
+            (affiliate && yearSelect.yearSelectDropDownIconColor) || "#9ca3af",
         }}
       />
     </SelectPrimitive.ScrollDownButton>
@@ -109,11 +112,11 @@ SelectScrollDownButton.displayName =
   SelectPrimitive.ScrollDownButton.displayName;
 type SelectContentProps = React.ComponentPropsWithoutRef<
   typeof SelectPrimitive.Content
->;
+> & { affiliate: boolean };
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
   SelectContentProps
->(({ className, children, position = "popper", ...props }, ref) => {
+>(({ className, children, position = "popper", affiliate, ...props }, ref) => {
   const yearSelect = useYearSelectCustomizationOption();
   return (
     <SelectPrimitive.Portal>
@@ -126,13 +129,16 @@ const SelectContent = React.forwardRef<
           className,
         )}
         style={{
-          backgroundColor: yearSelect.yearSelectDropDownBackgroundColor,
-          color: yearSelect.yearSelectDropDownTextColor,
+          backgroundColor:
+            (affiliate && yearSelect.yearSelectDropDownBackgroundColor) ||
+            undefined,
+          color:
+            (affiliate && yearSelect.yearSelectDropDownTextColor) || undefined,
         }}
         position={position}
         {...props}
       >
-        <SelectScrollUpButton />
+        <SelectScrollUpButton affiliate />
         <SelectPrimitive.Viewport
           className={cn(
             "p-1",
@@ -142,7 +148,7 @@ const SelectContent = React.forwardRef<
         >
           {children}
         </SelectPrimitive.Viewport>
-        <SelectScrollDownButton />
+        <SelectScrollDownButton affiliate />
       </SelectPrimitive.Content>
     </SelectPrimitive.Portal>
   );
@@ -164,24 +170,29 @@ type SelectItemProps = React.ComponentPropsWithoutRef<
   typeof SelectPrimitive.Item
 > & {
   selectedValue?: string;
+  affiliate: boolean;
 };
 const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
   SelectItemProps
->(({ className, children, selectedValue, value, ...props }, ref) => {
+>(({ className, children, selectedValue, value, affiliate, ...props }, ref) => {
   const [hovered, setHovered] = React.useState(false);
   const yearSelect = useYearSelectCustomizationOption();
   const isSelected = selectedValue === value;
   const style: React.CSSProperties = {
     "--active-text-color":
-      yearSelect.yearSelectDropDownActiveTextColor || "#3b82f6",
+      (affiliate && yearSelect.yearSelectDropDownActiveTextColor) || "#3b82f6",
     "--active-bg-color":
-      yearSelect.yearSelectDropDownActiveBackgroundColor || "#e0f2fe",
+      (affiliate && yearSelect.yearSelectDropDownActiveBackgroundColor) ||
+      "#e0f2fe",
     ...(hovered &&
       !isSelected && {
         backgroundColor:
-          yearSelect.yearSelectDropDownHoverBackgroundColor || "#f1f5f9",
-        color: yearSelect.yearSelectDropDownHoverTextColor || "#1d4ed8",
+          (affiliate && yearSelect.yearSelectDropDownHoverBackgroundColor) ||
+          "#f1f5f9",
+        color:
+          (affiliate && yearSelect.yearSelectDropDownHoverTextColor) ||
+          "#1d4ed8",
       }),
   } as React.CSSProperties;
   return (

@@ -247,7 +247,9 @@ export default function DashboardPage() {
               <XAxis dataKey="month" axisLine={false} tickLine={false} />
               <YAxis axisLine={false} tickLine={false} />
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartTooltip
+                content={<ChartTooltipContent affiliate={false} />}
+              />
               <Area
                 type="monotone"
                 dataKey="revenue"

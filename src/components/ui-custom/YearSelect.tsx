@@ -14,9 +14,15 @@ interface Props {
   value: { year?: number };
   onChange: (year?: number) => void;
   disabled?: boolean;
+  affiliate: boolean;
 }
 
-export default function YearSelect({ value, onChange, disabled }: Props) {
+export default function YearSelect({
+  value,
+  onChange,
+  disabled,
+  affiliate,
+}: Props) {
   const now = new Date();
   const START_YEAR = 1990;
   const years = Array.from(
@@ -33,15 +39,24 @@ export default function YearSelect({ value, onChange, disabled }: Props) {
         }
         disabled={disabled}
       >
-        <SelectTrigger className="w-[100px]" aria-disabled={disabled}>
+        <SelectTrigger
+          affiliate={affiliate}
+          className="w-[100px]"
+          aria-disabled={disabled}
+        >
           <SelectValue placeholder="Year" />
         </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all" selectedValue={currentSelectedValue}>
+        <SelectContent affiliate={affiliate}>
+          <SelectItem
+            affiliate={affiliate}
+            value="all"
+            selectedValue={currentSelectedValue}
+          >
             All
           </SelectItem>
           {years.map((y) => (
             <SelectItem
+              affiliate={affiliate}
               key={y}
               value={y.toString()}
               selectedValue={currentSelectedValue}

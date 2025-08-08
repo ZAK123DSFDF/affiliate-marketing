@@ -31,6 +31,7 @@ export function DashboardCustomization() {
       <div className="border rounded-xl overflow-hidden shadow-lg ring ring-muted bg-background max-w-5xl h-[500px] mx-auto relative">
         <div className="flex h-full">
           <AffiliateDashboardSidebar
+            affiliate
             orgId={orgId}
             isPreview
             currentPage={selectedPage}
@@ -43,15 +44,17 @@ export function DashboardCustomization() {
             }}
           >
             <DashboardThemeCustomizationOptions name="mainBackgroundColor" />
-            {selectedPage === "dashboard" && <AffiliateOverview isPreview />}
+            {selectedPage === "dashboard" && (
+              <AffiliateOverview affiliate isPreview />
+            )}
             {selectedPage === "links" && (
-              <Links isPreview data={dummyAffiliateLinks} />
+              <Links affiliate isPreview data={dummyAffiliateLinks} />
             )}
             {selectedPage === "payment" && (
-              <PaymentTable isPreview data={dummyAffiliatePayments} />
+              <PaymentTable affiliate isPreview data={dummyAffiliatePayments} />
             )}
             {selectedPage === "profile" && (
-              <Profile AffiliateData={dummyProfileData} isPreview />
+              <Profile affiliate AffiliateData={dummyProfileData} isPreview />
             )}
           </div>
         </div>

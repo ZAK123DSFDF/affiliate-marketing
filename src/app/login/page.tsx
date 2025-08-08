@@ -4,7 +4,7 @@ import Login from "@/components/pages/Login";
 const loginPage = () => {
   return (
     <>
-      <Login />
+      <Login affiliate={false} />
     </>
   );
 };
