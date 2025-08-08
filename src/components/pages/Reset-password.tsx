@@ -92,6 +92,7 @@ const ResetPassword = ({
           type: "error",
           title: "something went wrong",
           description: "something went wrong",
+          affiliate,
         });
       } else {
         // Simulate success
@@ -99,6 +100,7 @@ const ResetPassword = ({
           type: "success",
           title: "Password Changed Successfully",
           description: "Password Changed Successfully",
+          affiliate,
         });
       }
 

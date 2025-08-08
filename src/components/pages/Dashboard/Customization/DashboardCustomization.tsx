@@ -54,7 +54,12 @@ export function DashboardCustomization() {
               <PaymentTable affiliate isPreview data={dummyAffiliatePayments} />
             )}
             {selectedPage === "profile" && (
-              <Profile affiliate AffiliateData={dummyProfileData} isPreview />
+              <Profile
+                orgId="1234"
+                affiliate
+                AffiliateData={dummyProfileData}
+                isPreview
+              />
             )}
           </div>
         </div>

@@ -99,12 +99,14 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
           type: "error",
           title: "Login Failed",
           description: "The password you entered is incorrect.",
+          affiliate,
         });
       } else {
         showCustomToast({
           type: "success",
           title: "Login Successful",
           description: "Welcome back!",
+          affiliate,
         });
       }
 

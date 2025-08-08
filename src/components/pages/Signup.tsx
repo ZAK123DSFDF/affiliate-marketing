@@ -92,12 +92,14 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
           type: "error",
           title: "Signup Failed",
           description: "This Email Already Registered",
+          affiliate,
         });
       } else {
         showCustomToast({
           type: "success",
           title: "Signup Successful",
           description: "Your Account Have Created",
+          affiliate,
         });
       }
 

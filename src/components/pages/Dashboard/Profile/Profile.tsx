@@ -66,6 +66,7 @@ interface ProfileProps {
   UserData?: CommonData;
   isPreview?: boolean;
   affiliate: boolean;
+  orgId: string;
 }
 
 export default function Profile({
@@ -73,6 +74,7 @@ export default function Profile({
   UserData,
   isPreview = false,
   affiliate = false,
+  orgId,
 }: ProfileProps) {
   const initialName = AffiliateData
     ? AffiliateData.name
@@ -120,14 +122,15 @@ export default function Profile({
         );
       }
       return AffiliateData
-        ? updateAffiliateProfile(data)
-        : updateUserProfile(data);
+        ? updateAffiliateProfile(orgId, data)
+        : updateUserProfile(orgId, data);
     },
     onSuccess: () => {
       showCustomToast({
         type: "success",
         title: "Profile updated successfully",
         description: "Your profile was updated.",
+        affiliate,
       });
     },
     onError: (err: any) => {
@@ -135,6 +138,7 @@ export default function Profile({
         type: "error",
         title: "Update Error",
         description: err.message ?? "Something went wrong.",
+        affiliate,
       });
     },
   });
@@ -159,12 +163,14 @@ export default function Profile({
           type: "success",
           title: "Password validated",
           description: "Enter your new password below.",
+          affiliate,
         });
       } else {
         showCustomToast({
           type: "error",
           title: "Invalid Password",
           description: "Incorrect password.",
+          affiliate,
         });
       }
     },
@@ -173,6 +179,7 @@ export default function Profile({
         type: "error",
         title: "Something went wrong",
         description: "Unexpected error. Please try again.",
+        affiliate,
       });
     },
   });
@@ -195,6 +202,7 @@ export default function Profile({
           type: "success",
           title: "Password updated successfully",
           description: "You can now use your new password.",
+          affiliate,
         });
         resetPasswordModal();
       } else {
@@ -202,6 +210,7 @@ export default function Profile({
           type: "error",
           title: "Update Failed",
           description: "Unable to change password.",
+          affiliate,
         });
       }
     },
@@ -210,6 +219,7 @@ export default function Profile({
         type: "error",
         title: "Unexpected Error",
         description: "Please try again later.",
+        affiliate,
       });
     },
   });

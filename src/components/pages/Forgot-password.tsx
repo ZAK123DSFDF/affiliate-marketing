@@ -82,6 +82,7 @@ const ForgotPassword = ({
           type: "error",
           title: "Email Not Found",
           description: "We couldn't find an account with this email.",
+          affiliate,
         });
       } else {
         // Simulate success
@@ -89,6 +90,7 @@ const ForgotPassword = ({
           type: "success",
           title: "Email Sent",
           description: "If the email exists, a reset link has been sent.",
+          affiliate,
         });
       }
 

@@ -18,21 +18,25 @@ export const useCustomToast = () => {
     type,
     title,
     description,
+    affiliate,
   }: {
     type: ToastType;
     title: string;
     description: string;
+    affiliate: boolean;
   }) => {
     const isError = type === "error";
 
-    const titleColor = isError ? toastErrorTitleColor : toastTitleColor;
+    const titleColor = isError
+      ? affiliate && toastErrorTitleColor
+      : affiliate && toastTitleColor;
     const descriptionColor = isError
-      ? toastErrorDescriptionColor
-      : toastDescriptionColor;
+      ? affiliate && toastErrorDescriptionColor
+      : affiliate && toastDescriptionColor;
 
     const backgroundColor = isError
-      ? toastErrorBackgroundColor
-      : toastBackgroundColor;
+      ? affiliate && toastErrorBackgroundColor
+      : affiliate && toastBackgroundColor;
 
     toast({
       title: (

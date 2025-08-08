@@ -241,6 +241,7 @@ export default function Links({
         type: "success",
         title: "Link created!",
         description: newLink,
+        affiliate,
       });
     },
     onError: () => {
@@ -248,6 +249,7 @@ export default function Links({
         type: "error",
         title: "Something went wrong",
         description: "We couldn't create the affiliate link.",
+        affiliate,
       });
     },
   });
@@ -261,6 +263,7 @@ export default function Links({
           type: "success",
           title: "Preview Mode",
           description: "Simulated link creation.",
+          affiliate,
         });
       }, 1500);
     } else {
