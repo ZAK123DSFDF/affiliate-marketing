@@ -24,7 +24,6 @@ import { useMutation } from "@tanstack/react-query";
 import { createAffiliateLink } from "@/app/affiliate/[orgId]/dashboard/links/action";
 import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
 import { Check, Copy } from "lucide-react";
-import { localDashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import MonthSelect from "@/components/ui-custom/MonthSelect";
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";

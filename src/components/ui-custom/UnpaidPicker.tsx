@@ -4,11 +4,9 @@ import React from "react";
 import {
   Select,
   SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectLabel,
   SelectGroup,
-  SelectItem,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { UnpaidMonth } from "@/lib/types/unpaidMonth";

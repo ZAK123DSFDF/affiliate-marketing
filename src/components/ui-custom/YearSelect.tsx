@@ -8,7 +8,6 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { localDashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
 
 interface Props {
   value: { year?: number };

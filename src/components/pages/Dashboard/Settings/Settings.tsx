@@ -37,7 +37,6 @@ type OrgData = {
 type Props = {
   orgData: OrgData;
 };
-type OrgDataType = z.infer<typeof orgSettingsSchema>;
 export default function Settings({ orgData }: Props) {
   const [formValues, setFormValues] = useState({
     ...orgData,

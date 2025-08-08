@@ -26,7 +26,7 @@ import {
   updateAffiliateProfile,
   validateCurrentPassword,
 } from "@/app/affiliate/[orgId]/dashboard/profile/action";
-import { Eye, EyeOff, Loader2, Mail, Lock, User } from "lucide-react";
+import { Loader2, Mail, Lock, User } from "lucide-react";
 import {
   updateUserPassword,
   updateUserProfile,
@@ -39,7 +39,6 @@ import {
   newPasswordSchema,
 } from "@/lib/schema/passwordSchema";
 import { InputField } from "@/components/Auth/FormFields";
-import { localDashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
 import { DashboardButtonCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardButtonCustomizationOptions";

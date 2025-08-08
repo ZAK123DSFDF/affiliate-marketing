@@ -2,7 +2,6 @@
 
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import React from "react";
-import { usePieChartColorCustomization } from "@/store/useDashboardCustomizationStore";
 import { usePieChartCustomizationOption } from "@/hooks/useDashboardCustomization";
 
 export const PieChartCustomizationOptions = ({

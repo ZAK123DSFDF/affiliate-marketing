@@ -1,8 +1,7 @@
 // app/dashboard/layout.tsx
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import SellerDashboardSidebar from "@/components/SellerDashboardSidebar";
 import { validateOrg } from "@/util/ValidateOrg";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { OrgIdProps } from "@/lib/types/orgId";
 import AffiliateDashboardSidebar from "@/components/AffiliateDashboardSidebar";
 interface AffiliateDashboardLayoutProps extends OrgIdProps {

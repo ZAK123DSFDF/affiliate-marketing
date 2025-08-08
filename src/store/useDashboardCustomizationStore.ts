@@ -1,4 +1,3 @@
-import { create } from "zustand";
 import { createCustomizationStore } from "@/store/CreateCustomizationStore";
 
 export const useSidebarCustomization = createCustomizationStore(

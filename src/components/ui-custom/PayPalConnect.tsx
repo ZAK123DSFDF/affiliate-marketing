@@ -32,7 +32,6 @@ export default function PayPalMassPayout() {
   ]);
   const [defaultCurrency, setDefaultCurrency] = useState("USD");
   const [defaultWallet, setDefaultWallet] = useState("PayPal");
-  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const addRecipient = () => {
     setRecipients([

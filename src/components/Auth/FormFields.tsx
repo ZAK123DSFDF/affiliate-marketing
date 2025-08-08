@@ -1,16 +1,14 @@
 "use client";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import {
   FormField,
   FormItem,
   FormLabel,
   FormControl,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
-import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 import {
   useCardCustomizationOption,
   useCheckboxCustomizationOption,
