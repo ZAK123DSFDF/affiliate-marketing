@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { z } from "zod";
-import { orgSettingsSchema } from "@/lib/schema/orgSettingSchema";
 import { useMutation } from "@tanstack/react-query";
 import { updateOrgSettings } from "@/app/seller/[orgId]/dashboard/settings/action";
 import { useToast } from "@/hooks/use-toast";

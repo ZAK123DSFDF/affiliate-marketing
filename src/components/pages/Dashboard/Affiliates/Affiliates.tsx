@@ -38,13 +38,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AffiliateStats } from "@/lib/types/affiliateStats";
 import MonthSelect from "@/components/ui-custom/MonthSelect";
