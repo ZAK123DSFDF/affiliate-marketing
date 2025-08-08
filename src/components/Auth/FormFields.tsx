@@ -1,16 +1,19 @@
 "use client";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import {
   FormField,
   FormItem,
   FormLabel,
   FormControl,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
-import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
+import {
+  useCardCustomizationOption,
+  useCheckboxCustomizationOption,
+  useInputCustomizationOption,
+} from "@/hooks/useAuthCustomization";
 
 type InputFieldProps = {
   control: any;
@@ -20,8 +23,8 @@ type InputFieldProps = {
   type: "email" | "password" | "text";
   icon?: React.ElementType;
   showPasswordToggle?: boolean;
-  customization?: AuthCustomizationSettings;
   profile?: boolean;
+  affiliate: boolean;
 };
 
 export const InputField = ({
@@ -32,11 +35,23 @@ export const InputField = ({
   type,
   icon,
   showPasswordToggle = false,
-  customization,
   profile = false,
+  affiliate,
 }: InputFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const Icon = icon;
+  const {
+    inputBorderColor,
+    inputErrorBorderColor,
+    inputErrorTextColor,
+    inputIconColor,
+    inputPlaceholderTextColor,
+    inputLabelColor,
+    inputBorderFocusColor,
+    inputLabelErrorColor,
+    inputTextColor,
+  } = useInputCustomizationOption();
+  const { cardBackgroundColor } = useCardCustomizationOption();
   return (
     <FormField
       control={control}
@@ -47,8 +62,8 @@ export const InputField = ({
             className={fieldState.error ? "text-destructive" : ""}
             style={{
               color: fieldState.error
-                ? customization?.errorColor || undefined
-                : customization?.primaryTextColor || undefined,
+                ? (affiliate && inputLabelErrorColor) || undefined
+                : (affiliate && inputLabelColor) || undefined,
             }}
           >
             {label}
@@ -59,7 +74,7 @@ export const InputField = ({
                 <Icon
                   className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground"
                   style={{
-                    color: customization?.iconColor || undefined,
+                    color: (affiliate && inputIconColor) || undefined,
                   }}
                 />
               )}
@@ -75,28 +90,28 @@ export const InputField = ({
                 }`}
                 style={{
                   color: fieldState.error
-                    ? customization?.errorColor || undefined
-                    : customization?.inputTextColor || undefined,
+                    ? (affiliate && inputErrorTextColor) || undefined
+                    : (affiliate && inputTextColor) || undefined,
                   borderColor: fieldState.error
-                    ? customization?.inputBorderErrorColor || undefined
-                    : customization?.inputBorderColor || undefined,
+                    ? (affiliate && inputErrorBorderColor) || undefined
+                    : (affiliate && inputBorderColor) || undefined,
                 }}
                 {...field}
               />
 
               <style>{`
                  .auth-input-placeholder::placeholder {
-                      color: ${customization?.placeholderTextColor || undefined} !important;
+                      color: ${(affiliate && inputPlaceholderTextColor) || undefined} !important;
                           }
                   input:focus.auth-input-placeholder {
                       outline: none !important;
-                      border-color: ${customization?.inputBorderFocusColor || undefined} !important;
-                      box-shadow: 0 0 0 1px ${customization?.inputBorderFocusColor || undefined} !important;
+                      border-color: ${(affiliate && inputBorderFocusColor) || undefined} !important;
+                      box-shadow: 0 0 0 1px ${(affiliate && inputBorderFocusColor) || undefined} !important;
                            }
                      input.auth-input-placeholder:-webkit-autofill {
-                         box-shadow: 0 0 0px 1000px ${customization?.cardBackgroundColor || undefined} inset !important;
-                         -webkit-box-shadow: 0 0 0px 1000px ${customization?.cardBackgroundColor || undefined} inset !important;
-                         -webkit-text-fill-color: ${customization?.inputTextColor || undefined} !important;
+                         box-shadow: 0 0 0px 1000px ${(affiliate && cardBackgroundColor) || undefined} inset !important;
+                         -webkit-box-shadow: 0 0 0px 1000px ${(affiliate && cardBackgroundColor) || undefined} inset !important;
+                         -webkit-text-fill-color: ${(affiliate && inputTextColor) || undefined} !important;
                           transition: background-color 9999s ease-in-out 0s;
                             }
                   `}</style>
@@ -105,7 +120,7 @@ export const InputField = ({
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
-                  style={{ color: customization?.iconColor || undefined }}
+                  style={{ color: (affiliate && inputIconColor) || undefined }}
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" />
@@ -119,7 +134,7 @@ export const InputField = ({
           {fieldState.error && (
             <div
               style={{
-                color: customization?.errorColor || "red",
+                color: (affiliate && inputLabelErrorColor) || "red",
                 fontSize: "0.875rem",
                 fontWeight: 500,
                 marginTop: "0.25rem",
@@ -138,15 +153,17 @@ type CheckboxFieldProps = {
   control: any;
   name: string;
   label: string;
-  customization?: AuthCustomizationSettings;
+  affiliate?: boolean;
 };
 
 export const CheckboxField = ({
   control,
   name,
   label,
-  customization,
+  affiliate,
 }: CheckboxFieldProps) => {
+  const { checkboxActiveColor, checkboxInactiveColor, checkboxLabelColor } =
+    useCheckboxCustomizationOption();
   return (
     <FormField
       control={control}
@@ -162,10 +179,10 @@ export const CheckboxField = ({
                   className="border-2 rounded"
                   style={{
                     borderColor: field.value
-                      ? customization?.checkboxActiveColor || undefined
-                      : customization?.checkboxInactiveColor || undefined,
+                      ? (affiliate && checkboxActiveColor) || undefined
+                      : (affiliate && checkboxInactiveColor) || undefined,
                     backgroundColor: field.value
-                      ? customization?.checkboxActiveColor || undefined
+                      ? (affiliate && checkboxActiveColor) || undefined
                       : "transparent",
                   }}
                 />
@@ -173,7 +190,7 @@ export const CheckboxField = ({
               <FormLabel
                 className="!mt-0 cursor-pointer"
                 style={{
-                  color: customization?.primaryTextColor || undefined,
+                  color: (affiliate && checkboxLabelColor) || undefined,
                 }}
               >
                 {label}

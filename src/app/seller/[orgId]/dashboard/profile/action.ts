@@ -10,6 +10,7 @@ import { returnError } from "@/lib/errorHandler";
 import * as bcrypt from "bcrypt";
 import { ResponseData } from "@/lib/types/response";
 import { SafeUserData } from "@/lib/types/authUser";
+import { revalidatePath } from "next/cache";
 
 export const getUserData = async (): Promise<ResponseData<SafeUserData>> => {
   try {
@@ -54,13 +55,16 @@ export const getUserData = async (): Promise<ResponseData<SafeUserData>> => {
     return returnError(err) as ResponseData<SafeUserData>;
   }
 };
-export async function updateUserProfile({
-  name,
-  email,
-}: {
-  name: string;
-  email: string;
-}) {
+export async function updateUserProfile(
+  orgId: string,
+  {
+    name,
+    email,
+  }: {
+    name: string;
+    email: string;
+  },
+) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -70,6 +74,7 @@ export async function updateUserProfile({
     if (!id) throw { status: 400, toast: "Invalid session" };
 
     await db.update(user).set({ name, email }).where(eq(user.id, id));
+    revalidatePath(`/seller/${orgId}/dashboard/profile`);
     return { ok: true };
   } catch (err) {
     console.error("updateAffiliateProfile error:", err);

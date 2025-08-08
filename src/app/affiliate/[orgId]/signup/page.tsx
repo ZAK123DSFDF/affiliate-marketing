@@ -11,7 +11,7 @@ const AffiliateSignupPage = async ({ params }: OrgIdProps) => {
   }
   return (
     <>
-      <Signup orgId={orgId} />
+      <Signup affiliate orgId={orgId} />
     </>
   );
 };

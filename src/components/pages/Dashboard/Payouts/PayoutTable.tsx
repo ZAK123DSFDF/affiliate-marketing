@@ -20,21 +20,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  ArrowUpDown,
-  ChevronDown,
-  Download,
-  MoreHorizontal,
-} from "lucide-react";
+import { ChevronDown, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -46,13 +37,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   getAffiliatePayouts,
@@ -85,7 +70,7 @@ export const columns: ColumnDef<AffiliatePayout>[] = [
               View Links
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent affiliate={false}>
             <DialogHeader>
               <DialogTitle>Links</DialogTitle>
             </DialogHeader>
@@ -331,6 +316,7 @@ export default function PayoutTable({
             value={monthYear}
             onChange={onMonthChange}
             disabled={isUnpaidMode && selectedMonths.length > 0}
+            affiliate={false}
           />
           {isUnpaidMode && selectedMonths.length > 0 && (
             <div className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">

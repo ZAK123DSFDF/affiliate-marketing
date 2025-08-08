@@ -31,14 +31,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const performanceData = [
@@ -247,7 +240,9 @@ export default function DashboardPage() {
               <XAxis dataKey="month" axisLine={false} tickLine={false} />
               <YAxis axisLine={false} tickLine={false} />
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartTooltip
+                content={<ChartTooltipContent affiliate={false} />}
+              />
               <Area
                 type="monotone"
                 dataKey="revenue"

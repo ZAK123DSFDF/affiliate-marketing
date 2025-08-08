@@ -20,16 +20,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -41,13 +38,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AffiliateStats } from "@/lib/types/affiliateStats";
 import MonthSelect from "@/components/ui-custom/MonthSelect";
@@ -71,7 +62,7 @@ export const columns: ColumnDef<AffiliateStats>[] = [
               View Links
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent affiliate={false}>
             <DialogHeader>
               <DialogTitle>Links</DialogTitle>
             </DialogHeader>
@@ -216,6 +207,7 @@ export default function AffiliatesTable({
           <MonthSelect
             value={selectedDate}
             onChange={(month, year) => setSelectedDate({ month, year })}
+            affiliate={false}
           />
         </CardHeader>
         <CardContent>

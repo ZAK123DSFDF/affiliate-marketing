@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { z } from "zod";
-import { orgSettingsSchema } from "@/lib/schema/orgSettingSchema";
 import { useMutation } from "@tanstack/react-query";
 import { updateOrgSettings } from "@/app/seller/[orgId]/dashboard/settings/action";
 import { useToast } from "@/hooks/use-toast";
@@ -37,7 +35,6 @@ type OrgData = {
 type Props = {
   orgData: OrgData;
 };
-type OrgDataType = z.infer<typeof orgSettingsSchema>;
 export default function Settings({ orgData }: Props) {
   const [formValues, setFormValues] = useState({
     ...orgData,
@@ -142,13 +139,19 @@ export default function Settings({ orgData }: Props) {
                   setFormValues((prev) => ({ ...prev, referralParam: val }))
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger affiliate={false}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ref">ref</SelectItem>
-                  <SelectItem value="via">via</SelectItem>
-                  <SelectItem value="aff">aff</SelectItem>
+                <SelectContent affiliate={false}>
+                  <SelectItem affiliate={false} value="ref">
+                    ref
+                  </SelectItem>
+                  <SelectItem affiliate={false} value="via">
+                    via
+                  </SelectItem>
+                  <SelectItem affiliate={false} value="aff">
+                    aff
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -189,14 +192,22 @@ export default function Settings({ orgData }: Props) {
                   }))
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger affiliate={false}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="day">Day</SelectItem>
-                  <SelectItem value="week">Week</SelectItem>
-                  <SelectItem value="month">Month</SelectItem>
-                  <SelectItem value="year">Year</SelectItem>
+                <SelectContent affiliate={false}>
+                  <SelectItem affiliate={false} value="day">
+                    Day
+                  </SelectItem>
+                  <SelectItem affiliate={false} value="week">
+                    Week
+                  </SelectItem>
+                  <SelectItem affiliate={false} value="month">
+                    Month
+                  </SelectItem>
+                  <SelectItem affiliate={false} value="year">
+                    Year
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -213,12 +224,16 @@ export default function Settings({ orgData }: Props) {
                   setFormValues((prev) => ({ ...prev, commissionType: val }))
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger affiliate={false}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="percentage">Percentage</SelectItem>
-                  <SelectItem value="fixed">Fixed</SelectItem>
+                <SelectContent affiliate={false}>
+                  <SelectItem affiliate={false} value="percentage">
+                    Percentage
+                  </SelectItem>
+                  <SelectItem affiliate={false} value="fixed">
+                    Fixed
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -267,14 +282,22 @@ export default function Settings({ orgData }: Props) {
                   }))
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger affiliate={false}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="day">Day</SelectItem>
-                  <SelectItem value="week">Week</SelectItem>
-                  <SelectItem value="month">Month</SelectItem>
-                  <SelectItem value="year">Year</SelectItem>
+                <SelectContent affiliate={false}>
+                  <SelectItem affiliate={false} value="day">
+                    Day
+                  </SelectItem>
+                  <SelectItem affiliate={false} value="week">
+                    Week
+                  </SelectItem>
+                  <SelectItem affiliate={false} value="month">
+                    Month
+                  </SelectItem>
+                  <SelectItem affiliate={false} value="year">
+                    Year
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -289,15 +312,25 @@ export default function Settings({ orgData }: Props) {
                 setFormValues((prev) => ({ ...prev, currency: val }))
               }
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger affiliate={false} className="w-full">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="USD">USD</SelectItem>
-                <SelectItem value="EUR">EUR</SelectItem>
-                <SelectItem value="GBP">GBP</SelectItem>
-                <SelectItem value="CAD">CAD</SelectItem>
-                <SelectItem value="AUD">AUD</SelectItem>
+              <SelectContent affiliate={false}>
+                <SelectItem affiliate={false} value="USD">
+                  USD
+                </SelectItem>
+                <SelectItem affiliate={false} value="EUR">
+                  EUR
+                </SelectItem>
+                <SelectItem affiliate={false} value="GBP">
+                  GBP
+                </SelectItem>
+                <SelectItem affiliate={false} value="CAD">
+                  CAD
+                </SelectItem>
+                <SelectItem affiliate={false} value="AUD">
+                  AUD
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>

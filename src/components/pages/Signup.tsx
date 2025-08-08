@@ -7,35 +7,38 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import Link from "next/link";
-import { useToast } from "@/hooks/use-toast";
-import { GoogleAuthButton } from "@/components/Auth/GoogleAuthButton";
 import { InputField } from "@/components/Auth/FormFields";
 import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema";
 import { useMutation } from "@tanstack/react-query";
 import { SignupAffiliateServer } from "@/app/affiliate/[orgId]/signup/action";
 import { SignupServer } from "@/app/signup/action";
-import { AuthCustomizationSettings } from "@/lib/types/authCustomizationSettings";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
+import {
+  useButtonCustomizationOption,
+  useCardCustomizationOption,
+  useThemeCustomizationOption,
+} from "@/hooks/useAuthCustomization";
+
+import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
+import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions";
+import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
+import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
+import { toValidShadowSize } from "@/util/ValidateShadowColor";
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
+import { LinkButton } from "@/components/ui-custom/LinkButton";
 type Props = {
   orgId?: string;
-  customization?: AuthCustomizationSettings;
   isPreview?: boolean;
+  setTab?: (tab: string) => void;
+  affiliate: boolean;
 };
-const Signup = ({ orgId, customization, isPreview }: Props) => {
+const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false);
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -46,7 +49,23 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
       confirmPassword: "",
     },
   });
-  const { toast } = useToast();
+  const { backgroundColor, linkTextColor, tertiaryTextColor } =
+    useThemeCustomizationOption();
+  const {
+    cardShadow,
+    cardShadowColor,
+    cardBorder,
+    cardBorderColor,
+    cardBackgroundColor,
+    cardShadowThickness,
+  } = useCardCustomizationOption();
+  const {
+    buttonDisabledTextColor,
+    buttonBackgroundColor,
+    buttonDisabledBackgroundColor,
+    buttonTextColor,
+  } = useButtonCustomizationOption();
+  const { showCustomToast } = useCustomToast();
   const affiliateMutation = useMutation({
     mutationFn: SignupAffiliateServer,
     onSuccess: (data) => console.log("Affiliate signup success", data),
@@ -69,63 +88,18 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
       setPreviewLoading(false);
 
       if (data.email === "already@used.com") {
-        toast({
-          title: (
-            <span
-              className="font-semibold"
-              style={{ color: customization?.toastErrorTextColor || undefined }}
-            >
-              Signup Failed
-            </span>
-          ) as unknown as string,
-          description: (
-            <span
-              className="text-sm"
-              style={{
-                color:
-                  customization?.toastErrorSecondaryTextColor ||
-                  customization?.toastErrorTextColor ||
-                  undefined,
-              }}
-            >
-              This email is already registered.
-            </span>
-          ),
-          ...(!customization?.toastErrorBackgroundColor &&
-          !customization?.toastErrorTextColor &&
-          !customization?.toastErrorSecondaryTextColor
-            ? { variant: "destructive" }
-            : {}),
-          ...(customization?.toastErrorBackgroundColor && {
-            style: { backgroundColor: customization.toastErrorBackgroundColor },
-          }),
+        showCustomToast({
+          type: "error",
+          title: "Signup Failed",
+          description: "This Email Already Registered",
+          affiliate,
         });
       } else {
-        toast({
-          title: (
-            <span
-              className="font-semibold"
-              style={{ color: customization?.toastTextColor || undefined }}
-            >
-              Signup Successful
-            </span>
-          ) as unknown as string,
-          description: (
-            <span
-              className="text-sm"
-              style={{
-                color:
-                  customization?.toastSecondaryTextColor ||
-                  customization?.toastTextColor ||
-                  undefined,
-              }}
-            >
-              Your account has been created!
-            </span>
-          ),
-          ...(customization?.toastBackgroundColor && {
-            style: { backgroundColor: customization.toastBackgroundColor },
-          }),
+        showCustomToast({
+          type: "success",
+          title: "Signup Successful",
+          description: "Your Account Have Created",
+          affiliate,
         });
       }
 
@@ -144,13 +118,13 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
 
   return (
     <div
-      className={`min-h-screen flex items-center justify-center p-4 ${
-        customization?.backgroundColor
+      className={`relative min-h-screen flex items-center justify-center p-4 ${
+        affiliate && backgroundColor
           ? ""
           : "bg-gradient-to-b from-background to-background/80"
       }`}
       style={{
-        backgroundColor: customization?.backgroundColor || undefined,
+        backgroundColor: (affiliate && backgroundColor) || undefined,
       }}
     >
       <div className="w-full max-w-md">
@@ -166,78 +140,65 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
         </div>
 
         <Card
-          className={`transition-shadow duration-300 ${
-            customization?.showShadow && customization?.shadowThickness
-              ? `shadow-${customization.shadowThickness}`
-              : customization?.showShadow
+          className={`relative transition-shadow duration-300 ${
+            affiliate && cardShadow && cardShadowThickness
+              ? `shadow-${affiliate && cardShadowThickness}`
+              : affiliate && cardShadow
                 ? "shadow-lg"
                 : ""
-          } ${customization?.showBorder ? "border" : "border-none"}`}
+          } ${affiliate && cardBorder ? "border" : "border-none"}`}
           style={{
-            backgroundColor: customization?.cardBackgroundColor || undefined,
-            ...(customization?.showShadow && {
-              boxShadow: getShadowWithColor(
-                customization.shadowThickness || "lg",
-                customization.shadowColor,
-              ),
-            }),
+            backgroundColor: (affiliate && cardBackgroundColor) || undefined,
+            ...(affiliate &&
+              cardShadow && {
+                boxShadow:
+                  affiliate &&
+                  getShadowWithColor(
+                    toValidShadowSize(cardShadowThickness),
+                    cardShadowColor,
+                  ),
+              }),
             borderColor:
-              customization?.showBorder && customization?.borderColor
-                ? customization.borderColor
+              affiliate && cardBorder && cardBorderColor
+                ? affiliate && cardBorderColor
                 : undefined,
           }}
         >
           <CardHeader className="space-y-1">
-            {(!customization?.customNotesSignup ||
-              customization?.customNotesSignup === "") && (
-              <>
-                <CardTitle className="text-2xl font-bold text-center">
-                  Create An Account
-                </CardTitle>
-                <CardDescription className="text-center">
-                  Enter Your Information to Sign Up
-                </CardDescription>
-              </>
-            )}
-            {customization?.customNotesSignup?.trim() && (
-              <div
-                className="rich-text-preview text-sm"
-                dangerouslySetInnerHTML={{
-                  __html: customization?.customNotesSignup,
-                }}
-              />
-            )}
+            {isPreview && <InlineNotesEditor name="customNotesSignup" />}
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
+                className="relative space-y-4"
               >
+                {isPreview && (
+                  <div className="absolute top-[-10] right-0 z-50">
+                    <InputCustomizationOptions size="w-6 h-6" />
+                  </div>
+                )}
                 <InputField
-                  key={`name-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="name"
                   label="Full name"
                   placeholder="john doe"
                   type="text"
                   icon={User}
-                  customization={customization}
+                  affiliate={affiliate}
                 />
 
                 <InputField
-                  key={`email-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="email"
                   label="Email"
                   placeholder="john.doe@example.com"
                   type="email"
                   icon={Mail}
-                  customization={customization}
+                  affiliate={affiliate}
                 />
 
                 <InputField
-                  key={`password-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="password"
                   label="Password"
@@ -245,11 +206,10 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
                   type="password"
                   icon={Lock}
                   showPasswordToggle={true}
-                  customization={customization}
+                  affiliate={affiliate}
                 />
 
                 <InputField
-                  key={`confirmPassword-${customization?.inputBorderColor}-${customization?.inputBorderFocusColor}`}
                   control={form.control}
                   name="confirmPassword"
                   label="Confirm Password"
@@ -257,7 +217,7 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
                   type="password"
                   icon={Lock}
                   showPasswordToggle={true}
-                  customization={customization}
+                  affiliate={affiliate}
                 />
 
                 <Button
@@ -266,12 +226,12 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
                   disabled={isLoading}
                   style={{
                     backgroundColor: isLoading
-                      ? customization?.buttonDisabledBackgroundColor ||
+                      ? (affiliate && buttonDisabledBackgroundColor) ||
                         undefined
-                      : customization?.buttonBackgroundColor || undefined,
+                      : (affiliate && buttonBackgroundColor) || undefined,
                     color: isLoading
-                      ? customization?.buttonDisabledTextColor || undefined
-                      : customization?.buttonTextColor || undefined,
+                      ? (affiliate && buttonDisabledTextColor) || undefined
+                      : (affiliate && buttonTextColor) || undefined,
                   }}
                 >
                   {isLoading ? (
@@ -280,7 +240,7 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
                         className="h-4 w-4 animate-spin"
                         style={{
                           color:
-                            customization?.buttonDisabledTextColor || undefined,
+                            (affiliate && buttonDisabledTextColor) || undefined,
                         }}
                       />
                       Please wait...
@@ -291,41 +251,67 @@ const Signup = ({ orgId, customization, isPreview }: Props) => {
                       <ArrowRight
                         className="h-4 w-4"
                         style={{
-                          color: customization?.buttonTextColor || undefined,
+                          color: (affiliate && buttonTextColor) || undefined,
                         }}
                       />
                     </>
                   )}
                 </Button>
+                {isPreview && <ButtonCustomizationOptions size="w-6 h-6" />}
               </form>
             </Form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-            </div>
             <div
               className="text-center text-sm"
               style={{
-                color: customization?.secondaryTextColor || undefined,
+                color: (affiliate && tertiaryTextColor) || undefined,
               }}
             >
-              Already have an account?{" "}
-              <Link
-                href={`login`}
-                className="font-medium text-primary underline-offset-4 hover:underline"
-                style={{
-                  color: customization?.linkTextColor || undefined,
-                }}
-              >
-                Log in
-              </Link>
+              <div className="flex flex-row gap-2">
+                {isPreview && (
+                  <ThemeCustomizationOptions
+                    name="tertiaryTextColor"
+                    showLabel={false}
+                    buttonSize="w-4 h-4"
+                  />
+                )}
+                <span>Already have an account?</span>
+              </div>
+              <div className="flex flex-row gap-2 justify-center">
+                {isPreview && (
+                  <ThemeCustomizationOptions
+                    name="linkTextColor"
+                    showLabel={false}
+                    buttonSize="w-4 h-4"
+                  />
+                )}
+                <LinkButton
+                  isPreview={isPreview}
+                  label="Login"
+                  tabName="login"
+                  href="/login"
+                  setTab={setTab}
+                  linkTextColor={linkTextColor}
+                />
+              </div>
             </div>
           </CardFooter>
+          {isPreview && (
+            <div className="absolute bottom-0 left-0 p-2">
+              <CardCustomizationOptions
+                triggerSize="w-6 h-6"
+                dropdownSize="w-[150px]"
+              />
+            </div>
+          )}
         </Card>
       </div>
+      {isPreview && (
+        <div className="absolute bottom-0 left-0 z-50">
+          <ThemeCustomizationOptions name="backgroundColor" showLabel={false} />
+        </div>
+      )}
     </div>
   );
 };

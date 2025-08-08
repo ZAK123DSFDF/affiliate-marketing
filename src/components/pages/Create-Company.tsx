@@ -166,14 +166,20 @@ export default function CreateCompany() {
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger affiliate={false}>
                             <SelectValue placeholder="Select referral param" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="ref">ref</SelectItem>
-                          <SelectItem value="via">via</SelectItem>
-                          <SelectItem value="aff">aff</SelectItem>
+                        <SelectContent affiliate={false}>
+                          <SelectItem affiliate={false} value="ref">
+                            ref
+                          </SelectItem>
+                          <SelectItem affiliate={false} value="via">
+                            via
+                          </SelectItem>
+                          <SelectItem affiliate={false} value="aff">
+                            aff
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -207,15 +213,23 @@ export default function CreateCompany() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger affiliate={false}>
                               <SelectValue placeholder="Select unit" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="day">Day</SelectItem>
-                            <SelectItem value="week">Week</SelectItem>
-                            <SelectItem value="month">Month</SelectItem>
-                            <SelectItem value="year">Year</SelectItem>
+                          <SelectContent affiliate={false}>
+                            <SelectItem affiliate={false} value="day">
+                              Day
+                            </SelectItem>
+                            <SelectItem affiliate={false} value="week">
+                              Week
+                            </SelectItem>
+                            <SelectItem affiliate={false} value="month">
+                              Month
+                            </SelectItem>
+                            <SelectItem affiliate={false} value="year">
+                              Year
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -236,15 +250,17 @@ export default function CreateCompany() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger affiliate={false}>
                               <SelectValue placeholder="Select type" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="percentage">
+                          <SelectContent affiliate={false}>
+                            <SelectItem affiliate={false} value="percentage">
                               Percentage
                             </SelectItem>
-                            <SelectItem value="fixed">Fixed</SelectItem>
+                            <SelectItem affiliate={false} value="fixed">
+                              Fixed
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -293,15 +309,23 @@ export default function CreateCompany() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger affiliate={false}>
                               <SelectValue placeholder="Select unit" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="day">Day</SelectItem>
-                            <SelectItem value="week">Week</SelectItem>
-                            <SelectItem value="month">Month</SelectItem>
-                            <SelectItem value="year">Year</SelectItem>
+                          <SelectContent affiliate={false}>
+                            <SelectItem affiliate={false} value="day">
+                              Day
+                            </SelectItem>
+                            <SelectItem affiliate={false} value="week">
+                              Week
+                            </SelectItem>
+                            <SelectItem affiliate={false} value="month">
+                              Month
+                            </SelectItem>
+                            <SelectItem affiliate={false} value="year">
+                              Year
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -321,16 +345,26 @@ export default function CreateCompany() {
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger affiliate={false}>
                             <SelectValue placeholder="Select currency" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="USD">USD</SelectItem>
-                          <SelectItem value="EUR">EUR</SelectItem>
-                          <SelectItem value="GBP">GBP</SelectItem>
-                          <SelectItem value="CAD">CAD</SelectItem>
-                          <SelectItem value="AUD">AUD</SelectItem>
+                        <SelectContent affiliate={false}>
+                          <SelectItem affiliate={false} value="USD">
+                            USD
+                          </SelectItem>
+                          <SelectItem affiliate={false} value="EUR">
+                            EUR
+                          </SelectItem>
+                          <SelectItem affiliate={false} value="GBP">
+                            GBP
+                          </SelectItem>
+                          <SelectItem affiliate={false} value="CAD">
+                            CAD
+                          </SelectItem>
+                          <SelectItem affiliate={false} value="AUD">
+                            AUD
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

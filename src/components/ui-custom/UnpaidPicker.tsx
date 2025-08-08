@@ -4,11 +4,9 @@ import React from "react";
 import {
   Select,
   SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectLabel,
   SelectGroup,
-  SelectItem,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { UnpaidMonth } from "@/lib/types/unpaidMonth";
@@ -49,14 +47,14 @@ export default function UnpaidSelect({
 
   return (
     <Select open={open} onOpenChange={setOpen} disabled={disabled}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger affiliate={false} className="w-[180px]">
         {selection.length > 0 ? (
           <span className="text-black">Unpaid Months ({selection.length})</span>
         ) : (
           <span className="text-black">Unpaid Months</span>
         )}
       </SelectTrigger>
-      <SelectContent className="w-[280px] p-2">
+      <SelectContent affiliate={false} className="w-[280px] p-2">
         <SelectGroup>
           <SelectLabel>Select unpaid months</SelectLabel>
           {loading ? (

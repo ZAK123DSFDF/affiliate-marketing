@@ -5,7 +5,7 @@ const resetPasswordPage = () => {
   return (
     <>
       <Suspense fallback={<div>Loading...</div>}>
-        <ResetPassword />
+        <ResetPassword affiliate={false} />
       </Suspense>
     </>
   );

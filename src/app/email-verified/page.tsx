@@ -4,7 +4,7 @@ import EmailVerified from "@/components/pages/Email-verified";
 const emailVerifiedPage = () => {
   return (
     <>
-      <EmailVerified />
+      <EmailVerified affiliate={false} />
     </>
   );
 };

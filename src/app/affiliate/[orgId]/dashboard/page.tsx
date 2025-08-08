@@ -4,7 +4,7 @@ import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOv
 const DashboardPage = async () => {
   return (
     <>
-      <AffiliateOverview />
+      <AffiliateOverview affiliate />
     </>
   );
 };

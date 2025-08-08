@@ -26,27 +26,43 @@ import { usePathname, useRouter } from "next/navigation";
 import YearSelect from "@/components/ui-custom/YearSelect";
 import { useQuery } from "@tanstack/react-query";
 import { getAffiliateCommissionByMonth } from "@/app/affiliate/[orgId]/dashboard/payment/action";
-import { localDashboardCustomizationSettings } from "@/lib/types/dashboardCustomization";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
+import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
+import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions";
+import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions";
+import { cn } from "@/lib/utils";
+import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions";
+import {
+  useDashboardCardCustomizationOption,
+  useDashboardThemeCustomizationOption,
+  useTableCustomizationOption,
+} from "@/hooks/useDashboardCustomization";
+import { toValidShadowSize } from "@/util/ValidateShadowColor";
 
 interface AffiliateCommissionTableProps {
   data: AffiliatePaymentRow[];
   isPreview?: boolean;
-  customization?: localDashboardCustomizationSettings;
+  affiliate: boolean;
 }
 
 export default function AffiliateCommissionTable({
   data,
   isPreview,
-  customization,
+  affiliate = false,
 }: AffiliateCommissionTableProps) {
+  const dashboardTheme = useDashboardThemeCustomizationOption();
+  const dashboardCard = useDashboardCardCustomizationOption();
+  const dashboardTable = useTableCustomizationOption();
+  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
+  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const columns: ColumnDef<AffiliatePaymentRow>[] = [
     {
       accessorKey: "month",
       header: () => (
         <span
           style={{
-            color: customization?.tableHeaderTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
           }}
         >
           Month
@@ -55,7 +71,9 @@ export default function AffiliateCommissionTable({
       cell: ({ row }) => (
         <div
           style={{
-            color: customization?.tableRowTertiaryTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableRowTertiaryTextColor) ||
+              undefined,
           }}
         >
           {row.getValue("month")}
@@ -67,7 +85,8 @@ export default function AffiliateCommissionTable({
       header: () => (
         <span
           style={{
-            color: customization?.tableHeaderTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
           }}
         >
           Total Commission
@@ -83,7 +102,9 @@ export default function AffiliateCommissionTable({
           <div
             className=" font-medium"
             style={{
-              color: customization?.tableRowPrimaryTextColor || undefined,
+              color:
+                (affiliate && dashboardTable.tableRowPrimaryTextColor) ||
+                undefined,
             }}
           >
             {formatted}
@@ -96,7 +117,8 @@ export default function AffiliateCommissionTable({
       header: () => (
         <span
           style={{
-            color: customization?.tableHeaderTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
           }}
         >
           Paid Commission
@@ -112,7 +134,9 @@ export default function AffiliateCommissionTable({
           <div
             className=" font-medium"
             style={{
-              color: customization?.tableRowPrimaryTextColor || undefined,
+              color:
+                (affiliate && dashboardTable.tableRowPrimaryTextColor) ||
+                undefined,
             }}
           >
             {formatted}
@@ -125,7 +149,8 @@ export default function AffiliateCommissionTable({
       header: () => (
         <span
           style={{
-            color: customization?.tableHeaderTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
           }}
         >
           Unpaid Commission
@@ -141,7 +166,9 @@ export default function AffiliateCommissionTable({
           <div
             className=" font-medium"
             style={{
-              color: customization?.tableRowPrimaryTextColor || undefined,
+              color:
+                (affiliate && dashboardTable.tableRowPrimaryTextColor) ||
+                undefined,
             }}
           >
             {formatted}
@@ -154,7 +181,8 @@ export default function AffiliateCommissionTable({
       header: () => (
         <span
           style={{
-            color: customization?.tableHeaderTextColor || undefined,
+            color:
+              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
           }}
         >
           Status
@@ -178,17 +206,24 @@ export default function AffiliateCommissionTable({
 
         let defaultClass =
           "bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800";
-        let textColor = customization?.tableRowBadgePaidTextColor;
-        let backgroundColor = customization?.tableRowBadgePaidBackgroundColor;
+        let textColor =
+          (affiliate && dashboardTable.tableRowBadgePaidTextColor) || undefined;
+        let backgroundColor =
+          (affiliate && dashboardTable.tableRowBadgePaidBackgroundColor) ||
+          undefined;
 
         if (unpaid > 0) {
           if (isSameMonth) {
             status = "Pending";
             defaultClass =
               "bg-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:text-yellow-800";
-            textColor = customization?.tableRowBadgePendingTextColor;
+            textColor =
+              (affiliate && dashboardTable.tableRowBadgePendingTextColor) ||
+              undefined;
             backgroundColor =
-              customization?.tableRowBadgePendingBackgroundColor;
+              (affiliate &&
+                dashboardTable.tableRowBadgePendingBackgroundColor) ||
+              undefined;
           } else if (
             rowDate.getFullYear() < currentYear ||
             (rowDate.getFullYear() === currentYear &&
@@ -197,9 +232,12 @@ export default function AffiliateCommissionTable({
             status = "Overdue";
             defaultClass =
               "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-800";
-            textColor = customization?.tableRowBadgeOverDueTextColor;
-            backgroundColor =
-              customization?.tableRowBadgeOverDueBackgroundColor;
+            textColor = affiliate
+              ? dashboardTable.tableRowBadgeOverDueTextColor
+              : undefined;
+            backgroundColor = affiliate
+              ? dashboardTable.tableRowBadgeOverDueBackgroundColor
+              : undefined;
           }
         }
 
@@ -271,52 +309,107 @@ export default function AffiliateCommissionTable({
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1
-            className="text-3xl font-bold"
-            style={{
-              color: customization?.headerNameColor || undefined,
-            }}
-          >
-            Affiliate Earnings
-          </h1>
-          <p
-            className="text-muted-foreground"
-            style={{
-              color: customization?.headerDescColor || undefined,
-            }}
-          >
-            Monthly breakdown of your affiliate commissions
-          </p>
+          <div className="flex flex-row gap-2 items-center">
+            <h1
+              className="text-3xl font-bold"
+              style={{
+                color:
+                  (affiliate && dashboardTheme.dashboardHeaderNameColor) ||
+                  undefined,
+              }}
+            >
+              Affiliate Earnings
+            </h1>
+            {isPreview && (
+              <DashboardThemeCustomizationOptions
+                name="dashboardHeaderNameColor"
+                buttonSize="w-4 h-4"
+              />
+            )}
+          </div>
+          <div className="flex flex-row gap-2 items-center">
+            <p
+              className="text-muted-foreground"
+              style={{
+                color:
+                  (affiliate && dashboardTheme.dashboardHeaderDescColor) ||
+                  undefined,
+              }}
+            >
+              Monthly breakdown of your affiliate commissions
+            </p>
+            {isPreview && (
+              <DashboardThemeCustomizationOptions
+                name="dashboardHeaderDescColor"
+                buttonSize="w-4 h-4"
+              />
+            )}
+          </div>
         </div>
       </div>
       <Card
+        className="relative"
         style={{
-          backgroundColor: customization?.cardBackgroundColor || undefined,
+          backgroundColor:
+            (affiliate && dashboardCard.dashboardCardBackgroundColor) ||
+            undefined,
           boxShadow:
-            customization?.cardShadow && customization?.cardShadow !== "none"
-              ? getShadowWithColor(
-                  customization?.cardShadow,
-                  customization?.cardShadowColor,
+            affiliate &&
+            dashboardCard.dashboardCardShadow &&
+            dashboardCard.dashboardCardShadow !== "none"
+              ? affiliate &&
+                getShadowWithColor(
+                  toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
+                  dashboardCard.dashboardCardShadowColor,
                 )
+              : "",
+          border:
+            affiliate && dashboardCard.dashboardCardBorder
+              ? `1px solid ${affiliate && dashboardCard.dashboardCardBorderColor}`
               : "none",
-          border: customization?.cardBorder
-            ? `1px solid ${customization?.cardBorderColor}`
-            : "",
         }}
       >
+        {isPreview && (
+          <div className="absolute bottom-0 left-0 p-2">
+            <DashboardCardCustomizationOptions
+              triggerSize="w-6 h-6"
+              dropdownSize="w-[150px]"
+            />
+          </div>
+        )}{" "}
+        {isPreview && (
+          <div className="absolute bottom-0 right-0 p-2">
+            <TableCustomizationOptions triggerSize="w-6 h-6" type="payment" />
+          </div>
+        )}
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle
             style={{
-              color: customization?.headerNameColor || undefined,
+              color:
+                (affiliate && dashboardTheme.cardHeaderPrimaryTextColor) ||
+                undefined,
             }}
           >
-            Monthly Commission Stats
+            <div className="flex flex-row gap-2 items-center">
+              Monthly Commission Stats
+              {isPreview && (
+                <DashboardThemeCustomizationOptions
+                  name="cardHeaderPrimaryTextColor"
+                  buttonSize="w-4 h-4"
+                />
+              )}
+            </div>
           </CardTitle>
-          <YearSelect
-            value={yearValue !== undefined ? { year: yearValue } : {}}
-            onChange={OnYearChange}
-            customization={customization}
-          />
+          <div className="flex flex-row gap-2 items-center">
+            {isPreview && (
+              <YearSelectCustomizationOptions triggerSize="w-6 h-6" />
+            )}
+            <YearSelect
+              value={yearValue !== undefined ? { year: yearValue } : {}}
+              onChange={OnYearChange}
+              affiliate={affiliate}
+            />
+          </div>
         </CardHeader>
         <CardContent>
           {yearValue !== undefined && isPending && !isPreview ? (
@@ -344,13 +437,45 @@ export default function AffiliateCommissionTable({
               No commission data available.
             </div>
           ) : (
-            <div className="rounded-md border">
+            <div
+              className={cn(
+                "rounded-md border overflow-hidden",
+                isPreview && "mb-4",
+              )}
+              style={{
+                borderColor:
+                  (affiliate && dashboardTable.tableBorderColor) || undefined,
+                borderWidth: "1px",
+                borderStyle: "solid",
+              }}
+            >
               <Table>
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
+                    <TableRow
+                      key={headerGroup.id}
+                      onMouseEnter={() => setIsHeaderHovered(true)}
+                      onMouseLeave={() => setIsHeaderHovered(false)}
+                      style={{
+                        backgroundColor: isHeaderHovered
+                          ? (affiliate &&
+                              dashboardTable.tableHoverBackgroundColor) ||
+                            "#f9fafb"
+                          : undefined,
+                        transition: "background-color 0.2s ease",
+                      }}
+                    >
                       {headerGroup.headers.map((header) => (
-                        <TableHead key={header.id}>
+                        <TableHead
+                          key={header.id}
+                          style={{
+                            borderBottom: `1px solid ${(affiliate && dashboardTable.tableBorderColor) || "#e5e7eb"}`,
+                            color:
+                              (affiliate &&
+                                dashboardTable.tableHeaderTextColor) ||
+                              undefined,
+                          }}
+                        >
                           {flexRender(
                             header.column.columnDef.header,
                             header.getContext(),
@@ -361,18 +486,45 @@ export default function AffiliateCommissionTable({
                   ))}
                 </TableHeader>
                 <TableBody>
-                  {table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id}>
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
+                  {table.getRowModel().rows.map((row, idx, allRows) => {
+                    const isHovered = hoveredRowId === row.id;
+                    const defaultHoverBg = "#f9fafb";
+
+                    return (
+                      <TableRow
+                        key={row.id}
+                        onMouseEnter={() => setHoveredRowId(row.id)}
+                        onMouseLeave={() => setHoveredRowId(null)}
+                        className={cn(
+                          "group",
+                          idx === 0 && "rounded-t-md",
+                          idx === allRows.length - 1 && "rounded-b-md",
+                          "overflow-hidden",
+                        )}
+                        style={{
+                          backgroundColor: isHovered
+                            ? (affiliate &&
+                                dashboardTable.tableHoverBackgroundColor) ||
+                              defaultHoverBg
+                            : undefined,
+                          transition: "background-color 0.2s ease",
+                          borderBottom:
+                            idx !== allRows.length - 1
+                              ? `1px solid ${(affiliate && dashboardTable.tableBorderColor) || "#e5e7eb"}`
+                              : "none",
+                        }}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
