@@ -1,29 +1,14 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AuthCustomization } from "@/components/pages/Dashboard/Customization/AuthCustomization";
 import { DashboardCustomization } from "@/components/pages/Dashboard/Customization/DashboardCustomization";
 import { ToastPreview } from "@/components/ui-custom/ToastPreview";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import { useToastCustomizationOption } from "@/hooks/useDashboardCustomization";
-type ToastColorKey =
-  | "toastTitleColor"
-  | "toastDescriptionColor"
-  | "toastBackgroundColor"
-  | "toastErrorTitleColor"
-  | "toastErrorDescriptionColor"
-  | "toastErrorBackgroundColor";
-const customizationFields: { key: ToastColorKey; label: string }[] = [
-  { key: "toastTitleColor", label: "Success Toast Text Color" },
-  { key: "toastDescriptionColor", label: "Success Toast Secondary Text" },
-  { key: "toastBackgroundColor", label: "Success Toast Background" },
-  { key: "toastErrorTitleColor", label: "Error Toast Text Color" },
-  { key: "toastErrorDescriptionColor", label: "Error Toast Secondary Text" },
-  { key: "toastErrorBackgroundColor", label: "Error Toast Background" },
-];
+import { ToastCustomization } from "@/components/ui-custom/Customization/ToastCustomization";
 
 export default function CustomizationPage() {
-  const customization = useToastCustomizationOption();
   const [mainTab, setMainTab] = useState("sidebar");
   return (
     <div className="p-6 space-y-6">
@@ -35,34 +20,11 @@ export default function CustomizationPage() {
           Adjust colors and layout settings to match your brand.
         </p>
       </div>
-
       {/* Toast Inputs */}
       <div className="space-y-2">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {customizationFields.map(({ key, label }) => (
-            <ResettableColorInput
-              key={key}
-              label={label}
-              value={customization[key]}
-              onChange={(val) => customization.setToastColor(key, val)}
-            />
-          ))}
-        </div>
-
-        {/* Toast Previews */}
-        <ToastPreview
-          type="success"
-          title="Logged In"
-          description="You have successfully logged in."
-        />
-        <ToastPreview
-          type="error"
-          title="Login Failed"
-          description="The password you entered is incorrect."
-        />
+        <ToastCustomization />
       </div>
-
-      {/* Tabs */}
+      Tabs
       <Tabs value={mainTab} onValueChange={setMainTab} className="space-y-4">
         <TabsList>
           <TabsTrigger value="sidebar">Sidebar</TabsTrigger>

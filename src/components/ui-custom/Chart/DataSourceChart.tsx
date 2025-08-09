@@ -122,10 +122,7 @@ export default function SocialTrafficPieChart({
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="grid flex-1 gap-1">
-            <div
-              className="flex flex-row gap-1
-             items-center"
-            >
+            <div className="flex flex-row gap-1 items-center">
               <CardTitle
                 className={isPreview ? "text-sm" : "text-lg"}
                 style={{
