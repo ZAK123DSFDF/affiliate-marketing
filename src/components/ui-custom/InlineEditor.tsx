@@ -15,7 +15,7 @@ export const InlineNotesEditor = ({ name }: { name: NotesKey }) => {
     name === "customNotesLogin" ? customNotesLogin : customNotesSignup;
 
   const [isEditing, setIsEditing] = useState(false);
-  const [tempContent, setTempContent] = useState(currentContent || "");
+  const [tempContent, setTempContent] = useState<string>(currentContent || "");
 
   const hasContent = currentContent?.trim();
 

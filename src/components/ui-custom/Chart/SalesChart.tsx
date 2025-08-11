@@ -30,7 +30,7 @@ import {
   useChartCustomizationOption,
   useDashboardCardCustomizationOption,
 } from "@/hooks/useDashboardCustomization";
-import { useDashboardThemeCustomization } from "@/store/useDashboardCustomizationStore";
+import { DashboardCustomizationStores } from "@/store/useCustomizationStore";
 import { ChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/ChartCustomizationOptions";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
@@ -58,7 +58,8 @@ export function ChartDailyMetrics({
     year?: number;
   }>({});
   const ChartCustomization = useChartCustomizationOption();
-  const ThemeCustomization = useDashboardThemeCustomization();
+  const ThemeCustomization =
+    DashboardCustomizationStores.useDashboardThemeCustomization();
   const dashboardCard = useDashboardCardCustomizationOption();
   const baseColors: any = {
     visits: (affiliate && ChartCustomization.chartPrimaryColor) || "#60A5FA",

@@ -1,7 +1,5 @@
-import { createCustomizationStore } from "@/store/CreateCustomizationStore";
-
-export const useSidebarCustomization = createCustomizationStore(
-  {
+export const defaultDashboardCustomization = {
+  useSidebarCustomization: {
     sideBarBackgroundColor: "",
     sideBarActiveNavigationTextColor: "",
     sideBarInActiveNavigationTextColor: "",
@@ -13,21 +11,15 @@ export const useSidebarCustomization = createCustomizationStore(
     sideBarProfileTextSecondaryColor: "",
     sideBarNavigationFocusRingColor: "",
   },
-  {},
-  {},
-);
-export const useDashboardCardCustomization = createCustomizationStore(
-  {
+  useDashboardCardCustomization: {
     dashboardCardShadowThickness: "sm",
     dashboardCardBorderColor: "",
     dashboardCardBackgroundColor: "",
     dashboardCardShadowColor: "",
+    dashboardCardBorder: false,
+    dashboardCardShadow: false,
   },
-  { dashboardCardBorder: false, dashboardCardShadow: false },
-  {},
-);
-export const useDashboardThemeCustomization = createCustomizationStore(
-  {
+  useDashboardThemeCustomization: {
     mainBackgroundColor: "",
     separatorColor: "",
     dashboardHeaderNameColor: "",
@@ -37,21 +29,13 @@ export const useDashboardThemeCustomization = createCustomizationStore(
     dialogHeaderColor: "",
     cardHeaderDescriptionTextColor: "",
   },
-  {},
-  {},
-);
-export const useDashboardButtonCustomization = createCustomizationStore(
-  {
+  useDashboardButtonCustomization: {
     dashboardButtonBackgroundColor: "",
     dashboardButtonTextColor: "",
     dashboardButtonDisabledBackgroundColor: "",
     dashboardButtonDisabledTextColor: "",
   },
-  {},
-  {},
-);
-export const useTableCustomization = createCustomizationStore(
-  {
+  useTableCustomization: {
     tableHeaderTextColor: "",
     tableHoverBackgroundColor: "",
     tableIconColor: "",
@@ -68,20 +52,12 @@ export const useTableCustomization = createCustomizationStore(
     tableRowBadgePaidBackgroundColor: "",
     tableBorderColor: "",
   },
-  {},
-  {},
-);
-export const useDialogCustomization = createCustomizationStore(
-  {
+  useDialogCustomization: {
     dialogBackgroundColor: "",
     dialogCloseIconColor: "",
     dialogCloseIconBorderColor: "",
   },
-  {},
-  {},
-);
-export const useYearSelectCustomization = createCustomizationStore(
-  {
+  useYearSelectCustomization: {
     yearSelectBackgroundColor: "",
     yearSelectTextColor: "",
     yearSelectActiveBorderColor: "",
@@ -93,11 +69,7 @@ export const useYearSelectCustomization = createCustomizationStore(
     yearSelectDropDownHoverBackgroundColor: "",
     yearSelectDropDownHoverTextColor: "",
   },
-  {},
-  {},
-);
-export const useToastCustomization = createCustomizationStore(
-  {
+  useToastCustomization: {
     toastBackgroundColor: "",
     toastTitleColor: "",
     toastDescriptionColor: "",
@@ -105,12 +77,7 @@ export const useToastCustomization = createCustomizationStore(
     toastErrorTitleColor: "",
     toastErrorDescriptionColor: "",
   },
-  {},
-  {},
-);
-
-export const useKpiCardCustomization = createCustomizationStore(
-  {
+  useKpiCardCustomization: {
     cardShadowColor: "",
     cardBorderColor: "",
     cardPrimaryTextColor: "",
@@ -123,15 +90,10 @@ export const useKpiCardCustomization = createCustomizationStore(
     cardIconTertiaryBackgroundColor: "",
     cardShadowThickness: "sm",
     cardBackgroundColor: "",
-  },
-  {
     cardShadow: true,
     cardBorder: true,
   },
-  {},
-);
-export const useChartCustomization = createCustomizationStore(
-  {
+  useChartCustomization: {
     chartHorizontalLineColor: "",
     chartDateColor: "",
     chartPrimaryColor: "",
@@ -144,11 +106,7 @@ export const useChartCustomization = createCustomizationStore(
     toolTipTextColor: "",
     toolTipNumberColor: "",
   },
-  {},
-  {},
-);
-export const usePieChartColorCustomization = createCustomizationStore(
-  {
+  usePieChartColorCustomization: {
     pieColor1: "",
     pieColor2: "",
     pieColor3: "",
@@ -159,6 +117,4 @@ export const usePieChartColorCustomization = createCustomizationStore(
     pieColor8: "",
     pieFallbackColor: "",
   },
-  {},
-  {},
-);
+};

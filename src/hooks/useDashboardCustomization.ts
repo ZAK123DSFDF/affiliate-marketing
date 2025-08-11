@@ -1,49 +1,49 @@
-import {
-  useChartCustomization,
-  useDashboardButtonCustomization,
-  useDashboardCardCustomization,
-  useDashboardThemeCustomization,
-  useDialogCustomization,
-  useKpiCardCustomization,
-  usePieChartColorCustomization,
-  useSidebarCustomization,
-  useTableCustomization,
-  useToastCustomization,
-  useYearSelectCustomization,
-} from "@/store/useDashboardCustomizationStore";
+import { DashboardCustomizationStores } from "@/store/useCustomizationStore";
 
 export const useSidebarCustomizationOption = () => {
-  const sideBarBackgroundColor = useSidebarCustomization(
-    (s) => s.sideBarBackgroundColor,
+  const sideBarBackgroundColor =
+    DashboardCustomizationStores.useSidebarCustomization(
+      (s) => s.sideBarBackgroundColor,
+    );
+  const sideBarActiveNavigationTextColor =
+    DashboardCustomizationStores.useSidebarCustomization(
+      (s) => s.sideBarActiveNavigationTextColor,
+    );
+  const sideBarInActiveNavigationTextColor =
+    DashboardCustomizationStores.useSidebarCustomization(
+      (s) => s.sideBarInActiveNavigationTextColor,
+    );
+  const sideBarActiveNavigationBackgroundColor =
+    DashboardCustomizationStores.useSidebarCustomization(
+      (s) => s.sideBarActiveNavigationBackgroundColor,
+    );
+  const sideBarHoverNavigationBackgroundColor =
+    DashboardCustomizationStores.useSidebarCustomization(
+      (s) => s.sideBarHoverNavigationBackgroundColor,
+    );
+  const sideBarHoverNavigationTextColor =
+    DashboardCustomizationStores.useSidebarCustomization(
+      (s) => s.sideBarHoverNavigationTextColor,
+    );
+  const sideBarProfileBackgroundColor =
+    DashboardCustomizationStores.useSidebarCustomization(
+      (s) => s.sideBarProfileBackgroundColor,
+    );
+  const sideBarProfileTextPrimaryColor =
+    DashboardCustomizationStores.useSidebarCustomization(
+      (s) => s.sideBarProfileTextPrimaryColor,
+    );
+  const sideBarProfileTextSecondaryColor =
+    DashboardCustomizationStores.useSidebarCustomization(
+      (s) => s.sideBarProfileTextSecondaryColor,
+    );
+  const sideBarNavigationFocusRingColor =
+    DashboardCustomizationStores.useSidebarCustomization(
+      (s) => s.sideBarNavigationFocusRingColor,
+    );
+  const setSidebarColor = DashboardCustomizationStores.useSidebarCustomization(
+    (s) => s.setColor,
   );
-  const sideBarActiveNavigationTextColor = useSidebarCustomization(
-    (s) => s.sideBarActiveNavigationTextColor,
-  );
-  const sideBarInActiveNavigationTextColor = useSidebarCustomization(
-    (s) => s.sideBarInActiveNavigationTextColor,
-  );
-  const sideBarActiveNavigationBackgroundColor = useSidebarCustomization(
-    (s) => s.sideBarActiveNavigationBackgroundColor,
-  );
-  const sideBarHoverNavigationBackgroundColor = useSidebarCustomization(
-    (s) => s.sideBarHoverNavigationBackgroundColor,
-  );
-  const sideBarHoverNavigationTextColor = useSidebarCustomization(
-    (s) => s.sideBarHoverNavigationTextColor,
-  );
-  const sideBarProfileBackgroundColor = useSidebarCustomization(
-    (s) => s.sideBarProfileBackgroundColor,
-  );
-  const sideBarProfileTextPrimaryColor = useSidebarCustomization(
-    (s) => s.sideBarProfileTextPrimaryColor,
-  );
-  const sideBarProfileTextSecondaryColor = useSidebarCustomization(
-    (s) => s.sideBarProfileTextSecondaryColor,
-  );
-  const sideBarNavigationFocusRingColor = useSidebarCustomization(
-    (s) => s.sideBarNavigationFocusRingColor,
-  );
-  const setSidebarColor = useSidebarCustomization((s) => s.setColor);
 
   return {
     sideBarBackgroundColor,
@@ -60,32 +60,40 @@ export const useSidebarCustomizationOption = () => {
   };
 };
 export const useDashboardCardCustomizationOption = () => {
-  const dashboardCardShadowThickness = useDashboardCardCustomization(
-    (s) => s.dashboardCardShadowThickness,
-  );
-  const dashboardCardBorderColor = useDashboardCardCustomization(
-    (s) => s.dashboardCardBorderColor,
-  );
-  const dashboardCardBackgroundColor = useDashboardCardCustomization(
-    (s) => s.dashboardCardBackgroundColor,
-  );
-  const dashboardCardShadowColor = useDashboardCardCustomization(
-    (s) => s.dashboardCardShadowColor,
-  );
+  const dashboardCardShadowThickness =
+    DashboardCustomizationStores.useDashboardCardCustomization(
+      (s) => s.dashboardCardShadowThickness,
+    );
+  const dashboardCardBorderColor =
+    DashboardCustomizationStores.useDashboardCardCustomization(
+      (s) => s.dashboardCardBorderColor,
+    );
+  const dashboardCardBackgroundColor =
+    DashboardCustomizationStores.useDashboardCardCustomization(
+      (s) => s.dashboardCardBackgroundColor,
+    );
+  const dashboardCardShadowColor =
+    DashboardCustomizationStores.useDashboardCardCustomization(
+      (s) => s.dashboardCardShadowColor,
+    );
 
-  const dashboardCardBorder = useDashboardCardCustomization(
-    (s) => s.dashboardCardBorder,
-  );
-  const dashboardCardShadow = useDashboardCardCustomization(
-    (s) => s.dashboardCardShadow,
-  );
+  const dashboardCardBorder =
+    DashboardCustomizationStores.useDashboardCardCustomization(
+      (s) => s.dashboardCardBorder,
+    );
+  const dashboardCardShadow =
+    DashboardCustomizationStores.useDashboardCardCustomization(
+      (s) => s.dashboardCardShadow,
+    );
 
-  const setDashboardCardColor = useDashboardCardCustomization(
-    (s) => s.setColor,
-  );
-  const setDashboardCardSwitch = useDashboardCardCustomization(
-    (s) => s.setSwitch,
-  );
+  const setDashboardCardColor =
+    DashboardCustomizationStores.useDashboardCardCustomization(
+      (s) => s.setColor,
+    );
+  const setDashboardCardSwitch =
+    DashboardCustomizationStores.useDashboardCardCustomization(
+      (s) => s.setSwitch,
+    );
 
   return {
     dashboardCardShadowThickness,
@@ -99,33 +107,42 @@ export const useDashboardCardCustomizationOption = () => {
   };
 };
 export const useDashboardThemeCustomizationOption = () => {
-  const separatorColor = useDashboardThemeCustomization(
-    (s) => s.separatorColor,
-  );
-  const mainBackgroundColor = useDashboardThemeCustomization(
-    (s) => s.mainBackgroundColor,
-  );
-  const dashboardHeaderNameColor = useDashboardThemeCustomization(
-    (s) => s.dashboardHeaderNameColor,
-  );
-  const dashboardHeaderDescColor = useDashboardThemeCustomization(
-    (s) => s.dashboardHeaderDescColor,
-  );
-  const cardHeaderPrimaryTextColor = useDashboardThemeCustomization(
-    (s) => s.cardHeaderPrimaryTextColor,
-  );
-  const cardHeaderSecondaryTextColor = useDashboardThemeCustomization(
-    (s) => s.cardHeaderSecondaryTextColor,
-  );
-  const dialogHeaderColor = useDashboardThemeCustomization(
-    (s) => s.dialogHeaderColor,
-  );
-  const cardHeaderDescriptionTextColor = useDashboardThemeCustomization(
-    (s) => s.cardHeaderDescriptionTextColor,
-  );
-  const setDashboardThemeColor = useDashboardThemeCustomization(
-    (s) => s.setColor,
-  );
+  const separatorColor =
+    DashboardCustomizationStores.useDashboardThemeCustomization(
+      (s) => s.separatorColor,
+    );
+  const mainBackgroundColor =
+    DashboardCustomizationStores.useDashboardThemeCustomization(
+      (s) => s.mainBackgroundColor,
+    );
+  const dashboardHeaderNameColor =
+    DashboardCustomizationStores.useDashboardThemeCustomization(
+      (s) => s.dashboardHeaderNameColor,
+    );
+  const dashboardHeaderDescColor =
+    DashboardCustomizationStores.useDashboardThemeCustomization(
+      (s) => s.dashboardHeaderDescColor,
+    );
+  const cardHeaderPrimaryTextColor =
+    DashboardCustomizationStores.useDashboardThemeCustomization(
+      (s) => s.cardHeaderPrimaryTextColor,
+    );
+  const cardHeaderSecondaryTextColor =
+    DashboardCustomizationStores.useDashboardThemeCustomization(
+      (s) => s.cardHeaderSecondaryTextColor,
+    );
+  const dialogHeaderColor =
+    DashboardCustomizationStores.useDashboardThemeCustomization(
+      (s) => s.dialogHeaderColor,
+    );
+  const cardHeaderDescriptionTextColor =
+    DashboardCustomizationStores.useDashboardThemeCustomization(
+      (s) => s.cardHeaderDescriptionTextColor,
+    );
+  const setDashboardThemeColor =
+    DashboardCustomizationStores.useDashboardThemeCustomization(
+      (s) => s.setColor,
+    );
 
   return {
     mainBackgroundColor,
@@ -140,23 +157,27 @@ export const useDashboardThemeCustomizationOption = () => {
   };
 };
 export const useDashboardButtonCustomizationOption = () => {
-  const dashboardButtonBackgroundColor = useDashboardButtonCustomization(
-    (s) => s.dashboardButtonBackgroundColor,
-  );
-  const dashboardButtonTextColor = useDashboardButtonCustomization(
-    (s) => s.dashboardButtonTextColor,
-  );
+  const dashboardButtonBackgroundColor =
+    DashboardCustomizationStores.useDashboardButtonCustomization(
+      (s) => s.dashboardButtonBackgroundColor,
+    );
+  const dashboardButtonTextColor =
+    DashboardCustomizationStores.useDashboardButtonCustomization(
+      (s) => s.dashboardButtonTextColor,
+    );
   const dashboardButtonDisabledBackgroundColor =
-    useDashboardButtonCustomization(
+    DashboardCustomizationStores.useDashboardButtonCustomization(
       (s) => s.dashboardButtonDisabledBackgroundColor,
     );
-  const dashboardButtonDisabledTextColor = useDashboardButtonCustomization(
-    (s) => s.dashboardButtonDisabledTextColor,
-  );
+  const dashboardButtonDisabledTextColor =
+    DashboardCustomizationStores.useDashboardButtonCustomization(
+      (s) => s.dashboardButtonDisabledTextColor,
+    );
 
-  const setDashboardButtonColor = useDashboardButtonCustomization(
-    (s) => s.setColor,
-  );
+  const setDashboardButtonColor =
+    DashboardCustomizationStores.useDashboardButtonCustomization(
+      (s) => s.setColor,
+    );
 
   return {
     dashboardButtonBackgroundColor,
@@ -167,49 +188,68 @@ export const useDashboardButtonCustomizationOption = () => {
   };
 };
 export const useTableCustomizationOption = () => {
-  const tableHeaderTextColor = useTableCustomization(
-    (s) => s.tableHeaderTextColor,
+  const tableHeaderTextColor =
+    DashboardCustomizationStores.useTableCustomization(
+      (s) => s.tableHeaderTextColor,
+    );
+  const tableHoverBackgroundColor =
+    DashboardCustomizationStores.useTableCustomization(
+      (s) => s.tableHoverBackgroundColor,
+    );
+  const tableIconColor = DashboardCustomizationStores.useTableCustomization(
+    (s) => s.tableIconColor,
   );
-  const tableHoverBackgroundColor = useTableCustomization(
-    (s) => s.tableHoverBackgroundColor,
+  const tableIconHoverColor =
+    DashboardCustomizationStores.useTableCustomization(
+      (s) => s.tableIconHoverColor,
+    );
+  const tableIconHoverBackgroundColor =
+    DashboardCustomizationStores.useTableCustomization(
+      (s) => s.tableIconHoverBackgroundColor,
+    );
+  const tableRowPrimaryTextColor =
+    DashboardCustomizationStores.useTableCustomization(
+      (s) => s.tableRowPrimaryTextColor,
+    );
+  const tableRowSecondaryTextColor =
+    DashboardCustomizationStores.useTableCustomization(
+      (s) => s.tableRowSecondaryTextColor,
+    );
+  const tableRowTertiaryTextColor =
+    DashboardCustomizationStores.useTableCustomization(
+      (s) => s.tableRowTertiaryTextColor,
+    );
+  const tableRowBadgeOverDueTextColor =
+    DashboardCustomizationStores.useTableCustomization(
+      (s) => s.tableRowBadgeOverDueTextColor,
+    );
+  const tableRowBadgeOverDueBackgroundColor =
+    DashboardCustomizationStores.useTableCustomization(
+      (s) => s.tableRowBadgeOverDueBackgroundColor,
+    );
+  const tableRowBadgePendingTextColor =
+    DashboardCustomizationStores.useTableCustomization(
+      (s) => s.tableRowBadgePendingTextColor,
+    );
+  const tableRowBadgePendingBackgroundColor =
+    DashboardCustomizationStores.useTableCustomization(
+      (s) => s.tableRowBadgePendingBackgroundColor,
+    );
+  const tableRowBadgePaidTextColor =
+    DashboardCustomizationStores.useTableCustomization(
+      (s) => s.tableRowBadgePaidTextColor,
+    );
+  const tableBorderColor = DashboardCustomizationStores.useTableCustomization(
+    (s) => s.tableBorderColor,
   );
-  const tableIconColor = useTableCustomization((s) => s.tableIconColor);
-  const tableIconHoverColor = useTableCustomization(
-    (s) => s.tableIconHoverColor,
-  );
-  const tableIconHoverBackgroundColor = useTableCustomization(
-    (s) => s.tableIconHoverBackgroundColor,
-  );
-  const tableRowPrimaryTextColor = useTableCustomization(
-    (s) => s.tableRowPrimaryTextColor,
-  );
-  const tableRowSecondaryTextColor = useTableCustomization(
-    (s) => s.tableRowSecondaryTextColor,
-  );
-  const tableRowTertiaryTextColor = useTableCustomization(
-    (s) => s.tableRowTertiaryTextColor,
-  );
-  const tableRowBadgeOverDueTextColor = useTableCustomization(
-    (s) => s.tableRowBadgeOverDueTextColor,
-  );
-  const tableRowBadgeOverDueBackgroundColor = useTableCustomization(
-    (s) => s.tableRowBadgeOverDueBackgroundColor,
-  );
-  const tableRowBadgePendingTextColor = useTableCustomization(
-    (s) => s.tableRowBadgePendingTextColor,
-  );
-  const tableRowBadgePendingBackgroundColor = useTableCustomization(
-    (s) => s.tableRowBadgePendingBackgroundColor,
-  );
-  const tableRowBadgePaidTextColor = useTableCustomization(
-    (s) => s.tableRowBadgePaidTextColor,
-  );
-  const tableBorderColor = useTableCustomization((s) => s.tableBorderColor);
-  const tableRowBadgePaidBackgroundColor = useTableCustomization(
-    (s) => s.tableRowBadgePaidBackgroundColor,
-  );
+  const tableRowBadgePaidBackgroundColor =
+    DashboardCustomizationStores.useTableCustomization(
+      (s) => s.tableRowBadgePaidBackgroundColor,
+    );
 
-  const setTableColor = useTableCustomization((s) => s.setColor);
+  const setTableColor = DashboardCustomizationStores.useTableCustomization(
+    (s) => s.setColor,
+  );
 
   return {
     tableHeaderTextColor,
@@ -231,17 +271,22 @@ export const useTableCustomizationOption = () => {
   };
 };
 export const useDialogCustomizationOption = () => {
-  const dialogBackgroundColor = useDialogCustomization(
-    (s) => s.dialogBackgroundColor,
-  );
-  const dialogCloseIconColor = useDialogCustomization(
-    (s) => s.dialogCloseIconColor,
-  );
-  const dialogCloseIconBorderColor = useDialogCustomization(
-    (s) => s.dialogCloseIconBorderColor,
-  );
+  const dialogBackgroundColor =
+    DashboardCustomizationStores.useDialogCustomization(
+      (s) => s.dialogBackgroundColor,
+    );
+  const dialogCloseIconColor =
+    DashboardCustomizationStores.useDialogCustomization(
+      (s) => s.dialogCloseIconColor,
+    );
+  const dialogCloseIconBorderColor =
+    DashboardCustomizationStores.useDialogCustomization(
+      (s) => s.dialogCloseIconBorderColor,
+    );
 
-  const setDialogColor = useDialogCustomization((s) => s.setColor);
+  const setDialogColor = DashboardCustomizationStores.useDialogCustomization(
+    (s) => s.setColor,
+  );
 
   return {
     dialogBackgroundColor,
@@ -251,38 +296,49 @@ export const useDialogCustomizationOption = () => {
   };
 };
 export const useYearSelectCustomizationOption = () => {
-  const yearSelectBackgroundColor = useYearSelectCustomization(
-    (s) => s.yearSelectBackgroundColor,
-  );
-  const yearSelectTextColor = useYearSelectCustomization(
-    (s) => s.yearSelectTextColor,
-  );
-  const yearSelectActiveBorderColor = useYearSelectCustomization(
-    (s) => s.yearSelectActiveBorderColor,
-  );
-  const yearSelectDropDownBackgroundColor = useYearSelectCustomization(
-    (s) => s.yearSelectDropDownBackgroundColor,
-  );
-  const yearSelectDropDownTextColor = useYearSelectCustomization(
-    (s) => s.yearSelectDropDownTextColor,
-  );
-  const yearSelectDropDownActiveTextColor = useYearSelectCustomization(
-    (s) => s.yearSelectDropDownActiveTextColor,
-  );
-  const yearSelectDropDownActiveBackgroundColor = useYearSelectCustomization(
-    (s) => s.yearSelectDropDownActiveBackgroundColor,
-  );
-  const yearSelectDropDownIconColor = useYearSelectCustomization(
-    (s) => s.yearSelectDropDownIconColor,
-  );
-  const yearSelectDropDownHoverBackgroundColor = useYearSelectCustomization(
-    (s) => s.yearSelectDropDownHoverBackgroundColor,
-  );
-  const yearSelectDropDownHoverTextColor = useYearSelectCustomization(
-    (s) => s.yearSelectDropDownHoverTextColor,
-  );
+  const yearSelectBackgroundColor =
+    DashboardCustomizationStores.useYearSelectCustomization(
+      (s) => s.yearSelectBackgroundColor,
+    );
+  const yearSelectTextColor =
+    DashboardCustomizationStores.useYearSelectCustomization(
+      (s) => s.yearSelectTextColor,
+    );
+  const yearSelectActiveBorderColor =
+    DashboardCustomizationStores.useYearSelectCustomization(
+      (s) => s.yearSelectActiveBorderColor,
+    );
+  const yearSelectDropDownBackgroundColor =
+    DashboardCustomizationStores.useYearSelectCustomization(
+      (s) => s.yearSelectDropDownBackgroundColor,
+    );
+  const yearSelectDropDownTextColor =
+    DashboardCustomizationStores.useYearSelectCustomization(
+      (s) => s.yearSelectDropDownTextColor,
+    );
+  const yearSelectDropDownActiveTextColor =
+    DashboardCustomizationStores.useYearSelectCustomization(
+      (s) => s.yearSelectDropDownActiveTextColor,
+    );
+  const yearSelectDropDownActiveBackgroundColor =
+    DashboardCustomizationStores.useYearSelectCustomization(
+      (s) => s.yearSelectDropDownActiveBackgroundColor,
+    );
+  const yearSelectDropDownIconColor =
+    DashboardCustomizationStores.useYearSelectCustomization(
+      (s) => s.yearSelectDropDownIconColor,
+    );
+  const yearSelectDropDownHoverBackgroundColor =
+    DashboardCustomizationStores.useYearSelectCustomization(
+      (s) => s.yearSelectDropDownHoverBackgroundColor,
+    );
+  const yearSelectDropDownHoverTextColor =
+    DashboardCustomizationStores.useYearSelectCustomization(
+      (s) => s.yearSelectDropDownHoverTextColor,
+    );
 
-  const setYearSelectColor = useYearSelectCustomization((s) => s.setColor);
+  const setYearSelectColor =
+    DashboardCustomizationStores.useYearSelectCustomization((s) => s.setColor);
 
   return {
     yearSelectBackgroundColor,
@@ -299,25 +355,34 @@ export const useYearSelectCustomizationOption = () => {
   };
 };
 export const useToastCustomizationOption = () => {
-  const toastBackgroundColor = useToastCustomization(
-    (s) => s.toastBackgroundColor,
+  const toastBackgroundColor =
+    DashboardCustomizationStores.useToastCustomization(
+      (s) => s.toastBackgroundColor,
+    );
+  const toastTitleColor = DashboardCustomizationStores.useToastCustomization(
+    (s) => s.toastTitleColor,
   );
-  const toastTitleColor = useToastCustomization((s) => s.toastTitleColor);
-  const toastDescriptionColor = useToastCustomization(
-    (s) => s.toastDescriptionColor,
-  );
+  const toastDescriptionColor =
+    DashboardCustomizationStores.useToastCustomization(
+      (s) => s.toastDescriptionColor,
+    );
 
-  const toastErrorBackgroundColor = useToastCustomization(
-    (s) => s.toastErrorBackgroundColor,
-  );
-  const toastErrorTitleColor = useToastCustomization(
-    (s) => s.toastErrorTitleColor,
-  );
-  const toastErrorDescriptionColor = useToastCustomization(
-    (s) => s.toastErrorDescriptionColor,
-  );
+  const toastErrorBackgroundColor =
+    DashboardCustomizationStores.useToastCustomization(
+      (s) => s.toastErrorBackgroundColor,
+    );
+  const toastErrorTitleColor =
+    DashboardCustomizationStores.useToastCustomization(
+      (s) => s.toastErrorTitleColor,
+    );
+  const toastErrorDescriptionColor =
+    DashboardCustomizationStores.useToastCustomization(
+      (s) => s.toastErrorDescriptionColor,
+    );
 
-  const setToastColor = useToastCustomization((s) => s.setColor);
+  const setToastColor = DashboardCustomizationStores.useToastCustomization(
+    (s) => s.setColor,
+  );
 
   return {
     toastBackgroundColor,
@@ -330,44 +395,66 @@ export const useToastCustomizationOption = () => {
   };
 };
 export const useKpiCardCustomizationOption = () => {
-  const cardShadowColor = useKpiCardCustomization((s) => s.cardShadowColor);
-  const cardBorderColor = useKpiCardCustomization((s) => s.cardBorderColor);
-  const cardPrimaryTextColor = useKpiCardCustomization(
-    (s) => s.cardPrimaryTextColor,
+  const cardShadowColor = DashboardCustomizationStores.useKpiCardCustomization(
+    (s) => s.cardShadowColor,
   );
-  const cardSecondaryTextColor = useKpiCardCustomization(
-    (s) => s.cardSecondaryTextColor,
+  const cardBorderColor = DashboardCustomizationStores.useKpiCardCustomization(
+    (s) => s.cardBorderColor,
   );
-  const cardIconPrimaryColor = useKpiCardCustomization(
-    (s) => s.cardIconPrimaryColor,
+  const cardPrimaryTextColor =
+    DashboardCustomizationStores.useKpiCardCustomization(
+      (s) => s.cardPrimaryTextColor,
+    );
+  const cardSecondaryTextColor =
+    DashboardCustomizationStores.useKpiCardCustomization(
+      (s) => s.cardSecondaryTextColor,
+    );
+  const cardIconPrimaryColor =
+    DashboardCustomizationStores.useKpiCardCustomization(
+      (s) => s.cardIconPrimaryColor,
+    );
+  const cardIconSecondaryColor =
+    DashboardCustomizationStores.useKpiCardCustomization(
+      (s) => s.cardIconSecondaryColor,
+    );
+  const cardIconTertiaryColor =
+    DashboardCustomizationStores.useKpiCardCustomization(
+      (s) => s.cardIconTertiaryColor,
+    );
+  const cardIconPrimaryBackgroundColor =
+    DashboardCustomizationStores.useKpiCardCustomization(
+      (s) => s.cardIconPrimaryBackgroundColor,
+    );
+  const cardIconSecondaryBackgroundColor =
+    DashboardCustomizationStores.useKpiCardCustomization(
+      (s) => s.cardIconSecondaryBackgroundColor,
+    );
+  const cardIconTertiaryBackgroundColor =
+    DashboardCustomizationStores.useKpiCardCustomization(
+      (s) => s.cardIconTertiaryBackgroundColor,
+    );
+  const cardShadowThickness =
+    DashboardCustomizationStores.useKpiCardCustomization(
+      (s) => s.cardShadowThickness,
+    );
+
+  const cardShadow = DashboardCustomizationStores.useKpiCardCustomization(
+    (s) => s.cardShadow,
   );
-  const cardIconSecondaryColor = useKpiCardCustomization(
-    (s) => s.cardIconSecondaryColor,
-  );
-  const cardIconTertiaryColor = useKpiCardCustomization(
-    (s) => s.cardIconTertiaryColor,
-  );
-  const cardIconPrimaryBackgroundColor = useKpiCardCustomization(
-    (s) => s.cardIconPrimaryBackgroundColor,
-  );
-  const cardIconSecondaryBackgroundColor = useKpiCardCustomization(
-    (s) => s.cardIconSecondaryBackgroundColor,
-  );
-  const cardIconTertiaryBackgroundColor = useKpiCardCustomization(
-    (s) => s.cardIconTertiaryBackgroundColor,
-  );
-  const cardShadowThickness = useKpiCardCustomization(
-    (s) => s.cardShadowThickness,
+  const cardBorder = DashboardCustomizationStores.useKpiCardCustomization(
+    (s) => s.cardBorder,
   );
 
-  const cardShadow = useKpiCardCustomization((s) => s.cardShadow);
-  const cardBorder = useKpiCardCustomization((s) => s.cardBorder);
-
-  const setCardColor = useKpiCardCustomization((s) => s.setColor);
-  const setCardSwitch = useKpiCardCustomization((s) => s.setSwitch);
-  const cardBackgroundColor = useKpiCardCustomization(
-    (s) => s.cardBackgroundColor,
+  const setCardColor = DashboardCustomizationStores.useKpiCardCustomization(
+    (s) => s.setColor,
   );
+  const setCardSwitch = DashboardCustomizationStores.useKpiCardCustomization(
+    (s) => s.setSwitch,
+  );
+  const cardBackgroundColor =
+    DashboardCustomizationStores.useKpiCardCustomization(
+      (s) => s.cardBackgroundColor,
+    );
   return {
     cardShadowColor,
     cardBorderColor,
@@ -388,28 +475,47 @@ export const useKpiCardCustomizationOption = () => {
   };
 };
 export const useChartCustomizationOption = () => {
-  const chartHorizontalLineColor = useChartCustomization(
-    (s) => s.chartHorizontalLineColor,
+  const chartHorizontalLineColor =
+    DashboardCustomizationStores.useChartCustomization(
+      (s) => s.chartHorizontalLineColor,
+    );
+  const chartDateColor = DashboardCustomizationStores.useChartCustomization(
+    (s) => s.chartDateColor,
   );
-  const chartDateColor = useChartCustomization((s) => s.chartDateColor);
-  const chartPrimaryColor = useChartCustomization((s) => s.chartPrimaryColor);
-  const chartSecondaryColor = useChartCustomization(
-    (s) => s.chartSecondaryColor,
+  const chartPrimaryColor = DashboardCustomizationStores.useChartCustomization(
+    (s) => s.chartPrimaryColor,
   );
-  const chartTertiaryColor = useChartCustomization((s) => s.chartTertiaryColor);
-  const chartFourthColor = useChartCustomization((s) => s.chartFourthColor);
-  const chartLegendTextColor = useChartCustomization(
-    (s) => s.chartLegendTextColor,
+  const chartSecondaryColor =
+    DashboardCustomizationStores.useChartCustomization(
+      (s) => s.chartSecondaryColor,
+    );
+  const chartTertiaryColor = DashboardCustomizationStores.useChartCustomization(
+    (s) => s.chartTertiaryColor,
   );
-  const toolTipChartDateColor = useChartCustomization(
-    (s) => s.toolTipChartDateColor,
+  const chartFourthColor = DashboardCustomizationStores.useChartCustomization(
+    (s) => s.chartFourthColor,
   );
-  const toolTipBackgroundColor = useChartCustomization(
-    (s) => s.toolTipBackgroundColor,
+  const chartLegendTextColor =
+    DashboardCustomizationStores.useChartCustomization(
+      (s) => s.chartLegendTextColor,
+    );
+  const toolTipChartDateColor =
+    DashboardCustomizationStores.useChartCustomization(
+      (s) => s.toolTipChartDateColor,
+    );
+  const toolTipBackgroundColor =
+    DashboardCustomizationStores.useChartCustomization(
+      (s) => s.toolTipBackgroundColor,
+    );
+  const toolTipTextColor = DashboardCustomizationStores.useChartCustomization(
+    (s) => s.toolTipTextColor,
   );
-  const toolTipTextColor = useChartCustomization((s) => s.toolTipTextColor);
-  const toolTipNumberColor = useChartCustomization((s) => s.toolTipNumberColor);
-  const setChartThemeColor = useChartCustomization((s) => s.setColor);
+  const toolTipNumberColor = DashboardCustomizationStores.useChartCustomization(
+    (s) => s.toolTipNumberColor,
+  );
+  const setChartThemeColor = DashboardCustomizationStores.useChartCustomization(
+    (s) => s.setColor,
+  );
 
   return {
     chartHorizontalLineColor,
@@ -427,19 +533,39 @@ export const useChartCustomizationOption = () => {
   };
 };
 export const usePieChartCustomizationOption = () => {
-  const pieColor1 = usePieChartColorCustomization((s) => s.pieColor1);
-  const pieColor2 = usePieChartColorCustomization((s) => s.pieColor2);
-  const pieColor3 = usePieChartColorCustomization((s) => s.pieColor3);
-  const pieColor4 = usePieChartColorCustomization((s) => s.pieColor4);
-  const pieColor5 = usePieChartColorCustomization((s) => s.pieColor5);
-  const pieColor6 = usePieChartColorCustomization((s) => s.pieColor6);
-  const pieColor7 = usePieChartColorCustomization((s) => s.pieColor7);
-  const pieColor8 = usePieChartColorCustomization((s) => s.pieColor8);
-  const pieFallbackColor = usePieChartColorCustomization(
-    (s) => s.pieFallbackColor,
+  const pieColor1 = DashboardCustomizationStores.usePieChartColorCustomization(
+    (s) => s.pieColor1,
   );
+  const pieColor2 = DashboardCustomizationStores.usePieChartColorCustomization(
+    (s) => s.pieColor2,
+  );
+  const pieColor3 = DashboardCustomizationStores.usePieChartColorCustomization(
+    (s) => s.pieColor3,
+  );
+  const pieColor4 = DashboardCustomizationStores.usePieChartColorCustomization(
+    (s) => s.pieColor4,
+  );
+  const pieColor5 = DashboardCustomizationStores.usePieChartColorCustomization(
+    (s) => s.pieColor5,
+  );
+  const pieColor6 = DashboardCustomizationStores.usePieChartColorCustomization(
+    (s) => s.pieColor6,
+  );
+  const pieColor7 = DashboardCustomizationStores.usePieChartColorCustomization(
+    (s) => s.pieColor7,
+  );
+  const pieColor8 = DashboardCustomizationStores.usePieChartColorCustomization(
+    (s) => s.pieColor8,
+  );
+  const pieFallbackColor =
+    DashboardCustomizationStores.usePieChartColorCustomization(
+      (s) => s.pieFallbackColor,
+    );
 
-  const setPieChartColor = usePieChartColorCustomization((s) => s.setColor);
+  const setPieChartColor =
+    DashboardCustomizationStores.usePieChartColorCustomization(
+      (s) => s.setColor,
+    );
 
   return {
     pieColor1,

@@ -63,12 +63,14 @@ export const useCustomToast = () => {
         !toastBackgroundColor &&
         !toastTitleColor &&
         !toastDescriptionColor && { variant: "default" }),
-      ...(backgroundColor && {
-        style: {
-          backgroundColor,
-          border: "none",
-        },
-      }),
+      ...(backgroundColor
+        ? {
+            style: {
+              backgroundColor,
+              border: "none",
+            },
+          }
+        : {}),
     });
   };
 

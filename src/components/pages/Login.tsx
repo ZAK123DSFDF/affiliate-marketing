@@ -155,15 +155,14 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
           } ${affiliate && cardBorder ? "border" : "border-none"}`}
           style={{
             backgroundColor: (affiliate && cardBackgroundColor) || undefined,
-            ...(affiliate &&
-              cardShadow && {
-                boxShadow:
-                  affiliate &&
-                  getShadowWithColor(
+            ...(affiliate && cardShadow
+              ? {
+                  boxShadow: getShadowWithColor(
                     toValidShadowSize(cardShadowThickness),
                     cardShadowColor,
                   ),
-              }),
+                }
+              : {}),
             borderColor:
               affiliate && cardBorder && cardBorderColor
                 ? affiliate && cardBorderColor
@@ -181,7 +180,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                 className="relative space-y-4"
               >
                 {isPreview && (
-                  <div className="absolute top-[-10] right-0 z-50">
+                  <div className="absolute top-[-10] right-0">
                     <InputCustomizationOptions size="w-6 h-6" />
                   </div>
                 )}

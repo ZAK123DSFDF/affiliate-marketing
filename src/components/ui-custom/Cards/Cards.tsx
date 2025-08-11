@@ -178,15 +178,19 @@ const Cards = ({ affiliate = false, isPreview = false }: CardsProps) => {
               }
 
               const colorType = colorTypes[colorIndex % colorTypes.length];
-              const iconBgColor =
-                kpiCard[
+              const iconBgColor: string | undefined =
+                (kpiCard[
                   `cardIcon${colorType}BackgroundColor` as keyof typeof kpiCard
-                ] ||
-                (affiliate && defaultColorPair.iconBg);
+                ] as unknown as string | undefined) ||
+                (affiliate && defaultColorPair.iconBg) ||
+                undefined;
 
-              const iconTextColor =
-                kpiCard[`cardIcon${colorType}Color` as keyof typeof kpiCard] ||
-                (affiliate && defaultColorPair.iconColor);
+              const iconTextColor: string | undefined =
+                (kpiCard[
+                  `cardIcon${colorType}Color` as keyof typeof kpiCard
+                ] as unknown as string | undefined) ||
+                (affiliate && defaultColorPair.iconColor) ||
+                undefined;
 
               const borderColor =
                 (affiliate && kpiCard.cardBorderColor) || "#e5e7eb";
