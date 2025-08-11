@@ -1,6 +1,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import React from "react";
 import { useCardCustomizationOption } from "@/hooks/useAuthCustomization";
+import { updateAuthCustomization } from "@/util/AuthCustomizationChanges";
 
 export const CardCustomizationOptions = ({
   triggerSize,
@@ -15,8 +16,6 @@ export const CardCustomizationOptions = ({
     cardBorder,
     cardBorderColor,
     cardBackgroundColor,
-    setCardSwitch,
-    setCardColor,
     cardShadowThickness,
   } = useCardCustomizationOption();
   return (
@@ -27,12 +26,18 @@ export const CardCustomizationOptions = ({
         shadow: {
           label: "Enable Card Shadow",
           enabled: cardShadow,
-          onToggle: (val) => setCardSwitch("cardShadow", val),
+          onToggle: (val) =>
+            updateAuthCustomization("useCardCustomization", "cardShadow", val),
           children: {
             shadowColor: {
               label: "Shadow Color",
               value: cardShadowColor,
-              onChange: (val) => setCardColor("cardShadowColor", val),
+              onChange: (val) =>
+                updateAuthCustomization(
+                  "useCardCustomization",
+                  "cardShadowColor",
+                  val,
+                ),
             },
             shadowThickness: {
               label: "Shadow Thickness",
@@ -43,26 +48,42 @@ export const CardCustomizationOptions = ({
                 { label: "Large", value: "lg" },
                 { label: "Extra Large", value: "xl" },
               ],
-              onChange: (val) => setCardColor("cardShadowThickness", val),
+              onChange: (val) =>
+                updateAuthCustomization(
+                  "useCardCustomization",
+                  "cardShadowThickness",
+                  val,
+                ),
             },
           },
         },
         border: {
           label: "Enable Card Border",
           enabled: cardBorder,
-          onToggle: (val) => setCardSwitch("cardBorder", val),
+          onToggle: (val) =>
+            updateAuthCustomization("useCardCustomization", "cardBorder", val),
           children: {
             borderColor: {
               label: "Border Color",
               value: cardBorderColor,
-              onChange: (val) => setCardColor("cardBorderColor", val),
+              onChange: (val) =>
+                updateAuthCustomization(
+                  "useCardCustomization",
+                  "cardBorderColor",
+                  val,
+                ),
             },
           },
         },
         backgroundColor: {
           label: "Card Background Color",
           value: cardBackgroundColor,
-          onChange: (val) => setCardColor("cardBackgroundColor", val),
+          onChange: (val) =>
+            updateAuthCustomization(
+              "useCardCustomization",
+              "cardBackgroundColor",
+              val,
+            ),
         },
       }}
     />

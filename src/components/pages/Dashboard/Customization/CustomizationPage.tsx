@@ -7,9 +7,28 @@ import { ToastPreview } from "@/components/ui-custom/ToastPreview";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import { useToastCustomizationOption } from "@/hooks/useDashboardCustomization";
 import { ToastCustomization } from "@/components/ui-custom/Customization/ToastCustomization";
+import { useMutation } from "@tanstack/react-query";
+import { saveCustomizationsAction } from "@/app/seller/[orgId]/dashboard/customization/action";
+import { getAuthCustomizationChanges } from "@/util/AuthCustomizationChanges";
+import { useAuthCustomizationChangesStore } from "@/store/AuthCustomizationChangesStore";
 
 export default function CustomizationPage() {
   const [mainTab, setMainTab] = useState("sidebar");
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const data = getAuthCustomizationChanges();
+      console.log("🟢 Changes before send:", data);
+      return await saveCustomizationsAction(data);
+    },
+    onSuccess: () => {
+      console.log("✅ Customizations saved");
+      useAuthCustomizationChangesStore.getState().resetChanges();
+    },
+    onError: (error) => {
+      console.error("❌ Save failed:", error);
+    },
+  });
+
   return (
     <div className="p-6 space-y-6">
       <div>
@@ -38,6 +57,15 @@ export default function CustomizationPage() {
           <AuthCustomization setMainTab={setMainTab} />
         </TabsContent>
       </Tabs>
+      <div className="fixed bottom-6 right-6">
+        <button
+          onClick={() => mutation.mutate()}
+          className="px-4 py-2 bg-blue-600 text-white rounded shadow"
+          disabled={mutation.isPending}
+        >
+          {mutation.isPending ? "Saving..." : "Save Customizations"}
+        </button>
+      </div>
     </div>
   );
 }

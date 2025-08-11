@@ -2,6 +2,7 @@
 
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import { useButtonCustomizationOption } from "@/hooks/useAuthCustomization";
+import { updateAuthCustomization } from "@/util/AuthCustomizationChanges";
 
 export const ButtonCustomizationOptions = ({
   size,
@@ -15,19 +16,28 @@ export const ButtonCustomizationOptions = ({
     buttonBackgroundColor,
     buttonDisabledTextColor,
     buttonDisabledBackgroundColor,
-    setButtonColor,
   } = useButtonCustomizationOption();
   // Base properties
   const enabledProps = {
     buttonTextColor: {
       label: "Button Text Color",
       value: buttonTextColor,
-      onChange: (val: string) => setButtonColor("buttonTextColor", val),
+      onChange: (val: string) =>
+        updateAuthCustomization(
+          "useButtonCustomization",
+          "buttonTextColor",
+          val,
+        ),
     },
     buttonBackgroundColor: {
       label: "Button Background Color",
       value: buttonBackgroundColor,
-      onChange: (val: string) => setButtonColor("buttonBackgroundColor", val),
+      onChange: (val: string) =>
+        updateAuthCustomization(
+          "useButtonCustomization",
+          "buttonBackgroundColor",
+          val,
+        ),
     },
   };
 
@@ -36,13 +46,22 @@ export const ButtonCustomizationOptions = ({
     buttonDisabledTextColor: {
       label: "Disabled Text Color",
       value: buttonDisabledTextColor,
-      onChange: (val: string) => setButtonColor("buttonDisabledTextColor", val),
+      onChange: (val: string) =>
+        updateAuthCustomization(
+          "useButtonCustomization",
+          "buttonDisabledTextColor",
+          val,
+        ),
     },
     buttonDisabledBackgroundColor: {
       label: "Disabled Background Color",
       value: buttonDisabledBackgroundColor,
       onChange: (val: string) =>
-        setButtonColor("buttonDisabledBackgroundColor", val),
+        updateAuthCustomization(
+          "useButtonCustomization",
+          "buttonDisabledBackgroundColor",
+          val,
+        ),
     },
   };
 
