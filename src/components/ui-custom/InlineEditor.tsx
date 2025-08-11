@@ -4,12 +4,12 @@ import { useState } from "react";
 import { Pencil } from "lucide-react";
 import { RichTextEditor } from "@/components/ui-custom/RichTextEditor";
 import { useNotesCustomizationOption } from "@/hooks/useAuthCustomization";
+import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges";
 
 type NotesKey = "customNotesLogin" | "customNotesSignup";
 
 export const InlineNotesEditor = ({ name }: { name: NotesKey }) => {
-  const { customNotesLogin, customNotesSignup, setNote } =
-    useNotesCustomizationOption();
+  const { customNotesLogin, customNotesSignup } = useNotesCustomizationOption();
 
   const currentContent =
     name === "customNotesLogin" ? customNotesLogin : customNotesSignup;
@@ -27,7 +27,11 @@ export const InlineNotesEditor = ({ name }: { name: NotesKey }) => {
             <button
               className="bg-primary text-white px-4 py-1 rounded"
               onClick={() => {
-                setNote(name, tempContent);
+                updateAuthCustomization(
+                  "useNotesCustomization",
+                  name,
+                  tempContent,
+                );
                 setIsEditing(false);
               }}
             >

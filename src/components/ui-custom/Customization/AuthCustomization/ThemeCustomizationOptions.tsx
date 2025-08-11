@@ -2,7 +2,7 @@
 
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import { useThemeCustomizationOption } from "@/hooks/useAuthCustomization";
-import { updateAuthCustomization } from "@/util/AuthCustomizationChanges";
+import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges";
 
 // These are the valid keys
 type ThemeKeys =

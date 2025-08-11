@@ -4,7 +4,7 @@ import {
 } from "@/hooks/useAuthCustomization";
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import React from "react";
-import { updateAuthCustomization } from "@/util/AuthCustomizationChanges";
+import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges";
 
 export const InputCustomizationOptions = ({ size }: { size?: string }) => {
   const {

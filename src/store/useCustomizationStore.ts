@@ -1,7 +1,7 @@
 import { createStoresFromDefaults } from "@/customization/createStoresFromDefaults";
-import { defaultDashboardCustomization } from "@/customization/defaultDashboardCustomization";
+import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization";
 import { customizationConfig } from "@/customization/customizationConfig";
-import { defaultAuthCustomization } from "@/customization/defaultAuthCustomization";
+import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
 
 export const DashboardCustomizationStores = createStoresFromDefaults(
   defaultDashboardCustomization,

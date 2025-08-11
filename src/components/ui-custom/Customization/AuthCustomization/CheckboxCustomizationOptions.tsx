@@ -1,7 +1,7 @@
 import { useCheckboxCustomizationOption } from "@/hooks/useAuthCustomization";
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import React from "react";
-import { updateAuthCustomization } from "@/util/AuthCustomizationChanges";
+import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges";
 
 export const CheckboxCustomizationOptions = ({ size }: { size?: string }) => {
   const { checkboxLabelColor, checkboxActiveColor, checkboxInactiveColor } =

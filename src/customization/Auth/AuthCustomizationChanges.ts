@@ -1,6 +1,6 @@
 import { useAuthCustomizationChangesStore } from "@/store/AuthCustomizationChangesStore";
 import { AuthCustomizationStores } from "@/store/useCustomizationStore";
-import { defaultAuthCustomization } from "@/customization/defaultAuthCustomization";
+import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
 
 type AuthCustomizationStoreKey = keyof typeof defaultAuthCustomization;
 

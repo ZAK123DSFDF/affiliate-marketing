@@ -2,7 +2,7 @@
 
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import { useButtonCustomizationOption } from "@/hooks/useAuthCustomization";
-import { updateAuthCustomization } from "@/util/AuthCustomizationChanges";
+import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges";
 
 export const ButtonCustomizationOptions = ({
   size,

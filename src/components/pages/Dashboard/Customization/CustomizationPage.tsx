@@ -9,7 +9,7 @@ import { useToastCustomizationOption } from "@/hooks/useDashboardCustomization";
 import { ToastCustomization } from "@/components/ui-custom/Customization/ToastCustomization";
 import { useMutation } from "@tanstack/react-query";
 import { saveCustomizationsAction } from "@/app/seller/[orgId]/dashboard/customization/action";
-import { getAuthCustomizationChanges } from "@/util/AuthCustomizationChanges";
+import { getAuthCustomizationChanges } from "@/customization/Auth/AuthCustomizationChanges";
 import { useAuthCustomizationChangesStore } from "@/store/AuthCustomizationChangesStore";
 
 export default function CustomizationPage() {
