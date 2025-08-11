@@ -16,7 +16,6 @@ export const InlineNotesEditor = ({ name }: { name: NotesKey }) => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [tempContent, setTempContent] = useState<string>(currentContent || "");
-
   const hasContent = currentContent?.trim();
 
   return (
