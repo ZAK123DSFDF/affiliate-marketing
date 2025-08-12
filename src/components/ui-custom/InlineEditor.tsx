@@ -7,20 +7,13 @@ import { IsRichTextEmpty } from "@/util/IsRichTextEmpty";
 
 type NotesKey = "customNotesLogin" | "customNotesSignup";
 
-function isRichTextEmpty(html?: string) {
-  if (!html) return true;
-  const text = html
-    .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/g, "")
-    .trim();
-  return text.length === 0;
-}
-
 const DefaultAuthHeader = ({ name }: { name: NotesKey }) => {
   if (name === "customNotesLogin") {
     return (
       <>
-        <h2 className="text-2xl font-bold text-center">Welcome back</h2>
+        <div className="flex items-center justify-center gap-2">
+          <h2 className="text-2xl font-bold text-center">Welcome back</h2>
+        </div>
         <p className="text-center text-muted-foreground">
           Enter your credentials to access your account
         </p>
@@ -29,7 +22,9 @@ const DefaultAuthHeader = ({ name }: { name: NotesKey }) => {
   }
   return (
     <>
-      <h2 className="text-2xl font-bold text-center">Create An Account</h2>
+      <div className="flex items-center justify-center gap-2">
+        <h2 className="text-2xl font-bold text-center">Create An Account</h2>
+      </div>
       <p className="text-center text-muted-foreground">
         Enter Your Information to Sign Up
       </p>
@@ -79,22 +74,25 @@ export const InlineNotesEditor = ({ name }: { name: NotesKey }) => {
 
   return (
     <div className="space-y-2">
-      {showDefault ? (
-        <DefaultAuthHeader name={name} />
-      ) : (
-        <div
-          className="rich-text-preview"
-          dangerouslySetInnerHTML={{ __html: currentContent }}
-        />
-      )}
-
-      {/* Edit button below content */}
-      <button
-        className="text-primary hover:text-primary/80 flex items-center gap-1"
-        onClick={() => setIsEditing(true)}
-      >
-        <Pencil className="w-4 h-4" /> Edit
-      </button>
+      <div className="flex items-start justify-center gap-2 relative">
+        <div className="flex-1">
+          {showDefault ? (
+            <DefaultAuthHeader name={name} />
+          ) : (
+            <div
+              className="rich-text-preview"
+              dangerouslySetInnerHTML={{ __html: currentContent }}
+            />
+          )}
+        </div>
+        <button
+          className="text-primary hover:text-primary/80 mt-1"
+          onClick={() => setIsEditing(true)}
+          title="Edit"
+        >
+          <Pencil className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   );
 };
