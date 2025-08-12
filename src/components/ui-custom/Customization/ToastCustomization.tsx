@@ -3,6 +3,7 @@ import { useToastCustomizationOption } from "@/hooks/useDashboardCustomization";
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import { ToastPreview } from "@/components/ui-custom/ToastPreview";
 import React from "react";
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
 
 type ToastColorKey =
   | "toastTitleColor"
@@ -29,7 +30,9 @@ export const ToastCustomization = () => {
             key={key}
             label={label}
             value={customization[key]}
-            onChange={(val) => customization.setToastColor(key, val)}
+            onChange={(val) =>
+              updateDashboardCustomization("useToastCustomization", key, val)
+            }
           />
         ))}
       </div>

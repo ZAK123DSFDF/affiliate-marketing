@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import React from "react";
 import { useChartCustomizationOption } from "@/hooks/useDashboardCustomization";
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
 
 export const ChartCustomizationOptions = ({
   triggerSize,
@@ -23,7 +24,6 @@ export const ChartCustomizationOptions = ({
     toolTipBackgroundColor,
     toolTipTextColor,
     toolTipNumberColor,
-    setChartThemeColor,
   } = useChartCustomizationOption();
 
   return (
@@ -35,57 +35,111 @@ export const ChartCustomizationOptions = ({
           label: "Horizontal Line Color",
           value: chartHorizontalLineColor,
           onChange: (val) =>
-            setChartThemeColor("chartHorizontalLineColor", val),
+            updateDashboardCustomization(
+              "useChartCustomization",
+              "chartHorizontalLineColor",
+              val,
+            ),
         },
         dateColor: {
           label: "Date Color",
           value: chartDateColor,
-          onChange: (val) => setChartThemeColor("chartDateColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "useChartCustomization",
+              "chartDateColor",
+              val,
+            ),
         },
         primaryColor: {
           label: "Primary Chart Color",
           value: chartPrimaryColor,
-          onChange: (val) => setChartThemeColor("chartPrimaryColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "useChartCustomization",
+              "chartPrimaryColor",
+              val,
+            ),
         },
         secondaryColor: {
           label: "Secondary Chart Color",
           value: chartSecondaryColor,
-          onChange: (val) => setChartThemeColor("chartSecondaryColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "useChartCustomization",
+              "chartSecondaryColor",
+              val,
+            ),
         },
         tertiaryColor: {
           label: "Tertiary Chart Color",
           value: chartTertiaryColor,
-          onChange: (val) => setChartThemeColor("chartTertiaryColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "useChartCustomization",
+              "chartTertiaryColor",
+              val,
+            ),
         },
         fourthColor: {
           label: "Fourth Chart Color",
           value: chartFourthColor,
-          onChange: (val) => setChartThemeColor("chartFourthColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "useChartCustomization",
+              "chartFourthColor",
+              val,
+            ),
         },
         legendTextColor: {
           label: "Legend Text Color",
           value: chartLegendTextColor,
-          onChange: (val) => setChartThemeColor("chartLegendTextColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "useChartCustomization",
+              "chartLegendTextColor",
+              val,
+            ),
         },
         toolTipChartDateColor: {
           label: "Tooltip Date Color",
           value: toolTipChartDateColor,
-          onChange: (val) => setChartThemeColor("toolTipChartDateColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "useChartCustomization",
+              "toolTipChartDateColor",
+              val,
+            ),
         },
         toolTipBackgroundColor: {
           label: "Tooltip Background Color",
           value: toolTipBackgroundColor,
-          onChange: (val) => setChartThemeColor("toolTipBackgroundColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "useChartCustomization",
+              "toolTipBackgroundColor",
+              val,
+            ),
         },
         toolTipTextColor: {
           label: "Tooltip Text Color",
           value: toolTipTextColor,
-          onChange: (val) => setChartThemeColor("toolTipTextColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "useChartCustomization",
+              "toolTipTextColor",
+              val,
+            ),
         },
         toolTipNumberColor: {
           label: "Tooltip Number Color",
           value: toolTipNumberColor,
-          onChange: (val) => setChartThemeColor("toolTipNumberColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "useChartCustomization",
+              "toolTipNumberColor",
+              val,
+            ),
         },
       }}
     />

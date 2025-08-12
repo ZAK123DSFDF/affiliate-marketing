@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import React from "react";
 import { usePieChartCustomizationOption } from "@/hooks/useDashboardCustomization";
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
 
 export const PieChartCustomizationOptions = ({
   triggerSize,
@@ -21,7 +22,6 @@ export const PieChartCustomizationOptions = ({
     pieColor7,
     pieColor8,
     pieFallbackColor,
-    setPieChartColor,
   } = usePieChartCustomizationOption();
 
   return (
@@ -32,47 +32,92 @@ export const PieChartCustomizationOptions = ({
         pieColor1: {
           label: "Pie Color 1",
           value: pieColor1,
-          onChange: (val) => setPieChartColor("pieColor1", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "usePieChartColorCustomization",
+              "pieColor1",
+              val,
+            ),
         },
         pieColor2: {
           label: "Pie Color 2",
           value: pieColor2,
-          onChange: (val) => setPieChartColor("pieColor2", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "usePieChartColorCustomization",
+              "pieColor2",
+              val,
+            ),
         },
         pieColor3: {
           label: "Pie Color 3",
           value: pieColor3,
-          onChange: (val) => setPieChartColor("pieColor3", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "usePieChartColorCustomization",
+              "pieColor3",
+              val,
+            ),
         },
         pieColor4: {
           label: "Pie Color 4",
           value: pieColor4,
-          onChange: (val) => setPieChartColor("pieColor4", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "usePieChartColorCustomization",
+              "pieColor4",
+              val,
+            ),
         },
         pieColor5: {
           label: "Pie Color 5",
           value: pieColor5,
-          onChange: (val) => setPieChartColor("pieColor5", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "usePieChartColorCustomization",
+              "pieColor5",
+              val,
+            ),
         },
         pieColor6: {
           label: "Pie Color 6",
           value: pieColor6,
-          onChange: (val) => setPieChartColor("pieColor6", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "usePieChartColorCustomization",
+              "pieColor6",
+              val,
+            ),
         },
         pieColor7: {
           label: "Pie Color 7",
           value: pieColor7,
-          onChange: (val) => setPieChartColor("pieColor7", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "usePieChartColorCustomization",
+              "pieColor7",
+              val,
+            ),
         },
         pieColor8: {
           label: "Pie Color 8",
           value: pieColor8,
-          onChange: (val) => setPieChartColor("pieColor8", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "usePieChartColorCustomization",
+              "pieColor8",
+              val,
+            ),
         },
         pieFallbackColor: {
           label: "Pie Fallback Color",
           value: pieFallbackColor,
-          onChange: (val) => setPieChartColor("pieFallbackColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "usePieChartColorCustomization",
+              "pieFallbackColor",
+              val,
+            ),
         },
       }}
     />

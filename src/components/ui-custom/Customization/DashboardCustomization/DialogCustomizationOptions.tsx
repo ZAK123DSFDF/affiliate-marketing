@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import React from "react";
 import { useDialogCustomizationOption } from "@/hooks/useDashboardCustomization";
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
 
 export const DialogCustomizationOptions = ({
   triggerSize,
@@ -15,7 +16,6 @@ export const DialogCustomizationOptions = ({
     dialogBackgroundColor,
     dialogCloseIconColor,
     dialogCloseIconBorderColor,
-    setDialogColor,
   } = useDialogCustomizationOption();
 
   return (
@@ -26,17 +26,32 @@ export const DialogCustomizationOptions = ({
         dialogBackgroundColor: {
           label: "Dialog Background Color",
           value: dialogBackgroundColor,
-          onChange: (val) => setDialogColor("dialogBackgroundColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "useDialogCustomization",
+              "dialogBackgroundColor",
+              val,
+            ),
         },
         dialogCloseIconColor: {
           label: "Close Icon Color",
           value: dialogCloseIconColor,
-          onChange: (val) => setDialogColor("dialogCloseIconColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "useDialogCustomization",
+              "dialogCloseIconColor",
+              val,
+            ),
         },
         dialogCloseIconBorderColor: {
           label: "Close Icon Border Color",
           value: dialogCloseIconBorderColor,
-          onChange: (val) => setDialogColor("dialogCloseIconBorderColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "useDialogCustomization",
+              "dialogCloseIconBorderColor",
+              val,
+            ),
         },
       }}
     />

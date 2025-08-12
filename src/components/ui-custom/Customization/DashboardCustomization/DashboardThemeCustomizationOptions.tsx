@@ -2,6 +2,7 @@
 
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization";
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
 
 // Valid keys for dashboard theme customization
 type DashboardThemeKeys =
@@ -30,7 +31,6 @@ export const DashboardThemeCustomizationOptions = ({
     dashboardHeaderNameColor,
     dashboardHeaderDescColor,
     separatorColor,
-    setDashboardThemeColor,
     cardHeaderPrimaryTextColor,
     cardHeaderSecondaryTextColor,
     cardHeaderDescriptionTextColor,
@@ -63,7 +63,13 @@ export const DashboardThemeCustomizationOptions = ({
     <ResettableColorInput
       label={labelMap[name]}
       value={valueMap[name]}
-      onChange={(val) => setDashboardThemeColor(name, val)}
+      onChange={(val) =>
+        updateDashboardCustomization(
+          "useDashboardThemeCustomization",
+          name,
+          val,
+        )
+      }
       showLabel={showLabel}
       buttonSize={buttonSize}
     />

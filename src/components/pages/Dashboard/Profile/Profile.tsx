@@ -92,7 +92,7 @@ export default function Profile({
       email: initialEmail,
     },
   });
-  const currrentPasswordForm = useForm({
+  const currentPasswordForm = useForm({
     resolver: zodResolver(currentPasswordSchema),
     defaultValues: {
       currentPassword: "",
@@ -237,7 +237,7 @@ export default function Profile({
   const resetPasswordModal = () => {
     setShowPasswordModal(false);
     setStep("current");
-    currrentPasswordForm.reset();
+    currentPasswordForm.reset();
     newPasswordForm.reset();
   };
   useEffect(() => {
@@ -502,9 +502,9 @@ export default function Profile({
           </DialogHeader>
 
           {step === "current" ? (
-            <Form {...currrentPasswordForm}>
+            <Form {...currentPasswordForm}>
               <form
-                onSubmit={currrentPasswordForm.handleSubmit(
+                onSubmit={currentPasswordForm.handleSubmit(
                   onSubmitValidateCurrent,
                 )}
                 className=" relative space-y-4"
@@ -515,7 +515,7 @@ export default function Profile({
                   </div>
                 )}
                 <InputField
-                  control={currrentPasswordForm.control}
+                  control={currentPasswordForm.control}
                   name="currentPassword"
                   label="Current Password"
                   placeholder="Enter current password"

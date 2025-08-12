@@ -1,5 +1,6 @@
 import { useTableCustomizationOption } from "@/hooks/useDashboardCustomization";
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
 
 export const TableCustomizationOptions = ({
   triggerSize,
@@ -33,40 +34,72 @@ export const TableCustomizationOptions = ({
     tableHeaderTextColor: {
       label: "Table Header Text Color",
       value: tableHeaderTextColor,
-      onChange: (val: string) => setTableColor("tableHeaderTextColor", val),
+      onChange: (val: string) =>
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableHeaderTextColor",
+          val,
+        ),
     },
     tableHoverBackgroundColor: {
       label: "Table Row Hover Background",
       value: tableHoverBackgroundColor,
       onChange: (val: string) =>
-        setTableColor("tableHoverBackgroundColor", val),
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableHoverBackgroundColor",
+          val,
+        ),
     },
     tableIconColor: {
       label: "Table Icon Color",
       value: tableIconColor,
-      onChange: (val: string) => setTableColor("tableIconColor", val),
+      onChange: (val: string) =>
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableIconColor",
+          val,
+        ),
     },
     tableIconHoverColor: {
       label: "Table Icon Hover Color",
       value: tableIconHoverColor,
-      onChange: (val: string) => setTableColor("tableIconHoverColor", val),
+      onChange: (val: string) =>
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableIconHoverColor",
+          val,
+        ),
     },
     tableIconHoverBackgroundColor: {
       label: "Table Icon Hover Background",
       value: tableIconHoverBackgroundColor,
       onChange: (val: string) =>
-        setTableColor("tableIconHoverBackgroundColor", val),
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableIconHoverBackgroundColor",
+          val,
+        ),
     },
     tableRowTertiaryTextColor: {
       label: "Table Row Tertiary Text Color",
       value: tableRowTertiaryTextColor,
       onChange: (val: string) =>
-        setTableColor("tableRowTertiaryTextColor", val),
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableRowTertiaryTextColor",
+          val,
+        ),
     },
     tableBorderColor: {
       label: "Table Border Color",
       value: tableBorderColor,
-      onChange: (val: string) => setTableColor("tableBorderColor", val),
+      onChange: (val: string) =>
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableBorderColor",
+          val,
+        ),
     },
   };
 
@@ -75,50 +108,83 @@ export const TableCustomizationOptions = ({
     properties.tableRowPrimaryTextColor = {
       label: "Table Row Primary Text Color",
       value: tableRowPrimaryTextColor,
-      onChange: (val: string) => setTableColor("tableRowPrimaryTextColor", val),
+      onChange: (val: string) =>
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableRowPrimaryTextColor",
+          val,
+        ),
     };
     properties.tableRowBadgeOverDueTextColor = {
       label: "Table Badge Overdue Text Color",
       value: tableRowBadgeOverDueTextColor,
       onChange: (val: string) =>
-        setTableColor("tableRowBadgeOverDueTextColor", val),
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableRowBadgeOverDueTextColor",
+          val,
+        ),
     };
     properties.tableRowBadgeOverDueBackgroundColor = {
       label: "Table Badge Overdue Background",
       value: tableRowBadgeOverDueBackgroundColor,
       onChange: (val: string) =>
-        setTableColor("tableRowBadgeOverDueBackgroundColor", val),
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableRowBadgeOverDueBackgroundColor",
+          val,
+        ),
     };
     properties.tableRowBadgePendingTextColor = {
       label: "Table Badge Pending Text Color",
       value: tableRowBadgePendingTextColor,
       onChange: (val: string) =>
-        setTableColor("tableRowBadgePendingTextColor", val),
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableRowBadgePendingTextColor",
+          val,
+        ),
     };
     properties.tableRowBadgePendingBackgroundColor = {
       label: "Table Badge Pending Background",
       value: tableRowBadgePendingBackgroundColor,
       onChange: (val: string) =>
-        setTableColor("tableRowBadgePendingBackgroundColor", val),
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableRowBadgePendingBackgroundColor",
+          val,
+        ),
     };
     properties.tableRowBadgePaidTextColor = {
       label: "Table Badge Paid Text Color",
       value: tableRowBadgePaidTextColor,
       onChange: (val: string) =>
-        setTableColor("tableRowBadgePaidTextColor", val),
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableRowBadgePaidTextColor",
+          val,
+        ),
     };
     properties.tableRowBadgePaidBackgroundColor = {
       label: "Table Badge Paid Background",
       value: tableRowBadgePaidBackgroundColor,
       onChange: (val: string) =>
-        setTableColor("tableRowBadgePaidBackgroundColor", val),
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableRowBadgePaidBackgroundColor",
+          val,
+        ),
     };
   } else if (type === "link") {
     properties.tableRowSecondaryTextColor = {
       label: "Table Row Secondary Text Color",
       value: tableRowSecondaryTextColor,
       onChange: (val: string) =>
-        setTableColor("tableRowSecondaryTextColor", val),
+        updateDashboardCustomization(
+          "useTableCustomization",
+          "tableRowSecondaryTextColor",
+          val,
+        ),
     };
   }
 
