@@ -21,6 +21,7 @@ import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import {
   useButtonCustomizationOption,
   useCardCustomizationOption,
+  useNotesCustomizationOption,
   useThemeCustomizationOption,
 } from "@/hooks/useAuthCustomization";
 
@@ -34,6 +35,7 @@ import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
 import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import { IsRichTextEmpty } from "@/util/IsRichTextEmpty";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
@@ -49,6 +51,7 @@ const Signup = ({
   auth,
 }: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false);
+  const { customNotesSignup } = useNotesCustomizationOption();
   useCustomizationSync({ auth });
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -174,7 +177,23 @@ const Signup = ({
           }}
         >
           <CardHeader className="space-y-1">
-            {isPreview && <InlineNotesEditor name="customNotesSignup" />}
+            {isPreview ? (
+              <InlineNotesEditor name="customNotesSignup" />
+            ) : !IsRichTextEmpty(customNotesSignup) ? (
+              <div
+                className="rich-text-preview"
+                dangerouslySetInnerHTML={{ __html: customNotesSignup }}
+              />
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold text-center">
+                  Create An Account
+                </h2>
+                <p className="text-center text-muted-foreground">
+                  Enter Your Information to Sign Up
+                </p>
+              </>
+            )}
           </CardHeader>
           <CardContent>
             <Form {...form}>

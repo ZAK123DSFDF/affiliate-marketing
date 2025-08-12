@@ -21,6 +21,7 @@ import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import {
   useButtonCustomizationOption,
   useCardCustomizationOption,
+  useNotesCustomizationOption,
   useThemeCustomizationOption,
 } from "@/hooks/useAuthCustomization";
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
@@ -34,6 +35,7 @@ import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
+import { IsRichTextEmpty } from "@/util/IsRichTextEmpty";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
@@ -76,6 +78,7 @@ const Login = ({
     buttonDisabledBackgroundColor,
     buttonTextColor,
   } = useButtonCustomizationOption();
+  const { customNotesLogin } = useNotesCustomizationOption();
   const affiliateMutation = useMutation({
     mutationFn: LoginAffiliateServer,
     onSuccess: (data: any) => {
@@ -179,7 +182,21 @@ const Login = ({
           }}
         >
           <CardHeader className="space-y-1">
-            {isPreview && <InlineNotesEditor name="customNotesLogin" />}
+            {isPreview ? (
+              <InlineNotesEditor name="customNotesLogin" />
+            ) : !IsRichTextEmpty(customNotesLogin) ? (
+              <div
+                className="rich-text-preview"
+                dangerouslySetInnerHTML={{ __html: customNotesLogin }}
+              />
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold text-center">Welcome back</h2>
+                <p className="text-center text-muted-foreground">
+                  Enter your credentials to access your account
+                </p>
+              </>
+            )}
           </CardHeader>
 
           <CardContent>
