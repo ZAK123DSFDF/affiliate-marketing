@@ -184,7 +184,7 @@ const Login = ({
           <CardHeader className="space-y-1">
             {isPreview ? (
               <InlineNotesEditor name="customNotesLogin" />
-            ) : !IsRichTextEmpty(customNotesLogin) ? (
+            ) : affiliate && !IsRichTextEmpty(customNotesLogin) ? (
               <div
                 className="rich-text-preview"
                 dangerouslySetInnerHTML={{ __html: customNotesLogin }}
