@@ -16,10 +16,13 @@ import { cn } from "@/lib/utils";
 import { KpiCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/KpiCardCustomizationOptions";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
+import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 
 interface CardsProps {
   affiliate: boolean;
   isPreview?: boolean;
+  dashboard?: typeof defaultDashboardCustomization;
 }
 
 const affiliateColorPairs = [
@@ -35,10 +38,14 @@ const sellerColorPairs = [
   { iconBg: "bg-yellow-100", iconColor: "text-yellow-600" },
 ];
 
-const Cards = ({ affiliate = false, isPreview = false }: CardsProps) => {
+const Cards = ({
+  affiliate = false,
+  isPreview = false,
+  dashboard,
+}: CardsProps) => {
   const [selectedMonth, setSelectedMonth] = useState<string | undefined>();
   const [selectedYear, setSelectedYear] = useState<string | undefined>();
-
+  useCustomizationSync({ dashboard });
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const kpiCard = useKpiCardCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();

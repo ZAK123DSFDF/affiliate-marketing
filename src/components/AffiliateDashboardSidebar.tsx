@@ -18,6 +18,8 @@ import Link from "next/link";
 import { SidebarCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/SidebarCustomizationOptions";
 import { DashboardCustomizationStores } from "@/store/useCustomizationStore";
 import { cn } from "@/lib/utils";
+import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 
 type Props = {
   orgId?: string;
@@ -25,6 +27,7 @@ type Props = {
   onSelectPage?: (page: string) => void;
   currentPage?: string;
   affiliate: boolean;
+  dashboard?: typeof defaultDashboardCustomization;
 };
 
 const AffiliateDashboardSidebar = ({
@@ -33,8 +36,10 @@ const AffiliateDashboardSidebar = ({
   onSelectPage,
   currentPage,
   affiliate,
+  dashboard,
 }: Props) => {
   const pathname = usePathname();
+  useCustomizationSync({ dashboard });
   const items = [
     {
       title: "Dashboard",

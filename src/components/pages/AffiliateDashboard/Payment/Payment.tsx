@@ -38,22 +38,27 @@ import {
   useTableCustomizationOption,
 } from "@/hooks/useDashboardCustomization";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
+import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 
 interface AffiliateCommissionTableProps {
   data: AffiliatePaymentRow[];
   isPreview?: boolean;
   affiliate: boolean;
+  dashboard?: typeof defaultDashboardCustomization;
 }
 
 export default function AffiliateCommissionTable({
   data,
   isPreview,
   affiliate = false,
+  dashboard,
 }: AffiliateCommissionTableProps) {
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
   const dashboardTable = useTableCustomizationOption();
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
+  useCustomizationSync({ dashboard });
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const columns: ColumnDef<AffiliatePaymentRow>[] = [
     {

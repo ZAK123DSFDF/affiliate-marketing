@@ -53,6 +53,8 @@ import {
 } from "@/hooks/useDashboardCustomization";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
+import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 
 interface CommonData {
   id: string;
@@ -67,6 +69,7 @@ interface ProfileProps {
   isPreview?: boolean;
   affiliate: boolean;
   orgId: string;
+  dashboard?: typeof defaultDashboardCustomization;
 }
 
 export default function Profile({
@@ -75,6 +78,7 @@ export default function Profile({
   isPreview = false,
   affiliate = false,
   orgId,
+  dashboard,
 }: ProfileProps) {
   const initialName = AffiliateData
     ? AffiliateData.name
@@ -112,6 +116,7 @@ export default function Profile({
     currentEmail.trim() === initialEmail.trim();
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  useCustomizationSync({ dashboard });
   const [step, setStep] = useState<"current" | "new">("current");
   const { showCustomToast } = useCustomToast();
   const updateProfile = useMutation({
