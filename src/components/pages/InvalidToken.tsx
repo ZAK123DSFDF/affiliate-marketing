@@ -8,12 +8,16 @@ import {
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
+import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
   affiliate: boolean;
+  auth?: typeof defaultAuthCustomization;
 };
-const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
+const InvalidToken = ({ orgId, isPreview, affiliate, auth }: Props) => {
+  useCustomizationSync({ auth });
   const {
     backgroundColor,
     InvalidPrimaryCustomization,

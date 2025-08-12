@@ -32,14 +32,24 @@ import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
+import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
   setTab?: (tab: string) => void;
   affiliate: boolean;
+  auth?: typeof defaultAuthCustomization;
 };
-const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
+const Signup = ({
+  orgId,
+  isPreview = false,
+  setTab,
+  affiliate,
+  auth,
+}: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false);
+  useCustomizationSync({ auth });
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {

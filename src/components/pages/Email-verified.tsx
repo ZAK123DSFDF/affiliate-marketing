@@ -14,15 +14,25 @@ import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
 import { useRouter } from "next/navigation";
+import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 
 type Props = {
   orgId?: string;
   isPreview?: boolean;
   setMainTab?: (tab: string) => void;
   affiliate: boolean;
+  auth?: typeof defaultAuthCustomization;
 };
 
-const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
+const EmailVerified = ({
+  orgId,
+  isPreview,
+  setMainTab,
+  affiliate,
+  auth,
+}: Props) => {
+  useCustomizationSync({ auth });
   const { backgroundColor } = useThemeCustomizationOption();
   const {
     emailVerifiedPrimaryColor,

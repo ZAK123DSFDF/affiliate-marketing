@@ -33,17 +33,21 @@ import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
+import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
   setTab?: (tab: string) => void;
   affiliate: boolean;
+  auth?: typeof defaultAuthCustomization;
 };
 const ForgotPassword = ({
   orgId,
   isPreview = false,
   setTab,
   affiliate,
+  auth,
 }: Props) => {
   const form = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -52,6 +56,7 @@ const ForgotPassword = ({
     },
   });
   const [pending, setPending] = useState(false);
+  useCustomizationSync({ auth });
   const { showCustomToast } = useCustomToast();
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
     useThemeCustomizationOption();

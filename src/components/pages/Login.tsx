@@ -32,14 +32,24 @@ import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
   setTab?: (tab: string) => void;
   affiliate: boolean;
+  auth?: typeof defaultAuthCustomization;
 };
-const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
+const Login = ({
+  orgId,
+  isPreview = false,
+  setTab,
+  affiliate,
+  auth,
+}: Props) => {
   const { showCustomToast } = useCustomToast();
+  useCustomizationSync({ auth });
   const [previewLoading, setPreviewLoading] = useState(false);
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -72,7 +82,6 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
       console.log("Affiliate login success", data);
     },
   });
-
   const normalMutation = useMutation({
     mutationFn: LoginServer,
     onSuccess: (data: any) => {

@@ -35,22 +35,27 @@ import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
+import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
   setTab?: (tab: string) => void;
   affiliate: boolean;
+  auth?: typeof defaultAuthCustomization;
 };
 const ResetPassword = ({
   orgId,
   isPreview = false,
   setTab,
   affiliate,
+  auth,
 }: Props) => {
   const searchParams = useSearchParams();
+  useCustomizationSync({ auth });
   const token = searchParams.get("token");
   if (!token && !isPreview) {
-    return <InvalidToken affiliate={affiliate} />;
+    return <InvalidToken auth={auth} affiliate={affiliate} />;
   }
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(passwordSchema),
