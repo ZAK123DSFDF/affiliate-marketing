@@ -36,8 +36,9 @@ import { LinkButton } from "@/components/ui-custom/LinkButton";
 import { IsRichTextEmpty } from "@/util/IsRichTextEmpty";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 type Props = {
-  orgId: string;
+  orgId?: string;
   isPreview?: boolean;
   setTab?: (tab: string) => void;
   affiliate: boolean;
@@ -71,7 +72,9 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     buttonTextColor,
   } = useButtonCustomizationOption();
   const { customNotesLogin } = useNotesCustomizationOption();
-  const { isPending } = useCustomizationSync(orgId, "auth", affiliate);
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "auth")
+    : { isPending: false, isError: false, refetch: () => {} };
   const affiliateMutation = useMutation({
     mutationFn: LoginAffiliateServer,
     onSuccess: (data: any) => {
@@ -129,6 +132,9 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   };
   if (isPending) {
     return <PendingState />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
   }
   return (
     <div

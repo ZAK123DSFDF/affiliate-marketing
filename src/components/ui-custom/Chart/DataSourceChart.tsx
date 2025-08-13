@@ -26,8 +26,6 @@ import {
 import { PieChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/PieChartCustomization";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 
 const chartConfig: ChartConfig = {
   visitors: { label: "Visitors" },

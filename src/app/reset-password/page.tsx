@@ -4,16 +4,11 @@ import { validateOrg } from "@/util/ValidateOrg";
 import { redirect } from "next/navigation";
 import { OrgIdProps } from "@/lib/types/orgId";
 
-const resetPasswordPage = async ({ params }: OrgIdProps) => {
-  const { orgId } = await params;
-  const org = await validateOrg(orgId);
-  if (!org.orgFound) {
-    redirect(`/affiliate/${orgId}/not-found`);
-  }
+const resetPasswordPage = async () => {
   return (
     <>
       <Suspense fallback={<div>Loading...</div>}>
-        <ResetPassword orgId={orgId} affiliate={false} />
+        <ResetPassword affiliate={false} />
       </Suspense>
     </>
   );

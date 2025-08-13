@@ -35,8 +35,9 @@ import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 type Props = {
-  orgId: string;
+  orgId?: string;
   isPreview?: boolean;
   setTab?: (tab: string) => void;
   affiliate: boolean;
@@ -54,7 +55,9 @@ const ForgotPassword = ({
     },
   });
   const [pending, setPending] = useState(false);
-  const { isPending } = useCustomizationSync(orgId, "auth", affiliate);
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "auth")
+    : { isPending: false, isError: false, refetch: () => {} };
   const { showCustomToast } = useCustomToast();
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
     useThemeCustomizationOption();
@@ -102,6 +105,9 @@ const ForgotPassword = ({
   };
   if (isPending) {
     return <PendingState />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
   }
   return (
     <div

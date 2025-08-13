@@ -1,4 +1,3 @@
-// hooks/useCustomizationSync.ts
 "use client";
 
 import { useEffect } from "react";
@@ -14,17 +13,17 @@ import {
 } from "@/store/useCustomizationStore";
 
 type CustomizationType = "auth" | "dashboard" | "both";
-
 export function useCustomizationSync(
-  orgId: string,
+  orgId?: string,
   type: CustomizationType = "both",
-  affiliate?: boolean,
 ) {
   const query = useQuery({
     queryKey: ["customizations", type, orgId],
     queryFn: async () => {
+      if (!orgId) return { auth: {}, dashboard: {} };
       if (type === "auth") {
         const auth = await getAuthCustomization(orgId);
+        console.log("Fetched AUTH customization:", auth);
         return { auth, dashboard: {} };
       }
       if (type === "dashboard") {
@@ -34,7 +33,7 @@ export function useCustomizationSync(
       // type === "both"
       return await getCustomizations(orgId);
     },
-    enabled: !!orgId && !!affiliate,
+    enabled: !!orgId,
   });
 
   useEffect(() => {

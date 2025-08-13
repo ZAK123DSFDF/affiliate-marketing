@@ -27,6 +27,7 @@ import {
 import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -82,7 +83,9 @@ const SidebarProvider = React.forwardRef<
   ) => {
     const isMobile = useIsMobile();
     const [openMobile, setOpenMobile] = React.useState(false);
-    const { isPending } = useCustomizationSync(orgId, "dashboard", affiliate);
+    const { isPending, isError, refetch } = affiliate
+      ? useCustomizationSync(orgId, "dashboard")
+      : { isPending: false, isError: false, refetch: () => {} };
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
     const [_open, _setOpen] = React.useState(defaultOpen);
@@ -151,6 +154,9 @@ const SidebarProvider = React.forwardRef<
     );
     if (isPending) {
       return <PendingState />;
+    }
+    if (isError) {
+      return <ErrorState onRetry={refetch} />;
     }
     return (
       <SidebarContext.Provider value={contextValue}>

@@ -4,15 +4,10 @@ import { validateOrg } from "@/util/ValidateOrg";
 import { redirect } from "next/navigation";
 import { OrgIdProps } from "@/lib/types/orgId";
 
-const signupPage = async ({ params }: OrgIdProps) => {
-  const { orgId } = await params;
-  const org = await validateOrg(orgId);
-  if (!org.orgFound) {
-    redirect(`/affiliate/${orgId}/not-found`);
-  }
+const signupPage = async () => {
   return (
     <>
-      <Signup orgId={orgId} affiliate={false} />
+      <Signup affiliate={false} />
     </>
   );
 };

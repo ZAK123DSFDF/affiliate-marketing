@@ -37,8 +37,9 @@ import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 type Props = {
-  orgId: string;
+  orgId?: string;
   isPreview?: boolean;
   setTab?: (tab: string) => void;
   affiliate: boolean;
@@ -50,7 +51,9 @@ const ResetPassword = ({
   affiliate,
 }: Props) => {
   const searchParams = useSearchParams();
-  const { isPending } = useCustomizationSync(orgId, "auth", affiliate);
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "auth")
+    : { isPending: false, isError: false, refetch: () => {} };
   const token = searchParams.get("token");
   if (!token && !isPreview) {
     return <InvalidToken affiliate={affiliate} orgId={orgId} />;
@@ -112,6 +115,9 @@ const ResetPassword = ({
   };
   if (isPending) {
     return <PendingState />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
   }
   return (
     <div

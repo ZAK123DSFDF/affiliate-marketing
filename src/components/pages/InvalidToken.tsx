@@ -10,13 +10,16 @@ import { CardCustomizationOptions } from "@/components/ui-custom/Customization/A
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 type Props = {
-  orgId: string;
+  orgId?: string;
   isPreview?: boolean;
   affiliate: boolean;
 };
 const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
-  const { isPending } = useCustomizationSync(orgId, "auth", affiliate);
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "auth")
+    : { isPending: false, isError: false, refetch: () => {} };
   const {
     backgroundColor,
     InvalidPrimaryCustomization,
@@ -32,6 +35,9 @@ const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
   } = useCardCustomizationOption();
   if (isPending) {
     return <PendingState />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
   }
   return (
     <div

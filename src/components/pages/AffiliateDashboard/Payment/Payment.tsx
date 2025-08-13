@@ -40,6 +40,7 @@ import {
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 
 interface AffiliateCommissionTableProps {
   orgId: string;
@@ -59,11 +60,13 @@ export default function AffiliateCommissionTable({
   const dashboardTable = useTableCustomizationOption();
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
-  const { isPending: globalPending } = useCustomizationSync(
-    orgId,
-    "dashboard",
-    affiliate,
-  );
+  const {
+    isPending: globalPending,
+    isError,
+    refetch,
+  } = affiliate
+    ? useCustomizationSync(orgId, "dashboard")
+    : { isPending: false, isError: false, refetch: () => {} };
   const columns: ColumnDef<AffiliatePaymentRow>[] = [
     {
       accessorKey: "month",
@@ -316,6 +319,9 @@ export default function AffiliateCommissionTable({
   });
   if (globalPending) {
     return <PendingState withoutBackground />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
   }
   return (
     <div className="flex flex-col gap-6">

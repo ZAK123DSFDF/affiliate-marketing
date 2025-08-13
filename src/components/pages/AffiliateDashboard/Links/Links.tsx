@@ -42,6 +42,7 @@ import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 
 interface AffiliateLinkProps {
   orgId: string;
@@ -62,7 +63,9 @@ export default function Links({
   const dashboardCard = useDashboardCardCustomizationOption();
   const dashboardTable = useTableCustomizationOption();
   const { showCustomToast } = useCustomToast();
-  const { isPending } = useCustomizationSync(orgId, "dashboard", affiliate);
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "dashboard")
+    : { isPending: false, isError: false, refetch: () => {} };
   const columns: ColumnDef<AffiliateLinkWithStats>[] = [
     {
       accessorKey: "fullUrl",
@@ -285,6 +288,9 @@ export default function Links({
   });
   if (isPending) {
     return <PendingState withoutBackground />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
   }
   return (
     <div className="flex flex-col gap-6">

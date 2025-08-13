@@ -36,8 +36,9 @@ import { LinkButton } from "@/components/ui-custom/LinkButton";
 import { IsRichTextEmpty } from "@/util/IsRichTextEmpty";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 type Props = {
-  orgId: string;
+  orgId?: string;
   isPreview?: boolean;
   setTab?: (tab: string) => void;
   affiliate: boolean;
@@ -45,7 +46,9 @@ type Props = {
 const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false);
   const { customNotesSignup } = useNotesCustomizationOption();
-  const { isPending } = useCustomizationSync(orgId, "auth");
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "auth")
+    : { isPending: false, isError: false, refetch: () => {} };
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -124,6 +127,9 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   };
   if (isPending) {
     return <PendingState />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
   }
   return (
     <div

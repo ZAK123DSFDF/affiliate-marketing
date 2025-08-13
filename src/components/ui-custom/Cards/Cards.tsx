@@ -16,8 +16,6 @@ import { cn } from "@/lib/utils";
 import { KpiCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/KpiCardCustomizationOptions";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 
 interface CardsProps {
   affiliate: boolean;

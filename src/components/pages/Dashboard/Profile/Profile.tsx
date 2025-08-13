@@ -55,6 +55,7 @@ import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 
 interface CommonData {
   id: string;
@@ -87,7 +88,9 @@ export default function Profile({
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
   const dashboardButton = useDashboardButtonCustomizationOption();
-  const { isPending } = useCustomizationSync(orgId, "dashboard", affiliate);
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "dashboard")
+    : { isPending: false, isError: false, refetch: () => {} };
   const profileForm = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -245,6 +248,9 @@ export default function Profile({
   };
   if (isPending) {
     return <PendingState withoutBackground />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
   }
   return (
     <div className="flex flex-col gap-6">

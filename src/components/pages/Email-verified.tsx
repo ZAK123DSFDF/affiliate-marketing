@@ -17,9 +17,10 @@ import { useRouter } from "next/navigation";
 import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 
 type Props = {
-  orgId: string;
+  orgId?: string;
   isPreview?: boolean;
   setMainTab?: (tab: string) => void;
   affiliate: boolean;
@@ -27,7 +28,9 @@ type Props = {
 
 const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
   const { backgroundColor } = useThemeCustomizationOption();
-  const { isPending } = useCustomizationSync(orgId, "auth", affiliate);
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "auth")
+    : { isPending: false, isError: false, refetch: () => {} };
   const {
     emailVerifiedPrimaryColor,
     emailVerifiedSecondaryColor,
@@ -54,6 +57,9 @@ const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
   };
   if (isPending) {
     return <PendingState />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
   }
   return (
     <div
