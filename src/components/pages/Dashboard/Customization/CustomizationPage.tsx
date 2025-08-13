@@ -1,34 +1,19 @@
 "use client";
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AuthCustomization } from "@/components/pages/Dashboard/Customization/AuthCustomization";
 import { DashboardCustomization } from "@/components/pages/Dashboard/Customization/DashboardCustomization";
 import { ToastCustomization } from "@/components/ui-custom/Customization/ToastCustomization";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  getCustomizations,
-  saveCustomizationsAction,
-} from "@/app/seller/[orgId]/dashboard/customization/action";
+import { useMutation } from "@tanstack/react-query";
+import { saveCustomizationsAction } from "@/app/seller/[orgId]/dashboard/customization/action";
 import { getAuthCustomizationChanges } from "@/customization/Auth/AuthCustomizationChanges";
 import { useAuthCustomizationChangesStore } from "@/store/AuthCustomizationChangesStore";
 import { useDashboardCustomizationChangesStore } from "@/store/DashboardCustomizationChangesStore";
 import { getDashboardCustomizationChanges } from "@/customization/Dashboard/DashboardCustomizationChanges";
 import { Button } from "@/components/ui/button";
-import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization";
-import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 
-export default function CustomizationPage({
-  orgId,
-  dashboard,
-  auth,
-}: {
-  orgId: string;
-  dashboard: typeof defaultDashboardCustomization;
-  auth?: typeof defaultAuthCustomization;
-}) {
+export default function CustomizationPage({ orgId }: { orgId: string }) {
   const [mainTab, setMainTab] = useState("sidebar");
-  useCustomizationSync({ auth, dashboard });
   // Watch store changes so we can reactively compute payload
   const authChangesState = useAuthCustomizationChangesStore((s) => s.changes);
   const dashboardChangesState = useDashboardCustomizationChangesStore(
@@ -87,10 +72,10 @@ export default function CustomizationPage({
         </TabsList>
 
         <TabsContent value="sidebar">
-          <DashboardCustomization />
+          <DashboardCustomization orgId={orgId} />
         </TabsContent>
         <TabsContent value="auth">
-          <AuthCustomization setMainTab={setMainTab} />
+          <AuthCustomization orgId={orgId} setMainTab={setMainTab} />
         </TabsContent>
       </Tabs>
 

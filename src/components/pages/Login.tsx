@@ -71,7 +71,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     buttonTextColor,
   } = useButtonCustomizationOption();
   const { customNotesLogin } = useNotesCustomizationOption();
-  const { isPending } = useCustomizationSync(orgId, "auth");
+  const { isPending } = useCustomizationSync(orgId, "auth", affiliate);
   const affiliateMutation = useMutation({
     mutationFn: LoginAffiliateServer,
     onSuccess: (data: any) => {

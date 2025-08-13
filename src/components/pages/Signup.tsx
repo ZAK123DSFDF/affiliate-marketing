@@ -74,7 +74,8 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { showCustomToast } = useCustomToast();
   const affiliateMutation = useMutation({
     mutationFn: SignupAffiliateServer,
-    onSuccess: (data) => console.log("Affiliate signup success", data),
+    onSuccess: (data) =>
+      console.log("Affiliate signup success", data, affiliate),
   });
 
   const normalMutation = useMutation({

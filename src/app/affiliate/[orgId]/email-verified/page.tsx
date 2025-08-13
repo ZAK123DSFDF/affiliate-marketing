@@ -13,7 +13,7 @@ const emailVerifiedPage = async ({ params }: OrgIdProps) => {
   }
   return (
     <>
-      <EmailVerified affiliate />
+      <EmailVerified orgId={orgId} affiliate />
     </>
   );
 };

@@ -16,7 +16,7 @@ type Props = {
   affiliate: boolean;
 };
 const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
-  const { isPending } = useCustomizationSync(orgId, "auth");
+  const { isPending } = useCustomizationSync(orgId, "auth", affiliate);
   const {
     backgroundColor,
     InvalidPrimaryCustomization,

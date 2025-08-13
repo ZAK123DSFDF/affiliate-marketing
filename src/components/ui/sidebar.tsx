@@ -63,6 +63,7 @@ const SidebarProvider = React.forwardRef<
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
     orgId: string;
+    affiliate: boolean;
   }
 >(
   (
@@ -74,13 +75,14 @@ const SidebarProvider = React.forwardRef<
       style,
       children,
       orgId,
+      affiliate = false,
       ...props
     },
     ref,
   ) => {
     const isMobile = useIsMobile();
     const [openMobile, setOpenMobile] = React.useState(false);
-    const { isPending } = useCustomizationSync(orgId, "dashboard");
+    const { isPending } = useCustomizationSync(orgId, "dashboard", affiliate);
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
     const [_open, _setOpen] = React.useState(defaultOpen);

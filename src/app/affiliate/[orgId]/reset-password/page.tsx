@@ -13,7 +13,7 @@ const resetPasswordPage = async ({ params }: OrgIdProps) => {
   return (
     <>
       <Suspense fallback={<div>Loading...</div>}>
-        <ResetPassword affiliate />
+        <ResetPassword orgId={orgId} affiliate />
       </Suspense>
     </>
   );

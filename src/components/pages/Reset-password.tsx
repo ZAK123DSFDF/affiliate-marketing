@@ -50,7 +50,7 @@ const ResetPassword = ({
   affiliate,
 }: Props) => {
   const searchParams = useSearchParams();
-  const { isPending } = useCustomizationSync(orgId, "auth");
+  const { isPending } = useCustomizationSync(orgId, "auth", affiliate);
   const token = searchParams.get("token");
   if (!token && !isPreview) {
     return <InvalidToken affiliate={affiliate} orgId={orgId} />;

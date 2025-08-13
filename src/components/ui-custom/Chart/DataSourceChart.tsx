@@ -36,17 +36,14 @@ const chartConfig: ChartConfig = {
 export default function SocialTrafficPieChart({
   isPreview = false,
   affiliate = false,
-  dashboard,
 }: {
   isPreview?: boolean;
   affiliate: boolean;
-  dashboard?: typeof defaultDashboardCustomization;
 }) {
   const [selectedDate, setSelectedDate] = useState<{
     month?: number;
     year?: number;
   }>({});
-  useCustomizationSync({ dashboard });
   const innerRadius = isPreview ? 60 : 100;
   const outerRadius = isPreview ? 90 : 140;
   const ThemeCustomization = useDashboardThemeCustomizationOption();

@@ -54,7 +54,7 @@ const ForgotPassword = ({
     },
   });
   const [pending, setPending] = useState(false);
-  const { isPending } = useCustomizationSync(orgId, "auth");
+  const { isPending } = useCustomizationSync(orgId, "auth", affiliate);
   const { showCustomToast } = useCustomToast();
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
     useThemeCustomizationOption();

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { useParams } from "next/navigation";
 import AffiliateDashboardSidebar from "@/components/AffiliateDashboardSidebar";
 import Profile from "@/components/pages/Dashboard/Profile/Profile";
 import PaymentTable from "@/components/pages/AffiliateDashboard/Payment/Payment";
@@ -15,13 +14,10 @@ import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOv
 import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization";
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
 
-export function DashboardCustomization() {
+export function DashboardCustomization({ orgId }: { orgId: string }) {
   const [selectedPage, setSelectedPage] = useState("dashboard");
 
   const { mainBackgroundColor } = useDashboardThemeCustomizationOption();
-
-  const params = useParams();
-  const orgId = params?.orgId as string;
 
   if (!orgId) {
     return <div className="text-red-500">Invalid organization ID</div>;
@@ -45,17 +41,27 @@ export function DashboardCustomization() {
           >
             <DashboardThemeCustomizationOptions name="mainBackgroundColor" />
             {selectedPage === "dashboard" && (
-              <AffiliateOverview affiliate isPreview />
+              <AffiliateOverview orgId={orgId} affiliate isPreview />
             )}
             {selectedPage === "links" && (
-              <Links affiliate isPreview data={dummyAffiliateLinks} />
+              <Links
+                orgId={orgId}
+                affiliate
+                isPreview
+                data={dummyAffiliateLinks}
+              />
             )}
             {selectedPage === "payment" && (
-              <PaymentTable affiliate isPreview data={dummyAffiliatePayments} />
+              <PaymentTable
+                orgId={orgId}
+                affiliate
+                isPreview
+                data={dummyAffiliatePayments}
+              />
             )}
             {selectedPage === "profile" && (
               <Profile
-                orgId="1234"
+                orgId={orgId}
                 affiliate
                 AffiliateData={dummyProfileData}
                 isPreview

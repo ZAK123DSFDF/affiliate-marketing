@@ -27,7 +27,7 @@ type Props = {
 
 const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
   const { backgroundColor } = useThemeCustomizationOption();
-  const { isPending } = useCustomizationSync(orgId, "auth");
+  const { isPending } = useCustomizationSync(orgId, "auth", affiliate);
   const {
     emailVerifiedPrimaryColor,
     emailVerifiedSecondaryColor,

@@ -39,7 +39,6 @@ import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 interface ChartDailyMetricsProps {
   affiliate: boolean;
   isPreview?: boolean;
-  dashboard?: typeof defaultDashboardCustomization;
 }
 
 const rawMetricsData = [
@@ -55,14 +54,12 @@ const rawMetricsData = [
 export function ChartDailyMetrics({
   affiliate = false,
   isPreview = false,
-  dashboard,
 }: ChartDailyMetricsProps) {
   const [selectedDate, setSelectedDate] = React.useState<{
     month?: number;
     year?: number;
   }>({});
   const ChartCustomization = useChartCustomizationOption();
-  useCustomizationSync({ dashboard });
   const ThemeCustomization =
     DashboardCustomizationStores.useDashboardThemeCustomization();
   const dashboardCard = useDashboardCardCustomizationOption();

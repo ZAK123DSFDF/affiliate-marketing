@@ -13,7 +13,7 @@ const forgetPasswordPage = async ({ params }: OrgIdProps) => {
   }
   return (
     <>
-      <ForgotPassword affiliate />
+      <ForgotPassword orgId={orgId} affiliate />
     </>
   );
 };

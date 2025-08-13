@@ -62,7 +62,7 @@ export default function Links({
   const dashboardCard = useDashboardCardCustomizationOption();
   const dashboardTable = useTableCustomizationOption();
   const { showCustomToast } = useCustomToast();
-  const { isPending } = useCustomizationSync(orgId, "dashboard");
+  const { isPending } = useCustomizationSync(orgId, "dashboard", affiliate);
   const columns: ColumnDef<AffiliateLinkWithStats>[] = [
     {
       accessorKey: "fullUrl",

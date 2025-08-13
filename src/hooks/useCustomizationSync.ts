@@ -18,6 +18,7 @@ type CustomizationType = "auth" | "dashboard" | "both";
 export function useCustomizationSync(
   orgId: string,
   type: CustomizationType = "both",
+  affiliate?: boolean,
 ) {
   const query = useQuery({
     queryKey: ["customizations", type, orgId],
@@ -33,7 +34,7 @@ export function useCustomizationSync(
       // type === "both"
       return await getCustomizations(orgId);
     },
-    enabled: !!orgId,
+    enabled: !!orgId && !!affiliate,
   });
 
   useEffect(() => {

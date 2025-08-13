@@ -87,7 +87,7 @@ export default function Profile({
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
   const dashboardButton = useDashboardButtonCustomizationOption();
-  const { isPending } = useCustomizationSync(orgId, "dashboard");
+  const { isPending } = useCustomizationSync(orgId, "dashboard", affiliate);
   const profileForm = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {

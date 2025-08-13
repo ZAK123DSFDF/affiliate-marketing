@@ -17,7 +17,7 @@ const AffiliateOverview = ({
   isPreview?: boolean;
   affiliate: boolean;
 }) => {
-  const { isPending } = useCustomizationSync(orgId, "dashboard");
+  const { isPending } = useCustomizationSync(orgId, "dashboard", affiliate);
   if (isPending) {
     return <PendingState withoutBackground />;
   }

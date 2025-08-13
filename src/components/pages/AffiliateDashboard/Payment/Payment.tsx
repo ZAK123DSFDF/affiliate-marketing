@@ -59,7 +59,11 @@ export default function AffiliateCommissionTable({
   const dashboardTable = useTableCustomizationOption();
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
-  const { isPending: globalPending } = useCustomizationSync(orgId, "dashboard");
+  const { isPending: globalPending } = useCustomizationSync(
+    orgId,
+    "dashboard",
+    affiliate,
+  );
   const columns: ColumnDef<AffiliatePaymentRow>[] = [
     {
       accessorKey: "month",

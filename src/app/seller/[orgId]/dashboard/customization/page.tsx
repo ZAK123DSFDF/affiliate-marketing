@@ -14,13 +14,9 @@ export default async function CustomizationServerPage({ params }: OrgIdProps) {
   if (!org.orgFound) {
     redirect(`/affiliate/${orgId}/not-found`);
   }
-  const [dashboard, auth] = await Promise.all([
-    getDashboardCustomization(orgId),
-    getAuthCustomization(orgId),
-  ]);
   return (
     <>
-      <CustomizationPage orgId={orgId} dashboard={dashboard} auth={auth} />
+      <CustomizationPage orgId={orgId} />
     </>
   );
 }
