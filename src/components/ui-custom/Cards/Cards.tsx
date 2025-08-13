@@ -154,13 +154,13 @@ const Cards = ({ affiliate = false, isPreview = false }: CardsProps) => {
                       className={cn(
                         "flex-shrink-0 rounded-xl flex items-center justify-center",
                         isPreview ? "w-8 h-8" : "p-3",
-                        affiliate && defaultColorPair.iconBg,
+                        defaultColorPair.iconBg,
                       )}
                     >
                       <Icon
                         className={cn(
                           isPreview ? "w-4 h-4" : "w-8 h-8",
-                          affiliate && defaultColorPair.iconColor,
+                          defaultColorPair.iconColor,
                         )}
                       />
                     </div>
