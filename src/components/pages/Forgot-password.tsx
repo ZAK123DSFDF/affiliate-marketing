@@ -33,21 +33,19 @@ import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
-import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
 type Props = {
-  orgId?: string;
+  orgId: string;
   isPreview?: boolean;
   setTab?: (tab: string) => void;
   affiliate: boolean;
-  auth?: typeof defaultAuthCustomization;
 };
 const ForgotPassword = ({
   orgId,
   isPreview = false,
   setTab,
   affiliate,
-  auth,
 }: Props) => {
   const form = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -56,7 +54,7 @@ const ForgotPassword = ({
     },
   });
   const [pending, setPending] = useState(false);
-  useCustomizationSync({ auth });
+  const { isPending } = useCustomizationSync(orgId, "auth");
   const { showCustomToast } = useCustomToast();
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
     useThemeCustomizationOption();
@@ -102,7 +100,9 @@ const ForgotPassword = ({
       return;
     }
   };
-
+  if (isPending) {
+    return <PendingState />;
+  }
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${

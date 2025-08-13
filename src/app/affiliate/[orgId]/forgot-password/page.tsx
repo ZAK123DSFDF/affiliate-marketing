@@ -11,10 +11,9 @@ const forgetPasswordPage = async ({ params }: OrgIdProps) => {
   if (!org.orgFound) {
     redirect(`/affiliate/${orgId}/not-found`);
   }
-  const auth = await getAuthCustomization(orgId);
   return (
     <>
-      <ForgotPassword auth={auth} affiliate />
+      <ForgotPassword affiliate />
     </>
   );
 };

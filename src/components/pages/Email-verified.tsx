@@ -16,24 +16,18 @@ import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization
 import { useRouter } from "next/navigation";
 import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
 
 type Props = {
-  orgId?: string;
+  orgId: string;
   isPreview?: boolean;
   setMainTab?: (tab: string) => void;
   affiliate: boolean;
-  auth?: typeof defaultAuthCustomization;
 };
 
-const EmailVerified = ({
-  orgId,
-  isPreview,
-  setMainTab,
-  affiliate,
-  auth,
-}: Props) => {
-  useCustomizationSync({ auth });
+const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
   const { backgroundColor } = useThemeCustomizationOption();
+  const { isPending } = useCustomizationSync(orgId, "auth");
   const {
     emailVerifiedPrimaryColor,
     emailVerifiedSecondaryColor,
@@ -58,6 +52,9 @@ const EmailVerified = ({
       router.push("/dashboard");
     }
   };
+  if (isPending) {
+    return <PendingState />;
+  }
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${

@@ -40,29 +40,29 @@ import {
 } from "@/hooks/useDashboardCustomization";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
-import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
 
 interface AffiliateLinkProps {
+  orgId: string;
   data: AffiliateLinkWithStats[];
   isPreview?: boolean;
   isTopLinksView?: boolean;
   affiliate: boolean;
-  dashboard?: typeof defaultDashboardCustomization;
 }
 export default function Links({
+  orgId,
   data,
   isPreview,
   isTopLinksView = false,
   affiliate,
-  dashboard,
 }: AffiliateLinkProps) {
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const dashboardButton = useDashboardButtonCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
   const dashboardTable = useTableCustomizationOption();
-  useCustomizationSync({ dashboard });
   const { showCustomToast } = useCustomToast();
+  const { isPending } = useCustomizationSync(orgId, "dashboard");
   const columns: ColumnDef<AffiliateLinkWithStats>[] = [
     {
       accessorKey: "fullUrl",
@@ -283,7 +283,9 @@ export default function Links({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
-
+  if (isPending) {
+    return <PendingState withoutBackground />;
+  }
   return (
     <div className="flex flex-col gap-6">
       {!isTopLinksView && (

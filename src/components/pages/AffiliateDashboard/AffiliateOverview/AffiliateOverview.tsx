@@ -5,38 +5,31 @@ import SocialTrafficCharts from "@/components/ui-custom/Chart/DataSourceChart";
 import { ChartDailyMetrics } from "@/components/ui-custom/Chart/SalesChart";
 import Links from "@/components/pages/AffiliateDashboard/Links/Links";
 import { dummyLinksData } from "@/lib/types/dummyLInksData";
-import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
 
 const AffiliateOverview = ({
+  orgId,
   isPreview = false,
   affiliate = false,
-  dashboard,
 }: {
+  orgId: string;
   isPreview?: boolean;
   affiliate: boolean;
-  dashboard?: typeof defaultDashboardCustomization;
 }) => {
+  const { isPending } = useCustomizationSync(orgId, "dashboard");
+  if (isPending) {
+    return <PendingState withoutBackground />;
+  }
   return (
     <div className="space-y-8">
-      <Cards
-        affiliate={affiliate}
-        isPreview={isPreview}
-        dashboard={dashboard}
-      />
+      <Cards affiliate={affiliate} isPreview={isPreview} />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="h-full">
-          <ChartDailyMetrics
-            affiliate={affiliate}
-            isPreview={isPreview}
-            dashboard={dashboard}
-          />
+          <ChartDailyMetrics affiliate={affiliate} isPreview={isPreview} />
         </div>
         <div className="h-full">
-          <SocialTrafficCharts
-            isPreview={isPreview}
-            affiliate={affiliate}
-            dashboard={dashboard}
-          />
+          <SocialTrafficCharts isPreview={isPreview} affiliate={affiliate} />
         </div>
       </div>
 
@@ -44,8 +37,8 @@ const AffiliateOverview = ({
         data={dummyLinksData}
         affiliate={affiliate}
         isTopLinksView
-        dashboard={dashboard}
         isPreview={isPreview}
+        orgId={orgId}
       />
     </div>
   );

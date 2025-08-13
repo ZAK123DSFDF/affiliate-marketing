@@ -4,7 +4,6 @@ import { validateOrg } from "@/util/ValidateOrg";
 import { redirect } from "next/navigation";
 import { OrgIdProps } from "@/lib/types/orgId";
 import { getAffiliateData } from "@/app/affiliate/[orgId]/dashboard/profile/action";
-import { getDashboardCustomization } from "@/app/seller/[orgId]/dashboard/customization/action";
 
 const profilePage = async ({ params }: OrgIdProps) => {
   const { orgId } = await params;
@@ -18,15 +17,9 @@ const profilePage = async ({ params }: OrgIdProps) => {
   if (!affiliateResponse.ok) {
     redirect(`/error?message=${encodeURIComponent(affiliateResponse.error)}`);
   }
-  const dashboard = await getDashboardCustomization(orgId);
   return (
     <>
-      <Profile
-        orgId={orgId}
-        affiliate
-        AffiliateData={affiliateResponse.data}
-        dashboard={dashboard}
-      />
+      <Profile orgId={orgId} affiliate AffiliateData={affiliateResponse.data} />
     </>
   );
 };

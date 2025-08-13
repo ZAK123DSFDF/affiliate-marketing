@@ -4,7 +4,6 @@ import { validateOrg } from "@/util/ValidateOrg";
 import { redirect } from "next/navigation";
 import { getAffiliateCommissionByMonth } from "@/app/affiliate/[orgId]/dashboard/payment/action";
 import PaymentTable from "@/components/pages/AffiliateDashboard/Payment/Payment";
-import { getDashboardCustomization } from "@/app/seller/[orgId]/dashboard/customization/action";
 
 const paymentPage = async ({ params }: OrgIdProps) => {
   const { orgId } = await params;
@@ -17,10 +16,9 @@ const paymentPage = async ({ params }: OrgIdProps) => {
   if (!res.ok) {
     redirect(`/error?message=${encodeURIComponent(res.error)}`);
   }
-  const dashboard = await getDashboardCustomization(orgId);
   return (
     <>
-      <PaymentTable affiliate data={res.data} dashboard={dashboard} />
+      <PaymentTable orgId={orgId} affiliate data={res.data} />
     </>
   );
 };

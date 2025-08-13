@@ -38,28 +38,28 @@ import {
   useTableCustomizationOption,
 } from "@/hooks/useDashboardCustomization";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
 
 interface AffiliateCommissionTableProps {
+  orgId: string;
   data: AffiliatePaymentRow[];
   isPreview?: boolean;
   affiliate: boolean;
-  dashboard?: typeof defaultDashboardCustomization;
 }
 
 export default function AffiliateCommissionTable({
+  orgId,
   data,
   isPreview,
   affiliate = false,
-  dashboard,
 }: AffiliateCommissionTableProps) {
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
   const dashboardTable = useTableCustomizationOption();
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
-  useCustomizationSync({ dashboard });
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
+  const { isPending: globalPending } = useCustomizationSync(orgId, "dashboard");
   const columns: ColumnDef<AffiliatePaymentRow>[] = [
     {
       accessorKey: "month",
@@ -310,6 +310,9 @@ export default function AffiliateCommissionTable({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
+  if (globalPending) {
+    return <PendingState withoutBackground />;
+  }
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">

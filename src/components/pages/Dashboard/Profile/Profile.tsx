@@ -53,8 +53,8 @@ import {
 } from "@/hooks/useDashboardCustomization";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
-import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
 
 interface CommonData {
   id: string;
@@ -69,7 +69,6 @@ interface ProfileProps {
   isPreview?: boolean;
   affiliate: boolean;
   orgId: string;
-  dashboard?: typeof defaultDashboardCustomization;
 }
 
 export default function Profile({
@@ -78,7 +77,6 @@ export default function Profile({
   isPreview = false,
   affiliate = false,
   orgId,
-  dashboard,
 }: ProfileProps) {
   const initialName = AffiliateData
     ? AffiliateData.name
@@ -89,6 +87,7 @@ export default function Profile({
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
   const dashboardButton = useDashboardButtonCustomizationOption();
+  const { isPending } = useCustomizationSync(orgId, "dashboard");
   const profileForm = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -116,7 +115,6 @@ export default function Profile({
     currentEmail.trim() === initialEmail.trim();
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  useCustomizationSync({ dashboard });
   const [step, setStep] = useState<"current" | "new">("current");
   const { showCustomToast } = useCustomToast();
   const updateProfile = useMutation({
@@ -245,9 +243,9 @@ export default function Profile({
     currentPasswordForm.reset();
     newPasswordForm.reset();
   };
-  useEffect(() => {
-    console.log("show open modal", showPasswordModal);
-  }, [showPasswordModal]);
+  if (isPending) {
+    return <PendingState withoutBackground />;
+  }
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">

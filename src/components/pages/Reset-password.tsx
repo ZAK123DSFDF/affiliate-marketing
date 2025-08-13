@@ -35,27 +35,25 @@ import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
-import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
 type Props = {
-  orgId?: string;
+  orgId: string;
   isPreview?: boolean;
   setTab?: (tab: string) => void;
   affiliate: boolean;
-  auth?: typeof defaultAuthCustomization;
 };
 const ResetPassword = ({
   orgId,
   isPreview = false,
   setTab,
   affiliate,
-  auth,
 }: Props) => {
   const searchParams = useSearchParams();
-  useCustomizationSync({ auth });
+  const { isPending } = useCustomizationSync(orgId, "auth");
   const token = searchParams.get("token");
   if (!token && !isPreview) {
-    return <InvalidToken auth={auth} affiliate={affiliate} />;
+    return <InvalidToken affiliate={affiliate} orgId={orgId} />;
   }
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(passwordSchema),
@@ -112,7 +110,9 @@ const ResetPassword = ({
       return;
     }
   };
-
+  if (isPending) {
+    return <PendingState />;
+  }
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${

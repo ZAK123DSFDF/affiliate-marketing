@@ -33,25 +33,17 @@ import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
-import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
 import { IsRichTextEmpty } from "@/util/IsRichTextEmpty";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
 type Props = {
-  orgId?: string;
+  orgId: string;
   isPreview?: boolean;
   setTab?: (tab: string) => void;
   affiliate: boolean;
-  auth?: typeof defaultAuthCustomization;
 };
-const Login = ({
-  orgId,
-  isPreview = false,
-  setTab,
-  affiliate,
-  auth,
-}: Props) => {
+const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { showCustomToast } = useCustomToast();
-  useCustomizationSync({ auth });
   const [previewLoading, setPreviewLoading] = useState(false);
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -79,6 +71,7 @@ const Login = ({
     buttonTextColor,
   } = useButtonCustomizationOption();
   const { customNotesLogin } = useNotesCustomizationOption();
+  const { isPending } = useCustomizationSync(orgId, "auth");
   const affiliateMutation = useMutation({
     mutationFn: LoginAffiliateServer,
     onSuccess: (data: any) => {
@@ -134,6 +127,9 @@ const Login = ({
       console.error("Login failed", error);
     }
   };
+  if (isPending) {
+    return <PendingState />;
+  }
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${

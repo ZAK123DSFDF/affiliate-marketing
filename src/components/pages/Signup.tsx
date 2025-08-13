@@ -33,26 +33,19 @@ import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
-import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import { IsRichTextEmpty } from "@/util/IsRichTextEmpty";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
 type Props = {
-  orgId?: string;
+  orgId: string;
   isPreview?: boolean;
   setTab?: (tab: string) => void;
   affiliate: boolean;
-  auth?: typeof defaultAuthCustomization;
 };
-const Signup = ({
-  orgId,
-  isPreview = false,
-  setTab,
-  affiliate,
-  auth,
-}: Props) => {
+const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false);
   const { customNotesSignup } = useNotesCustomizationOption();
-  useCustomizationSync({ auth });
+  const { isPending } = useCustomizationSync(orgId, "auth");
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -128,7 +121,9 @@ const Signup = ({
       console.error("Signup failed:", err);
     }
   };
-
+  if (isPending) {
+    return <PendingState />;
+  }
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${

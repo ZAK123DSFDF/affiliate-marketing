@@ -8,16 +8,15 @@ import {
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
 type Props = {
-  orgId?: string;
+  orgId: string;
   isPreview?: boolean;
   affiliate: boolean;
-  auth?: typeof defaultAuthCustomization;
 };
-const InvalidToken = ({ orgId, isPreview, affiliate, auth }: Props) => {
-  useCustomizationSync({ auth });
+const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
+  const { isPending } = useCustomizationSync(orgId, "auth");
   const {
     backgroundColor,
     InvalidPrimaryCustomization,
@@ -31,6 +30,9 @@ const InvalidToken = ({ orgId, isPreview, affiliate, auth }: Props) => {
     cardBackgroundColor,
     cardShadowThickness,
   } = useCardCustomizationOption();
+  if (isPending) {
+    return <PendingState />;
+  }
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${

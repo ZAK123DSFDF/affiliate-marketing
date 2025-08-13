@@ -11,10 +11,9 @@ const emailVerifiedPage = async ({ params }: OrgIdProps) => {
   if (!org.orgFound) {
     redirect(`/affiliate/${orgId}/not-found`);
   }
-  const auth = await getAuthCustomization(orgId);
   return (
     <>
-      <EmailVerified auth={auth} affiliate />
+      <EmailVerified affiliate />
     </>
   );
 };

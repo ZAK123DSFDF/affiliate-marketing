@@ -2,48 +2,81 @@
 "use client";
 
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  getAuthCustomization,
+  getDashboardCustomization,
+  getCustomizations,
+} from "@/app/seller/[orgId]/dashboard/customization/action";
 import {
   AuthCustomizationStores,
   DashboardCustomizationStores,
 } from "@/store/useCustomizationStore";
 
-interface SyncData {
-  auth?: Record<string, any>;
-  dashboard?: Record<string, any>;
-}
+type CustomizationType = "auth" | "dashboard" | "both";
 
-export function useCustomizationSync(data: SyncData) {
+export function useCustomizationSync(
+  orgId: string,
+  type: CustomizationType = "both",
+) {
+  const query = useQuery({
+    queryKey: ["customizations", type, orgId],
+    queryFn: async () => {
+      if (type === "auth") {
+        const auth = await getAuthCustomization(orgId);
+        return { auth, dashboard: {} };
+      }
+      if (type === "dashboard") {
+        const dashboard = await getDashboardCustomization(orgId);
+        return { auth: {}, dashboard };
+      }
+      // type === "both"
+      return await getCustomizations(orgId);
+    },
+    enabled: !!orgId,
+  });
+
   useEffect(() => {
-    if (data.auth) {
-      Object.entries(data.auth).forEach(([storeName, storeValues]) => {
+    if (!query.data) return;
+
+    const { auth, dashboard } = query.data;
+
+    // Sync auth customizations if present
+    if (auth && Object.keys(auth).length > 0) {
+      Object.entries(auth).forEach(([storeName, storeValues]) => {
         const typedStoreName =
           storeName as keyof typeof AuthCustomizationStores;
         const store = AuthCustomizationStores[typedStoreName];
         if (store) {
           Object.entries(storeValues).forEach(([key, value]) => {
-            if (typeof value === "string")
+            if (typeof value === "string") {
               store.getState().setColor(key, value);
-            else if (typeof value === "boolean")
+            } else {
               store.getState().setSwitch(key, value);
+            }
           });
         }
       });
     }
 
-    if (data.dashboard) {
-      Object.entries(data.dashboard).forEach(([storeName, storeValues]) => {
+    // Sync dashboard customizations if present
+    if (dashboard && Object.keys(dashboard).length > 0) {
+      Object.entries(dashboard).forEach(([storeName, storeValues]) => {
         const typedStoreName =
           storeName as keyof typeof DashboardCustomizationStores;
         const store = DashboardCustomizationStores[typedStoreName];
         if (store) {
           Object.entries(storeValues).forEach(([key, value]) => {
-            if (typeof value === "string")
+            if (typeof value === "string") {
               store.getState().setColor(key, value);
-            else if (typeof value === "boolean")
+            } else {
               store.getState().setSwitch(key, value);
+            }
           });
         }
       });
     }
-  }, []);
+  }, [query.data]);
+
+  return query;
 }

@@ -25,6 +25,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -60,6 +62,7 @@ const SidebarProvider = React.forwardRef<
     defaultOpen?: boolean;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
+    orgId: string;
   }
 >(
   (
@@ -70,13 +73,14 @@ const SidebarProvider = React.forwardRef<
       className,
       style,
       children,
+      orgId,
       ...props
     },
     ref,
   ) => {
     const isMobile = useIsMobile();
     const [openMobile, setOpenMobile] = React.useState(false);
-
+    const { isPending } = useCustomizationSync(orgId, "dashboard");
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
     const [_open, _setOpen] = React.useState(defaultOpen);
@@ -143,7 +147,9 @@ const SidebarProvider = React.forwardRef<
         toggleSidebar,
       ],
     );
-
+    if (isPending) {
+      return <PendingState />;
+    }
     return (
       <SidebarContext.Provider value={contextValue}>
         <TooltipProvider delayDuration={0}>
