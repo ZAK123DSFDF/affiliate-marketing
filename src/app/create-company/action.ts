@@ -2,12 +2,19 @@
 
 import { cookies } from "next/headers";
 import { returnError } from "@/lib/errorHandler";
-import { organization, userToOrganization } from "@/db/schema";
+import {
+  organization,
+  organizationAuthCustomization,
+  organizationDashboardCustomization,
+  userToOrganization,
+} from "@/db/schema";
 import { db } from "@/db/drizzle";
 import { companySchema } from "@/components/pages/Create-Company";
 import { z } from "zod";
 import jwt from "jsonwebtoken";
 import { calculateExpirationDate } from "@/util/CalculateExpiration";
+import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
+import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization";
 
 export const CreateOrganization = async (
   data: z.infer<typeof companySchema>,
@@ -63,7 +70,27 @@ export const CreateOrganization = async (
       userId: decoded.id,
       organizationId: newOrg.id,
     });
+    await db
+      .insert(organizationAuthCustomization)
+      .values({
+        id: newOrg.id,
+        auth: defaultAuthCustomization,
+      })
+      .onConflictDoUpdate({
+        target: organizationAuthCustomization.id,
+        set: { auth: defaultAuthCustomization },
+      });
 
+    await db
+      .insert(organizationDashboardCustomization)
+      .values({
+        id: newOrg.id,
+        dashboard: defaultDashboardCustomization,
+      })
+      .onConflictDoUpdate({
+        target: organizationDashboardCustomization.id,
+        set: { dashboard: defaultDashboardCustomization },
+      });
     return { ok: true, data: newOrg };
   } catch (err) {
     console.error("Organization create error", err);

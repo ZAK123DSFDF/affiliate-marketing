@@ -33,6 +33,9 @@ import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
@@ -52,6 +55,9 @@ const ForgotPassword = ({
     },
   });
   const [pending, setPending] = useState(false);
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "auth")
+    : { isPending: false, isError: false, refetch: () => {} };
   const { showCustomToast } = useCustomToast();
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
     useThemeCustomizationOption();
@@ -97,7 +103,12 @@ const ForgotPassword = ({
       return;
     }
   };
-
+  if (isPending) {
+    return <PendingState />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
+  }
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${
@@ -131,15 +142,14 @@ const ForgotPassword = ({
           } ${affiliate && cardBorder ? "border" : "border-none"}`}
           style={{
             backgroundColor: (affiliate && cardBackgroundColor) || undefined,
-            ...(affiliate &&
-              cardShadow && {
-                boxShadow:
-                  affiliate &&
-                  getShadowWithColor(
+            ...(affiliate && cardShadow
+              ? {
+                  boxShadow: getShadowWithColor(
                     toValidShadowSize(cardShadowThickness),
                     cardShadowColor,
                   ),
-              }),
+                }
+              : {}),
             borderColor:
               affiliate && cardBorder && cardBorderColor
                 ? affiliate && cardBorderColor
@@ -189,7 +199,7 @@ const ForgotPassword = ({
                 className="relative space-y-4"
               >
                 {isPreview && (
-                  <div className="absolute top-[-10] right-0 z-50">
+                  <div className="absolute top-[-10] right-0">
                     <InputCustomizationOptions size="w-6 h-6" />
                   </div>
                 )}

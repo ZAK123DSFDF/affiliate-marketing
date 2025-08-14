@@ -38,14 +38,19 @@ import {
   useTableCustomizationOption,
 } from "@/hooks/useDashboardCustomization";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 
 interface AffiliateCommissionTableProps {
+  orgId: string;
   data: AffiliatePaymentRow[];
   isPreview?: boolean;
   affiliate: boolean;
 }
 
 export default function AffiliateCommissionTable({
+  orgId,
   data,
   isPreview,
   affiliate = false,
@@ -55,6 +60,13 @@ export default function AffiliateCommissionTable({
   const dashboardTable = useTableCustomizationOption();
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
+  const {
+    isPending: globalPending,
+    isError,
+    refetch,
+  } = affiliate
+    ? useCustomizationSync(orgId, "dashboard")
+    : { isPending: false, isError: false, refetch: () => {} };
   const columns: ColumnDef<AffiliatePaymentRow>[] = [
     {
       accessorKey: "month",
@@ -305,6 +317,12 @@ export default function AffiliateCommissionTable({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
+  if (globalPending) {
+    return <PendingState withoutBackground />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
+  }
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">

@@ -53,6 +53,9 @@ import {
 } from "@/hooks/useDashboardCustomization";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 
 interface CommonData {
   id: string;
@@ -85,6 +88,9 @@ export default function Profile({
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
   const dashboardButton = useDashboardButtonCustomizationOption();
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "dashboard")
+    : { isPending: false, isError: false, refetch: () => {} };
   const profileForm = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -92,7 +98,7 @@ export default function Profile({
       email: initialEmail,
     },
   });
-  const currrentPasswordForm = useForm({
+  const currentPasswordForm = useForm({
     resolver: zodResolver(currentPasswordSchema),
     defaultValues: {
       currentPassword: "",
@@ -237,12 +243,15 @@ export default function Profile({
   const resetPasswordModal = () => {
     setShowPasswordModal(false);
     setStep("current");
-    currrentPasswordForm.reset();
+    currentPasswordForm.reset();
     newPasswordForm.reset();
   };
-  useEffect(() => {
-    console.log("show open modal", showPasswordModal);
-  }, [showPasswordModal]);
+  if (isPending) {
+    return <PendingState withoutBackground />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
+  }
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
@@ -502,9 +511,9 @@ export default function Profile({
           </DialogHeader>
 
           {step === "current" ? (
-            <Form {...currrentPasswordForm}>
+            <Form {...currentPasswordForm}>
               <form
-                onSubmit={currrentPasswordForm.handleSubmit(
+                onSubmit={currentPasswordForm.handleSubmit(
                   onSubmitValidateCurrent,
                 )}
                 className=" relative space-y-4"
@@ -515,7 +524,7 @@ export default function Profile({
                   </div>
                 )}
                 <InputField
-                  control={currrentPasswordForm.control}
+                  control={currentPasswordForm.control}
                   name="currentPassword"
                   label="Current Password"
                   placeholder="Enter current password"

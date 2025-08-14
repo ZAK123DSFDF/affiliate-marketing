@@ -38,7 +38,6 @@ const sellerColorPairs = [
 const Cards = ({ affiliate = false, isPreview = false }: CardsProps) => {
   const [selectedMonth, setSelectedMonth] = useState<string | undefined>();
   const [selectedYear, setSelectedYear] = useState<string | undefined>();
-
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const kpiCard = useKpiCardCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
@@ -155,13 +154,13 @@ const Cards = ({ affiliate = false, isPreview = false }: CardsProps) => {
                       className={cn(
                         "flex-shrink-0 rounded-xl flex items-center justify-center",
                         isPreview ? "w-8 h-8" : "p-3",
-                        affiliate && defaultColorPair.iconBg,
+                        defaultColorPair.iconBg,
                       )}
                     >
                       <Icon
                         className={cn(
                           isPreview ? "w-4 h-4" : "w-8 h-8",
-                          affiliate && defaultColorPair.iconColor,
+                          defaultColorPair.iconColor,
                         )}
                       />
                     </div>
@@ -178,15 +177,19 @@ const Cards = ({ affiliate = false, isPreview = false }: CardsProps) => {
               }
 
               const colorType = colorTypes[colorIndex % colorTypes.length];
-              const iconBgColor =
-                kpiCard[
+              const iconBgColor: string | undefined =
+                (kpiCard[
                   `cardIcon${colorType}BackgroundColor` as keyof typeof kpiCard
-                ] ||
-                (affiliate && defaultColorPair.iconBg);
+                ] as unknown as string | undefined) ||
+                (affiliate && defaultColorPair.iconBg) ||
+                undefined;
 
-              const iconTextColor =
-                kpiCard[`cardIcon${colorType}Color` as keyof typeof kpiCard] ||
-                (affiliate && defaultColorPair.iconColor);
+              const iconTextColor: string | undefined =
+                (kpiCard[
+                  `cardIcon${colorType}Color` as keyof typeof kpiCard
+                ] as unknown as string | undefined) ||
+                (affiliate && defaultColorPair.iconColor) ||
+                undefined;
 
               const borderColor =
                 (affiliate && kpiCard.cardBorderColor) || "#e5e7eb";

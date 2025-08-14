@@ -19,7 +19,6 @@ import {
   generateAffiliateClickId,
   generateAffiliateCode,
   generateAffiliatePaymentLinkId,
-  generateExpirationDateId,
   generateInviteLinkId,
   generateOrganizationId,
 } from "@/util/idGenerators";
@@ -249,3 +248,187 @@ export const invitationRelations = relations(invitation, ({ one }) => ({
     references: [organization.id],
   }),
 }));
+export const organizationDashboardCustomization = pgTable(
+  "organization_dashboard_customization",
+  {
+    id: text("id")
+      .primaryKey()
+      .references(() => organization.id),
+    dashboard: jsonb("dashboard").$type<{
+      useSidebarCustomization: {
+        sideBarBackgroundColor: string;
+        sideBarActiveNavigationTextColor: string;
+        sideBarInActiveNavigationTextColor: string;
+        sideBarActiveNavigationBackgroundColor: string;
+        sideBarHoverNavigationBackgroundColor: string;
+        sideBarHoverNavigationTextColor: string;
+        sideBarProfileBackgroundColor: string;
+        sideBarProfileTextPrimaryColor: string;
+        sideBarProfileTextSecondaryColor: string;
+        sideBarNavigationFocusRingColor: string;
+      };
+      useDashboardCardCustomization: {
+        dashboardCardShadowThickness: string;
+        dashboardCardBorderColor: string;
+        dashboardCardBackgroundColor: string;
+        dashboardCardShadowColor: string;
+        dashboardCardBorder: boolean;
+        dashboardCardShadow: boolean;
+      };
+      useDashboardThemeCustomization: {
+        mainBackgroundColor: string;
+        separatorColor: string;
+        dashboardHeaderNameColor: string;
+        dashboardHeaderDescColor: string;
+        cardHeaderPrimaryTextColor: string;
+        cardHeaderSecondaryTextColor: string;
+        dialogHeaderColor: string;
+        cardHeaderDescriptionTextColor: string;
+      };
+      useDashboardButtonCustomization: {
+        dashboardButtonBackgroundColor: string;
+        dashboardButtonTextColor: string;
+        dashboardButtonDisabledBackgroundColor: string;
+        dashboardButtonDisabledTextColor: string;
+      };
+      useTableCustomization: {
+        tableHeaderTextColor: string;
+        tableHoverBackgroundColor: string;
+        tableIconColor: string;
+        tableIconHoverColor: string;
+        tableIconHoverBackgroundColor: string;
+        tableRowPrimaryTextColor: string;
+        tableRowSecondaryTextColor: string;
+        tableRowTertiaryTextColor: string;
+        tableRowBadgeOverDueTextColor: string;
+        tableRowBadgeOverDueBackgroundColor: string;
+        tableRowBadgePendingTextColor: string;
+        tableRowBadgePendingBackgroundColor: string;
+        tableRowBadgePaidTextColor: string;
+        tableRowBadgePaidBackgroundColor: string;
+        tableBorderColor: string;
+      };
+      useDialogCustomization: {
+        dialogBackgroundColor: string;
+        dialogCloseIconColor: string;
+        dialogCloseIconBorderColor: string;
+      };
+      useYearSelectCustomization: {
+        yearSelectBackgroundColor: string;
+        yearSelectTextColor: string;
+        yearSelectActiveBorderColor: string;
+        yearSelectDropDownBackgroundColor: string;
+        yearSelectDropDownTextColor: string;
+        yearSelectDropDownActiveTextColor: string;
+        yearSelectDropDownActiveBackgroundColor: string;
+        yearSelectDropDownIconColor: string;
+        yearSelectDropDownHoverBackgroundColor: string;
+        yearSelectDropDownHoverTextColor: string;
+      };
+      useToastCustomization: {
+        toastBackgroundColor: string;
+        toastTitleColor: string;
+        toastDescriptionColor: string;
+        toastErrorBackgroundColor: string;
+        toastErrorTitleColor: string;
+        toastErrorDescriptionColor: string;
+      };
+      useKpiCardCustomization: {
+        cardShadowColor: string;
+        cardBorderColor: string;
+        cardPrimaryTextColor: string;
+        cardSecondaryTextColor: string;
+        cardIconPrimaryColor: string;
+        cardIconSecondaryColor: string;
+        cardIconTertiaryColor: string;
+        cardIconPrimaryBackgroundColor: string;
+        cardIconSecondaryBackgroundColor: string;
+        cardIconTertiaryBackgroundColor: string;
+        cardShadowThickness: string;
+        cardBackgroundColor: string;
+        cardShadow: boolean;
+        cardBorder: boolean;
+      };
+      useChartCustomization: {
+        chartHorizontalLineColor: string;
+        chartDateColor: string;
+        chartPrimaryColor: string;
+        chartSecondaryColor: string;
+        chartTertiaryColor: string;
+        chartFourthColor: string;
+        chartLegendTextColor: string;
+        toolTipChartDateColor: string;
+        toolTipBackgroundColor: string;
+        toolTipTextColor: string;
+        toolTipNumberColor: string;
+      };
+      usePieChartColorCustomization: {
+        pieColor1: string;
+        pieColor2: string;
+        pieColor3: string;
+        pieColor4: string;
+        pieColor5: string;
+        pieColor6: string;
+        pieColor7: string;
+        pieColor8: string;
+        pieFallbackColor: string;
+      };
+    }>(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+);
+export const organizationAuthCustomization = pgTable(
+  "organization_auth_customization",
+  {
+    id: text("id")
+      .primaryKey()
+      .references(() => organization.id),
+    auth: jsonb("auth").$type<{
+      useCardCustomization: {
+        cardShadowColor: string;
+        cardBorderColor: string;
+        cardBackgroundColor: string;
+        cardShadowThickness: string;
+        cardShadow: boolean;
+        cardBorder: boolean;
+      };
+      useInputCustomization: {
+        inputLabelColor: string;
+        inputLabelErrorColor: string;
+        inputIconColor: string;
+        inputTextColor: string;
+        inputErrorTextColor: string;
+        inputBorderColor: string;
+        inputErrorBorderColor: string;
+        inputPlaceholderTextColor: string;
+        inputBorderFocusColor: string;
+      };
+      useCheckboxCustomization: {
+        checkboxLabelColor: string;
+        checkboxActiveColor: string;
+        checkboxInactiveColor: string;
+      };
+      useButtonCustomization: {
+        buttonTextColor: string;
+        buttonBackgroundColor: string;
+        buttonDisabledTextColor: string;
+        buttonDisabledBackgroundColor: string;
+      };
+      useThemeCustomization: {
+        backgroundColor: string;
+        linkTextColor: string;
+        tertiaryTextColor: string;
+        primaryCustomization: string;
+        secondaryCustomization: string;
+        InvalidPrimaryCustomization: string;
+        InvalidSecondaryCustomization: string;
+        emailVerifiedPrimaryColor: string;
+        emailVerifiedSecondaryColor: string;
+        emailVerifiedIconColor: string;
+      };
+    }>(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+);

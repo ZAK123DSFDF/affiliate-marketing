@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import React from "react";
 import { useDashboardButtonCustomizationOption } from "@/hooks/useDashboardCustomization";
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
 
 export const DashboardButtonCustomizationOptions = ({
   triggerSize,
@@ -16,7 +17,6 @@ export const DashboardButtonCustomizationOptions = ({
     dashboardButtonTextColor,
     dashboardButtonDisabledBackgroundColor,
     dashboardButtonDisabledTextColor,
-    setDashboardButtonColor,
   } = useDashboardButtonCustomizationOption();
 
   return (
@@ -28,19 +28,28 @@ export const DashboardButtonCustomizationOptions = ({
           label: "Button Background Color",
           value: dashboardButtonBackgroundColor,
           onChange: (val) =>
-            setDashboardButtonColor("dashboardButtonBackgroundColor", val),
+            updateDashboardCustomization(
+              "useDashboardButtonCustomization",
+              "dashboardButtonBackgroundColor",
+              val,
+            ),
         },
         buttonTextColor: {
           label: "Button Text Color",
           value: dashboardButtonTextColor,
           onChange: (val) =>
-            setDashboardButtonColor("dashboardButtonTextColor", val),
+            updateDashboardCustomization(
+              "useDashboardButtonCustomization",
+              "dashboardButtonTextColor",
+              val,
+            ),
         },
         buttonDisabledBackgroundColor: {
           label: "Disabled Background Color",
           value: dashboardButtonDisabledBackgroundColor,
           onChange: (val) =>
-            setDashboardButtonColor(
+            updateDashboardCustomization(
+              "useDashboardButtonCustomization",
               "dashboardButtonDisabledBackgroundColor",
               val,
             ),
@@ -49,7 +58,11 @@ export const DashboardButtonCustomizationOptions = ({
           label: "Disabled Text Color",
           value: dashboardButtonDisabledTextColor,
           onChange: (val) =>
-            setDashboardButtonColor("dashboardButtonDisabledTextColor", val),
+            updateDashboardCustomization(
+              "useDashboardButtonCustomization",
+              "dashboardButtonDisabledTextColor",
+              val,
+            ),
         },
       }}
     />

@@ -8,12 +8,18 @@ import {
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
   affiliate: boolean;
 };
 const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "auth")
+    : { isPending: false, isError: false, refetch: () => {} };
   const {
     backgroundColor,
     InvalidPrimaryCustomization,
@@ -27,6 +33,12 @@ const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
     cardBackgroundColor,
     cardShadowThickness,
   } = useCardCustomizationOption();
+  if (isPending) {
+    return <PendingState />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
+  }
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${
@@ -49,15 +61,14 @@ const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
           } ${affiliate && cardBorder ? "border" : "border-none"}`}
           style={{
             backgroundColor: (affiliate && cardBackgroundColor) || undefined,
-            ...(affiliate &&
-              cardShadow && {
-                boxShadow:
-                  affiliate &&
-                  getShadowWithColor(
+            ...(affiliate && cardShadow
+              ? {
+                  boxShadow: getShadowWithColor(
                     toValidShadowSize(cardShadowThickness),
                     cardShadowColor,
                   ),
-              }),
+                }
+              : {}),
             borderColor:
               affiliate && cardBorder && cardBorderColor
                 ? affiliate && cardBorderColor

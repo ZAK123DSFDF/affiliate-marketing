@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { SidebarCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/SidebarCustomizationOptions";
-import { useSidebarCustomization } from "@/store/useDashboardCustomizationStore";
+import { DashboardCustomizationStores } from "@/store/useCustomizationStore";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -58,7 +58,7 @@ const AffiliateDashboardSidebar = ({
     { title: "Payment", key: "payment", icon: Users },
   ];
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
-  const sidebar = useSidebarCustomization();
+  const sidebar = DashboardCustomizationStores.useSidebarCustomization();
   const baseSidebarClass = isPreview ? "relative h-full" : ""; // you can add full-screen layout styles here
   const setProfile = () => {
     onSelectPage && onSelectPage("profile");

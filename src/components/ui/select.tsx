@@ -20,16 +20,17 @@ const SelectTrigger = React.forwardRef<
   SelectTriggerProps
 >(({ className, children, affiliate, ...props }, ref) => {
   const yearSelect = useYearSelectCustomizationOption();
-  const style = {
-    backgroundColor: affiliate && yearSelect.yearSelectBackgroundColor,
-    color: affiliate && yearSelect.yearSelectTextColor,
+  const style: React.CSSProperties = {
+    backgroundColor: affiliate
+      ? yearSelect.yearSelectBackgroundColor
+      : undefined,
+    color: affiliate ? yearSelect.yearSelectTextColor : undefined,
     ...(affiliate && yearSelect.yearSelectActiveBorderColor
       ? {
-          "--tw-ring-color":
-            affiliate && yearSelect.yearSelectActiveBorderColor,
+          "--tw-ring-color": yearSelect.yearSelectActiveBorderColor,
         }
       : {}),
-  } as React.CSSProperties;
+  };
   return (
     <SelectPrimitive.Trigger
       ref={ref}

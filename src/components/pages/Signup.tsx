@@ -21,6 +21,7 @@ import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import {
   useButtonCustomizationOption,
   useCardCustomizationOption,
+  useNotesCustomizationOption,
   useThemeCustomizationOption,
 } from "@/hooks/useAuthCustomization";
 
@@ -32,6 +33,10 @@ import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
+import { IsRichTextEmpty } from "@/util/IsRichTextEmpty";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
@@ -40,6 +45,10 @@ type Props = {
 };
 const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false);
+  const { customNotesSignup } = useNotesCustomizationOption();
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "auth")
+    : { isPending: false, isError: false, refetch: () => {} };
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -68,7 +77,8 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { showCustomToast } = useCustomToast();
   const affiliateMutation = useMutation({
     mutationFn: SignupAffiliateServer,
-    onSuccess: (data) => console.log("Affiliate signup success", data),
+    onSuccess: (data) =>
+      console.log("Affiliate signup success", data, affiliate),
   });
 
   const normalMutation = useMutation({
@@ -115,7 +125,12 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
       console.error("Signup failed:", err);
     }
   };
-
+  if (isPending) {
+    return <PendingState />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
+  }
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${
@@ -149,15 +164,14 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
           } ${affiliate && cardBorder ? "border" : "border-none"}`}
           style={{
             backgroundColor: (affiliate && cardBackgroundColor) || undefined,
-            ...(affiliate &&
-              cardShadow && {
-                boxShadow:
-                  affiliate &&
-                  getShadowWithColor(
+            ...(affiliate && cardShadow
+              ? {
+                  boxShadow: getShadowWithColor(
                     toValidShadowSize(cardShadowThickness),
                     cardShadowColor,
                   ),
-              }),
+                }
+              : {}),
             borderColor:
               affiliate && cardBorder && cardBorderColor
                 ? affiliate && cardBorderColor
@@ -165,7 +179,23 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
           }}
         >
           <CardHeader className="space-y-1">
-            {isPreview && <InlineNotesEditor name="customNotesSignup" />}
+            {isPreview ? (
+              <InlineNotesEditor name="customNotesSignup" />
+            ) : affiliate && !IsRichTextEmpty(customNotesSignup) ? (
+              <div
+                className="rich-text-preview"
+                dangerouslySetInnerHTML={{ __html: customNotesSignup }}
+              />
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold text-center">
+                  Create An Account
+                </h2>
+                <p className="text-center text-muted-foreground">
+                  Enter Your Information to Sign Up
+                </p>
+              </>
+            )}
           </CardHeader>
           <CardContent>
             <Form {...form}>

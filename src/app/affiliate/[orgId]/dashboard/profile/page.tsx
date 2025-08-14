@@ -14,9 +14,7 @@ const profilePage = async ({ params }: OrgIdProps) => {
   }
 
   const affiliateResponse = await getAffiliateData();
-  // Check if the response was successful
   if (!affiliateResponse.ok) {
-    // Handle the error case - you might want to redirect or show an error
     redirect(`/error?message=${encodeURIComponent(affiliateResponse.error)}`);
   }
   return (

@@ -14,6 +14,10 @@ import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
 import { useRouter } from "next/navigation";
+import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 
 type Props = {
   orgId?: string;
@@ -24,6 +28,9 @@ type Props = {
 
 const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
   const { backgroundColor } = useThemeCustomizationOption();
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "auth")
+    : { isPending: false, isError: false, refetch: () => {} };
   const {
     emailVerifiedPrimaryColor,
     emailVerifiedSecondaryColor,
@@ -48,6 +55,12 @@ const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
       router.push("/dashboard");
     }
   };
+  if (isPending) {
+    return <PendingState />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
+  }
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${
@@ -70,15 +83,14 @@ const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
           } ${affiliate && cardBorder ? "border" : "border-none"}`}
           style={{
             backgroundColor: (affiliate && cardBackgroundColor) || undefined,
-            ...(affiliate &&
-              cardShadow && {
-                boxShadow:
-                  affiliate &&
-                  getShadowWithColor(
+            ...(affiliate && cardShadow
+              ? {
+                  boxShadow: getShadowWithColor(
                     toValidShadowSize(cardShadowThickness),
                     cardShadowColor,
                   ),
-              }),
+                }
+              : {}),
             borderColor:
               affiliate && cardBorder && cardBorderColor
                 ? affiliate && cardBorderColor

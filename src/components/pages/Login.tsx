@@ -21,6 +21,7 @@ import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import {
   useButtonCustomizationOption,
   useCardCustomizationOption,
+  useNotesCustomizationOption,
   useThemeCustomizationOption,
 } from "@/hooks/useAuthCustomization";
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
@@ -32,6 +33,10 @@ import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { LinkButton } from "@/components/ui-custom/LinkButton";
+import { IsRichTextEmpty } from "@/util/IsRichTextEmpty";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 type Props = {
   orgId?: string;
   isPreview?: boolean;
@@ -66,13 +71,16 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     buttonDisabledBackgroundColor,
     buttonTextColor,
   } = useButtonCustomizationOption();
+  const { customNotesLogin } = useNotesCustomizationOption();
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "auth")
+    : { isPending: false, isError: false, refetch: () => {} };
   const affiliateMutation = useMutation({
     mutationFn: LoginAffiliateServer,
     onSuccess: (data: any) => {
       console.log("Affiliate login success", data);
     },
   });
-
   const normalMutation = useMutation({
     mutationFn: LoginServer,
     onSuccess: (data: any) => {
@@ -122,6 +130,12 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
       console.error("Login failed", error);
     }
   };
+  if (isPending) {
+    return <PendingState />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
+  }
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${
@@ -155,15 +169,14 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
           } ${affiliate && cardBorder ? "border" : "border-none"}`}
           style={{
             backgroundColor: (affiliate && cardBackgroundColor) || undefined,
-            ...(affiliate &&
-              cardShadow && {
-                boxShadow:
-                  affiliate &&
-                  getShadowWithColor(
+            ...(affiliate && cardShadow
+              ? {
+                  boxShadow: getShadowWithColor(
                     toValidShadowSize(cardShadowThickness),
                     cardShadowColor,
                   ),
-              }),
+                }
+              : {}),
             borderColor:
               affiliate && cardBorder && cardBorderColor
                 ? affiliate && cardBorderColor
@@ -171,7 +184,21 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
           }}
         >
           <CardHeader className="space-y-1">
-            {isPreview && <InlineNotesEditor name="customNotesLogin" />}
+            {isPreview ? (
+              <InlineNotesEditor name="customNotesLogin" />
+            ) : affiliate && !IsRichTextEmpty(customNotesLogin) ? (
+              <div
+                className="rich-text-preview"
+                dangerouslySetInnerHTML={{ __html: customNotesLogin }}
+              />
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold text-center">Welcome back</h2>
+                <p className="text-center text-muted-foreground">
+                  Enter your credentials to access your account
+                </p>
+              </>
+            )}
           </CardHeader>
 
           <CardContent>
@@ -181,7 +208,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                 className="relative space-y-4"
               >
                 {isPreview && (
-                  <div className="absolute top-[-10] right-0 z-50">
+                  <div className="absolute top-[-10] right-0">
                     <InputCustomizationOptions size="w-6 h-6" />
                   </div>
                 )}

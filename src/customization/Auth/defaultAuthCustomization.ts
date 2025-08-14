@@ -1,20 +1,13 @@
-import { createCustomizationStore } from "@/store/CreateCustomizationStore";
-
-export const useCardCustomization = createCustomizationStore(
-  {
+export const defaultAuthCustomization = {
+  useCardCustomization: {
     cardShadowColor: "",
     cardBorderColor: "",
     cardBackgroundColor: "",
     cardShadowThickness: "md",
-  },
-  {
     cardShadow: true,
     cardBorder: true,
   },
-  {},
-);
-export const useInputCustomization = createCustomizationStore(
-  {
+  useInputCustomization: {
     inputLabelColor: "",
     inputLabelErrorColor: "",
     inputIconColor: "",
@@ -25,31 +18,18 @@ export const useInputCustomization = createCustomizationStore(
     inputPlaceholderTextColor: "",
     inputBorderFocusColor: "",
   },
-  {},
-  {},
-);
-export const useCheckboxCustomization = createCustomizationStore(
-  {
+  useCheckboxCustomization: {
     checkboxLabelColor: "",
     checkboxActiveColor: "",
     checkboxInactiveColor: "",
   },
-  {},
-  {},
-);
-export const useButtonCustomization = createCustomizationStore(
-  {
+  useButtonCustomization: {
     buttonTextColor: "",
     buttonBackgroundColor: "",
     buttonDisabledTextColor: "",
     buttonDisabledBackgroundColor: "",
   },
-  {},
-  {},
-);
-
-export const useThemeCustomization = createCustomizationStore(
-  {
+  useThemeCustomization: {
     backgroundColor: "",
     linkTextColor: "",
     tertiaryTextColor: "",
@@ -61,14 +41,8 @@ export const useThemeCustomization = createCustomizationStore(
     emailVerifiedSecondaryColor: "",
     emailVerifiedIconColor: "",
   },
-  {},
-  {},
-);
-export const useNotesCustomization = createCustomizationStore(
-  {},
-  {},
-  {
+  useNotesCustomization: {
     customNotesLogin: "",
     customNotesSignup: "",
   },
-);
+};

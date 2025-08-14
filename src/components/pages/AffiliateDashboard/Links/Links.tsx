@@ -40,14 +40,19 @@ import {
 } from "@/hooks/useDashboardCustomization";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 
 interface AffiliateLinkProps {
+  orgId: string;
   data: AffiliateLinkWithStats[];
   isPreview?: boolean;
   isTopLinksView?: boolean;
   affiliate: boolean;
 }
 export default function Links({
+  orgId,
   data,
   isPreview,
   isTopLinksView = false,
@@ -58,6 +63,9 @@ export default function Links({
   const dashboardCard = useDashboardCardCustomizationOption();
   const dashboardTable = useTableCustomizationOption();
   const { showCustomToast } = useCustomToast();
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "dashboard")
+    : { isPending: false, isError: false, refetch: () => {} };
   const columns: ColumnDef<AffiliateLinkWithStats>[] = [
     {
       accessorKey: "fullUrl",
@@ -278,7 +286,12 @@ export default function Links({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
-
+  if (isPending) {
+    return <PendingState withoutBackground />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
+  }
   return (
     <div className="flex flex-col gap-6">
       {!isTopLinksView && (

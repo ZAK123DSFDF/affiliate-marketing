@@ -12,8 +12,12 @@ import InvalidToken from "@/components/pages/InvalidToken";
 import EmailVerified from "@/components/pages/Email-verified";
 interface AuthCustomizationProps {
   setMainTab?: (tab: string) => void;
+  orgId: string;
 }
-export const AuthCustomization = ({ setMainTab }: AuthCustomizationProps) => {
+export const AuthCustomization = ({
+  setMainTab,
+  orgId,
+}: AuthCustomizationProps) => {
   const [tab, setTab] = useState("login");
   return (
     <>
@@ -28,22 +32,27 @@ export const AuthCustomization = ({ setMainTab }: AuthCustomizationProps) => {
             <TabsTrigger value="email-verified">Email Verified</TabsTrigger>
           </TabsList>
           <TabsContent value="login">
-            <Login affiliate isPreview setTab={setTab} />
+            <Login orgId={orgId} affiliate isPreview setTab={setTab} />
           </TabsContent>
           <TabsContent value="signup">
-            <Signup affiliate isPreview setTab={setTab} />
+            <Signup orgId={orgId} affiliate isPreview setTab={setTab} />
           </TabsContent>
           <TabsContent value="forgot-password">
-            <ForgotPassword affiliate isPreview setTab={setTab} />
+            <ForgotPassword orgId={orgId} affiliate isPreview setTab={setTab} />
           </TabsContent>
           <TabsContent value="reset-password">
-            <ResetPassword affiliate isPreview setTab={setTab} />
+            <ResetPassword orgId={orgId} affiliate isPreview setTab={setTab} />
           </TabsContent>
           <TabsContent value="invalid-token">
-            <InvalidToken affiliate isPreview />
+            <InvalidToken orgId={orgId} affiliate isPreview />
           </TabsContent>{" "}
           <TabsContent value="email-verified">
-            <EmailVerified affiliate isPreview setMainTab={setMainTab} />
+            <EmailVerified
+              orgId={orgId}
+              affiliate
+              isPreview
+              setMainTab={setMainTab}
+            />
           </TabsContent>
         </Tabs>
       </div>

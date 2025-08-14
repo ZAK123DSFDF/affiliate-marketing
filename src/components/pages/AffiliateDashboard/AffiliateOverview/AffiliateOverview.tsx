@@ -5,14 +5,28 @@ import SocialTrafficCharts from "@/components/ui-custom/Chart/DataSourceChart";
 import { ChartDailyMetrics } from "@/components/ui-custom/Chart/SalesChart";
 import Links from "@/components/pages/AffiliateDashboard/Links/Links";
 import { dummyLinksData } from "@/lib/types/dummyLInksData";
+import { useCustomizationSync } from "@/hooks/useCustomizationSync";
+import PendingState from "@/components/ui-custom/PendingState";
+import ErrorState from "@/components/ui-custom/ErrorState";
 
 const AffiliateOverview = ({
+  orgId,
   isPreview = false,
   affiliate = false,
 }: {
+  orgId: string;
   isPreview?: boolean;
   affiliate: boolean;
 }) => {
+  const { isPending, isError, refetch } = affiliate
+    ? useCustomizationSync(orgId, "dashboard")
+    : { isPending: false, isError: false, refetch: () => {} };
+  if (isPending) {
+    return <PendingState withoutBackground />;
+  }
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
+  }
   return (
     <div className="space-y-8">
       <Cards affiliate={affiliate} isPreview={isPreview} />
@@ -30,6 +44,7 @@ const AffiliateOverview = ({
         affiliate={affiliate}
         isTopLinksView
         isPreview={isPreview}
+        orgId={orgId}
       />
     </div>
   );

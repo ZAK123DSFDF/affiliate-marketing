@@ -29,8 +29,6 @@ export const ResettableColorInput = ({
 }: ResettableColorInputProps) => {
   const [open, setOpen] = useState(false);
   const [color, setColor] = useState(value || "#84C5F4");
-
-  // Sync internal state with external value changes
   useEffect(() => {
     setColor(value || "#84C5F4");
   }, [value]);

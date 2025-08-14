@@ -18,7 +18,7 @@ const paymentPage = async ({ params }: OrgIdProps) => {
   }
   return (
     <>
-      <PaymentTable affiliate data={res.data} />
+      <PaymentTable orgId={orgId} affiliate data={res.data} />
     </>
   );
 };

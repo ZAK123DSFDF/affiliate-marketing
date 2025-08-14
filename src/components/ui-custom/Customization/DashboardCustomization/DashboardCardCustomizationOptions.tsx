@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import React from "react";
 import { useDashboardCardCustomizationOption } from "@/hooks/useDashboardCustomization";
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
 
 export const DashboardCardCustomizationOptions = ({
   triggerSize,
@@ -18,8 +19,6 @@ export const DashboardCardCustomizationOptions = ({
     dashboardCardBorderColor,
     dashboardCardBackgroundColor,
     dashboardCardShadowThickness,
-    setDashboardCardColor,
-    setDashboardCardSwitch,
   } = useDashboardCardCustomizationOption();
 
   return (
@@ -30,13 +29,22 @@ export const DashboardCardCustomizationOptions = ({
         shadow: {
           label: "Enable Card Shadow",
           enabled: dashboardCardShadow,
-          onToggle: (val) => setDashboardCardSwitch("dashboardCardShadow", val),
+          onToggle: (val) =>
+            updateDashboardCustomization(
+              "useDashboardCardCustomization",
+              "dashboardCardShadow",
+              val,
+            ),
           children: {
             shadowColor: {
               label: "Shadow Color",
               value: dashboardCardShadowColor,
               onChange: (val) =>
-                setDashboardCardColor("dashboardCardShadowColor", val),
+                updateDashboardCustomization(
+                  "useDashboardCardCustomization",
+                  "dashboardCardShadowColor",
+                  val,
+                ),
             },
             shadowThickness: {
               label: "Shadow Thickness",
@@ -48,20 +56,33 @@ export const DashboardCardCustomizationOptions = ({
                 { label: "Extra Large", value: "xl" },
               ],
               onChange: (val) =>
-                setDashboardCardColor("dashboardCardShadowThickness", val),
+                updateDashboardCustomization(
+                  "useDashboardCardCustomization",
+                  "dashboardCardShadowThickness",
+                  val,
+                ),
             },
           },
         },
         border: {
           label: "Enable Card Border",
           enabled: dashboardCardBorder,
-          onToggle: (val) => setDashboardCardSwitch("dashboardCardBorder", val),
+          onToggle: (val) =>
+            updateDashboardCustomization(
+              "useDashboardCardCustomization",
+              "dashboardCardBorder",
+              val,
+            ),
           children: {
             borderColor: {
               label: "Border Color",
               value: dashboardCardBorderColor,
               onChange: (val) =>
-                setDashboardCardColor("dashboardCardBorderColor", val),
+                updateDashboardCustomization(
+                  "useDashboardCardCustomization",
+                  "dashboardCardBorderColor",
+                  val,
+                ),
             },
           },
         },
@@ -69,7 +90,11 @@ export const DashboardCardCustomizationOptions = ({
           label: "Card Background Color",
           value: dashboardCardBackgroundColor,
           onChange: (val) =>
-            setDashboardCardColor("dashboardCardBackgroundColor", val),
+            updateDashboardCustomization(
+              "useDashboardCardCustomization",
+              "dashboardCardBackgroundColor",
+              val,
+            ),
         },
       }}
     />

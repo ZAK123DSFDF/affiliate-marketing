@@ -2,6 +2,7 @@
 
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
 import { useThemeCustomizationOption } from "@/hooks/useAuthCustomization";
+import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges";
 
 // These are the valid keys
 type ThemeKeys =
@@ -38,7 +39,6 @@ export const ThemeCustomizationOptions = ({
     emailVerifiedPrimaryColor,
     emailVerifiedSecondaryColor,
     emailVerifiedIconColor,
-    setThemeColor,
   } = useThemeCustomizationOption();
 
   const valueMap: Record<ThemeKeys, string> = {
@@ -71,7 +71,9 @@ export const ThemeCustomizationOptions = ({
     <ResettableColorInput
       label={labelMap[name]}
       value={valueMap[name]}
-      onChange={(val) => setThemeColor(name, val)}
+      onChange={(val) =>
+        updateAuthCustomization("useThemeCustomization", name, val)
+      }
       showLabel={showLabel}
       buttonSize={buttonSize}
     />

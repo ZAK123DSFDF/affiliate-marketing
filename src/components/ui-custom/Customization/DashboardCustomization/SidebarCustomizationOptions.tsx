@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
 import React from "react";
 import { useSidebarCustomizationOption } from "@/hooks/useDashboardCustomization";
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
 
 export const SidebarCustomizationOptions = ({
   triggerSize,
@@ -22,7 +23,6 @@ export const SidebarCustomizationOptions = ({
     sideBarProfileTextPrimaryColor,
     sideBarProfileTextSecondaryColor,
     sideBarNavigationFocusRingColor,
-    setSidebarColor,
   } = useSidebarCustomizationOption();
 
   return (
@@ -33,61 +33,102 @@ export const SidebarCustomizationOptions = ({
         sideBarBackgroundColor: {
           label: "Sidebar Background",
           value: sideBarBackgroundColor,
-          onChange: (val) => setSidebarColor("sideBarBackgroundColor", val),
+          onChange: (val) =>
+            updateDashboardCustomization(
+              "useSidebarCustomization",
+              "sideBarBackgroundColor",
+              val,
+            ),
         },
         sideBarActiveNavigationTextColor: {
           label: "Active Nav Text",
           value: sideBarActiveNavigationTextColor,
           onChange: (val) =>
-            setSidebarColor("sideBarActiveNavigationTextColor", val),
+            updateDashboardCustomization(
+              "useSidebarCustomization",
+              "sideBarActiveNavigationTextColor",
+              val,
+            ),
         },
         sideBarInActiveNavigationTextColor: {
           label: "Inactive Nav Text",
           value: sideBarInActiveNavigationTextColor,
           onChange: (val) =>
-            setSidebarColor("sideBarInActiveNavigationTextColor", val),
+            updateDashboardCustomization(
+              "useSidebarCustomization",
+              "sideBarInActiveNavigationTextColor",
+              val,
+            ),
         },
         sideBarActiveNavigationBackgroundColor: {
           label: "Active Nav Background",
           value: sideBarActiveNavigationBackgroundColor,
           onChange: (val) =>
-            setSidebarColor("sideBarActiveNavigationBackgroundColor", val),
+            updateDashboardCustomization(
+              "useSidebarCustomization",
+              "sideBarActiveNavigationBackgroundColor",
+              val,
+            ),
         },
         sideBarHoverNavigationBackgroundColor: {
           label: "Hover Nav Background",
           value: sideBarHoverNavigationBackgroundColor,
           onChange: (val) =>
-            setSidebarColor("sideBarHoverNavigationBackgroundColor", val),
+            updateDashboardCustomization(
+              "useSidebarCustomization",
+              "sideBarHoverNavigationBackgroundColor",
+              val,
+            ),
         },
         sideBarHoverNavigationTextColor: {
           label: "Hover Nav Text",
           value: sideBarHoverNavigationTextColor,
           onChange: (val) =>
-            setSidebarColor("sideBarHoverNavigationTextColor", val),
+            updateDashboardCustomization(
+              "useSidebarCustomization",
+              "sideBarHoverNavigationTextColor",
+              val,
+            ),
         },
         sideBarProfileBackgroundColor: {
           label: "Profile Background",
           value: sideBarProfileBackgroundColor,
           onChange: (val) =>
-            setSidebarColor("sideBarProfileBackgroundColor", val),
+            updateDashboardCustomization(
+              "useSidebarCustomization",
+              "sideBarProfileBackgroundColor",
+              val,
+            ),
         },
         sideBarProfileTextPrimaryColor: {
           label: "Profile Text Primary",
           value: sideBarProfileTextPrimaryColor,
           onChange: (val) =>
-            setSidebarColor("sideBarProfileTextPrimaryColor", val),
+            updateDashboardCustomization(
+              "useSidebarCustomization",
+              "sideBarProfileTextPrimaryColor",
+              val,
+            ),
         },
         sideBarProfileTextSecondaryColor: {
           label: "Profile Text Secondary",
           value: sideBarProfileTextSecondaryColor,
           onChange: (val) =>
-            setSidebarColor("sideBarProfileTextSecondaryColor", val),
+            updateDashboardCustomization(
+              "useSidebarCustomization",
+              "sideBarProfileTextSecondaryColor",
+              val,
+            ),
         },
         sideBarNavigationFocusRingColor: {
           label: "Focus Ring Color",
           value: sideBarNavigationFocusRingColor,
           onChange: (val) =>
-            setSidebarColor("sideBarNavigationFocusRingColor", val),
+            updateDashboardCustomization(
+              "useSidebarCustomization",
+              "sideBarNavigationFocusRingColor",
+              val,
+            ),
         },
       }}
     />
