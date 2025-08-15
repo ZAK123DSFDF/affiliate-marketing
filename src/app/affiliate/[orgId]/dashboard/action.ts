@@ -14,6 +14,7 @@ import { ResponseData } from "@/lib/types/response";
 import { returnError } from "@/lib/errorHandler";
 import { AffiliateReferrerStat } from "@/lib/types/affiliateReferrerStat";
 import { AffiliateKpiTimeSeries } from "@/lib/types/affiliateChartStats";
+import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
 async function getAffiliateLinks(decoded: {
   organizationId: string;
   id: string;
@@ -258,3 +259,92 @@ export async function getAffiliateReferrers(): Promise<
     return { ok: false, error: "Failed to fetch referrer stats", status: 500 };
   }
 }
+export const getTopPerformingAffiliateLinks = async (): Promise<
+  ResponseData<AffiliateLinkWithStats[]>
+> => {
+  try {
+    const { org, decoded } = await getOrganization();
+    const baseDomain = org.domainName.replace(/^https?:\/\//, "");
+    const param = org.referralParam;
+
+    const rows = await db
+      .select({
+        id: affiliateLink.id,
+        createdAt: affiliateLink.createdAt,
+        clicks: sql<number>`COUNT(DISTINCT ${affiliateClick.id})`.mapWith(
+          Number,
+        ),
+        // sales = distinct subscriptions + distinct one-time invoices (subscription_id IS NULL)
+        sales: sql<number>`
+          (
+            COUNT(DISTINCT ${affiliateInvoice.subscriptionId})
+            +
+            COUNT(DISTINCT CASE WHEN ${affiliateInvoice.subscriptionId} IS NULL THEN ${affiliateInvoice.id} END)
+          )
+        `.mapWith(Number),
+        conversionRate: sql<number>`
+          CASE
+            WHEN COUNT(DISTINCT ${affiliateClick.id}) > 0 THEN
+              (
+                (
+                  COUNT(DISTINCT ${affiliateInvoice.subscriptionId})
+                  +
+                  COUNT(DISTINCT CASE WHEN ${affiliateInvoice.subscriptionId} IS NULL THEN ${affiliateInvoice.id} END)
+                )::decimal
+                /
+                COUNT(DISTINCT ${affiliateClick.id})::decimal
+              )
+            ELSE 0
+          END
+        `.mapWith(Number),
+      })
+      .from(affiliateLink)
+      .leftJoin(
+        affiliateClick,
+        eq(affiliateClick.affiliateLinkId, affiliateLink.id),
+      )
+      .leftJoin(
+        affiliateInvoice,
+        eq(affiliateInvoice.affiliateLinkId, affiliateLink.id),
+      )
+      .where(
+        and(
+          eq(affiliateLink.affiliateId, decoded.id),
+          eq(affiliateLink.organizationId, decoded.organizationId),
+        ),
+      )
+      .groupBy(affiliateLink.id, affiliateLink.createdAt)
+      .orderBy(
+        sql`
+        CASE
+          WHEN COUNT(DISTINCT ${affiliateClick.id}) > 0 THEN
+            (
+              (
+                COUNT(DISTINCT ${affiliateInvoice.subscriptionId})
+                +
+                COUNT(DISTINCT CASE WHEN ${affiliateInvoice.subscriptionId} IS NULL THEN ${affiliateInvoice.id} END)
+              )::decimal
+              /
+              COUNT(DISTINCT ${affiliateClick.id})::decimal
+            )
+          ELSE 0
+        END DESC
+      `,
+      )
+      .limit(10);
+
+    const data: AffiliateLinkWithStats[] = rows.map((r) => ({
+      id: r.id,
+      fullUrl: `https://${baseDomain}/?${param}=${r.id}`,
+      clicks: r.clicks,
+      sales: r.sales,
+      conversionRate: r.conversionRate, // already a Number (0..1). multiply by 100 in UI if you show %
+      createdAt: r.createdAt,
+    }));
+
+    return { ok: true, data };
+  } catch (err) {
+    console.error("getTopPerformingAffiliateLinks error:", err);
+    return returnError(err) as ResponseData<AffiliateLinkWithStats[]>;
+  }
+};
