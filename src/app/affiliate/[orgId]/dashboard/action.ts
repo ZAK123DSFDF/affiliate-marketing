@@ -12,7 +12,6 @@ import { AffiliateKpiStats } from "@/lib/types/affiliateKpiStats";
 import { getOrganization } from "@/util/GetOrganization";
 import { ResponseData } from "@/lib/types/response";
 import { returnError } from "@/lib/errorHandler";
-import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
 export async function getAffiliateKpiStats(): Promise<
   ResponseData<AffiliateKpiStats[]>
 > {
