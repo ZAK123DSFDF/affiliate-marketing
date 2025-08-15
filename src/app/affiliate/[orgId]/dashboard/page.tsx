@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { OrgIdProps } from "@/lib/types/orgId";
 import {
   getAffiliateKpiStats,
+  getAffiliateKpiTimeSeries,
   getAffiliateReferrers,
 } from "@/app/affiliate/[orgId]/dashboard/action";
 
@@ -23,6 +24,11 @@ const DashboardPage = async ({ params }: OrgIdProps) => {
   if (!referrerStats.ok) {
     redirect(`/error?message=${encodeURIComponent(referrerStats.error)}`);
   }
+  const affiliateChartStats = await getAffiliateKpiTimeSeries();
+  if (!affiliateChartStats.ok) {
+    redirect(`/error?message=${encodeURIComponent(affiliateChartStats.error)}`);
+  }
+  console.log("Affiliate Chart Stats:", affiliateChartStats.data);
   return (
     <>
       <AffiliateOverview

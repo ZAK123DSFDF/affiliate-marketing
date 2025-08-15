@@ -1,5 +1,5 @@
 export interface AffiliateKpiTimeSeries {
-  date: string;
+  createdAt: string;
   visitors: number;
   sales: number;
   totalCommission: number;

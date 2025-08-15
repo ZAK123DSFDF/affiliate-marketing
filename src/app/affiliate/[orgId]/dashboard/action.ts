@@ -82,7 +82,6 @@ export async function getAffiliateKpiStats(): Promise<
       db
         .select({
           id: affiliateInvoice.affiliateLinkId,
-          createdAt: affiliateInvoice.createdAt,
           subs: sql<number>`count(distinct ${affiliateInvoice.subscriptionId})`.mapWith(
             Number,
           ),
@@ -157,24 +156,17 @@ export async function getAffiliateKpiTimeSeries(): Promise<
       db
         .select({
           id: affiliateClick.affiliateLinkId,
-          date: sql<Date>`date_trunc('day', ${affiliateClick.createdAt})`.mapWith(
-            Date,
-          ),
+          createdAt: affiliateClick.createdAt,
           count: sql<number>`count(*)`.mapWith(Number),
         })
         .from(affiliateClick)
         .where(inArray(affiliateClick.affiliateLinkId, linkIds))
-        .groupBy(
-          sql`date_trunc('day', ${affiliateClick.createdAt})`,
-          affiliateClick.affiliateLinkId,
-        ),
+        .groupBy(affiliateClick.createdAt, affiliateClick.affiliateLinkId),
 
       db
         .select({
           id: affiliateInvoice.affiliateLinkId,
-          date: sql<Date>`date_trunc('day', ${affiliateInvoice.createdAt})`.mapWith(
-            Date,
-          ),
+          createdAt: affiliateInvoice.createdAt,
           subs: sql<number>`count(distinct ${affiliateInvoice.subscriptionId})`.mapWith(
             Number,
           ),
@@ -189,18 +181,15 @@ export async function getAffiliateKpiTimeSeries(): Promise<
         })
         .from(affiliateInvoice)
         .where(inArray(affiliateInvoice.affiliateLinkId, linkIds))
-        .groupBy(
-          sql`date_trunc('day', ${affiliateInvoice.createdAt})`,
-          affiliateInvoice.affiliateLinkId,
-        ),
+        .groupBy(affiliateInvoice.createdAt, affiliateInvoice.affiliateLinkId),
     ]);
 
     const chartData = clicksAgg.map((click) => {
       const sameDaySales = salesAgg.find(
-        (sale) => sale.id === click.id && sale.date === click.date,
+        (sale) => sale.id === click.id && sale.createdAt === click.createdAt,
       );
       return {
-        date: click.date,
+        createdAt: click.createdAt.toISOString().slice(0, 10),
         visitors: click.count,
         sales: sameDaySales ? sameDaySales.subs + sameDaySales.singles : 0,
         totalCommission: sameDaySales ? sameDaySales.totalCommission : 0,
