@@ -8,8 +8,6 @@ import {
   unique,
   pgEnum,
   integer,
-  uniqueIndex,
-  index,
   jsonb,
   numeric,
 } from "drizzle-orm/pg-core";
@@ -128,7 +126,7 @@ export const affiliateClick = pgTable("affiliate_click", {
     .notNull()
     .references(() => affiliateLink.id, { onDelete: "cascade" }),
   userAgent: text("user_agent"),
-  referrer: text("referrer"),
+  referrer: text("referrer").default("unknown").notNull(),
   deviceType: text("device_type"),
   browser: text("browser"),
   os: text("os"),

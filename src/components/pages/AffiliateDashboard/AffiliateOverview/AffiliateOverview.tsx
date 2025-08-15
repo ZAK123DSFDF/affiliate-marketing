@@ -8,15 +8,18 @@ import { dummyLinksData } from "@/lib/types/dummyLInksData";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
 import ErrorState from "@/components/ui-custom/ErrorState";
+import { AffiliateKpiStats } from "@/lib/types/affiliateKpiStats";
 
 const AffiliateOverview = ({
   orgId,
   isPreview = false,
   affiliate = false,
+  kpiCardStats,
 }: {
   orgId: string;
   isPreview?: boolean;
   affiliate: boolean;
+  kpiCardStats: AffiliateKpiStats[];
 }) => {
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "dashboard")
@@ -29,7 +32,11 @@ const AffiliateOverview = ({
   }
   return (
     <div className="space-y-8">
-      <Cards affiliate={affiliate} isPreview={isPreview} />
+      <Cards
+        affiliate={affiliate}
+        kpiCardStats={kpiCardStats}
+        isPreview={isPreview}
+      />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="h-full">
           <ChartDailyMetrics affiliate={affiliate} isPreview={isPreview} />

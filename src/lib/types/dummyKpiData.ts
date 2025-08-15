@@ -66,7 +66,19 @@ export const initialKpiData = [
     bg: "bg-red-100",
   },
 ];
-
+export const dummyAffiliateKpiCardStats = [
+  {
+    affiliateId: "aff1",
+    name: "John Doe",
+    email: "John@gmail.com",
+    totalLinks: 41,
+    totalVisitors: 1403,
+    totalSales: 98,
+    totalCommission: 4150,
+    totalCommissionPaid: 2200,
+    totalCommissionUnpaid: 1950,
+  },
+];
 export const months = [
   "January",
   "February",

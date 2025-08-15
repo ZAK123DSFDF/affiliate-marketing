@@ -13,6 +13,7 @@ import {
 import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOverview/AffiliateOverview";
 import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization";
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
+import { dummyAffiliateKpiCardStats } from "@/lib/types/dummyKpiData";
 
 export function DashboardCustomization({ orgId }: { orgId: string }) {
   const [selectedPage, setSelectedPage] = useState("dashboard");
@@ -41,7 +42,12 @@ export function DashboardCustomization({ orgId }: { orgId: string }) {
           >
             <DashboardThemeCustomizationOptions name="mainBackgroundColor" />
             {selectedPage === "dashboard" && (
-              <AffiliateOverview orgId={orgId} affiliate isPreview />
+              <AffiliateOverview
+                data={{ kpiCardStats: dummyAffiliateKpiCardStats }}
+                orgId={orgId}
+                affiliate
+                isPreview
+              />
             )}
             {selectedPage === "links" && (
               <Links

@@ -16,10 +16,13 @@ import { cn } from "@/lib/utils";
 import { KpiCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/KpiCardCustomizationOptions";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
+import { AffiliateKpiStats } from "@/lib/types/affiliateKpiStats";
+import { mapAffiliateStats } from "@/util/mapStats";
 
 interface CardsProps {
   affiliate: boolean;
   isPreview?: boolean;
+  kpiCardStats?: AffiliateKpiStats[] | [{}];
 }
 
 const affiliateColorPairs = [
@@ -35,17 +38,20 @@ const sellerColorPairs = [
   { iconBg: "bg-yellow-100", iconColor: "text-yellow-600" },
 ];
 
-const Cards = ({ affiliate = false, isPreview = false }: CardsProps) => {
+const Cards = ({
+  affiliate = false,
+  isPreview = false,
+  kpiCardStats = [{}],
+}: CardsProps) => {
   const [selectedMonth, setSelectedMonth] = useState<string | undefined>();
   const [selectedYear, setSelectedYear] = useState<string | undefined>();
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const kpiCard = useKpiCardCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
+  const stats = kpiCardStats[0];
+
   const filteredData = affiliate
-    ? initialKpiData.filter(
-        (item) =>
-          item.label !== "Total Affiliates" && item.label !== "Total Amount",
-      )
+    ? mapAffiliateStats(stats as AffiliateKpiStats)
     : initialKpiData;
 
   const colorTypes = ["Primary", "Secondary", "Tertiary"] as const;
@@ -134,7 +140,9 @@ const Cards = ({ affiliate = false, isPreview = false }: CardsProps) => {
             className={`grid ${
               isPreview
                 ? "grid-cols-2 sm:grid-cols-3 gap-2"
-                : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+                : affiliate
+                  ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                  : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
             }`}
           >
             {filteredData.map(({ label, value, icon: Icon }, index) => {
