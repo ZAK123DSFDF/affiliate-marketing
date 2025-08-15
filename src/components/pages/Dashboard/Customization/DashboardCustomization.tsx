@@ -43,7 +43,7 @@ export function DashboardCustomization({ orgId }: { orgId: string }) {
             <DashboardThemeCustomizationOptions name="mainBackgroundColor" />
             {selectedPage === "dashboard" && (
               <AffiliateOverview
-                data={{ kpiCardStats: dummyAffiliateKpiCardStats }}
+                kpiCardStats={dummyAffiliateKpiCardStats}
                 orgId={orgId}
                 affiliate
                 isPreview

@@ -3,7 +3,10 @@ import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOv
 import { validateOrg } from "@/util/ValidateOrg";
 import { redirect } from "next/navigation";
 import { OrgIdProps } from "@/lib/types/orgId";
-import { getAffiliateKpiStats } from "@/app/affiliate/[orgId]/dashboard/action";
+import {
+  getAffiliateKpiStats,
+  getAffiliateReferrers,
+} from "@/app/affiliate/[orgId]/dashboard/action";
 
 const DashboardPage = async ({ params }: OrgIdProps) => {
   const { orgId } = await params;
@@ -15,6 +18,10 @@ const DashboardPage = async ({ params }: OrgIdProps) => {
   const kpiCardStats = await getAffiliateKpiStats();
   if (!kpiCardStats.ok) {
     redirect(`/error?message=${encodeURIComponent(kpiCardStats.error)}`);
+  }
+  const referrerStats = await getAffiliateReferrers();
+  if (!referrerStats.ok) {
+    redirect(`/error?message=${encodeURIComponent(referrerStats.error)}`);
   }
   return (
     <>
