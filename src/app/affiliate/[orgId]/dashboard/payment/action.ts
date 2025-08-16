@@ -1,6 +1,6 @@
 // actions/getAffiliateCommissionByMonth.ts
 "use server";
-import { getOrganization } from "@/util/GetOrganization";
+import { getAffiliateOrganization } from "@/util/GetAffiliateOrganization";
 import { db } from "@/db/drizzle";
 import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow";
 import { ResponseData } from "@/lib/types/response";
@@ -12,7 +12,7 @@ export const getAffiliateCommissionByMonth = async (
   year?: number,
 ): Promise<ResponseData<AffiliatePaymentRow[]>> => {
   try {
-    const { org, decoded } = await getOrganization();
+    const { org, decoded } = await getAffiliateOrganization();
     const links = await db.query.affiliateLink.findMany({
       where: (l, { eq, and }) =>
         and(eq(l.organizationId, org.id), eq(l.affiliateId, decoded.id)),

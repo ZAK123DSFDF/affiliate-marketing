@@ -3,15 +3,17 @@
 import { db } from "@/db/drizzle";
 import { affiliateClick, affiliateInvoice, affiliateLink } from "@/db/schema";
 import { generateAffiliateCode } from "@/util/idGenerators";
-import { getOrganization } from "@/util/GetOrganization";
+import { getAffiliateOrganization } from "@/util/GetAffiliateOrganization";
 import { revalidatePath } from "next/cache";
 import { inArray, sql } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
 import { ResponseData } from "@/lib/types/response";
 import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
+import { getAffiliateLinks } from "@/lib/server/getAffiliateLinks";
+import { buildWhereWithDate } from "@/util/BuildWhereWithDate";
 
 export const createAffiliateLink = async () => {
-  const { org, decoded } = await getOrganization();
+  const { org, decoded } = await getAffiliateOrganization();
 
   const code = generateAffiliateCode(); // e.g., "7hjKpQ"
   const param = org.referralParam;
@@ -28,28 +30,19 @@ export const createAffiliateLink = async () => {
   return fullUrl;
 };
 
-export const getAffiliateLinksWithStats = async (): Promise<
-  ResponseData<AffiliateLinkWithStats[]>
-> => {
+export const getAffiliateLinksWithStats = async (
+  year?: number,
+  month?: number,
+): Promise<ResponseData<AffiliateLinkWithStats[]>> => {
   try {
-    const { org, decoded } = await getOrganization();
+    const { org, decoded } = await getAffiliateOrganization();
 
     const baseDomain = org.domainName.replace(/^https?:\/\//, "");
     const param = org.referralParam;
 
     // Step 1: Fetch all links for this affiliate in the current org
-    const links = await db.query.affiliateLink.findMany({
-      where: (l, { and, eq }) =>
-        and(
-          eq(l.affiliateId, decoded.id),
-          eq(l.organizationId, decoded.organizationId),
-        ),
-    });
-
-    if (!links.length) return { ok: true, data: [] };
-
-    const linkIds = links.map((l) => l.id);
-
+    const { linkIds, links } = await getAffiliateLinks(decoded);
+    if (!linkIds.length || !links) return { ok: true, data: [] };
     // Step 2: Aggregate clicks & sales using GROUP BY
     const [clickAgg, salesAgg] = await Promise.all([
       db
@@ -58,7 +51,14 @@ export const getAffiliateLinksWithStats = async (): Promise<
           count: sql<number>`count(*)`.mapWith(Number),
         })
         .from(affiliateClick)
-        .where(inArray(affiliateClick.affiliateLinkId, linkIds))
+        .where(
+          buildWhereWithDate(
+            [inArray(affiliateClick.affiliateLinkId, linkIds)],
+            affiliateClick,
+            year,
+            month,
+          ),
+        )
         .groupBy(affiliateClick.affiliateLinkId),
 
       db
@@ -72,7 +72,14 @@ export const getAffiliateLinksWithStats = async (): Promise<
                     `.mapWith(Number),
         })
         .from(affiliateInvoice)
-        .where(inArray(affiliateInvoice.affiliateLinkId, linkIds))
+        .where(
+          buildWhereWithDate(
+            [inArray(affiliateInvoice.affiliateLinkId, linkIds)],
+            affiliateInvoice,
+            year,
+            month,
+          ),
+        )
         .groupBy(affiliateInvoice.affiliateLinkId),
     ]);
 
@@ -83,13 +90,21 @@ export const getAffiliateLinksWithStats = async (): Promise<
     );
 
     // Step 4: Combine into final list
-    const rows: AffiliateLinkWithStats[] = links.map((link) => ({
-      id: link.id,
-      fullUrl: `https://${baseDomain}/?${param}=${link.id}`,
-      clicks: clicksMap.get(link.id) ?? 0,
-      sales: salesMap.get(link.id) ?? 0,
-      createdAt: link.createdAt,
-    }));
+    const rows: AffiliateLinkWithStats[] = links.map((link) => {
+      const clicks = clicksMap.get(link.id) ?? 0;
+      const sales = salesMap.get(link.id) ?? 0;
+
+      const conversionRate = clicks > 0 ? (sales / clicks) * 100 : 0;
+
+      return {
+        id: link.id,
+        fullUrl: `https://${baseDomain}/?${param}=${link.id}`,
+        clicks,
+        sales,
+        conversionRate,
+        createdAt: link.createdAt,
+      };
+    });
 
     return { ok: true, data: rows };
   } catch (err) {

@@ -39,16 +39,33 @@ interface ChartDailyMetricsProps {
   affiliate: boolean;
   isPreview?: boolean;
 }
+function generateSampleData(count: number) {
+  const data = [];
+  const today = new Date();
 
-const rawMetricsData = [
-  { date: "2024-06-01", visits: 340, sales: 45, amount: 1200, commission: 240 },
-  { date: "2024-06-02", visits: 380, sales: 60, amount: 1600, commission: 320 },
-  { date: "2024-06-03", visits: 420, sales: 58, amount: 1800, commission: 290 },
-  { date: "2024-06-04", visits: 390, sales: 62, amount: 1900, commission: 310 },
-  { date: "2024-06-05", visits: 410, sales: 40, amount: 1000, commission: 200 },
-  { date: "2024-06-06", visits: 500, sales: 78, amount: 2200, commission: 430 },
-  { date: "2024-06-07", visits: 460, sales: 65, amount: 1700, commission: 300 },
-];
+  for (let i = 0; i < count; i++) {
+    // Go backwards in time day by day
+    const date = new Date(today);
+    date.setDate(today.getDate() - (count - i));
+
+    // Random visits & sales
+    const visits = Math.floor(Math.random() * 500) + 100; // 100 - 600
+    const sales = Math.floor(Math.random() * (visits * 0.3)); // up to 30% conversion
+    const amount = sales * (Math.floor(Math.random() * 50) + 20); // $20–$70 per sale
+    const commission = Math.floor(amount * 0.2); // 20% commission
+
+    data.push({
+      date: date.toISOString().split("T")[0],
+      visits,
+      sales,
+      amount,
+      commission,
+    });
+  }
+
+  return data;
+}
+const rawMetricsData = generateSampleData(1000);
 
 export function ChartDailyMetrics({
   affiliate = false,
@@ -228,6 +245,7 @@ export function ChartDailyMetrics({
                   }}
                   tickFormatter={(value) =>
                     new Date(value).toLocaleDateString("en-US", {
+                      year: "numeric",
                       month: "short",
                       day: "numeric",
                     })
@@ -240,6 +258,7 @@ export function ChartDailyMetrics({
                       affiliate={affiliate}
                       labelFormatter={(value) =>
                         new Date(value).toLocaleDateString("en-US", {
+                          year: "numeric",
                           month: "short",
                           day: "numeric",
                         })

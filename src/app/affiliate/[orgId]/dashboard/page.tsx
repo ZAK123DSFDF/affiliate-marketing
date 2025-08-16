@@ -7,7 +7,6 @@ import {
   getAffiliateKpiStats,
   getAffiliateKpiTimeSeries,
   getAffiliateReferrers,
-  getTopPerformingAffiliateLinks,
 } from "@/app/affiliate/[orgId]/dashboard/action";
 
 const DashboardPage = async ({ params }: OrgIdProps) => {
@@ -29,8 +28,6 @@ const DashboardPage = async ({ params }: OrgIdProps) => {
   if (!affiliateChartStats.ok) {
     redirect(`/error?message=${encodeURIComponent(affiliateChartStats.error)}`);
   }
-  const topPerformingLinks = await getTopPerformingAffiliateLinks();
-  console.log("Top Performing Links:", topPerformingLinks);
   return (
     <>
       <AffiliateOverview

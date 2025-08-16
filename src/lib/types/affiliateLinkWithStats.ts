@@ -4,5 +4,5 @@ export type AffiliateLinkWithStats = {
   clicks: number;
   sales: number;
   createdAt: Date;
-  conversionRate?: number;
+  conversionRate: number;
 };

@@ -45,14 +45,6 @@ const AffiliateOverview = ({
           <SocialTrafficCharts isPreview={isPreview} affiliate={affiliate} />
         </div>
       </div>
-
-      <Links
-        data={dummyLinksData}
-        affiliate={affiliate}
-        isTopLinksView
-        isPreview={isPreview}
-        orgId={orgId}
-      />
     </div>
   );
 };

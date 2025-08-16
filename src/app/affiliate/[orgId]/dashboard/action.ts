@@ -1,60 +1,23 @@
 "use server";
 
 import { db } from "@/db/drizzle";
-import {
-  affiliate,
-  affiliateLink,
-  affiliateClick,
-  affiliateInvoice,
-} from "@/db/schema";
-import { sql, eq, and, inArray } from "drizzle-orm";
+import { affiliateClick, affiliateInvoice } from "@/db/schema";
+import { sql, inArray } from "drizzle-orm";
 import { AffiliateKpiStats } from "@/lib/types/affiliateKpiStats";
-import { getOrganization } from "@/util/GetOrganization";
+import { getAffiliateOrganization } from "@/util/GetAffiliateOrganization";
 import { ResponseData } from "@/lib/types/response";
 import { returnError } from "@/lib/errorHandler";
 import { AffiliateReferrerStat } from "@/lib/types/affiliateReferrerStat";
 import { AffiliateKpiTimeSeries } from "@/lib/types/affiliateChartStats";
-import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
-async function getAffiliateLinks(decoded: {
-  organizationId: string;
-  id: string;
-}) {
-  const affiliates = await db
-    .select({
-      affiliateId: affiliate.id,
-      name: affiliate.name,
-      email: affiliate.email,
-    })
-    .from(affiliate)
-    .where(
-      and(
-        eq(affiliate.organizationId, decoded.organizationId),
-        eq(affiliate.id, decoded.id),
-      ),
-    );
+import { buildWhereWithDate } from "@/util/BuildWhereWithDate";
+import { getAffiliateLinks } from "@/lib/server/getAffiliateLinks";
 
-  if (!affiliates.length) return { affiliates: [], linkIds: [] };
-
-  const affiliateId = affiliates[0].affiliateId;
-
-  const links = await db
-    .select({ id: affiliateLink.id })
-    .from(affiliateLink)
-    .where(
-      and(
-        eq(affiliateLink.affiliateId, affiliateId),
-        eq(affiliateLink.organizationId, decoded.organizationId),
-      ),
-    );
-
-  return { affiliates, linkIds: links.map((l) => l.id) };
-}
-
-export async function getAffiliateKpiStats(): Promise<
-  ResponseData<AffiliateKpiStats[]>
-> {
+export async function getAffiliateKpiStats(
+  year?: number,
+  month?: number,
+): Promise<ResponseData<AffiliateKpiStats[]>> {
   try {
-    const { decoded } = await getOrganization();
+    const { decoded } = await getAffiliateOrganization();
     const { affiliates, linkIds } = await getAffiliateLinks(decoded);
     if (!linkIds.length) {
       const affiliateLinks = affiliates.map((a) => ({
@@ -77,7 +40,14 @@ export async function getAffiliateKpiStats(): Promise<
           count: sql<number>`count(*)`.mapWith(Number),
         })
         .from(affiliateClick)
-        .where(inArray(affiliateClick.affiliateLinkId, linkIds))
+        .where(
+          buildWhereWithDate(
+            [inArray(affiliateClick.affiliateLinkId, linkIds)],
+            affiliateClick,
+            year,
+            month,
+          ),
+        )
         .groupBy(affiliateClick.affiliateLinkId),
 
       db
@@ -104,7 +74,14 @@ export async function getAffiliateKpiStats(): Promise<
             ),
         })
         .from(affiliateInvoice)
-        .where(inArray(affiliateInvoice.affiliateLinkId, linkIds))
+        .where(
+          buildWhereWithDate(
+            [inArray(affiliateInvoice.affiliateLinkId, linkIds)],
+            affiliateInvoice,
+            year,
+            month,
+          ),
+        )
         .groupBy(affiliateInvoice.affiliateLinkId),
     ]);
 
@@ -145,14 +122,17 @@ export async function getAffiliateKpiStats(): Promise<
     return returnError(err) as ResponseData<AffiliateKpiStats[]>;
   }
 }
-export async function getAffiliateKpiTimeSeries(): Promise<
-  ResponseData<AffiliateKpiTimeSeries[]>
-> {
+export async function getAffiliateKpiTimeSeries(
+  year?: number,
+  month?: number,
+): Promise<ResponseData<AffiliateKpiTimeSeries[]>> {
   try {
-    const { decoded } = await getOrganization();
+    const { decoded } = await getAffiliateOrganization();
     const { linkIds } = await getAffiliateLinks(decoded);
     if (!linkIds.length) return { ok: true, data: [] };
-
+    const today = new Date();
+    const past1000Days = new Date();
+    past1000Days.setDate(today.getDate() - 1000);
     const [clicksAgg, salesAgg] = await Promise.all([
       db
         .select({
@@ -161,7 +141,15 @@ export async function getAffiliateKpiTimeSeries(): Promise<
           count: sql<number>`count(*)`.mapWith(Number),
         })
         .from(affiliateClick)
-        .where(inArray(affiliateClick.affiliateLinkId, linkIds))
+        .where(
+          buildWhereWithDate(
+            [inArray(affiliateClick.affiliateLinkId, linkIds)],
+            affiliateClick,
+            year,
+            month,
+            true,
+          ),
+        )
         .groupBy(affiliateClick.createdAt, affiliateClick.affiliateLinkId),
 
       db
@@ -181,7 +169,14 @@ export async function getAffiliateKpiTimeSeries(): Promise<
             ),
         })
         .from(affiliateInvoice)
-        .where(inArray(affiliateInvoice.affiliateLinkId, linkIds))
+        .where(
+          buildWhereWithDate(
+            [inArray(affiliateInvoice.affiliateLinkId, linkIds)],
+            affiliateInvoice,
+            year,
+            month,
+          ),
+        )
         .groupBy(affiliateInvoice.createdAt, affiliateInvoice.affiliateLinkId),
     ]);
 
@@ -203,54 +198,29 @@ export async function getAffiliateKpiTimeSeries(): Promise<
   }
 }
 
-export async function getAffiliateReferrers(): Promise<
-  ResponseData<AffiliateReferrerStat[]>
-> {
+export async function getAffiliateReferrers(
+  year?: number,
+  month?: number,
+): Promise<ResponseData<AffiliateReferrerStat[]>> {
   try {
-    const { decoded } = await getOrganization();
+    const { decoded } = await getAffiliateOrganization();
 
-    // Step 1: Find affiliate for current user/org
-    const affiliates = await db
-      .select({ affiliateId: affiliate.id })
-      .from(affiliate)
-      .where(
-        and(
-          eq(affiliate.organizationId, decoded.organizationId),
-          eq(affiliate.id, decoded.id),
-        ),
-      );
-
-    if (!affiliates.length) {
-      return { ok: true, data: [] };
-    }
-
-    const affiliateId = affiliates[0].affiliateId;
-
-    // Step 2: Get all affiliate link IDs for that affiliate
-    const links = await db
-      .select({ id: affiliateLink.id })
-      .from(affiliateLink)
-      .where(
-        and(
-          eq(affiliateLink.affiliateId, affiliateId),
-          eq(affiliateLink.organizationId, decoded.organizationId),
-        ),
-      );
-
-    const linkIds = links.map((l) => l.id);
-
-    if (!linkIds.length) {
-      return { ok: true, data: [] };
-    }
-
-    // Step 3: Aggregate referrer stats for only these links
+    const { linkIds } = await getAffiliateLinks(decoded);
+    if (!linkIds.length) return { ok: true, data: [] };
     const referrerStats = await db
       .select({
         referrer: affiliateClick.referrer,
         clicks: sql<number>`COUNT(*)`.mapWith(Number),
       })
       .from(affiliateClick)
-      .where(inArray(affiliateClick.affiliateLinkId, linkIds))
+      .where(
+        buildWhereWithDate(
+          [inArray(affiliateClick.affiliateLinkId, linkIds)],
+          affiliateClick,
+          year,
+          month,
+        ),
+      )
       .groupBy(affiliateClick.referrer);
 
     return { ok: true, data: referrerStats };
@@ -259,92 +229,3 @@ export async function getAffiliateReferrers(): Promise<
     return { ok: false, error: "Failed to fetch referrer stats", status: 500 };
   }
 }
-export const getTopPerformingAffiliateLinks = async (): Promise<
-  ResponseData<AffiliateLinkWithStats[]>
-> => {
-  try {
-    const { org, decoded } = await getOrganization();
-    const baseDomain = org.domainName.replace(/^https?:\/\//, "");
-    const param = org.referralParam;
-
-    const rows = await db
-      .select({
-        id: affiliateLink.id,
-        createdAt: affiliateLink.createdAt,
-        clicks: sql<number>`COUNT(DISTINCT ${affiliateClick.id})`.mapWith(
-          Number,
-        ),
-        // sales = distinct subscriptions + distinct one-time invoices (subscription_id IS NULL)
-        sales: sql<number>`
-          (
-            COUNT(DISTINCT ${affiliateInvoice.subscriptionId})
-            +
-            COUNT(DISTINCT CASE WHEN ${affiliateInvoice.subscriptionId} IS NULL THEN ${affiliateInvoice.id} END)
-          )
-        `.mapWith(Number),
-        conversionRate: sql<number>`
-          CASE
-            WHEN COUNT(DISTINCT ${affiliateClick.id}) > 0 THEN
-              (
-                (
-                  COUNT(DISTINCT ${affiliateInvoice.subscriptionId})
-                  +
-                  COUNT(DISTINCT CASE WHEN ${affiliateInvoice.subscriptionId} IS NULL THEN ${affiliateInvoice.id} END)
-                )::decimal
-                /
-                COUNT(DISTINCT ${affiliateClick.id})::decimal
-              )
-            ELSE 0
-          END
-        `.mapWith(Number),
-      })
-      .from(affiliateLink)
-      .leftJoin(
-        affiliateClick,
-        eq(affiliateClick.affiliateLinkId, affiliateLink.id),
-      )
-      .leftJoin(
-        affiliateInvoice,
-        eq(affiliateInvoice.affiliateLinkId, affiliateLink.id),
-      )
-      .where(
-        and(
-          eq(affiliateLink.affiliateId, decoded.id),
-          eq(affiliateLink.organizationId, decoded.organizationId),
-        ),
-      )
-      .groupBy(affiliateLink.id, affiliateLink.createdAt)
-      .orderBy(
-        sql`
-        CASE
-          WHEN COUNT(DISTINCT ${affiliateClick.id}) > 0 THEN
-            (
-              (
-                COUNT(DISTINCT ${affiliateInvoice.subscriptionId})
-                +
-                COUNT(DISTINCT CASE WHEN ${affiliateInvoice.subscriptionId} IS NULL THEN ${affiliateInvoice.id} END)
-              )::decimal
-              /
-              COUNT(DISTINCT ${affiliateClick.id})::decimal
-            )
-          ELSE 0
-        END DESC
-      `,
-      )
-      .limit(10);
-
-    const data: AffiliateLinkWithStats[] = rows.map((r) => ({
-      id: r.id,
-      fullUrl: `https://${baseDomain}/?${param}=${r.id}`,
-      clicks: r.clicks,
-      sales: r.sales,
-      conversionRate: r.conversionRate, // already a Number (0..1). multiply by 100 in UI if you show %
-      createdAt: r.createdAt,
-    }));
-
-    return { ok: true, data };
-  } catch (err) {
-    console.error("getTopPerformingAffiliateLinks error:", err);
-    return returnError(err) as ResponseData<AffiliateLinkWithStats[]>;
-  }
-};

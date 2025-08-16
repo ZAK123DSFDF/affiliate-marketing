@@ -48,14 +48,12 @@ interface AffiliateLinkProps {
   orgId: string;
   data: AffiliateLinkWithStats[];
   isPreview?: boolean;
-  isTopLinksView?: boolean;
   affiliate: boolean;
 }
 export default function Links({
   orgId,
   data,
   isPreview,
-  isTopLinksView = false,
   affiliate,
 }: AffiliateLinkProps) {
   const dashboardTheme = useDashboardThemeCustomizationOption();
@@ -294,78 +292,76 @@ export default function Links({
   }
   return (
     <div className="flex flex-col gap-6">
-      {!isTopLinksView && (
-        <div className="flex justify-between items-center">
-          <div>
-            <div className="flex flex-row gap-2 items-center">
-              <h1
-                className="text-3xl font-bold"
-                style={{
-                  color:
-                    (affiliate && dashboardTheme.dashboardHeaderNameColor) ||
-                    undefined,
-                }}
-              >
-                Affiliate Links
-              </h1>
-              {isPreview && (
-                <DashboardThemeCustomizationOptions
-                  name="dashboardHeaderNameColor"
-                  buttonSize="w-4 h-4"
-                />
-              )}
-            </div>
-            <div className="flex flex-row gap-2 items-center">
-              <p
-                className="text-muted-foreground"
-                style={{
-                  color:
-                    (affiliate && dashboardTheme.dashboardHeaderDescColor) ||
-                    undefined,
-                }}
-              >
-                Track your referral links and their performance
-              </p>
-              {isPreview && (
-                <DashboardThemeCustomizationOptions
-                  name="dashboardHeaderDescColor"
-                  buttonSize="w-4 h-4"
-                />
-              )}
-            </div>
-          </div>
+      <div className="flex justify-between items-center">
+        <div>
           <div className="flex flex-row gap-2 items-center">
-            {isPreview && (
-              <DashboardButtonCustomizationOptions triggerSize="w-6 h-6" />
-            )}
-            <Button
-              onClick={handleCreate}
-              disabled={mutation.isPending || isFakeLoading}
+            <h1
+              className="text-3xl font-bold"
               style={{
-                backgroundColor:
-                  mutation.isPending || isFakeLoading
-                    ? (affiliate &&
-                        dashboardButton.dashboardButtonDisabledBackgroundColor) ||
-                      undefined
-                    : (affiliate &&
-                        dashboardButton.dashboardButtonBackgroundColor) ||
-                      undefined,
                 color:
-                  mutation.isPending || isFakeLoading
-                    ? (affiliate &&
-                        dashboardButton.dashboardButtonDisabledTextColor) ||
-                      undefined
-                    : (affiliate && dashboardButton.dashboardButtonTextColor) ||
-                      undefined,
+                  (affiliate && dashboardTheme.dashboardHeaderNameColor) ||
+                  undefined,
               }}
             >
-              {mutation.isPending || isFakeLoading
-                ? "Creating..."
-                : "Create New Link"}
-            </Button>
+              Affiliate Links
+            </h1>
+            {isPreview && (
+              <DashboardThemeCustomizationOptions
+                name="dashboardHeaderNameColor"
+                buttonSize="w-4 h-4"
+              />
+            )}
+          </div>
+          <div className="flex flex-row gap-2 items-center">
+            <p
+              className="text-muted-foreground"
+              style={{
+                color:
+                  (affiliate && dashboardTheme.dashboardHeaderDescColor) ||
+                  undefined,
+              }}
+            >
+              Track your referral links and their performance
+            </p>
+            {isPreview && (
+              <DashboardThemeCustomizationOptions
+                name="dashboardHeaderDescColor"
+                buttonSize="w-4 h-4"
+              />
+            )}
           </div>
         </div>
-      )}
+        <div className="flex flex-row gap-2 items-center">
+          {isPreview && (
+            <DashboardButtonCustomizationOptions triggerSize="w-6 h-6" />
+          )}
+          <Button
+            onClick={handleCreate}
+            disabled={mutation.isPending || isFakeLoading}
+            style={{
+              backgroundColor:
+                mutation.isPending || isFakeLoading
+                  ? (affiliate &&
+                      dashboardButton.dashboardButtonDisabledBackgroundColor) ||
+                    undefined
+                  : (affiliate &&
+                      dashboardButton.dashboardButtonBackgroundColor) ||
+                    undefined,
+              color:
+                mutation.isPending || isFakeLoading
+                  ? (affiliate &&
+                      dashboardButton.dashboardButtonDisabledTextColor) ||
+                    undefined
+                  : (affiliate && dashboardButton.dashboardButtonTextColor) ||
+                    undefined,
+            }}
+          >
+            {mutation.isPending || isFakeLoading
+              ? "Creating..."
+              : "Create New Link"}
+          </Button>
+        </div>
+      </div>
 
       <Card
         className="relative"
@@ -412,8 +408,7 @@ export default function Links({
             className="text-lg"
           >
             <div className="flex flex-row items-center gap-2">
-              {isTopLinksView ? "Top Performing Links" : "Link Stats"}
-
+              Link Stats
               {isPreview && (
                 <DashboardThemeCustomizationOptions
                   name="cardHeaderPrimaryTextColor"
