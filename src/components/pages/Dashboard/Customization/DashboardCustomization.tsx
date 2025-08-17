@@ -7,6 +7,7 @@ import PaymentTable from "@/components/pages/AffiliateDashboard/Payment/Payment"
 import Links from "@/components/pages/AffiliateDashboard/Links/Links";
 import {
   dummyAffiliateLinks,
+  dummyAffiliateLinksRaw,
   dummyAffiliatePayments,
   dummyProfileData,
 } from "@/lib/types/previewData";
@@ -54,7 +55,7 @@ export function DashboardCustomization({ orgId }: { orgId: string }) {
                 orgId={orgId}
                 affiliate
                 isPreview
-                data={dummyAffiliateLinks}
+                data={dummyAffiliateLinksRaw}
               />
             )}
             {selectedPage === "payment" && (

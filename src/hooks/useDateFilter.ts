@@ -1,5 +1,5 @@
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo, useEffect } from "react";
 
 export function useDateFilter(
   yearKey: string = "year",
@@ -39,7 +39,7 @@ export function useDateFilter(
         newParams.delete(monthKey);
       }
 
-      router.push(`?${newParams.toString()}`);
+      router.push(`?${newParams.toString()}`, { scroll: false });
     },
     [router, searchParams, yearKey, monthKey],
   );

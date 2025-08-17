@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AuthCustomization } from "@/components/pages/Dashboard/Customization/AuthCustomization";
 import { DashboardCustomization } from "@/components/pages/Dashboard/Customization/DashboardCustomization";
@@ -11,6 +11,7 @@ import { useAuthCustomizationChangesStore } from "@/store/AuthCustomizationChang
 import { useDashboardCustomizationChangesStore } from "@/store/DashboardCustomizationChangesStore";
 import { getDashboardCustomizationChanges } from "@/customization/Dashboard/DashboardCustomizationChanges";
 import { Button } from "@/components/ui/button";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function CustomizationPage({ orgId }: { orgId: string }) {
   const [mainTab, setMainTab] = useState("sidebar");
@@ -49,6 +50,13 @@ export default function CustomizationPage({ orgId }: { orgId: string }) {
       console.error("❌ Save failed:", error);
     },
   });
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    if (searchParams.size > 0) {
+      router.replace("?", { scroll: false });
+    }
+  }, []);
   return (
     <div className="p-6 space-y-6">
       <div>

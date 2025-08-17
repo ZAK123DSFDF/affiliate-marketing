@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -38,10 +38,11 @@ import { useDateFilter } from "@/hooks/useDateFilter";
 import { TableContent } from "@/components/ui-custom/TableContent";
 import { LinksColumns } from "@/components/pages/AffiliateDashboard/Links/LinksColumns";
 import { TableLoading } from "@/components/ui-custom/TableLoading";
+import { DummyAffiliateLink } from "@/lib/types/DummyAffiliateLink";
 
 interface AffiliateLinkProps {
   orgId: string;
-  data: AffiliateLinkWithStats[];
+  data: AffiliateLinkWithStats[] | DummyAffiliateLink[];
   isPreview?: boolean;
   affiliate: boolean;
 }
@@ -58,10 +59,67 @@ export default function Links({
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "dashboard")
     : { isPending: false, isError: false, refetch: () => {} };
-  const columns = LinksColumns(affiliate);
-  const [isFakeLoading, setIsFakeLoading] = useState(false);
-  const { selectedDate, handleDateChange } = useDateFilter();
 
+  const [isFakeLoading, setIsFakeLoading] = useState(false);
+  const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false);
+  const { selectedDate, handleDateChange } = useDateFilter();
+  useEffect(() => {
+    if (!isPreview) return;
+
+    setIsFakeLoadingPreview(true);
+
+    const timer = setTimeout(() => {
+      setIsFakeLoadingPreview(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [selectedDate, isPreview]);
+  const filteredPreviewData = React.useMemo(() => {
+    if (!isPreview) return data as AffiliateLinkWithStats[];
+
+    return (data as DummyAffiliateLink[]).map((link) => {
+      const filteredClicks = link.clicks.filter((c) => {
+        const d = new Date(c.createdAt);
+        const matchesYear = selectedDate.year
+          ? d.getFullYear() === selectedDate.year
+          : true;
+        const matchesMonth =
+          selectedDate.year === undefined
+            ? true
+            : selectedDate.month
+              ? d.getMonth() + 1 === selectedDate.month
+              : true;
+        return matchesYear && matchesMonth;
+      });
+
+      const filteredSales = link.sales.filter((s) => {
+        const d = new Date(s.createdAt);
+        const matchesYear = selectedDate.year
+          ? d.getFullYear() === selectedDate.year
+          : true;
+        const matchesMonth = selectedDate.month
+          ? d.getMonth() + 1 === selectedDate.month
+          : true;
+        return matchesYear && matchesMonth;
+      });
+
+      const totalClicks = filteredClicks.reduce((sum, c) => sum + c.count, 0);
+      const totalSales = filteredSales.reduce((sum, s) => sum + s.count, 0);
+      const conversionRate =
+        totalClicks > 0
+          ? parseFloat(((totalSales / totalClicks) * 100).toFixed(2))
+          : 0;
+
+      return {
+        id: link.id,
+        fullUrl: link.fullUrl,
+        createdAt: link.createdAt,
+        clicks: totalClicks,
+        sales: totalSales,
+        conversionRate,
+      } satisfies AffiliateLinkWithStats;
+    });
+  }, [data, selectedDate, isPreview]);
   const { data: searchData, isPending: searchPending } = useSearch(
     ["affiliate-links", orgId, selectedDate.year, selectedDate.month],
     getAffiliateLinksWithStats,
@@ -110,9 +168,11 @@ export default function Links({
       mutation.mutate();
     }
   };
-
+  const columns = LinksColumns(affiliate);
   const table = useReactTable({
-    data: searchData ? searchData : data,
+    data: isPreview
+      ? filteredPreviewData
+      : (searchData ?? (data as AffiliateLinkWithStats[])),
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -266,10 +326,10 @@ export default function Links({
         <CardContent>
           {(selectedDate.year !== undefined ||
             selectedDate.month !== undefined) &&
-          searchPending &&
-          !isPreview ? (
+          ((searchPending && !isPreview) ||
+            (isPreview && isFakeLoadingPreview)) ? (
             <TableLoading columns={columns} />
-          ) : data.length === 0 ? (
+          ) : table.getRowModel().rows.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">
               No links found.
             </div>

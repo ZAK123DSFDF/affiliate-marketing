@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -56,7 +56,18 @@ export default function AffiliateCommissionTable({
     ? useCustomizationSync(orgId, "dashboard")
     : { isPending: false, isError: false, refetch: () => {} };
   const { selectedDate, handleDateChange } = useDateFilter();
+  const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false);
+  useEffect(() => {
+    if (!isPreview) return;
 
+    setIsFakeLoadingPreview(true);
+
+    const timer = setTimeout(() => {
+      setIsFakeLoadingPreview(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [selectedDate, isPreview]);
   const filteredData = React.useMemo(() => {
     if (!isPreview) return data;
     if (!selectedDate.year) return data;
@@ -201,7 +212,8 @@ export default function AffiliateCommissionTable({
           </div>
         </CardHeader>
         <CardContent>
-          {selectedDate.year !== undefined && isPending && !isPreview ? (
+          {selectedDate.year !== undefined &&
+          ((isPending && !isPreview) || (isPreview && isFakeLoadingPreview)) ? (
             <TableLoading columns={columns} />
           ) : table.getRowModel().rows.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">
