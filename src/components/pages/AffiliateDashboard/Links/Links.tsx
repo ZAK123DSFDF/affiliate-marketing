@@ -2,8 +2,6 @@
 
 import React, { useState } from "react";
 import {
-  ColumnDef,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -11,38 +9,35 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
-import { createAffiliateLink } from "@/app/affiliate/[orgId]/dashboard/links/action";
+import {
+  createAffiliateLink,
+  getAffiliateLinksWithStats,
+} from "@/app/affiliate/[orgId]/dashboard/links/action";
 import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
-import { Check, Copy } from "lucide-react";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import MonthSelect from "@/components/ui-custom/MonthSelect";
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
 import { DashboardButtonCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardButtonCustomizationOptions";
 import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions";
-import { cn } from "@/lib/utils";
 import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions";
 import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions";
 import {
   useDashboardButtonCustomizationOption,
   useDashboardCardCustomizationOption,
   useDashboardThemeCustomizationOption,
-  useTableCustomizationOption,
 } from "@/hooks/useDashboardCustomization";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
 import ErrorState from "@/components/ui-custom/ErrorState";
+import { useSearch } from "@/hooks/useSearch";
+import { useDateFilter } from "@/hooks/useDateFilter";
+import { TableContent } from "@/components/ui-custom/TableContent";
+import { LinksColumns } from "@/components/pages/AffiliateDashboard/Links/LinksColumns";
+import { TableLoading } from "@/components/ui-custom/TableLoading";
 
 interface AffiliateLinkProps {
   orgId: string;
@@ -59,187 +54,26 @@ export default function Links({
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const dashboardButton = useDashboardButtonCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
-  const dashboardTable = useTableCustomizationOption();
   const { showCustomToast } = useCustomToast();
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "dashboard")
     : { isPending: false, isError: false, refetch: () => {} };
-  const columns: ColumnDef<AffiliateLinkWithStats>[] = [
-    {
-      accessorKey: "fullUrl",
-      header: () => (
-        <span
-          style={{
-            color:
-              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
-          }}
-        >
-          Affiliate Link
-        </span>
-      ),
-      cell: ({ row }) => {
-        const url: string = row.getValue("fullUrl");
-        const [isHovered, setIsHovered] = useState(false);
-        const [copied, setCopied] = useState(false);
-
-        const handleCopy = () => {
-          navigator.clipboard.writeText(url).then(() => {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1000);
-          });
-        };
-        const iconColor = copied
-          ? (affiliate && dashboardTable.tableIconHoverColor) || "#2563eb"
-          : isHovered
-            ? (affiliate && dashboardTable.tableIconHoverColor) || "#2563eb"
-            : (affiliate && dashboardTable.tableIconColor) || "";
-
-        const iconBgColor = copied
-          ? "transparent"
-          : isHovered
-            ? (affiliate && dashboardTable.tableIconHoverBackgroundColor) ||
-              "#dbeafe"
-            : "transparent";
-        return (
-          <div
-            className="flex items-center"
-            style={{
-              color:
-                (affiliate && dashboardTable.tableRowSecondaryTextColor) ||
-                undefined,
-            }}
-          >
-            <span className="break-all">{url}</span>
-            <Button
-              type="button"
-              size="icon"
-              variant="ghost"
-              onClick={handleCopy}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-              className="ml-5 flex items-center gap-[2px] text-xs rounded-md transition-colors"
-              style={{
-                color: iconColor,
-                backgroundColor: iconBgColor,
-              }}
-            >
-              {copied ? (
-                <>
-                  <Check className="w-3 h-3" style={{ color: iconColor }} />
-                  <span style={{ color: iconColor }}>Copied</span>
-                </>
-              ) : (
-                <Copy className="w-3 h-3" />
-              )}
-            </Button>
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "clicks",
-      header: () => (
-        <span
-          style={{
-            color:
-              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
-          }}
-        >
-          Clicks
-        </span>
-      ),
-      cell: ({ row }) => (
-        <div
-          style={{
-            color:
-              (affiliate && dashboardTable.tableRowTertiaryTextColor) ||
-              undefined,
-          }}
-        >
-          {row.getValue("clicks")}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "sales",
-      header: () => (
-        <span
-          style={{
-            color:
-              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
-          }}
-        >
-          Sales
-        </span>
-      ),
-      cell: ({ row }) => (
-        <div
-          style={{
-            color:
-              (affiliate && dashboardTable.tableRowTertiaryTextColor) ||
-              undefined,
-          }}
-        >
-          {row.getValue("sales")}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "conversionRate",
-      header: () => (
-        <span
-          style={{
-            color:
-              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
-          }}
-        >
-          Conversion Rate
-        </span>
-      ),
-      cell: ({ row }) => (
-        <div
-          style={{
-            color:
-              (affiliate && dashboardTable.tableRowTertiaryTextColor) ||
-              undefined,
-          }}
-        >
-          {row.getValue("conversionRate")}%
-        </div>
-      ),
-    },
-    {
-      accessorKey: "createdAt",
-      header: () => (
-        <span
-          style={{
-            color:
-              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
-          }}
-        >
-          Created
-        </span>
-      ),
-      cell: ({ row }) => (
-        <div
-          style={{
-            color:
-              (affiliate && dashboardTable.tableRowTertiaryTextColor) ||
-              undefined,
-          }}
-        >
-          {new Date(row.getValue("createdAt")).toLocaleDateString()}
-        </div>
-      ),
-    },
-  ];
+  const columns = LinksColumns(affiliate);
   const [isFakeLoading, setIsFakeLoading] = useState(false);
-  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
-  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<{
-    year?: number;
-    month?: number;
-  }>({});
+  const { selectedDate, handleDateChange } = useDateFilter();
+
+  const { data: searchData, isPending: searchPending } = useSearch(
+    ["affiliate-links", orgId, selectedDate.year, selectedDate.month],
+    getAffiliateLinksWithStats,
+    [selectedDate.year, selectedDate.month],
+    {
+      enabled: !!(
+        orgId &&
+        (selectedDate.year || selectedDate.month) &&
+        !isPreview
+      ),
+    },
+  );
   const mutation = useMutation({
     mutationFn: createAffiliateLink,
     onSuccess: async (newLink: string) => {
@@ -276,8 +110,9 @@ export default function Links({
       mutation.mutate();
     }
   };
+
   const table = useReactTable({
-    data: data,
+    data: searchData ? searchData : data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -423,108 +258,27 @@ export default function Links({
             )}
             <MonthSelect
               value={selectedDate}
-              onChange={(month, year) => setSelectedDate({ month, year })}
+              onChange={handleDateChange}
               affiliate={affiliate}
             />
           </div>
         </CardHeader>
         <CardContent>
-          {data.length === 0 ? (
+          {(selectedDate.year !== undefined ||
+            selectedDate.month !== undefined) &&
+          searchPending &&
+          !isPreview ? (
+            <TableLoading columns={columns} />
+          ) : data.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">
               No links found.
             </div>
           ) : (
-            <div
-              className={cn(
-                "rounded-md border overflow-hidden",
-                isPreview && "mb-4",
-              )}
-              style={{
-                borderColor:
-                  (affiliate && dashboardTable.tableBorderColor) || undefined,
-                borderWidth: "1px",
-                borderStyle: "solid",
-              }}
-            >
-              <Table>
-                <TableHeader>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow
-                      key={headerGroup.id}
-                      onMouseEnter={() => setIsHeaderHovered(true)}
-                      onMouseLeave={() => setIsHeaderHovered(false)}
-                      style={{
-                        backgroundColor: isHeaderHovered
-                          ? (affiliate &&
-                              dashboardTable.tableHoverBackgroundColor) ||
-                            "#f9fafb"
-                          : undefined,
-                        transition: "background-color 0.2s ease",
-                      }}
-                    >
-                      {headerGroup.headers.map((header) => (
-                        <TableHead
-                          key={header.id}
-                          style={{
-                            borderBottom: `1px solid ${(affiliate && dashboardTable.tableBorderColor) || "#e5e7eb"}`,
-                            color:
-                              (affiliate &&
-                                dashboardTable.tableHeaderTextColor) ||
-                              undefined,
-                          }}
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows.map((row, idx, allRows) => {
-                    const isHovered = hoveredRowId === row.id;
-                    const defaultHoverBg = "#f9fafb"; // fallback light gray
-
-                    return (
-                      <TableRow
-                        key={row.id}
-                        onMouseEnter={() => setHoveredRowId(row.id)}
-                        onMouseLeave={() => setHoveredRowId(null)}
-                        className={cn(
-                          "group",
-                          idx === 0 && "rounded-t-md",
-                          idx === allRows.length - 1 && "rounded-b-md",
-                          "overflow-hidden",
-                        )}
-                        style={{
-                          backgroundColor: isHovered
-                            ? (affiliate &&
-                                dashboardTable.tableHoverBackgroundColor) ||
-                              defaultHoverBg
-                            : undefined,
-                          transition: "background-color 0.2s ease",
-                          borderBottom:
-                            idx !== allRows.length - 1
-                              ? `1px solid ${(affiliate && dashboardTable.tableBorderColor) || "#e5e7eb"}`
-                              : "none",
-                        }}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+            <TableContent
+              table={table}
+              affiliate={affiliate}
+              isPreview={isPreview}
+            />
           )}
         </CardContent>
       </Card>

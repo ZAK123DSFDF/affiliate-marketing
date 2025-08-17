@@ -1,9 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
-  ColumnDef,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -12,35 +10,28 @@ import {
 } from "@tanstack/react-table";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+
 import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow";
-import { usePathname, useRouter } from "next/navigation";
 import YearSelect from "@/components/ui-custom/YearSelect";
-import { useQuery } from "@tanstack/react-query";
 import { getAffiliateCommissionByMonth } from "@/app/affiliate/[orgId]/dashboard/payment/action";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
 import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions";
 import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions";
-import { cn } from "@/lib/utils";
 import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions";
 import {
   useDashboardCardCustomizationOption,
   useDashboardThemeCustomizationOption,
-  useTableCustomizationOption,
 } from "@/hooks/useDashboardCustomization";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
 import ErrorState from "@/components/ui-custom/ErrorState";
+import { TableContent } from "@/components/ui-custom/TableContent";
+import { TableLoading } from "@/components/ui-custom/TableLoading";
+import { paymentColumns } from "@/components/pages/AffiliateDashboard/Payment/PaymentColumns";
+import { useDateFilter } from "@/hooks/useDateFilter";
+import { useSearch } from "@/hooks/useSearch";
 
 interface AffiliateCommissionTableProps {
   orgId: string;
@@ -57,9 +48,6 @@ export default function AffiliateCommissionTable({
 }: AffiliateCommissionTableProps) {
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
-  const dashboardTable = useTableCustomizationOption();
-  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
-  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const {
     isPending: globalPending,
     isError,
@@ -67,248 +55,31 @@ export default function AffiliateCommissionTable({
   } = affiliate
     ? useCustomizationSync(orgId, "dashboard")
     : { isPending: false, isError: false, refetch: () => {} };
-  const columns: ColumnDef<AffiliatePaymentRow>[] = [
-    {
-      accessorKey: "month",
-      header: () => (
-        <span
-          style={{
-            color:
-              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
-          }}
-        >
-          Month
-        </span>
-      ),
-      cell: ({ row }) => (
-        <div
-          style={{
-            color:
-              (affiliate && dashboardTable.tableRowTertiaryTextColor) ||
-              undefined,
-          }}
-        >
-          {row.getValue("month")}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "totalCommission",
-      header: () => (
-        <span
-          style={{
-            color:
-              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
-          }}
-        >
-          Total Commission
-        </span>
-      ),
-      cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("totalCommission"));
-        const formatted = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(amount);
-        return (
-          <div
-            className=" font-medium"
-            style={{
-              color:
-                (affiliate && dashboardTable.tableRowPrimaryTextColor) ||
-                undefined,
-            }}
-          >
-            {formatted}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "paidCommission",
-      header: () => (
-        <span
-          style={{
-            color:
-              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
-          }}
-        >
-          Paid Commission
-        </span>
-      ),
-      cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("paidCommission"));
-        const formatted = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(amount);
-        return (
-          <div
-            className=" font-medium"
-            style={{
-              color:
-                (affiliate && dashboardTable.tableRowPrimaryTextColor) ||
-                undefined,
-            }}
-          >
-            {formatted}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "unpaidCommission",
-      header: () => (
-        <span
-          style={{
-            color:
-              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
-          }}
-        >
-          Unpaid Commission
-        </span>
-      ),
-      cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("unpaidCommission"));
-        const formatted = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(amount);
-        return (
-          <div
-            className=" font-medium"
-            style={{
-              color:
-                (affiliate && dashboardTable.tableRowPrimaryTextColor) ||
-                undefined,
-            }}
-          >
-            {formatted}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "status",
-      header: () => (
-        <span
-          style={{
-            color:
-              (affiliate && dashboardTable.tableHeaderTextColor) || undefined,
-          }}
-        >
-          Status
-        </span>
-      ),
-      cell: ({ row }) => {
-        const unpaid = parseFloat(row.getValue("unpaidCommission"));
-        const monthStr = row.getValue("month") as string;
+  const { selectedDate, handleDateChange } = useDateFilter();
 
-        const today = new Date();
-        const [year, month] = monthStr.split("-").map(Number);
-        const rowDate = new Date(year, month - 1);
-
-        const currentMonth = today.getMonth();
-        const currentYear = today.getFullYear();
-        const isSameMonth =
-          rowDate.getMonth() === currentMonth &&
-          rowDate.getFullYear() === currentYear;
-
-        let status = "Paid";
-
-        let defaultClass =
-          "bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800";
-        let textColor =
-          (affiliate && dashboardTable.tableRowBadgePaidTextColor) || undefined;
-        let backgroundColor =
-          (affiliate && dashboardTable.tableRowBadgePaidBackgroundColor) ||
-          undefined;
-
-        if (unpaid > 0) {
-          if (isSameMonth) {
-            status = "Pending";
-            defaultClass =
-              "bg-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:text-yellow-800";
-            textColor =
-              (affiliate && dashboardTable.tableRowBadgePendingTextColor) ||
-              undefined;
-            backgroundColor =
-              (affiliate &&
-                dashboardTable.tableRowBadgePendingBackgroundColor) ||
-              undefined;
-          } else if (
-            rowDate.getFullYear() < currentYear ||
-            (rowDate.getFullYear() === currentYear &&
-              rowDate.getMonth() < currentMonth)
-          ) {
-            status = "Overdue";
-            defaultClass =
-              "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-800";
-            textColor = affiliate
-              ? dashboardTable.tableRowBadgeOverDueTextColor
-              : undefined;
-            backgroundColor = affiliate
-              ? dashboardTable.tableRowBadgeOverDueBackgroundColor
-              : undefined;
-          }
-        }
-
-        const hasCustomStyle = textColor || backgroundColor;
-
-        return hasCustomStyle ? (
-          <Badge
-            style={{
-              color: textColor,
-              backgroundColor: backgroundColor,
-            }}
-          >
-            {status}
-          </Badge>
-        ) : (
-          <Badge className={defaultClass}>{status}</Badge>
-        );
-      },
-    },
-  ];
-  const router = useRouter();
-  const pathname = usePathname();
-  const [yearValue, setYearValue] = useState<number | undefined>(undefined);
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const year = searchParams.get("y");
-    if (year) {
-      const parsed = parseInt(year);
-      if (!isNaN(parsed)) {
-        setYearValue(parsed);
-      }
-    }
-  }, []);
   const filteredData = React.useMemo(() => {
     if (!isPreview) return data;
-    if (!yearValue) return data;
+    if (!selectedDate.year) return data;
 
-    return data.filter((row) => row.month.startsWith(yearValue.toString()));
-  }, [data, yearValue, isPreview]);
-  const OnYearChange = (y?: number) => {
-    setYearValue(y);
-    const qs = y ? `?y=${y}` : "";
-    router.replace(`${pathname}${qs}`);
-  };
-
-  const { data: yearSelectedData, isPending } = useQuery({
-    queryKey: ["affiliate-commissions", yearValue],
-    queryFn: () => {
-      return getAffiliateCommissionByMonth(yearValue).then((r) =>
-        r.ok ? r.data : [],
-      );
+    return data.filter((row) =>
+      selectedDate.year
+        ? row.month.startsWith(selectedDate.year.toString())
+        : true,
+    );
+  }, [data, selectedDate.year, isPreview]);
+  const { data: yearSelectedData, isPending } = useSearch(
+    ["affiliate-commissions", orgId, selectedDate.year],
+    getAffiliateCommissionByMonth,
+    [selectedDate.year],
+    {
+      enabled: !!(orgId && selectedDate.year && !isPreview),
     },
-    enabled: !!yearValue && !isPreview,
-  });
-
+  );
+  const columns = paymentColumns(affiliate);
   const table = useReactTable({
     data: isPreview
       ? filteredData
-      : yearValue && yearSelectedData
+      : selectedDate.year && yearSelectedData
         ? yearSelectedData
         : data,
     columns,
@@ -423,129 +194,25 @@ export default function AffiliateCommissionTable({
               <YearSelectCustomizationOptions triggerSize="w-6 h-6" />
             )}
             <YearSelect
-              value={yearValue !== undefined ? { year: yearValue } : {}}
-              onChange={OnYearChange}
+              value={selectedDate}
+              onChange={handleDateChange}
               affiliate={affiliate}
             />
           </div>
         </CardHeader>
         <CardContent>
-          {yearValue !== undefined && isPending && !isPreview ? (
-            <div className="rounded-md border">
-              <Table>
-                <TableBody>
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      <div className="flex items-center justify-center gap-2">
-                        <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-gray-600" />
-                        <span className="text-sm text-muted-foreground">
-                          Loading...
-                        </span>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
+          {selectedDate.year !== undefined && isPending && !isPreview ? (
+            <TableLoading columns={columns} />
           ) : table.getRowModel().rows.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">
               No commission data available.
             </div>
           ) : (
-            <div
-              className={cn(
-                "rounded-md border overflow-hidden",
-                isPreview && "mb-4",
-              )}
-              style={{
-                borderColor:
-                  (affiliate && dashboardTable.tableBorderColor) || undefined,
-                borderWidth: "1px",
-                borderStyle: "solid",
-              }}
-            >
-              <Table>
-                <TableHeader>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow
-                      key={headerGroup.id}
-                      onMouseEnter={() => setIsHeaderHovered(true)}
-                      onMouseLeave={() => setIsHeaderHovered(false)}
-                      style={{
-                        backgroundColor: isHeaderHovered
-                          ? (affiliate &&
-                              dashboardTable.tableHoverBackgroundColor) ||
-                            "#f9fafb"
-                          : undefined,
-                        transition: "background-color 0.2s ease",
-                      }}
-                    >
-                      {headerGroup.headers.map((header) => (
-                        <TableHead
-                          key={header.id}
-                          style={{
-                            borderBottom: `1px solid ${(affiliate && dashboardTable.tableBorderColor) || "#e5e7eb"}`,
-                            color:
-                              (affiliate &&
-                                dashboardTable.tableHeaderTextColor) ||
-                              undefined,
-                          }}
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows.map((row, idx, allRows) => {
-                    const isHovered = hoveredRowId === row.id;
-                    const defaultHoverBg = "#f9fafb";
-
-                    return (
-                      <TableRow
-                        key={row.id}
-                        onMouseEnter={() => setHoveredRowId(row.id)}
-                        onMouseLeave={() => setHoveredRowId(null)}
-                        className={cn(
-                          "group",
-                          idx === 0 && "rounded-t-md",
-                          idx === allRows.length - 1 && "rounded-b-md",
-                          "overflow-hidden",
-                        )}
-                        style={{
-                          backgroundColor: isHovered
-                            ? (affiliate &&
-                                dashboardTable.tableHoverBackgroundColor) ||
-                              defaultHoverBg
-                            : undefined,
-                          transition: "background-color 0.2s ease",
-                          borderBottom:
-                            idx !== allRows.length - 1
-                              ? `1px solid ${(affiliate && dashboardTable.tableBorderColor) || "#e5e7eb"}`
-                              : "none",
-                        }}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+            <TableContent
+              table={table}
+              affiliate={affiliate}
+              isPreview={isPreview}
+            />
           )}
         </CardContent>
       </Card>

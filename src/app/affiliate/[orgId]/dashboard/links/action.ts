@@ -39,7 +39,7 @@ export const getAffiliateLinksWithStats = async (
 
     const baseDomain = org.domainName.replace(/^https?:\/\//, "");
     const param = org.referralParam;
-
+    console.log("year and month", year, month);
     // Step 1: Fetch all links for this affiliate in the current org
     const { linkIds, links } = await getAffiliateLinks(decoded);
     if (!linkIds.length || !links) return { ok: true, data: [] };
@@ -95,7 +95,7 @@ export const getAffiliateLinksWithStats = async (
       const sales = salesMap.get(link.id) ?? 0;
 
       const conversionRate = clicks > 0 ? (sales / clicks) * 100 : 0;
-
+      console.log("link created at", link.createdAt);
       return {
         id: link.id,
         fullUrl: `https://${baseDomain}/?${param}=${link.id}`,

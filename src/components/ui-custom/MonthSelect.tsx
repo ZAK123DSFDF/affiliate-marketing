@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/select";
 
 interface Props {
-  value: { month?: number; year?: number };
-  onChange: (month?: number, year?: number) => void;
+  value: { year?: number; month?: number };
+  onChange: (year?: number, month?: number) => void;
   disabled?: boolean;
   isPreview?: boolean;
   affiliate: boolean;
@@ -38,8 +38,8 @@ export default function MonthSelect({
         value={value.year ? value.year.toString() : "all"}
         onValueChange={(yearVal) =>
           onChange(
-            value.month,
             yearVal === "all" ? undefined : parseInt(yearVal),
+            value.month, // keep month
           )
         }
         disabled={disabled}
@@ -68,8 +68,8 @@ export default function MonthSelect({
         value={value.month ? value.month.toString() : "all"}
         onValueChange={(monthVal) =>
           onChange(
+            value.year, // ✅ year first
             monthVal === "all" ? undefined : parseInt(monthVal),
-            value.year,
           )
         }
         disabled={!value.year || disabled}
