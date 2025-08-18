@@ -210,8 +210,6 @@ export async function getAffiliateKpiTimeSeries(
           seenSubs.add(row.subscriptionId);
         }
       }
-
-      curr.commission += row.commission ?? 0;
       byDay.set(d, curr);
     }
 
@@ -220,7 +218,6 @@ export async function getAffiliateKpiTimeSeries(
         createdAt: date, // 'YYYY-MM-DD'
         visitors: v.visits,
         sales: v.sales,
-        totalCommission: v.commission,
         conversionRate:
           v.visits > 0 ? Math.round((v.sales / v.visits) * 10000) / 100 : 0, // keep 2 decimals
       }))
