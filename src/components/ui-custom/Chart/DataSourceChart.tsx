@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Pie, PieChart } from "recharts";
 import {
   Card,
@@ -26,75 +26,70 @@ import {
 import { PieChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/PieChartCustomization";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
+import { AffiliateReferrerStat } from "@/lib/types/affiliateReferrerStat";
+import { useDateFilter } from "@/hooks/useDateFilter";
+import { useSearch } from "@/hooks/useSearch";
+import { getAffiliateReferrers } from "@/app/affiliate/[orgId]/dashboard/action";
 
 const chartConfig: ChartConfig = {
   visitors: { label: "Visitors" },
 };
 
 export default function SocialTrafficPieChart({
+  orgId,
+  referrerStats,
   isPreview = false,
   affiliate = false,
 }: {
+  orgId: string;
+  referrerStats?: AffiliateReferrerStat[];
   isPreview?: boolean;
   affiliate: boolean;
 }) {
-  const [selectedDate, setSelectedDate] = useState<{
-    month?: number;
-    year?: number;
-  }>({});
   const innerRadius = isPreview ? 60 : 100;
   const outerRadius = isPreview ? 90 : 140;
   const ThemeCustomization = useDashboardThemeCustomizationOption();
   const pieCustomization = usePieChartCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
+  const { selectedDate, handleDateChange } = useDateFilter(
+    "sourceYear",
+    "sourceMonth",
+  );
+  const { data: searchData, isPending: searchPending } = useSearch(
+    ["affiliate-source", orgId, selectedDate.year, selectedDate.month],
+    getAffiliateReferrers,
+    [selectedDate.year, selectedDate.month],
+    {
+      enabled: !!(
+        orgId &&
+        (selectedDate.year || selectedDate.month) &&
+        !isPreview
+      ),
+    },
+  );
+  const effectiveData =
+    searchData !== undefined ? searchData : referrerStats || [];
+  const chartData = React.useMemo(() => {
+    if (!effectiveData || effectiveData.length === 0) return [];
 
-  const chartData = [
-    {
-      platform: "YouTube",
-      visitors: 280,
-      fill: (affiliate && pieCustomization.pieColor1) || "#ef4444",
-    },
-    {
-      platform: "Reddit",
-      visitors: 190,
-      fill: (affiliate && pieCustomization.pieColor2) || "#f97316",
-    },
-    {
-      platform: "Instagram",
-      visitors: 240,
-      fill: (affiliate && pieCustomization.pieColor3) || "#8b5cf6",
-    },
-    {
-      platform: "Threads",
-      visitors: 130,
-      fill: (affiliate && pieCustomization.pieColor4) || "#10b981",
-    },
-    {
-      platform: "Google",
-      visitors: 310,
-      fill: (affiliate && pieCustomization.pieColor5) || "#facc15",
-    },
-    {
-      platform: "TikTok",
-      visitors: 220,
-      fill: (affiliate && pieCustomization.pieColor6) || "#ec4899",
-    },
-    {
-      platform: "Facebook",
-      visitors: 260,
-      fill: (affiliate && pieCustomization.pieColor7) || "#3b82f6",
-    },
-    {
-      platform: "Twitter",
-      visitors: 260,
-      fill: (affiliate && pieCustomization.pieColor8) || "#0ea5e9",
-    },
-    {
-      platform: "Yandex",
-      visitors: 260,
-      fill: (affiliate && pieCustomization.pieFallbackColor) || "#a855f7",
-    },
-  ];
+    const colorPalette = [
+      pieCustomization.pieColor1 || "#ef4444",
+      pieCustomization.pieColor2 || "#f97316",
+      pieCustomization.pieColor3 || "#8b5cf6",
+      pieCustomization.pieColor4 || "#10b981",
+      pieCustomization.pieColor5 || "#facc15",
+      pieCustomization.pieColor6 || "#ec4899",
+      pieCustomization.pieColor7 || "#3b82f6",
+      pieCustomization.pieColor8 || "#0ea5e9",
+      pieCustomization.pieFallbackColor || "#a855f7",
+    ];
+
+    return effectiveData.map((stat: AffiliateReferrerStat, index) => ({
+      platform: stat.referrer,
+      visitors: stat.clicks,
+      fill: affiliate ? colorPalette[index % colorPalette.length] : undefined,
+    }));
+  }, [effectiveData, pieCustomization, affiliate]);
   return (
     <Card
       className={`${isPreview ? "h-[340px]" : "h-[480px]"} flex flex-col relative`}
@@ -141,7 +136,7 @@ export default function SocialTrafficPieChart({
                 />
               )}
             </div>
-            <div className="flex flex-row gap-1 items-center">
+            <div className="flex flex-column gap-1 items-center">
               <CardDescription
                 className={isPreview ? "text-xs" : "text-sm"}
                 style={{
@@ -164,7 +159,7 @@ export default function SocialTrafficPieChart({
           <MonthSelect
             isPreview={isPreview}
             value={selectedDate}
-            onChange={(month, year) => setSelectedDate({ month, year })}
+            onChange={handleDateChange}
             affiliate={affiliate}
           />
         </div>
@@ -184,27 +179,39 @@ export default function SocialTrafficPieChart({
         </div>
       )}
       <CardContent className="flex-1 flex justify-center items-center">
-        <ChartContainer
-          config={chartConfig}
-          className={`aspect-square ${
-            isPreview ? "max-w-[200px]" : "max-w-[320px]"
-          } w-full`}
-        >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent affiliate={affiliate} hideLabel />}
-            />
-            <Pie
-              data={chartData}
-              dataKey="visitors"
-              nameKey="platform"
-              innerRadius={innerRadius}
-              outerRadius={outerRadius}
-              paddingAngle={3}
-            />
-          </PieChart>
-        </ChartContainer>
+        {searchPending &&
+        (selectedDate.year !== undefined ||
+          selectedDate.month !== undefined) ? (
+          <div className="text-sm text-muted-foreground">
+            Loading sources...
+          </div>
+        ) : chartData.length === 0 ? (
+          <div className="text-sm text-muted-foreground">No sources found</div>
+        ) : (
+          <ChartContainer
+            config={chartConfig}
+            className={`aspect-square ${
+              isPreview ? "max-w-[200px]" : "max-w-[320px]"
+            } w-full`}
+          >
+            <PieChart>
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent affiliate={affiliate} hideLabel />
+                }
+              />
+              <Pie
+                data={chartData}
+                dataKey="visitors"
+                nameKey="platform"
+                innerRadius={innerRadius}
+                outerRadius={outerRadius}
+                paddingAngle={3}
+              />
+            </PieChart>
+          </ChartContainer>
+        )}
       </CardContent>
       {isPreview && (
         <div className="absolute bottom-1 left-1 pt-2">

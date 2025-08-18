@@ -3,23 +3,27 @@ import React from "react";
 import Cards from "@/components/ui-custom/Cards/Cards";
 import SocialTrafficCharts from "@/components/ui-custom/Chart/DataSourceChart";
 import { ChartDailyMetrics } from "@/components/ui-custom/Chart/SalesChart";
-import Links from "@/components/pages/AffiliateDashboard/Links/Links";
-import { dummyLinksData } from "@/lib/types/dummyLInksData";
 import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
 import ErrorState from "@/components/ui-custom/ErrorState";
 import { AffiliateKpiStats } from "@/lib/types/affiliateKpiStats";
+import { AffiliateReferrerStat } from "@/lib/types/affiliateReferrerStat";
+import { AffiliateKpiTimeSeries } from "@/lib/types/affiliateChartStats";
 
 const AffiliateOverview = ({
   orgId,
   isPreview = false,
   affiliate = false,
   kpiCardStats,
+  affiliateChartStats,
+  referrerStats,
 }: {
   orgId: string;
   isPreview?: boolean;
   affiliate: boolean;
   kpiCardStats: AffiliateKpiStats[];
+  affiliateChartStats?: AffiliateKpiTimeSeries[];
+  referrerStats?: AffiliateReferrerStat[];
 }) => {
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "dashboard")
@@ -33,16 +37,27 @@ const AffiliateOverview = ({
   return (
     <div className="space-y-8">
       <Cards
+        orgId={orgId}
         affiliate={affiliate}
         kpiCardStats={kpiCardStats}
         isPreview={isPreview}
       />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="h-full">
-          <ChartDailyMetrics affiliate={affiliate} isPreview={isPreview} />
+          <ChartDailyMetrics
+            orgId={orgId}
+            affiliateChartStats={affiliateChartStats}
+            affiliate={affiliate}
+            isPreview={isPreview}
+          />
         </div>
         <div className="h-full">
-          <SocialTrafficCharts isPreview={isPreview} affiliate={affiliate} />
+          <SocialTrafficCharts
+            orgId={orgId}
+            referrerStats={referrerStats}
+            isPreview={isPreview}
+            affiliate={affiliate}
+          />
         </div>
       </div>
     </div>

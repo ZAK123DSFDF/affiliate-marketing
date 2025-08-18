@@ -492,9 +492,6 @@ export const useChartCustomizationOption = () => {
   const chartTertiaryColor = DashboardCustomizationStores.useChartCustomization(
     (s) => s.chartTertiaryColor,
   );
-  const chartFourthColor = DashboardCustomizationStores.useChartCustomization(
-    (s) => s.chartFourthColor,
-  );
   const chartLegendTextColor =
     DashboardCustomizationStores.useChartCustomization(
       (s) => s.chartLegendTextColor,
@@ -523,7 +520,6 @@ export const useChartCustomizationOption = () => {
     chartPrimaryColor,
     chartSecondaryColor,
     chartTertiaryColor,
-    chartFourthColor,
     chartLegendTextColor,
     toolTipChartDateColor,
     toolTipBackgroundColor,

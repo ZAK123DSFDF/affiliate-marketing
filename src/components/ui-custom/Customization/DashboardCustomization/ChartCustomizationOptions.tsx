@@ -18,7 +18,6 @@ export const ChartCustomizationOptions = ({
     chartPrimaryColor,
     chartSecondaryColor,
     chartTertiaryColor,
-    chartFourthColor,
     chartLegendTextColor,
     toolTipChartDateColor,
     toolTipBackgroundColor,
@@ -78,16 +77,6 @@ export const ChartCustomizationOptions = ({
             updateDashboardCustomization(
               "useChartCustomization",
               "chartTertiaryColor",
-              val,
-            ),
-        },
-        fourthColor: {
-          label: "Fourth Chart Color",
-          value: chartFourthColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useChartCustomization",
-              "chartFourthColor",
               val,
             ),
         },

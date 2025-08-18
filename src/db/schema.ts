@@ -353,7 +353,6 @@ export const organizationDashboardCustomization = pgTable(
         chartPrimaryColor: string;
         chartSecondaryColor: string;
         chartTertiaryColor: string;
-        chartFourthColor: string;
         chartLegendTextColor: string;
         toolTipChartDateColor: string;
         toolTipBackgroundColor: string;

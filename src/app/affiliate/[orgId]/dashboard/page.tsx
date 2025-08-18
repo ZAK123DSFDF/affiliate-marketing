@@ -32,6 +32,8 @@ const DashboardPage = async ({ params }: OrgIdProps) => {
     <>
       <AffiliateOverview
         kpiCardStats={kpiCardStats.data}
+        affiliateChartStats={affiliateChartStats.data}
+        referrerStats={referrerStats.data}
         affiliate
         orgId={orgId}
       />

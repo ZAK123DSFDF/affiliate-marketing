@@ -130,15 +130,16 @@ export async function getAffiliateKpiTimeSeries(
     const { decoded } = await getAffiliateOrganization();
     const { linkIds } = await getAffiliateLinks(decoded);
     if (!linkIds.length) return { ok: true, data: [] };
-    const today = new Date();
-    const past1000Days = new Date();
-    past1000Days.setDate(today.getDate() - 1000);
+
+    // Bucket to DAY in the DB (Postgres). If you're on MySQL, use DATE(column) instead.
+    const clickDay = sql<string>`(${affiliateClick.createdAt}::date)`;
+    const invoiceDay = sql<string>`(${affiliateInvoice.createdAt}::date)`;
+
     const [clicksAgg, salesAgg] = await Promise.all([
       db
         .select({
-          id: affiliateClick.affiliateLinkId,
-          createdAt: affiliateClick.createdAt,
-          count: sql<number>`count(*)`.mapWith(Number),
+          day: clickDay,
+          visits: sql<number>`count(*)`.mapWith(Number),
         })
         .from(affiliateClick)
         .where(
@@ -150,21 +151,21 @@ export async function getAffiliateKpiTimeSeries(
             true,
           ),
         )
-        .groupBy(affiliateClick.createdAt, affiliateClick.affiliateLinkId),
+        .groupBy(clickDay),
 
       db
         .select({
-          id: affiliateInvoice.affiliateLinkId,
-          createdAt: affiliateInvoice.createdAt,
+          day: invoiceDay,
+          subscriptionId: affiliateInvoice.subscriptionId,
           subs: sql<number>`count(distinct ${affiliateInvoice.subscriptionId})`.mapWith(
             Number,
-          ),
+          ), // unique subs that day
           singles:
             sql<number>`sum(case when ${affiliateInvoice.subscriptionId} is null then 1 else 0 end)`.mapWith(
               Number,
-            ),
-          totalCommission:
-            sql<number>`COALESCE(SUM(${affiliateInvoice.commission}), 0)`.mapWith(
+            ), // null subs (one-off)
+          commission:
+            sql<number>`coalesce(sum(${affiliateInvoice.commission}), 0)`.mapWith(
               Number,
             ),
         })
@@ -175,24 +176,57 @@ export async function getAffiliateKpiTimeSeries(
             affiliateInvoice,
             year,
             month,
+            true,
           ),
         )
-        .groupBy(affiliateInvoice.createdAt, affiliateInvoice.affiliateLinkId),
+        .groupBy(invoiceDay, affiliateInvoice.subscriptionId),
     ]);
 
-    const chartData = clicksAgg.map((click) => {
-      const sameDaySales = salesAgg.find(
-        (sale) => sale.id === click.id && sale.createdAt === click.createdAt,
-      );
-      return {
-        createdAt: click.createdAt.toISOString().slice(0, 10),
-        visitors: click.count,
-        sales: sameDaySales ? sameDaySales.subs + sameDaySales.singles : 0,
-        totalCommission: sameDaySales ? sameDaySales.totalCommission : 0,
-      };
-    });
+    // Merge by day (include days that exist in either aggregate)
+    const byDay = new Map<
+      string,
+      { visits: number; sales: number; commission: number }
+    >();
 
-    return { ok: true, data: chartData };
+    for (const row of clicksAgg) {
+      const d = row.day; // already 'YYYY-MM-DD' via ::date
+      const curr = byDay.get(d) ?? { visits: 0, sales: 0, commission: 0 };
+      curr.visits += row.visits;
+      byDay.set(d, curr);
+    }
+
+    const seenSubs = new Set<string>();
+
+    for (const row of salesAgg) {
+      const d = row.day;
+      const curr = byDay.get(d) ?? { visits: 0, sales: 0, commission: 0 };
+
+      if (row.subscriptionId === null) {
+        // always count one-time sales
+        curr.sales += 1;
+      } else {
+        if (!seenSubs.has(row.subscriptionId)) {
+          curr.sales += 1;
+          seenSubs.add(row.subscriptionId);
+        }
+      }
+
+      curr.commission += row.commission ?? 0;
+      byDay.set(d, curr);
+    }
+
+    const data: AffiliateKpiTimeSeries[] = Array.from(byDay.entries())
+      .map(([date, v]) => ({
+        createdAt: date, // 'YYYY-MM-DD'
+        visitors: v.visits,
+        sales: v.sales,
+        totalCommission: v.commission,
+        conversionRate:
+          v.visits > 0 ? Math.round((v.sales / v.visits) * 10000) / 100 : 0, // keep 2 decimals
+      }))
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+
+    return { ok: true, data };
   } catch (err) {
     return returnError(err) as ResponseData<AffiliateKpiTimeSeries[]>;
   }

@@ -3,4 +3,5 @@ export interface AffiliateKpiTimeSeries {
   visitors: number;
   sales: number;
   totalCommission: number;
+  conversionRate: number;
 }

@@ -7,26 +7,29 @@ interface ErrorResponse {
 }
 
 export function returnError(err: unknown): ErrorResponse {
-  // Handle custom thrown errors
+  console.error("Full error object:", err);
+
+  // Handle Drizzle/Postgres errors
+  if (err instanceof Error) {
+    return {
+      ok: false,
+      status: 500,
+      error: err.message,
+      toast: "Database query failed",
+      fields: null,
+    };
+  }
   if (typeof err === "object" && err !== null) {
     const errorObj = err as Partial<ErrorResponse>;
-
-    // Log the error
-    console.error(
-      `Error - Status: ${errorObj.status || 500}, ` +
-        `Message: ${errorObj.error || "Internal Server Error"}`,
-    );
-
     return {
       ok: false,
       status: errorObj.status || 500,
-      error: errorObj.error || "Internal server error",
-      toast: errorObj.toast || errorObj.error || "Something went wrong",
+      error: errorObj.error || "Unknown error",
+      toast: errorObj.toast || "Something went wrong",
       fields: errorObj.fields || null,
     };
   }
 
-  // Fallback for unknown errors
   return {
     ok: false,
     status: 500,
