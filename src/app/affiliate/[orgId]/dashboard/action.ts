@@ -214,12 +214,17 @@ export async function getAffiliateKpiTimeSeries(
     }
 
     const data: AffiliateKpiTimeSeries[] = Array.from(byDay.entries())
+      .filter(([_, v]) => v.visits > 0 || v.sales > 0)
       .map(([date, v]) => ({
-        createdAt: date, // 'YYYY-MM-DD'
+        createdAt: date,
         visitors: v.visits,
         sales: v.sales,
         conversionRate:
-          v.visits > 0 ? Math.round((v.sales / v.visits) * 10000) / 100 : 0, // keep 2 decimals
+          v.visits > 0
+            ? Math.round((v.sales / v.visits) * 10000) / 100
+            : v.sales > 0
+              ? 100
+              : 0,
       }))
       .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 

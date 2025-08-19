@@ -19,6 +19,8 @@ interface UnpaidSelectProps {
   loading: boolean;
   onApply: () => void;
   disabled?: boolean;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function UnpaidSelect({
@@ -28,9 +30,9 @@ export default function UnpaidSelect({
   loading,
   onApply,
   disabled,
+  open,
+  setOpen,
 }: UnpaidSelectProps) {
-  const [open, setOpen] = React.useState(false);
-
   const toggle = (m: UnpaidMonth) => {
     setSelection((prev) =>
       prev.some((x) => x.month === m.month && x.year === m.year)

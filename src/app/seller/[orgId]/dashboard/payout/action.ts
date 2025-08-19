@@ -1,84 +1,27 @@
-// app/seller/[orgId]/dashboard/payouts/action.ts
 "use server";
 
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
 import { db } from "@/db/drizzle";
-import {
-  affiliate,
-  affiliateLink,
-  affiliateClick,
-  affiliateInvoice,
-  organization,
-} from "@/db/schema";
+import { affiliateLink, affiliateClick, affiliateInvoice } from "@/db/schema";
 import { and, between, eq, inArray, or, sql } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
 import { ResponseData } from "@/lib/types/response";
-import { AffiliatePayout } from "@/lib/types/affiliatePayout";
 import { UnpaidMonth } from "@/lib/types/unpaidMonth";
-
-/* ------------------------------------------------------------------ */
-/* 🚀 main                                                            */
-/* ------------------------------------------------------------------ */
+import { getOrgAuth } from "@/util/GetOrgAuth";
+import { getOrgAffiliateLinks } from "@/util/GetOrgAffiliateLinks";
+import { getOrgClicksAndInvoiceAggregate } from "@/util/GetOrgClicksAndInvoiceAggregate";
+import { AffiliatePayout } from "@/lib/types/affiliateStats";
+import { buildWhereWithDate } from "@/util/BuildWhereWithDate";
 export async function getAffiliatePayouts(
   orgId: string,
-  month?: number,
   year?: number,
+  month?: number,
 ): Promise<ResponseData<AffiliatePayout[]>> {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw { status: 401, toast: "Unauthorized" };
-
-    const { id: userId } = jwt.decode(token) as { id: string };
-    const isMember = await db.query.userToOrganization.findFirst({
-      where: (t, { and, eq }) =>
-        and(eq(t.userId, userId), eq(t.organizationId, orgId)),
-    });
-    if (!isMember) throw { status: 403, toast: "Forbidden" };
-    const org = await db
-      .select({
-        domain: organization.domainName,
-        param: organization.referralParam,
-      })
-      .from(organization)
-      .where(eq(organization.id, orgId))
-      .then((r) => r[0]);
-    if (!org) throw { status: 404, toast: "Org not found" };
-    const affRows = await db
-      .select({ id: affiliate.id, email: affiliate.email })
-      .from(affiliate)
-      .where(eq(affiliate.organizationId, orgId));
-    if (!affRows.length) return { ok: true, data: [] };
-    const affIds = affRows.map((a) => a.id);
-    const allLinks = await db
-      .select({ id: affiliateLink.id, affId: affiliateLink.affiliateId })
-      .from(affiliateLink)
-      .where(
-        and(
-          eq(affiliateLink.organizationId, orgId),
-          inArray(affiliateLink.affiliateId, affIds),
-        ),
-      );
-    const linksByAffiliate: Record<string, string[]> = {};
-    const linkIds: string[] = [];
-    allLinks.forEach((l) => {
-      const url = `https://${org.domain}/?${org.param}=${l.id}`;
-      (linksByAffiliate[l.affId] ||= []).push(url);
-      linkIds.push(l.id);
-    });
-    let clickCond, invoiceCond;
-    if (month && year) {
-      const from = new Date(Date.UTC(year, month - 1, 1));
-      const to = new Date(Date.UTC(year, month, 0, 23, 59, 59));
-      clickCond = between(affiliateClick.createdAt, from, to);
-      invoiceCond = between(affiliateInvoice.createdAt, from, to);
-    } else if (year) {
-      const from = new Date(Date.UTC(year, 0, 1));
-      const to = new Date(Date.UTC(year, 11, 31, 23, 59, 59));
-      clickCond = between(affiliateClick.createdAt, from, to);
-      invoiceCond = between(affiliateInvoice.createdAt, from, to);
-    }
+    const org = await getOrgAuth(orgId);
+    const { linkIds, affRows, linksByAffiliate } = await getOrgAffiliateLinks(
+      org,
+      orgId,
+    );
     const [clickAgg, invoiceAgg] = await Promise.all([
       db
         .select({
@@ -87,9 +30,12 @@ export async function getAffiliatePayouts(
         })
         .from(affiliateClick)
         .where(
-          clickCond
-            ? and(inArray(affiliateClick.affiliateLinkId, linkIds), clickCond)
-            : inArray(affiliateClick.affiliateLinkId, linkIds),
+          buildWhereWithDate(
+            [inArray(affiliateClick.affiliateLinkId, linkIds)],
+            affiliateClick,
+            year,
+            month,
+          ),
         )
         .groupBy(affiliateClick.affiliateLinkId),
 
@@ -116,63 +62,22 @@ export async function getAffiliatePayouts(
         })
         .from(affiliateInvoice)
         .where(
-          invoiceCond
-            ? and(
-                inArray(affiliateInvoice.affiliateLinkId, linkIds),
-                invoiceCond,
-              )
-            : inArray(affiliateInvoice.affiliateLinkId, linkIds),
+          buildWhereWithDate(
+            [inArray(affiliateInvoice.affiliateLinkId, linkIds)],
+            affiliateInvoice,
+            year,
+            month,
+          ),
         )
         .groupBy(affiliateInvoice.affiliateLinkId),
     ]);
 
-    const clicksMap = new Map(clickAgg.map((r) => [r.linkId, r.visits]));
-    const invoiceMap = new Map(
-      invoiceAgg.map((r) => [
-        r.linkId,
-        {
-          sales: r.subs + r.singles,
-          commission: r.commission,
-          paid: r.paid,
-          unpaid: r.unpaid,
-        },
-      ]),
+    const rows = getOrgClicksAndInvoiceAggregate(
+      clickAgg,
+      invoiceAgg,
+      affRows,
+      linksByAffiliate,
     );
-
-    const rows: AffiliatePayout[] = affRows.map((aff) => {
-      const urls = linksByAffiliate[aff.id] ?? [];
-
-      let visitors = 0;
-      let sales = 0;
-      let commission = 0;
-      let paid = 0;
-      let unpaid = 0;
-
-      for (const url of urls) {
-        const linkId = url.split("=").pop()!;
-
-        visitors += clicksMap.get(linkId) ?? 0;
-
-        const inv = invoiceMap.get(linkId);
-        if (inv) {
-          sales += inv.sales;
-          commission += inv.commission;
-          paid += inv.paid;
-          unpaid += inv.unpaid;
-        }
-      }
-
-      return {
-        id: aff.id,
-        email: aff.email,
-        visitors,
-        sales,
-        commission,
-        paid,
-        unpaid,
-        links: urls,
-      };
-    });
 
     return { ok: true, data: rows };
   } catch (err) {
@@ -185,55 +90,11 @@ export async function getAffiliatePayoutsBulk(
   months: { month: number; year: number }[],
 ): Promise<ResponseData<AffiliatePayout[]>> {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw { status: 401, toast: "Unauthorized" };
-
-    const { id: userId } = jwt.decode(token) as { id: string };
-    const isMember = await db.query.userToOrganization.findFirst({
-      where: (t, { and, eq }) =>
-        and(eq(t.userId, userId), eq(t.organizationId, orgId)),
-    });
-    if (!isMember) throw { status: 403, toast: "Forbidden" };
-
-    const org = await db
-      .select({
-        domain: organization.domainName,
-        param: organization.referralParam,
-      })
-      .from(organization)
-      .where(eq(organization.id, orgId))
-      .then((r) => r[0]);
-
-    if (!org) throw { status: 404, toast: "Org not found" };
-
-    const affRows = await db
-      .select({ id: affiliate.id, email: affiliate.email })
-      .from(affiliate)
-      .where(eq(affiliate.organizationId, orgId));
-
-    if (!affRows.length) return { ok: true, data: [] };
-
-    const affIds = affRows.map((a) => a.id);
-
-    const allLinks = await db
-      .select({ id: affiliateLink.id, affId: affiliateLink.affiliateId })
-      .from(affiliateLink)
-      .where(
-        and(
-          eq(affiliateLink.organizationId, orgId),
-          inArray(affiliateLink.affiliateId, affIds),
-        ),
-      );
-
-    const linksByAffiliate: Record<string, string[]> = {};
-    const linkIds: string[] = [];
-
-    allLinks.forEach((l) => {
-      const url = `https://${org.domain}/?${org.param}=${l.id}`;
-      (linksByAffiliate[l.affId] ||= []).push(url);
-      linkIds.push(l.id);
-    });
+    const org = await getOrgAuth(orgId);
+    const { linkIds, affRows, linksByAffiliate } = await getOrgAffiliateLinks(
+      org,
+      orgId,
+    );
 
     const clickDateFilters = months.map(({ month, year }) => {
       const from = new Date(Date.UTC(year, month - 1, 1));
@@ -294,54 +155,12 @@ export async function getAffiliatePayoutsBulk(
         .groupBy(affiliateInvoice.affiliateLinkId),
     ]);
 
-    const clicksMap = new Map(clickAgg.map((r) => [r.linkId, r.visits]));
-    const invoiceMap = new Map(
-      invoiceAgg.map((r) => [
-        r.linkId,
-        {
-          sales: r.subs + r.singles,
-          commission: r.commission,
-          paid: r.paid,
-          unpaid: r.unpaid,
-        },
-      ]),
+    const rows = getOrgClicksAndInvoiceAggregate(
+      clickAgg,
+      invoiceAgg,
+      affRows,
+      linksByAffiliate,
     );
-
-    const rows: AffiliatePayout[] = affRows.map((aff) => {
-      const urls = linksByAffiliate[aff.id] ?? [];
-
-      let visitors = 0;
-      let sales = 0;
-      let commission = 0;
-      let paid = 0;
-      let unpaid = 0;
-
-      for (const url of urls) {
-        const linkId = url.split("=").pop()!;
-
-        visitors += clicksMap.get(linkId) ?? 0;
-
-        const inv = invoiceMap.get(linkId);
-        if (inv) {
-          sales += inv.sales;
-          commission += inv.commission;
-          paid += inv.paid;
-          unpaid += inv.unpaid;
-        }
-      }
-
-      return {
-        id: aff.id,
-        email: aff.email,
-        visitors,
-        sales,
-        commission,
-        paid,
-        unpaid,
-        links: urls,
-      };
-    });
-    console.log("Affiliate payouts bulk data:", rows);
     return { ok: true, data: rows };
   } catch (err) {
     console.error("getAffiliatePayoutsBulk error:", err);

@@ -2,41 +2,18 @@
 
 import * as React from "react";
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { ChevronDown, Download } from "lucide-react";
+
+import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
@@ -45,123 +22,18 @@ import {
   getUnpaidMonths,
 } from "@/app/seller/[orgId]/dashboard/payout/action";
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import MonthSelect from "@/components/ui-custom/MonthSelect";
 import { useQuery } from "@tanstack/react-query";
-import { AffiliatePayout } from "@/lib/types/affiliatePayout";
 import { UnpaidMonth } from "@/lib/types/unpaidMonth";
 import UnpaidSelect from "@/components/ui-custom/UnpaidPicker";
+import { AffiliatePayout } from "@/lib/types/affiliateStats";
+import { TableContent } from "@/components/ui-custom/TableContent";
+import { TableTop } from "@/components/ui-custom/TableTop";
+import { PayoutColumns } from "@/components/pages/Dashboard/Payouts/PayoutColumns";
+import { useDateFilter } from "@/hooks/useDateFilter";
+import { useSearch } from "@/hooks/useSearch";
+import { TableLoading } from "@/components/ui-custom/TableLoading";
 
-export const columns: ColumnDef<AffiliatePayout>[] = [
-  {
-    accessorKey: "email",
-    header: "Email",
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    id: "links",
-    header: "Links",
-    cell: ({ row }) => {
-      const links = row.original.links;
-      return (
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="link" className="p-0 text-blue-600 underline">
-              View Links
-            </Button>
-          </DialogTrigger>
-          <DialogContent affiliate={false}>
-            <DialogHeader>
-              <DialogTitle>Links</DialogTitle>
-            </DialogHeader>
-            <ul className="space-y-2">
-              {links.map((link, index) => (
-                <li key={index}>
-                  <a
-                    href={link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 underline"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </DialogContent>
-        </Dialog>
-      );
-    },
-  },
-  {
-    accessorKey: "visitors",
-    header: "Visitors",
-    cell: ({ row }) => <div>{row.getValue("visitors")}</div>,
-  },
-  {
-    accessorKey: "sales",
-    header: "Sales",
-    cell: ({ row }) => <div>{row.getValue("sales")}</div>,
-  },
-  {
-    accessorKey: "commission",
-    header: () => <div className="text-right">Commission</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("commission"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "paid",
-    header: () => <div className="text-right">Paid</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("paid"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "unpaid",
-    header: () => <div className="text-right">Unpaid</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("unpaid"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const unpaid = row.original.unpaid;
-      const status = unpaid > 0 ? "pending" : "paid";
-      return (
-        <span
-          className={`px-2 py-1 rounded-full text-xs ${
-            status === "paid"
-              ? "bg-green-100 text-green-800"
-              : "bg-yellow-100 text-yellow-800"
-          }`}
-        >
-          {status}
-        </span>
-      );
-    },
-  },
-];
 interface AffiliatesTablePayoutProps {
   data: AffiliatePayout[];
   orgId: string;
@@ -177,31 +49,10 @@ export default function PayoutTable({
   const [unpaidMonths, setUnpaidMonths] = useState<UnpaidMonth[]>([]);
   const [selectedMonths, setSelectedMonths] = useState<UnpaidMonth[]>([]);
   const [isUnpaidMode, setIsUnpaidMode] = useState(false);
+  const { selectedDate, handleDateChange } = useDateFilter();
+  const [unpaidOpen, setUnpaidOpen] = useState(false);
   /* optional: refetch when month changes */
-  const router = useRouter();
-  const pathname = usePathname();
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const month = searchParams.get("m");
-    const year = searchParams.get("y");
 
-    if (year) {
-      setMonthYear({
-        month: month ? parseInt(month) : undefined,
-        year: parseInt(year),
-      });
-    }
-  }, []);
-  const onMonthChange = (m?: number, y?: number) => {
-    setMonthYear({ month: m, year: y });
-    let qs = "";
-    if (y && m) {
-      qs = `?m=${m}&y=${y}`;
-    } else if (y) {
-      qs = `?y=${y}`;
-    }
-    router.replace(`${pathname}${qs}`);
-  };
   const { data: unpaidPayouts, isPending: isPendingUnpaid } = useQuery({
     queryKey: ["unpaid-payouts", orgId, selectedMonths],
     queryFn: () =>
@@ -211,31 +62,31 @@ export default function PayoutTable({
     enabled: isUnpaidMode && selectedMonths.length > 0,
   });
 
-  const { data: regularPayouts, isPending: isPendingRegular } = useQuery({
-    queryKey: ["regular-payouts", orgId, monthYear.month, monthYear.year],
-    queryFn: () =>
-      getAffiliatePayouts(orgId, monthYear.month, monthYear.year).then((r) =>
-        r.ok ? r.data : [],
-      ),
-    enabled: !isUnpaidMode,
-  });
+  const { data: regularPayouts, isPending: isPendingRegular } = useSearch(
+    ["regular-payouts", orgId, selectedDate.year, selectedDate.month],
+    getAffiliatePayouts,
+    [orgId, selectedDate.year, selectedDate.month],
+    {
+      enabled:
+        !!(orgId && (selectedDate.year || selectedDate.month)) && !isUnpaidMode,
+    },
+  );
   const { data: unpaidMonthData, isPending: pendingMonth } = useQuery({
     queryKey: ["unpaid-months", orgId],
     queryFn: () =>
       getUnpaidMonths(orgId).then((res) => (res.ok ? res.data : [])),
+    enabled: unpaidOpen,
   });
   const applyUnpaidMonths = () => {
     if (selectedMonths.length > 0) {
       setIsUnpaidMode(true);
       setMonthYear({});
-      router.replace(pathname);
     }
   };
   const clearUnpaidMonths = () => {
     setSelectedMonths([]);
     setIsUnpaidMode(false);
     setMonthYear({});
-    router.replace(pathname);
   };
   const isPending = isUnpaidMode ? isPendingUnpaid : isPendingRegular;
   useEffect(() => {
@@ -278,6 +129,7 @@ export default function PayoutTable({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const columns = PayoutColumns();
   const table = useReactTable({
     data: tableData,
     columns,
@@ -313,8 +165,8 @@ export default function PayoutTable({
       <div className="flex justify-between items-center">
         <div className="flex gap-2 items-center">
           <MonthSelect
-            value={monthYear}
-            onChange={onMonthChange}
+            value={selectedDate}
+            onChange={handleDateChange}
             disabled={isUnpaidMode && selectedMonths.length > 0}
             affiliate={false}
           />
@@ -337,6 +189,8 @@ export default function PayoutTable({
           loading={pendingMonth}
           onApply={applyUnpaidMonths}
           disabled={isUnpaidMode}
+          open={unpaidOpen}
+          setOpen={setUnpaidOpen}
         />
         <div className="flex gap-2">
           <Button variant="outline" onClick={downloadCSV}>
@@ -358,108 +212,29 @@ export default function PayoutTable({
           <CardTitle>Payment Records</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center py-4">
-            <Input
-              placeholder="Filter emails..."
-              value={
-                (table.getColumn("email")?.getFilterValue() as string) ?? ""
-              }
-              onChange={(event) =>
-                table.getColumn("email")?.setFilterValue(event.target.value)
-              }
-              className="max-w-sm"
-            />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto">
-                  Columns <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {table
-                  .getAllColumns()
-                  .filter((column) => column.getCanHide())
-                  .map((column) => {
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(!!value)
-                        }
-                      >
-                        {column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {isPending ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      <div className="flex items-center justify-center gap-2">
-                        <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-gray-600" />
-                        <span className="text-sm text-muted-foreground">
-                          Loading...
-                        </span>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No results.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <TableTop table={table} />
+          {isUnpaidMode ? (
+            pendingMonth || isPending ? (
+              <TableLoading columns={columns} />
+            ) : table.getRowModel().rows.length === 0 ? (
+              <div className="text-center py-6 text-muted-foreground">
+                No Affiliates found
+              </div>
+            ) : (
+              <TableContent table={table} affiliate={false} />
+            )
+          ) : (selectedDate.year !== undefined ||
+              selectedDate.month !== undefined) &&
+            isPending ? (
+            <TableLoading columns={columns} />
+          ) : table.getRowModel().rows.length === 0 ? (
+            <div className="text-center py-6 text-muted-foreground">
+              No Affiliates found
+            </div>
+          ) : (
+            <TableContent table={table} affiliate={false} />
+          )}
+
           <div className="flex items-center justify-end space-x-2 py-4">
             <div className="flex-1 text-sm text-muted-foreground">
               {table.getFilteredSelectedRowModel().rows.length} of{" "}
