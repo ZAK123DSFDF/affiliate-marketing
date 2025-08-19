@@ -6,21 +6,45 @@ import SocialTrafficCharts from "@/components/ui-custom/Chart/DataSourceChart";
 import AffiliatesTable from "@/components/pages/Dashboard/Affiliates/Affiliates";
 import { dummyAffiliateTopRankData } from "@/lib/types/dummyAffiliateTopRank";
 import React from "react";
+import { SellerKpiStats } from "@/lib/types/affiliateKpiStats";
+import { SellerKpiTimeSeries } from "@/lib/types/affiliateChartStats";
+import { SellerReferrerStat } from "@/lib/types/affiliateReferrerStat";
 
-const Overview = ({ orgId }: { orgId: string }) => {
+const Overview = ({
+  orgId,
+  kpiCardStats,
+  referrerStats,
+  ChartStats,
+  TopAffiliates,
+}: {
+  orgId: string;
+  kpiCardStats: SellerKpiStats[];
+  referrerStats: SellerReferrerStat[];
+  ChartStats: SellerKpiTimeSeries[];
+  TopAffiliates: any[];
+}) => {
   return (
     <div className="space-y-8">
-      <Cards orgId={orgId} affiliate={false} />
+      <Cards orgId={orgId} kpiCardStats={kpiCardStats} affiliate={false} />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="h-full">
-          <ChartDailyMetrics orgId={orgId} affiliate={false} />
+          <ChartDailyMetrics
+            ChartStats={ChartStats}
+            orgId={orgId}
+            affiliate={false}
+          />
         </div>
         <div className="h-full">
-          <SocialTrafficCharts orgId={orgId} affiliate={false} />
+          <SocialTrafficCharts
+            referrerStats={referrerStats}
+            orgId={orgId}
+            affiliate={false}
+          />
         </div>
       </div>
       <AffiliatesTable
-        data={dummyAffiliateTopRankData}
+        orgId={orgId}
+        data={TopAffiliates}
         cardTitle="Top Affiliates"
       />
     </div>

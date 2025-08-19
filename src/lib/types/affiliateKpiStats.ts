@@ -9,3 +9,10 @@ export interface AffiliateKpiStats {
   totalCommissionPaid: number;
   totalCommissionUnpaid: number;
 }
+export type SellerKpiStats = Omit<
+  AffiliateKpiStats,
+  "affiliateId" | "email" | "name"
+> & {
+  totalAmount: number;
+  totalAffiliates: number;
+};

@@ -41,14 +41,14 @@ import { getAffiliateKpiTimeSeries } from "@/app/affiliate/[orgId]/dashboard/act
 
 interface ChartDailyMetricsProps {
   orgId: string;
-  affiliateChartStats?: AffiliateKpiTimeSeries[];
+  ChartStats?: AffiliateKpiTimeSeries[];
   affiliate: boolean;
   isPreview?: boolean;
 }
 
 export function ChartDailyMetrics({
   orgId,
-  affiliateChartStats,
+  ChartStats,
   affiliate = false,
   isPreview = false,
 }: ChartDailyMetricsProps) {
@@ -69,13 +69,13 @@ export function ChartDailyMetrics({
     },
   );
   const data = React.useMemo(() => {
-    const source = searchData ?? affiliateChartStats ?? [];
+    const source = searchData ?? ChartStats ?? [];
     return source.map((item) => ({
       ...item,
       date: item.createdAt,
       visits: item.visitors,
     }));
-  }, [affiliateChartStats, searchData]);
+  }, [ChartStats, searchData]);
   const ChartCustomization = useChartCustomizationOption();
   const ThemeCustomization =
     DashboardCustomizationStores.useDashboardThemeCustomization();

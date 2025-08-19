@@ -4,3 +4,4 @@ export interface AffiliateKpiTimeSeries {
   sales: number;
   conversionRate: number;
 }
+export type SellerKpiTimeSeries = AffiliateKpiTimeSeries;

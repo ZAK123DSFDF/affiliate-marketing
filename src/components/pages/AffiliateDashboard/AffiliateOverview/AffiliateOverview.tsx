@@ -46,7 +46,7 @@ const AffiliateOverview = ({
         <div className="h-full">
           <ChartDailyMetrics
             orgId={orgId}
-            affiliateChartStats={affiliateChartStats}
+            ChartStats={affiliateChartStats}
             affiliate={affiliate}
             isPreview={isPreview}
           />

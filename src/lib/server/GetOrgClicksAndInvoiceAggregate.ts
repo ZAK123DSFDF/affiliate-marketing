@@ -1,11 +1,11 @@
 import { ClickAggRow, InvoiceAggRow } from "@/lib/types/aggregateTypes";
-import { AffiliatePayout } from "@/lib/types/affiliateStats";
 
-export function getOrgClicksAndInvoiceAggregate(
+export function getOrgClicksAndInvoiceAggregate<T>(
   clickAgg: ClickAggRow[],
   invoiceAgg: InvoiceAggRow[],
   affRows: { id: string; email: string }[],
   linksByAffiliate: Record<string, string[]>,
+  calculateConversionRate = false,
 ) {
   const clicksMap = new Map(clickAgg.map((r) => [r.linkId, r.visits]));
   const invoiceMap = new Map(
@@ -20,7 +20,7 @@ export function getOrgClicksAndInvoiceAggregate(
     ]),
   );
 
-  const rows: AffiliatePayout[] = affRows.map((aff) => {
+  return affRows.map((aff) => {
     const urls = linksByAffiliate[aff.id] ?? [];
 
     let visitors = 0;
@@ -42,7 +42,6 @@ export function getOrgClicksAndInvoiceAggregate(
         unpaid += inv.unpaid;
       }
     }
-
     return {
       id: aff.id,
       email: aff.email,
@@ -52,7 +51,9 @@ export function getOrgClicksAndInvoiceAggregate(
       paid,
       unpaid,
       links: urls,
-    };
+      ...(calculateConversionRate && {
+        conversionRate: visitors > 0 ? (sales / visitors) * 100 : 0,
+      }),
+    } as T;
   });
-  return rows;
 }

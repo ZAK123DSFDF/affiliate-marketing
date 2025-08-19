@@ -16,17 +16,21 @@ import { cn } from "@/lib/utils";
 import { KpiCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/KpiCardCustomizationOptions";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { AffiliateKpiStats } from "@/lib/types/affiliateKpiStats";
-import { mapAffiliateStats } from "@/util/mapStats";
+import {
+  AffiliateKpiStats,
+  SellerKpiStats,
+} from "@/lib/types/affiliateKpiStats";
+import { mapAffiliateStats, mapSellerStats } from "@/util/mapStats";
 import { useDateFilter } from "@/hooks/useDateFilter";
 import { useSearch } from "@/hooks/useSearch";
 import { getAffiliateKpiStats } from "@/app/affiliate/[orgId]/dashboard/action";
+import { getSellerKpiStats } from "@/app/seller/[orgId]/dashboard/action";
 
 interface CardsProps {
   orgId: string;
   affiliate: boolean;
   isPreview?: boolean;
-  kpiCardStats?: AffiliateKpiStats[] | [{}];
+  kpiCardStats?: AffiliateKpiStats[] | SellerKpiStats[] | [{}];
 }
 
 const affiliateColorPairs = [
@@ -56,10 +60,25 @@ const Cards = ({
     "kpiYear",
     "kpiMonth",
   );
-  const { data: searchData, isPending: searchPending } = useSearch(
-    ["affiliate-card", orgId, selectedDate.year, selectedDate.month],
-    getAffiliateKpiStats,
-    [selectedDate.year, selectedDate.month],
+
+  const { data: affiliateSearchData, isPending: affiliateSearchPending } =
+    useSearch(
+      ["affiliate-card", orgId, selectedDate.year, selectedDate.month],
+      getAffiliateKpiStats,
+      [selectedDate.year, selectedDate.month],
+      {
+        enabled: !!(
+          affiliate &&
+          orgId &&
+          (selectedDate.year || selectedDate.month) &&
+          !isPreview
+        ),
+      },
+    );
+  const { data: sellerSearchData, isPending: sellerSearchPending } = useSearch(
+    ["seller-card", orgId, selectedDate.year, selectedDate.month],
+    getSellerKpiStats,
+    [orgId, selectedDate.year, selectedDate.month],
     {
       enabled: !!(
         orgId &&
@@ -68,18 +87,24 @@ const Cards = ({
       ),
     },
   );
+  const searchData = affiliate ? affiliateSearchData : sellerSearchData;
+  const searchPending = affiliate
+    ? affiliateSearchPending
+    : sellerSearchPending;
   const filteredData = affiliate
     ? mapAffiliateStats(stats as AffiliateKpiStats)
-    : initialKpiData;
+    : mapSellerStats(stats as SellerKpiStats) || initialKpiData;
   const isFiltering = !!(selectedDate.year || selectedDate.month);
 
   const displayData = React.useMemo(() => {
-    if (isPreview) return filteredData; // preview always uses static/dummy
+    if (isPreview) return filteredData;
 
     if (isFiltering) {
-      if (searchPending) return []; // show loader instead
+      if (searchPending) return [];
       if (searchData)
-        return mapAffiliateStats(searchData[0] as AffiliateKpiStats);
+        return affiliate
+          ? mapAffiliateStats(searchData[0] as AffiliateKpiStats)
+          : mapSellerStats(searchData[0] as SellerKpiStats) || initialKpiData;
     }
 
     return filteredData;
