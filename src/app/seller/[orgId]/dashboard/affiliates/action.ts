@@ -6,8 +6,8 @@ import { inArray, sql } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
 import { ResponseData } from "@/lib/types/response";
 import { AffiliateStats } from "@/lib/types/affiliateStats";
-import { getOrgAuth } from "@/util/GetOrgAuth";
-import { getOrgAffiliateLinks } from "@/util/GetOrgAffiliateLinks";
+import { getOrgAuth } from "@/lib/server/GetOrgAuth";
+import { getOrgAffiliateLinks } from "@/lib/server/GetOrgAffiliateLinks";
 import { buildWhereWithDate } from "@/util/BuildWhereWithDate";
 
 export async function getAffiliatesWithStats(

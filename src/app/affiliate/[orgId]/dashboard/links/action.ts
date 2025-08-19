@@ -3,7 +3,7 @@
 import { db } from "@/db/drizzle";
 import { affiliateClick, affiliateInvoice, affiliateLink } from "@/db/schema";
 import { generateAffiliateCode } from "@/util/idGenerators";
-import { getAffiliateOrganization } from "@/util/GetAffiliateOrganization";
+import { getAffiliateOrganization } from "@/lib/server/GetAffiliateOrganization";
 import { revalidatePath } from "next/cache";
 import { inArray, sql } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";

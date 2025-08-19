@@ -1,6 +1,6 @@
 // actions/getAffiliateCommissionByMonth.ts
 "use server";
-import { getAffiliateOrganization } from "@/util/GetAffiliateOrganization";
+import { getAffiliateOrganization } from "@/lib/server/GetAffiliateOrganization";
 import { db } from "@/db/drizzle";
 import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow";
 import { ResponseData } from "@/lib/types/response";

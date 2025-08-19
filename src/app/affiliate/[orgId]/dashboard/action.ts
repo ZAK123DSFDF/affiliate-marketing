@@ -4,7 +4,7 @@ import { db } from "@/db/drizzle";
 import { affiliateClick, affiliateInvoice } from "@/db/schema";
 import { sql, inArray } from "drizzle-orm";
 import { AffiliateKpiStats } from "@/lib/types/affiliateKpiStats";
-import { getAffiliateOrganization } from "@/util/GetAffiliateOrganization";
+import { getAffiliateOrganization } from "@/lib/server/GetAffiliateOrganization";
 import { ResponseData } from "@/lib/types/response";
 import { returnError } from "@/lib/errorHandler";
 import { AffiliateReferrerStat } from "@/lib/types/affiliateReferrerStat";

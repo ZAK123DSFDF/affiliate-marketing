@@ -6,9 +6,9 @@ import { and, between, eq, inArray, or, sql } from "drizzle-orm";
 import { returnError } from "@/lib/errorHandler";
 import { ResponseData } from "@/lib/types/response";
 import { UnpaidMonth } from "@/lib/types/unpaidMonth";
-import { getOrgAuth } from "@/util/GetOrgAuth";
-import { getOrgAffiliateLinks } from "@/util/GetOrgAffiliateLinks";
-import { getOrgClicksAndInvoiceAggregate } from "@/util/GetOrgClicksAndInvoiceAggregate";
+import { getOrgAuth } from "@/lib/server/GetOrgAuth";
+import { getOrgAffiliateLinks } from "@/lib/server/GetOrgAffiliateLinks";
+import { getOrgClicksAndInvoiceAggregate } from "@/lib/server/GetOrgClicksAndInvoiceAggregate";
 import { AffiliatePayout } from "@/lib/types/affiliateStats";
 import { buildWhereWithDate } from "@/util/BuildWhereWithDate";
 export async function getAffiliatePayouts(
