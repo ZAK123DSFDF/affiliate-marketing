@@ -7,23 +7,21 @@ import {
   affiliateLink,
   organization,
 } from "@/db/schema";
-import { and, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { buildWhereWithDate } from "@/util/BuildWhereWithDate";
-
-export async function getAffiliatePayoutAction(
-  orgId: string,
+export async function getAffiliateLinksWithStatsAction(
+  decoded: {
+    id: string;
+    organizationId: string;
+  },
   year?: number,
   month?: number,
 ) {
   return db
     .select({
-      id: affiliate.id,
-      email: affiliate.email,
-
-      visitors: sql<number>`COUNT(DISTINCT ${affiliateClick.id})`.mapWith(
-        Number,
-      ),
-
+      id: affiliateLink.id,
+      createdAt: affiliateLink.createdAt,
+      clicks: sql<number>`count(distinct ${affiliateClick.id})`.mapWith(Number),
       subs: sql<number>`COUNT(DISTINCT ${affiliateInvoice.subscriptionId})`.mapWith(
         Number,
       ),
@@ -53,30 +51,19 @@ export async function getAffiliatePayoutAction(
         ) * 100
       END`.mapWith(Number),
 
-      commission:
-        sql<number>`COALESCE(SUM(${affiliateInvoice.commission}), 0)`.mapWith(
-          Number,
-        ),
-      paid: sql<number>`COALESCE(SUM(${affiliateInvoice.paidAmount}), 0)`.mapWith(
-        Number,
-      ),
-      unpaid:
-        sql<number>`COALESCE(SUM(${affiliateInvoice.unpaidAmount}), 0)`.mapWith(
-          Number,
-        ),
-
-      links: sql<string[]>`
-        ARRAY_AGG(
-          DISTINCT ('https://' || ${organization.domainName} || '?' || ${organization.referralParam} || '=' || ${affiliateLink.id})
-        )
-      `,
+      fullUrl: sql<string>`
+  COALESCE(
+    MIN('https://' || ${organization.domainName} || '?' || ${organization.referralParam} || '=' || ${affiliateLink.id}),
+    ''
+  )
+`,
     })
     .from(affiliate)
-    .leftJoin(
+    .innerJoin(
       affiliateLink,
       and(
         eq(affiliateLink.affiliateId, affiliate.id),
-        eq(affiliateLink.organizationId, orgId),
+        eq(affiliateLink.organizationId, decoded.organizationId),
       ),
     )
     .leftJoin(
@@ -97,7 +84,16 @@ export async function getAffiliatePayoutAction(
         month,
       ),
     )
-    .leftJoin(organization, eq(organization.id, orgId))
-    .where(eq(affiliate.organizationId, orgId))
-    .groupBy(affiliate.id, affiliate.email);
+    .leftJoin(organization, eq(organization.id, affiliateLink.organizationId))
+    .where(
+      and(
+        eq(affiliate.organizationId, decoded.organizationId),
+        eq(affiliate.id, decoded.id),
+      ),
+    )
+    .groupBy(
+      affiliateLink.id,
+      organization.domainName,
+      organization.referralParam,
+    );
 }

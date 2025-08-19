@@ -7,6 +7,7 @@ import { getOrgAuth } from "@/lib/server/GetOrgAuth";
 import { getOrgAffiliateLinks } from "@/lib/server/GetOrgAffiliateLinks";
 import { getOrgClicksAndInvoiceAggregate } from "@/lib/server/GetOrgClicksAndInvoiceAggregate";
 import { getClickInvoiceAggregate } from "@/lib/server/getClickInvoiceAggregate";
+import { getAffiliatesWithStatsAction } from "@/lib/server/getAffiliatesWithStats";
 
 export async function getAffiliatesWithStats(
   orgId: string,
@@ -14,25 +15,8 @@ export async function getAffiliatesWithStats(
   month?: number,
 ): Promise<ResponseData<AffiliateStats[]>> {
   try {
-    const org = await getOrgAuth(orgId);
-    const { linkIds, affRows, linksByAffiliate } = await getOrgAffiliateLinks(
-      org,
-      orgId,
-    );
-
-    const { clickAgg, invoiceAgg } = await getClickInvoiceAggregate(
-      linkIds,
-      year,
-      month,
-    );
-    const rows = getOrgClicksAndInvoiceAggregate<AffiliateStats>(
-      clickAgg,
-      invoiceAgg,
-      affRows,
-      linksByAffiliate,
-      true,
-    );
-
+    await getOrgAuth(orgId);
+    const rows = await getAffiliatesWithStatsAction(orgId, year, month);
     return { ok: true, data: rows };
   } catch (err) {
     console.error("getAffiliatesWithStats error:", err);

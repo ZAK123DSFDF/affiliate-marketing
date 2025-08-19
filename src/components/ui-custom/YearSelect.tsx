@@ -14,6 +14,7 @@ interface Props {
   onChange: (year?: number) => void;
   disabled?: boolean;
   affiliate: boolean;
+  allowAll?: boolean;
 }
 
 export default function YearSelect({
@@ -21,6 +22,7 @@ export default function YearSelect({
   onChange,
   disabled,
   affiliate,
+  allowAll = true,
 }: Props) {
   const now = new Date();
   const START_YEAR = 1990;
@@ -28,7 +30,9 @@ export default function YearSelect({
     { length: now.getUTCFullYear() - START_YEAR + 1 },
     (_, i) => now.getUTCFullYear() - i,
   );
-  const currentSelectedValue = value.year ? value.year.toString() : "all";
+  const currentSelectedValue =
+    value.year?.toString() ??
+    (allowAll ? "all" : now.getUTCFullYear().toString());
   return (
     <div className="flex gap-2">
       <Select
@@ -46,13 +50,15 @@ export default function YearSelect({
           <SelectValue placeholder="Year" />
         </SelectTrigger>
         <SelectContent affiliate={affiliate}>
-          <SelectItem
-            affiliate={affiliate}
-            value="all"
-            selectedValue={currentSelectedValue}
-          >
-            All
-          </SelectItem>
+          {allowAll && (
+            <SelectItem
+              affiliate={affiliate}
+              value="all"
+              selectedValue={currentSelectedValue}
+            >
+              All
+            </SelectItem>
+          )}
           {years.map((y) => (
             <SelectItem
               affiliate={affiliate}

@@ -208,6 +208,7 @@ export default function AffiliateCommissionTable({
               value={selectedDate}
               onChange={handleDateChange}
               affiliate={affiliate}
+              allowAll={false}
             />
           </div>
         </CardHeader>

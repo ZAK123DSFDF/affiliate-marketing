@@ -11,6 +11,8 @@ import { ResponseData } from "@/lib/types/response";
 import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
 import { getAffiliateLinks } from "@/lib/server/getAffiliateLinks";
 import { buildWhereWithDate } from "@/util/BuildWhereWithDate";
+import { getAffiliatesWithStatsAction } from "@/lib/server/getAffiliatesWithStats";
+import { getAffiliateLinksWithStatsAction } from "@/lib/server/getAffiliateLinksWithStats";
 
 export const createAffiliateLink = async () => {
   const { org, decoded } = await getAffiliateOrganization();
@@ -35,76 +37,8 @@ export const getAffiliateLinksWithStats = async (
   month?: number,
 ): Promise<ResponseData<AffiliateLinkWithStats[]>> => {
   try {
-    const { org, decoded } = await getAffiliateOrganization();
-
-    const baseDomain = org.domainName.replace(/^https?:\/\//, "");
-    const param = org.referralParam;
-    console.log("year and month", year, month);
-    // Step 1: Fetch all links for this affiliate in the current org
-    const { linkIds, links } = await getAffiliateLinks(decoded);
-    if (!linkIds.length || !links) return { ok: true, data: [] };
-    // Step 2: Aggregate clicks & sales using GROUP BY
-    const [clickAgg, salesAgg] = await Promise.all([
-      db
-        .select({
-          id: affiliateClick.affiliateLinkId,
-          count: sql<number>`count(*)`.mapWith(Number),
-        })
-        .from(affiliateClick)
-        .where(
-          buildWhereWithDate(
-            [inArray(affiliateClick.affiliateLinkId, linkIds)],
-            affiliateClick,
-            year,
-            month,
-          ),
-        )
-        .groupBy(affiliateClick.affiliateLinkId),
-
-      db
-        .select({
-          id: affiliateInvoice.affiliateLinkId,
-          subs: sql<number>`count(distinct ${affiliateInvoice.subscriptionId})`.mapWith(
-            Number,
-          ),
-          singles: sql<number>`
-                      sum(case when ${affiliateInvoice.subscriptionId} is null then 1 else 0 end)
-                    `.mapWith(Number),
-        })
-        .from(affiliateInvoice)
-        .where(
-          buildWhereWithDate(
-            [inArray(affiliateInvoice.affiliateLinkId, linkIds)],
-            affiliateInvoice,
-            year,
-            month,
-          ),
-        )
-        .groupBy(affiliateInvoice.affiliateLinkId),
-    ]);
-
-    // Step 3: Store counts in a map for fast lookup
-    const clicksMap = new Map(clickAgg.map((c) => [c.id, c.count]));
-    const salesMap = new Map(
-      salesAgg.map((r) => [r.id, (r.subs ?? 0) + (r.singles ?? 0)]),
-    );
-
-    // Step 4: Combine into final list
-    const rows: AffiliateLinkWithStats[] = links.map((link) => {
-      const clicks = clicksMap.get(link.id) ?? 0;
-      const sales = salesMap.get(link.id) ?? 0;
-
-      const conversionRate = clicks > 0 ? (sales / clicks) * 100 : 0;
-      console.log("link created at", link.createdAt);
-      return {
-        id: link.id,
-        fullUrl: `https://${baseDomain}/?${param}=${link.id}`,
-        clicks,
-        sales,
-        conversionRate,
-        createdAt: link.createdAt,
-      };
-    });
+    const { decoded } = await getAffiliateOrganization();
+    const rows = await getAffiliateLinksWithStatsAction(decoded, year, month);
 
     return { ok: true, data: rows };
   } catch (err) {

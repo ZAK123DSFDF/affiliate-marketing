@@ -153,10 +153,9 @@ export async function getTopAffiliates(
   month?: number,
 ): Promise<ResponseData<AffiliateStats[]>> {
   try {
-    const org = await getOrgAuth(orgId);
-    const { linkIds } = await getOrgAffiliateLinks(org, orgId);
+    await getOrgAuth(orgId);
     const TopAffiliateStats = await getTopAffiliatesByConversionRate(
-      linkIds,
+      orgId,
       year,
       month,
     );
