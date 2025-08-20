@@ -14,8 +14,12 @@ export async function getAffiliatePayouts(
 ): Promise<ResponseData<AffiliatePayout[]>> {
   try {
     await getOrgAuth(orgId);
-    const rows = await getAffiliatePayoutAction(orgId, year, month);
-
+    const rows = (await getAffiliatePayoutAction(
+      orgId,
+      year,
+      month,
+    )) as AffiliatePayout[];
+    console.log("getAffiliatePayouts rows:", rows);
     return { ok: true, data: rows };
   } catch (err) {
     console.error("getAffiliatePayouts error:", err);
@@ -28,7 +32,10 @@ export async function getAffiliatePayoutsBulk(
 ): Promise<ResponseData<AffiliatePayout[]>> {
   try {
     await getOrgAuth(orgId);
-    const rows = await getAffiliatePayoutBulkAction(orgId, months);
+    const rows = (await getAffiliatePayoutBulkAction(
+      orgId,
+      months,
+    )) as AffiliatePayout[];
     return { ok: true, data: rows };
   } catch (err) {
     console.error("getAffiliatePayoutsBulk error:", err);
