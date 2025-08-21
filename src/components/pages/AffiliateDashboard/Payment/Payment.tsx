@@ -30,8 +30,8 @@ import ErrorState from "@/components/ui-custom/ErrorState";
 import { TableContent } from "@/components/ui-custom/TableContent";
 import { TableLoading } from "@/components/ui-custom/TableLoading";
 import { paymentColumns } from "@/components/pages/AffiliateDashboard/Payment/PaymentColumns";
-import { useDateFilter } from "@/hooks/useDateFilter";
 import { useSearch } from "@/hooks/useSearch";
+import { useQueryFilter } from "@/hooks/useQueryFilter";
 
 interface AffiliateCommissionTableProps {
   orgId: string;
@@ -48,6 +48,7 @@ export default function AffiliateCommissionTable({
 }: AffiliateCommissionTableProps) {
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
+  const { filters, setFilters } = useQueryFilter();
   const {
     isPending: globalPending,
     isError,
@@ -55,7 +56,6 @@ export default function AffiliateCommissionTable({
   } = affiliate
     ? useCustomizationSync(orgId, "dashboard")
     : { isPending: false, isError: false, refetch: () => {} };
-  const { selectedDate, handleDateChange } = useDateFilter();
   const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false);
   useEffect(() => {
     if (!isPreview) return;
@@ -67,30 +67,28 @@ export default function AffiliateCommissionTable({
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [selectedDate, isPreview]);
+  }, [filters, isPreview]);
   const filteredData = React.useMemo(() => {
     if (!isPreview) return data;
-    if (!selectedDate.year) return data;
+    if (!filters.year) return data;
 
     return data.filter((row) =>
-      selectedDate.year
-        ? row.month.startsWith(selectedDate.year.toString())
-        : true,
+      filters.year ? row.month.startsWith(filters.year.toString()) : true,
     );
-  }, [data, selectedDate.year, isPreview]);
+  }, [data, filters.year, isPreview]);
   const { data: yearSelectedData, isPending } = useSearch(
-    ["affiliate-commissions", orgId, selectedDate.year],
+    ["affiliate-commissions", orgId, filters.year],
     getAffiliateCommissionByMonth,
-    [selectedDate.year],
+    [filters.year],
     {
-      enabled: !!(orgId && selectedDate.year && !isPreview),
+      enabled: !!(orgId && filters.year && !isPreview),
     },
   );
   const columns = paymentColumns(affiliate);
   const table = useReactTable({
     data: isPreview
       ? filteredData
-      : selectedDate.year && yearSelectedData
+      : filters.year && yearSelectedData
         ? yearSelectedData
         : data,
     columns,
@@ -205,15 +203,15 @@ export default function AffiliateCommissionTable({
               <YearSelectCustomizationOptions triggerSize="w-6 h-6" />
             )}
             <YearSelect
-              value={selectedDate}
-              onChange={handleDateChange}
+              value={{ year: filters.year }}
+              onChange={(year) => setFilters({ year })}
               affiliate={affiliate}
               allowAll={false}
             />
           </div>
         </CardHeader>
         <CardContent>
-          {selectedDate.year !== undefined &&
+          {filters.year !== undefined &&
           ((isPending && !isPreview) || (isPreview && isFakeLoadingPreview)) ? (
             <TableLoading columns={columns} />
           ) : table.getRowModel().rows.length === 0 ? (

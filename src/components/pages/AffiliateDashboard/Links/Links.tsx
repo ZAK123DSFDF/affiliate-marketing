@@ -34,7 +34,7 @@ import { useCustomizationSync } from "@/hooks/useCustomizationSync";
 import PendingState from "@/components/ui-custom/PendingState";
 import ErrorState from "@/components/ui-custom/ErrorState";
 import { useSearch } from "@/hooks/useSearch";
-import { useDateFilter } from "@/hooks/useDateFilter";
+import { useQueryFilter } from "@/hooks/useQueryFilter";
 import { TableContent } from "@/components/ui-custom/TableContent";
 import { LinksColumns } from "@/components/pages/AffiliateDashboard/Links/LinksColumns";
 import { TableLoading } from "@/components/ui-custom/TableLoading";
@@ -62,7 +62,7 @@ export default function Links({
 
   const [isFakeLoading, setIsFakeLoading] = useState(false);
   const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false);
-  const { selectedDate, handleDateChange } = useDateFilter();
+  const { filters, setFilters } = useQueryFilter();
   useEffect(() => {
     if (!isPreview) return;
 
@@ -73,32 +73,32 @@ export default function Links({
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [selectedDate, isPreview]);
+  }, [filters, isPreview]);
   const filteredPreviewData = React.useMemo(() => {
     if (!isPreview) return data as AffiliateLinkWithStats[];
 
     return (data as DummyAffiliateLink[]).map((link) => {
       const filteredClicks = link.clicks.filter((c) => {
         const d = new Date(c.createdAt);
-        const matchesYear = selectedDate.year
-          ? d.getFullYear() === selectedDate.year
+        const matchesYear = filters.year
+          ? d.getFullYear() === filters.year
           : true;
         const matchesMonth =
-          selectedDate.year === undefined
+          filters.year === undefined
             ? true
-            : selectedDate.month
-              ? d.getMonth() + 1 === selectedDate.month
+            : filters.month
+              ? d.getMonth() + 1 === filters.month
               : true;
         return matchesYear && matchesMonth;
       });
 
       const filteredSales = link.sales.filter((s) => {
         const d = new Date(s.createdAt);
-        const matchesYear = selectedDate.year
-          ? d.getFullYear() === selectedDate.year
+        const matchesYear = filters.year
+          ? d.getFullYear() === filters.year
           : true;
-        const matchesMonth = selectedDate.month
-          ? d.getMonth() + 1 === selectedDate.month
+        const matchesMonth = filters.month
+          ? d.getMonth() + 1 === filters.month
           : true;
         return matchesYear && matchesMonth;
       });
@@ -119,17 +119,13 @@ export default function Links({
         conversionRate,
       } satisfies AffiliateLinkWithStats;
     });
-  }, [data, selectedDate, isPreview]);
+  }, [data, filters, isPreview]);
   const { data: searchData, isPending: searchPending } = useSearch(
-    ["affiliate-links", orgId, selectedDate.year, selectedDate.month],
+    ["affiliate-links", orgId, filters.year, filters.month],
     getAffiliateLinksWithStats,
-    [selectedDate.year, selectedDate.month],
+    [filters.year, filters.month],
     {
-      enabled: !!(
-        orgId &&
-        (selectedDate.year || selectedDate.month) &&
-        !isPreview
-      ),
+      enabled: !!(orgId && (filters.year || filters.month) && !isPreview),
     },
   );
   const mutation = useMutation({
@@ -317,15 +313,14 @@ export default function Links({
               <YearSelectCustomizationOptions triggerSize="w-6 h-6" />
             )}
             <MonthSelect
-              value={selectedDate}
-              onChange={handleDateChange}
+              value={{ year: filters.year, month: filters.month }}
+              onChange={(year, month) => setFilters({ year, month })}
               affiliate={affiliate}
             />
           </div>
         </CardHeader>
         <CardContent>
-          {(selectedDate.year !== undefined ||
-            selectedDate.month !== undefined) &&
+          {(filters.year !== undefined || filters.month !== undefined) &&
           ((searchPending && !isPreview) ||
             (isPreview && isFakeLoadingPreview)) ? (
             <TableLoading columns={columns} />

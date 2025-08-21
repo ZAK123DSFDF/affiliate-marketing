@@ -79,11 +79,11 @@ export async function getTopAffiliates(
 ): Promise<ResponseData<AffiliateStats[]>> {
   try {
     await getOrgAuth(orgId);
-    const TopAffiliateStats = await getTopAffiliatesByConversionRate(
+    const TopAffiliateStats = (await getTopAffiliatesByConversionRate(
       orgId,
       year,
       month,
-    );
+    )) as AffiliateStats[];
     return { ok: true, data: TopAffiliateStats };
   } catch (err) {
     console.error("Error fetching top affiliates:", err);

@@ -15,14 +15,26 @@ import {
   ExcludableFields,
 } from "@/util/BuildAffiliateStatsSelect";
 
-type OrderableFields = "conversionRate" | "commission" | "sales";
-function applyOptionalLimit<T extends { limit: (n: number) => any }>(
-  q: T,
-  n?: number,
-) {
-  return typeof n === "number" ? q.limit(n) : q;
+type OrderableFields =
+  | "conversionRate"
+  | "commission"
+  | "sales"
+  | "visits"
+  | "email"
+  | "commissionPaid"
+  | "commissionUnpaid";
+function applyOptionalLimitAndOffset<
+  T extends { limit: (n: number) => any; offset: (n: number) => any },
+>(q: T, limit?: number, offset?: number) {
+  let query = q;
+  if (typeof limit === "number") {
+    query = query.limit(limit);
+  }
+  if (typeof offset === "number") {
+    query = query.offset(offset);
+  }
+  return query;
 }
-
 export async function getAffiliatesWithStatsAction(
   orgId: string,
   year?: number,
@@ -34,6 +46,7 @@ export async function getAffiliatesWithStatsAction(
     orderBy?: OrderableFields;
     orderDir?: "asc" | "desc";
     limit?: number;
+    offset?: number;
   },
 ) {
   const selectedFields = buildAffiliateStatsSelect(opts);
@@ -61,14 +74,20 @@ export async function getAffiliatesWithStatsAction(
           THEN ${affiliateInvoice.id} END
         )
     `;
+    const visitsSql = sql`COUNT(DISTINCT ${affiliateClick.id})`;
+    const commissionPaidSql = sql`COALESCE(SUM(${affiliateInvoice.paidAmount}), 0)`;
+    const commissionUnpaidSql = sql`COALESCE(SUM(${affiliateInvoice.unpaidAmount}), 0)`;
+    const emailSql = affiliate.email;
+    const orderByMap: Record<string, any> = {
+      conversionRate: conversionRateSql,
+      commission: commissionSql,
+      sales: salesSql,
+      visits: visitsSql,
+      commissionPaid: commissionPaidSql,
+      commissionUnpaid: commissionUnpaidSql,
+    };
 
-    const base =
-      opts.orderBy === "conversionRate"
-        ? conversionRateSql
-        : opts.orderBy === "commission"
-          ? commissionSql
-          : salesSql;
-
+    const base = orderByMap[opts.orderBy] ?? emailSql;
     return opts.orderDir === "asc" ? base : desc(base);
   })();
   const chained = db
@@ -107,5 +126,5 @@ export async function getAffiliatesWithStatsAction(
     .where(eq(affiliate.organizationId, orgId))
     .groupBy(affiliate.id, affiliate.email)
     .orderBy(...(orderExpr ? [orderExpr] : []));
-  return applyOptionalLimit(chained, opts?.limit);
+  return applyOptionalLimitAndOffset(chained, opts?.limit, opts?.offset);
 }

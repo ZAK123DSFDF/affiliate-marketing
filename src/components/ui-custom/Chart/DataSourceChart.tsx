@@ -30,13 +30,13 @@ import {
   AffiliateReferrerStat,
   SellerReferrerStat,
 } from "@/lib/types/affiliateReferrerStat";
-import { useDateFilter } from "@/hooks/useDateFilter";
 import { useSearch } from "@/hooks/useSearch";
 import { getAffiliateReferrers } from "@/app/affiliate/[orgId]/dashboard/action";
 import {
   getSellerKpiStats,
   getSellerReferrer,
 } from "@/app/seller/[orgId]/dashboard/action";
+import { useQueryFilter } from "@/hooks/useQueryFilter";
 
 const chartConfig: ChartConfig = {
   visitors: { label: "Visitors" },
@@ -58,32 +58,32 @@ export default function SocialTrafficPieChart({
   const ThemeCustomization = useDashboardThemeCustomizationOption();
   const pieCustomization = usePieChartCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
-  const { selectedDate, handleDateChange } = useDateFilter(
-    "sourceYear",
-    "sourceMonth",
-  );
+  const { filters, setFilters } = useQueryFilter({
+    yearKey: "sourceYear",
+    monthKey: "sourceMonth",
+  });
   const { data: affiliateData, isPending: affiliatePending } = useSearch(
-    ["affiliate-source", orgId, selectedDate.year, selectedDate.month],
+    ["affiliate-source", orgId, filters.year, filters.month],
     getAffiliateReferrers,
-    [selectedDate.year, selectedDate.month],
+    [filters.year, filters.month],
     {
       enabled: !!(
         affiliate &&
         orgId &&
-        (selectedDate.year || selectedDate.month) &&
+        (filters.year || filters.month) &&
         !isPreview
       ),
     },
   );
   const { data: sellerData, isPending: sellerPending } = useSearch(
-    ["seller-source", orgId, selectedDate.year, selectedDate.month],
+    ["seller-source", orgId, filters.year, filters.month],
     getSellerReferrer,
-    [orgId, selectedDate.year, selectedDate.month],
+    [orgId, filters.year, filters.month],
     {
       enabled: !!(
         !affiliate &&
         orgId &&
-        (selectedDate.year || selectedDate.month) &&
+        (filters.year || filters.month) &&
         !isPreview
       ),
     },
@@ -192,8 +192,8 @@ export default function SocialTrafficPieChart({
           </div>
           <MonthSelect
             isPreview={isPreview}
-            value={selectedDate}
-            onChange={handleDateChange}
+            value={{ year: filters.year, month: filters.month }}
+            onChange={(year, month) => setFilters({ year, month })}
             affiliate={affiliate}
           />
         </div>
@@ -214,8 +214,7 @@ export default function SocialTrafficPieChart({
       )}
       <CardContent className="flex-1 flex justify-center items-center">
         {searchPending &&
-        (selectedDate.year !== undefined ||
-          selectedDate.month !== undefined) ? (
+        (filters.year !== undefined || filters.month !== undefined) ? (
           <div className="text-sm text-muted-foreground">
             Loading sources...
           </div>

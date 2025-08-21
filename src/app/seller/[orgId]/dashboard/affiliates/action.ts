@@ -10,6 +10,15 @@ export async function getAffiliatesWithStats(
   orgId: string,
   year?: number,
   month?: number,
+  orderBy?:
+    | "conversionRate"
+    | "commission"
+    | "sales"
+    | "visits"
+    | "email"
+    | "commissionPaid"
+    | "commissionUnpaid",
+  orderDir?: "asc" | "desc",
 ): Promise<ResponseData<AffiliateStats[]>> {
   try {
     await getOrgAuth(orgId);
@@ -17,6 +26,11 @@ export async function getAffiliatesWithStats(
       orgId,
       year,
       month,
+      undefined,
+      {
+        orderBy,
+        orderDir,
+      },
     )) as AffiliateStats[];
     return { ok: true, data: rows };
   } catch (err) {

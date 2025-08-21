@@ -35,10 +35,10 @@ import { ChartCustomizationOptions } from "@/components/ui-custom/Customization/
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
 import { AffiliateKpiTimeSeries } from "@/lib/types/affiliateChartStats";
-import { useDateFilter } from "@/hooks/useDateFilter";
 import { useSearch } from "@/hooks/useSearch";
 import { getAffiliateKpiTimeSeries } from "@/app/affiliate/[orgId]/dashboard/action";
 import { getSellerKpiTimeSeries } from "@/app/seller/[orgId]/dashboard/action";
+import { useQueryFilter } from "@/hooks/useQueryFilter";
 
 interface ChartDailyMetricsProps {
   orgId: string;
@@ -53,38 +53,33 @@ export function ChartDailyMetrics({
   affiliate = false,
   isPreview = false,
 }: ChartDailyMetricsProps) {
-  const { selectedDate, handleDateChange } = useDateFilter(
-    "chartYear",
-    "chartMonth",
-  );
+  const { filters, setFilters } = useQueryFilter({
+    yearKey: "chartYear",
+    monthKey: "chartMonth",
+  });
   const { data: affiliateSearchData, isPending: affiliateSearchPending } =
     useSearch(
-      [
-        "affiliate-kpi-time-series",
-        orgId,
-        selectedDate.year,
-        selectedDate.month,
-      ],
+      ["affiliate-kpi-time-series", orgId, filters.year, filters.month],
       getAffiliateKpiTimeSeries,
-      [selectedDate.year, selectedDate.month],
+      [filters.year, filters.month],
       {
         enabled: !!(
           affiliate &&
           orgId &&
-          (selectedDate.year || selectedDate.month) &&
+          (filters.year || filters.month) &&
           !isPreview
         ),
       },
     );
   const { data: sellerSearchData, isPending: sellerSearchPending } = useSearch(
-    ["seller-kpi-time-series", orgId, selectedDate.year, selectedDate.month],
+    ["seller-kpi-time-series", orgId, filters.year, filters.month],
     getSellerKpiTimeSeries,
-    [orgId, selectedDate.year, selectedDate.month],
+    [orgId, filters.year, filters.month],
     {
       enabled: !!(
         !affiliate &&
         orgId &&
-        (selectedDate.year || selectedDate.month) &&
+        (filters.year || filters.month) &&
         !isPreview
       ),
     },
@@ -179,8 +174,8 @@ export function ChartDailyMetrics({
         </div>
         <MonthSelect
           isPreview={isPreview}
-          value={selectedDate}
-          onChange={handleDateChange}
+          value={{ year: filters.year, month: filters.month }}
+          onChange={(year, month) => setFilters({ year, month })}
           affiliate={affiliate}
         />
       </CardHeader>
@@ -201,8 +196,7 @@ export function ChartDailyMetrics({
       )}
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         {searchPending &&
-        (selectedDate.year !== undefined ||
-          selectedDate.month !== undefined) ? (
+        (filters.year !== undefined || filters.month !== undefined) ? (
           <div className="flex items-center justify-center h-[300px]">
             <span className="text-sm text-muted-foreground">Loading...</span>
           </div>

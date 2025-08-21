@@ -30,9 +30,9 @@ import { AffiliatePayout } from "@/lib/types/affiliateStats";
 import { TableContent } from "@/components/ui-custom/TableContent";
 import { TableTop } from "@/components/ui-custom/TableTop";
 import { PayoutColumns } from "@/components/pages/Dashboard/Payouts/PayoutColumns";
-import { useDateFilter } from "@/hooks/useDateFilter";
 import { useSearch } from "@/hooks/useSearch";
 import { TableLoading } from "@/components/ui-custom/TableLoading";
+import { useQueryFilter } from "@/hooks/useQueryFilter";
 
 interface AffiliatesTablePayoutProps {
   data: AffiliatePayout[];
@@ -51,7 +51,7 @@ export default function PayoutTable({
   const [unpaidMonths, setUnpaidMonths] = useState<UnpaidMonth[]>([]);
   const [selectedMonths, setSelectedMonths] = useState<UnpaidMonth[]>([]);
   const [isUnpaidMode, setIsUnpaidMode] = useState(false);
-  const { selectedDate, handleDateChange } = useDateFilter();
+  const { filters, setFilters } = useQueryFilter();
   const [unpaidOpen, setUnpaidOpen] = useState(false);
   /* optional: refetch when month changes */
 
@@ -65,12 +65,12 @@ export default function PayoutTable({
   });
 
   const { data: regularPayouts, isPending: isPendingRegular } = useSearch(
-    ["regular-payouts", orgId, selectedDate.year, selectedDate.month],
+    ["regular-payouts", orgId, filters.year, filters.month],
     getAffiliatePayouts,
-    [orgId, selectedDate.year, selectedDate.month],
+    [orgId, filters.year, filters.month],
     {
       enabled:
-        !!(!affiliate && orgId && (selectedDate.year || selectedDate.month)) &&
+        !!(!affiliate && orgId && (filters.year || filters.month)) &&
         !isUnpaidMode,
     },
   );
@@ -168,8 +168,8 @@ export default function PayoutTable({
       <div className="flex justify-between items-center">
         <div className="flex gap-2 items-center">
           <MonthSelect
-            value={selectedDate}
-            onChange={handleDateChange}
+            value={{ year: filters.year, month: filters.month }}
+            onChange={(year, month) => setFilters({ year, month })}
             disabled={isUnpaidMode && selectedMonths.length > 0}
             affiliate={false}
           />
@@ -226,8 +226,7 @@ export default function PayoutTable({
             ) : (
               <TableContent table={table} affiliate={false} />
             )
-          ) : (selectedDate.year !== undefined ||
-              selectedDate.month !== undefined) &&
+          ) : (filters.year !== undefined || filters.month !== undefined) &&
             isPending ? (
             <TableLoading columns={columns} />
           ) : table.getRowModel().rows.length === 0 ? (

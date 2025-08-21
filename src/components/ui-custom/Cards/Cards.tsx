@@ -21,10 +21,10 @@ import {
   SellerKpiStats,
 } from "@/lib/types/affiliateKpiStats";
 import { mapAffiliateStats, mapSellerStats } from "@/util/mapStats";
-import { useDateFilter } from "@/hooks/useDateFilter";
 import { useSearch } from "@/hooks/useSearch";
 import { getAffiliateKpiStats } from "@/app/affiliate/[orgId]/dashboard/action";
 import { getSellerKpiStats } from "@/app/seller/[orgId]/dashboard/action";
+import { useQueryFilter } from "@/hooks/useQueryFilter";
 
 interface CardsProps {
   orgId: string;
@@ -56,34 +56,34 @@ const Cards = ({
   const kpiCard = useKpiCardCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
   const stats = kpiCardStats[0];
-  const { selectedDate, handleDateChange } = useDateFilter(
-    "kpiYear",
-    "kpiMonth",
-  );
+  const { filters, setFilters } = useQueryFilter({
+    yearKey: "kpiYear",
+    monthKey: "kpiMonth",
+  });
 
   const { data: affiliateSearchData, isPending: affiliateSearchPending } =
     useSearch(
-      ["affiliate-card", orgId, selectedDate.year, selectedDate.month],
+      ["affiliate-card", orgId, filters.year, filters.month],
       getAffiliateKpiStats,
-      [selectedDate.year, selectedDate.month],
+      [filters.year, filters.month],
       {
         enabled: !!(
           affiliate &&
           orgId &&
-          (selectedDate.year || selectedDate.month) &&
+          (filters.year || filters.month) &&
           !isPreview
         ),
       },
     );
   const { data: sellerSearchData, isPending: sellerSearchPending } = useSearch(
-    ["seller-card", orgId, selectedDate.year, selectedDate.month],
+    ["seller-card", orgId, filters.year, filters.month],
     getSellerKpiStats,
-    [orgId, selectedDate.year, selectedDate.month],
+    [orgId, filters.year, filters.month],
     {
       enabled: !!(
         !affiliate &&
         orgId &&
-        (selectedDate.year || selectedDate.month) &&
+        (filters.year || filters.month) &&
         !isPreview
       ),
     },
@@ -95,7 +95,7 @@ const Cards = ({
   const filteredData = affiliate
     ? mapAffiliateStats(stats as AffiliateKpiStats)
     : mapSellerStats(stats as SellerKpiStats) || initialKpiData;
-  const isFiltering = !!(selectedDate.year || selectedDate.month);
+  const isFiltering = !!(filters.year || filters.month);
 
   const displayData = React.useMemo(() => {
     if (isPreview) return filteredData;
@@ -179,8 +179,8 @@ const Cards = ({
                 <YearSelectCustomizationOptions triggerSize="w-6 h-6" />
               )}
               <MonthSelect
-                value={selectedDate}
-                onChange={handleDateChange}
+                value={{ year: filters.year, month: filters.month }}
+                onChange={(year, month) => setFilters({ year, month })}
                 affiliate={affiliate}
               />
             </div>
@@ -195,8 +195,7 @@ const Cards = ({
                   : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
             }`}
           >
-            {(selectedDate.year !== undefined ||
-              selectedDate.month !== undefined) &&
+            {(filters.year !== undefined || filters.month !== undefined) &&
             searchPending
               ? Array.from({ length: affiliate ? 3 : 4 }).map((_, i) => (
                   <div

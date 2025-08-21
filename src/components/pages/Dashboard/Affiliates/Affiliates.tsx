@@ -18,13 +18,13 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AffiliateStats } from "@/lib/types/affiliateStats";
 import MonthSelect from "@/components/ui-custom/MonthSelect";
-import { useDateFilter } from "@/hooks/useDateFilter";
 import { useSearch } from "@/hooks/useSearch";
 import { getAffiliatesWithStats } from "@/app/seller/[orgId]/dashboard/affiliates/action";
 import { TableContent } from "@/components/ui-custom/TableContent";
 import { TableTop } from "@/components/ui-custom/TableTop";
 import { AffiliatesColumns } from "@/components/pages/Dashboard/Affiliates/AffiliatesColumns";
 import { TableLoading } from "@/components/ui-custom/TableLoading";
+import { useQueryFilter } from "@/hooks/useQueryFilter";
 
 interface AffiliatesTableProps {
   orgId: string;
@@ -48,17 +48,13 @@ export default function AffiliatesTable({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const { selectedDate, handleDateChange } = useDateFilter();
+  const { filters, setFilters } = useQueryFilter();
   const { data: searchData, isPending: searchPending } = useSearch(
-    ["all-affiliates", orgId, selectedDate.year, selectedDate.month],
+    ["all-affiliates", orgId, filters.year, filters.month],
     getAffiliatesWithStats,
-    [orgId, selectedDate.year, selectedDate.month],
+    [orgId, filters.year, filters.month],
     {
-      enabled: !!(
-        !affiliate &&
-        orgId &&
-        (selectedDate.year || selectedDate.month)
-      ),
+      enabled: !!(!affiliate && orgId && (filters.year || filters.month)),
     },
   );
   const table = useReactTable({
@@ -102,15 +98,14 @@ export default function AffiliatesTable({
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">{cardTitle}</CardTitle>
           <MonthSelect
-            value={selectedDate}
-            onChange={handleDateChange}
+            value={{ year: filters.year, month: filters.month }}
+            onChange={(year, month) => setFilters({ year, month })}
             affiliate={false}
           />
         </CardHeader>
         <CardContent>
           <TableTop table={table} />
-          {(selectedDate.year !== undefined ||
-            selectedDate.month !== undefined) &&
+          {(filters.year !== undefined || filters.month !== undefined) &&
           searchPending ? (
             <TableLoading columns={columns} />
           ) : table.getRowModel().rows.length === 0 ? (
