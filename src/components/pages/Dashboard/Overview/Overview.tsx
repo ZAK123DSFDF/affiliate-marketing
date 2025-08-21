@@ -4,7 +4,6 @@ import Cards from "@/components/ui-custom/Cards/Cards";
 import { ChartDailyMetrics } from "@/components/ui-custom/Chart/SalesChart";
 import SocialTrafficCharts from "@/components/ui-custom/Chart/DataSourceChart";
 import AffiliatesTable from "@/components/pages/Dashboard/Affiliates/Affiliates";
-import { dummyAffiliateTopRankData } from "@/lib/types/dummyAffiliateTopRank";
 import React from "react";
 import { SellerKpiStats } from "@/lib/types/affiliateKpiStats";
 import { SellerKpiTimeSeries } from "@/lib/types/affiliateChartStats";
@@ -43,6 +42,7 @@ const Overview = ({
         </div>
       </div>
       <AffiliatesTable
+        affiliate={false}
         orgId={orgId}
         data={TopAffiliates}
         cardTitle="Top Affiliates"
