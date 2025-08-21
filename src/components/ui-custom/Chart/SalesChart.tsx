@@ -111,8 +111,6 @@ export function ChartDailyMetrics({
     conversionRate:
       (affiliate && ChartCustomization.chartTertiaryColor) || "#5EEAD4",
   };
-
-  // Chart config (dynamic based on affiliate mode)
   const chartConfig: ChartConfig = {
     visits: { label: "Visits", color: "var(--chart-1)" },
     sales: { label: "Sales", color: "var(--chart-2)" },
