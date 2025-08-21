@@ -22,6 +22,7 @@ const affiliatePage = async ({ params }: OrgIdProps) => {
   return (
     <>
       <AffiliatesTable
+        affiliate={false}
         orgId={orgId}
         data={rows.data}
         cardTitle="All Affiliates"

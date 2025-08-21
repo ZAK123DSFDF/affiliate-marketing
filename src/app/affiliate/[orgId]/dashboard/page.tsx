@@ -28,6 +28,7 @@ const DashboardPage = async ({ params }: OrgIdProps) => {
   if (!affiliateChartStats.ok) {
     redirect(`/error?message=${encodeURIComponent(affiliateChartStats.error)}`);
   }
+  console.log("referrerStats", referrerStats.data);
   return (
     <>
       <AffiliateOverview

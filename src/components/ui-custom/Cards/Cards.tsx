@@ -81,6 +81,7 @@ const Cards = ({
     [orgId, selectedDate.year, selectedDate.month],
     {
       enabled: !!(
+        !affiliate &&
         orgId &&
         (selectedDate.year || selectedDate.month) &&
         !isPreview

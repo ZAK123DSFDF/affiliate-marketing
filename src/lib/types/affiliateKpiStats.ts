@@ -1,7 +1,4 @@
 export interface AffiliateKpiStats {
-  affiliateId: string;
-  name: string;
-  email: string;
   totalLinks: number;
   totalVisitors: number;
   totalSales: number;
@@ -9,10 +6,7 @@ export interface AffiliateKpiStats {
   totalCommissionPaid: number;
   totalCommissionUnpaid: number;
 }
-export type SellerKpiStats = Omit<
-  AffiliateKpiStats,
-  "affiliateId" | "email" | "name"
-> & {
+export type SellerKpiStats = AffiliateKpiStats & {
   totalAmount: number;
   totalAffiliates: number;
 };

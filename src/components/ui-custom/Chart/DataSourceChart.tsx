@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Pie, PieChart } from "recharts";
 import {
   Card,
@@ -26,10 +26,17 @@ import {
 import { PieChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/PieChartCustomization";
 import { getShadowWithColor } from "@/util/GetShadowWithColor";
 import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { AffiliateReferrerStat } from "@/lib/types/affiliateReferrerStat";
+import {
+  AffiliateReferrerStat,
+  SellerReferrerStat,
+} from "@/lib/types/affiliateReferrerStat";
 import { useDateFilter } from "@/hooks/useDateFilter";
 import { useSearch } from "@/hooks/useSearch";
 import { getAffiliateReferrers } from "@/app/affiliate/[orgId]/dashboard/action";
+import {
+  getSellerKpiStats,
+  getSellerReferrer,
+} from "@/app/seller/[orgId]/dashboard/action";
 
 const chartConfig: ChartConfig = {
   visitors: { label: "Visitors" },
@@ -55,20 +62,47 @@ export default function SocialTrafficPieChart({
     "sourceYear",
     "sourceMonth",
   );
-  const { data: searchData, isPending: searchPending } = useSearch(
+  const { data: affiliateData, isPending: affiliatePending } = useSearch(
     ["affiliate-source", orgId, selectedDate.year, selectedDate.month],
     getAffiliateReferrers,
     [selectedDate.year, selectedDate.month],
     {
       enabled: !!(
+        affiliate &&
         orgId &&
         (selectedDate.year || selectedDate.month) &&
         !isPreview
       ),
     },
   );
-  const effectiveData =
-    searchData !== undefined ? searchData : referrerStats || [];
+  const { data: sellerData, isPending: sellerPending } = useSearch(
+    ["seller-source", orgId, selectedDate.year, selectedDate.month],
+    getSellerReferrer,
+    [orgId, selectedDate.year, selectedDate.month],
+    {
+      enabled: !!(
+        !affiliate &&
+        orgId &&
+        (selectedDate.year || selectedDate.month) &&
+        !isPreview
+      ),
+    },
+  );
+  const searchData = affiliate ? affiliateData : sellerData;
+  const searchPending = affiliate ? affiliatePending : sellerPending;
+  const effectiveData: AffiliateReferrerStat[] = React.useMemo(() => {
+    if (affiliate && searchData) {
+      return searchData as AffiliateReferrerStat[];
+    }
+    if (!affiliate && searchData) {
+      return searchData as SellerReferrerStat[];
+    }
+
+    return referrerStats || [];
+  }, [searchData, referrerStats, affiliate]);
+  useEffect(() => {
+    console.log("search data", searchData);
+  }, [searchData]);
   const chartData = React.useMemo(() => {
     if (!effectiveData || effectiveData.length === 0) return [];
 
@@ -84,12 +118,12 @@ export default function SocialTrafficPieChart({
       pieCustomization.pieFallbackColor || "#a855f7",
     ];
 
-    return effectiveData.map((stat: AffiliateReferrerStat, index) => ({
+    return effectiveData.map((stat, index) => ({
       platform: stat.referrer,
       visitors: stat.clicks,
-      fill: affiliate ? colorPalette[index % colorPalette.length] : undefined,
+      fill: colorPalette[index % colorPalette.length],
     }));
-  }, [effectiveData, pieCustomization, affiliate]);
+  }, [effectiveData, pieCustomization]);
   return (
     <Card
       className={`${isPreview ? "h-[340px]" : "h-[480px]"} flex flex-col relative`}

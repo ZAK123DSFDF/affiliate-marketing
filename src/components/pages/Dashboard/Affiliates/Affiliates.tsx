@@ -31,12 +31,14 @@ interface AffiliatesTableProps {
   data: AffiliateStats[];
   cardTitle?: string;
   showHeader?: boolean;
+  affiliate: boolean;
 }
 export default function AffiliatesTable({
   orgId,
   data,
   cardTitle = "Overview of all affiliate activities",
   showHeader = false,
+  affiliate = false,
 }: AffiliatesTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -52,7 +54,11 @@ export default function AffiliatesTable({
     getAffiliatesWithStats,
     [orgId, selectedDate.year, selectedDate.month],
     {
-      enabled: !!(orgId && (selectedDate.year || selectedDate.month)),
+      enabled: !!(
+        !affiliate &&
+        orgId &&
+        (selectedDate.year || selectedDate.month)
+      ),
     },
   );
   const table = useReactTable({

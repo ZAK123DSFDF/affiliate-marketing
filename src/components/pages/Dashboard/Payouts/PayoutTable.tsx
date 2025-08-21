@@ -37,10 +37,12 @@ import { TableLoading } from "@/components/ui-custom/TableLoading";
 interface AffiliatesTablePayoutProps {
   data: AffiliatePayout[];
   orgId: string;
+  affiliate: boolean;
 }
 export default function PayoutTable({
   data,
   orgId,
+  affiliate = false,
 }: AffiliatesTablePayoutProps) {
   const [monthYear, setMonthYear] = useState<{
     month?: number;
@@ -68,7 +70,8 @@ export default function PayoutTable({
     [orgId, selectedDate.year, selectedDate.month],
     {
       enabled:
-        !!(orgId && (selectedDate.year || selectedDate.month)) && !isUnpaidMode,
+        !!(!affiliate && orgId && (selectedDate.year || selectedDate.month)) &&
+        !isUnpaidMode,
     },
   );
   const { data: unpaidMonthData, isPending: pendingMonth } = useQuery({

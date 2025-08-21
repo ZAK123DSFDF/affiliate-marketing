@@ -38,6 +38,7 @@ import { AffiliateKpiTimeSeries } from "@/lib/types/affiliateChartStats";
 import { useDateFilter } from "@/hooks/useDateFilter";
 import { useSearch } from "@/hooks/useSearch";
 import { getAffiliateKpiTimeSeries } from "@/app/affiliate/[orgId]/dashboard/action";
+import { getSellerKpiTimeSeries } from "@/app/seller/[orgId]/dashboard/action";
 
 interface ChartDailyMetricsProps {
   orgId: string;
@@ -56,18 +57,42 @@ export function ChartDailyMetrics({
     "chartYear",
     "chartMonth",
   );
-  const { data: searchData, isPending: searchPending } = useSearch(
-    ["affiliate-card", orgId, selectedDate.year, selectedDate.month],
-    getAffiliateKpiTimeSeries,
-    [selectedDate.year, selectedDate.month],
+  const { data: affiliateSearchData, isPending: affiliateSearchPending } =
+    useSearch(
+      [
+        "affiliate-kpi-time-series",
+        orgId,
+        selectedDate.year,
+        selectedDate.month,
+      ],
+      getAffiliateKpiTimeSeries,
+      [selectedDate.year, selectedDate.month],
+      {
+        enabled: !!(
+          affiliate &&
+          orgId &&
+          (selectedDate.year || selectedDate.month) &&
+          !isPreview
+        ),
+      },
+    );
+  const { data: sellerSearchData, isPending: sellerSearchPending } = useSearch(
+    ["seller-kpi-time-series", orgId, selectedDate.year, selectedDate.month],
+    getSellerKpiTimeSeries,
+    [orgId, selectedDate.year, selectedDate.month],
     {
       enabled: !!(
+        !affiliate &&
         orgId &&
         (selectedDate.year || selectedDate.month) &&
         !isPreview
       ),
     },
   );
+  const searchData = affiliate ? affiliateSearchData : sellerSearchData;
+  const searchPending = affiliate
+    ? affiliateSearchPending
+    : sellerSearchPending;
   const data = React.useMemo(() => {
     const source = searchData ?? ChartStats ?? [];
     return source.map((item) => ({

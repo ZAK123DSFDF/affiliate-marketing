@@ -17,7 +17,7 @@ const payoutPage = async ({ params }: OrgIdProps) => {
   }
   return (
     <>
-      <PayoutTable data={res.data} orgId={orgId} />
+      <PayoutTable affiliate={false} data={res.data} orgId={orgId} />
     </>
   );
 };
