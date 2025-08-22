@@ -1,5 +1,6 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useMemo } from "react";
+import { OrderBy } from "@/lib/types/orderTypes";
 
 type OrderDir = "asc" | "desc";
 
@@ -26,8 +27,8 @@ export function useQueryFilter(
     () => ({
       year: params[yearKey] ? Number(params[yearKey]) : undefined,
       month: params[monthKey] ? Number(params[monthKey]) : undefined,
-      orderBy: params[orderByKey] ?? undefined,
-      orderDir: params[orderDirKey] ?? undefined,
+      orderBy: (params[orderByKey] as OrderBy) ?? undefined,
+      orderDir: (params[orderDirKey] as OrderDir) ?? undefined,
     }),
     [params, yearKey, monthKey, orderByKey, orderDirKey],
   );
@@ -51,12 +52,18 @@ export function useQueryFilter(
       if (merged.month !== undefined)
         newParams.set(monthKey, String(merged.month));
       else newParams.delete(monthKey);
+      if (merged.orderBy) {
+        newParams.set(orderByKey, merged.orderBy);
+      } else {
+        newParams.delete(orderByKey);
+        newParams.delete(orderDirKey);
+      }
 
-      if (merged.orderBy) newParams.set(orderByKey, merged.orderBy);
-      else newParams.delete(orderByKey);
-
-      if (merged.orderDir) newParams.set(orderDirKey, merged.orderDir);
-      else newParams.delete(orderDirKey);
+      if (merged.orderDir && merged.orderBy) {
+        newParams.set(orderDirKey, merged.orderDir);
+      } else {
+        newParams.delete(orderDirKey);
+      }
 
       router.push(`?${newParams.toString()}`, { scroll: false });
     },

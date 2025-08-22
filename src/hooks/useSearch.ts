@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { ResponseData } from "@/lib/types/response";
+import { UnpaidMonth } from "@/lib/types/unpaidMonth";
 export function useSearch<Args extends unknown[], TData>(
-  queryKey: (string | number | undefined)[],
+  queryKey: (string | number | undefined | UnpaidMonth[])[],
   fetchFn: (...args: Args) => Promise<ResponseData<TData>>,
   fetchArgs: Args,
   options?: { enabled?: boolean },

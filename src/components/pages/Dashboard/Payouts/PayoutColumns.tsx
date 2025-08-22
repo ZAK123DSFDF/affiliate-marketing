@@ -4,11 +4,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import * as React from "react";
-import { ColumnDef } from "@tanstack/react-table";
-import { AffiliatePayout } from "@/lib/types/affiliateStats";
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import * as React from "react"
+import { ColumnDef } from "@tanstack/react-table"
+import { AffiliatePayout } from "@/lib/types/affiliateStats"
 
 export const PayoutColumns = (): ColumnDef<AffiliatePayout>[] => {
   return [
@@ -23,7 +23,7 @@ export const PayoutColumns = (): ColumnDef<AffiliatePayout>[] => {
       id: "links",
       header: "Links",
       cell: ({ row }) => {
-        const links = row.original.links;
+        const links = row.original.links
         return (
           <Dialog>
             <DialogTrigger asChild>
@@ -36,8 +36,8 @@ export const PayoutColumns = (): ColumnDef<AffiliatePayout>[] => {
                 <DialogTitle>Links</DialogTitle>
               </DialogHeader>
               <ul className="space-y-2">
-                {links.map((link, index) => (
-                  <li key={index}>
+                {links.map((link) => (
+                  <li key={link}>
                     <a
                       href={link}
                       target="_blank"
@@ -51,7 +51,7 @@ export const PayoutColumns = (): ColumnDef<AffiliatePayout>[] => {
               </ul>
             </DialogContent>
           </Dialog>
-        );
+        )
       },
     },
     {
@@ -68,47 +68,47 @@ export const PayoutColumns = (): ColumnDef<AffiliatePayout>[] => {
       accessorKey: "commission",
       header: () => <div className="text-right">Commission</div>,
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("commission"));
+        const amount = parseFloat(row.getValue("commission"))
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
-        }).format(amount);
+        }).format(amount)
 
-        return <div className="text-right font-medium">{formatted}</div>;
+        return <div className="text-right font-medium">{formatted}</div>
       },
     },
     {
       accessorKey: "paid",
       header: () => <div className="text-right">Paid</div>,
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("paid"));
+        const amount = parseFloat(row.getValue("paid"))
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
-        }).format(amount);
+        }).format(amount)
 
-        return <div className="text-right font-medium">{formatted}</div>;
+        return <div className="text-right font-medium">{formatted}</div>
       },
     },
     {
       accessorKey: "unpaid",
       header: () => <div className="text-right">Unpaid</div>,
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("unpaid"));
+        const amount = parseFloat(row.getValue("unpaid"))
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
-        }).format(amount);
+        }).format(amount)
 
-        return <div className="text-right font-medium">{formatted}</div>;
+        return <div className="text-right font-medium">{formatted}</div>
       },
     },
     {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        const unpaid = row.original.unpaid;
-        const status = unpaid > 0 ? "pending" : "paid";
+        const unpaid = row.original.unpaid
+        const status = unpaid > 0 ? "pending" : "paid"
         return (
           <span
             className={`px-2 py-1 rounded-full text-xs ${
@@ -119,8 +119,8 @@ export const PayoutColumns = (): ColumnDef<AffiliatePayout>[] => {
           >
             {status}
           </span>
-        );
+        )
       },
     },
-  ];
-};
+  ]
+}

@@ -4,6 +4,15 @@ import { getAffiliatesWithStatsAction } from "@/lib/server/getAffiliatesWithStat
 export async function getAffiliatePayoutBulkAction(
   orgId: string,
   months: { month: number; year: number }[],
+  orderBy?:
+    | "conversionRate"
+    | "commission"
+    | "sales"
+    | "visits"
+    | "email"
+    | "commissionPaid"
+    | "commissionUnpaid",
+  orderDir?: "asc" | "desc",
 ) {
   return await getAffiliatesWithStatsAction(
     orgId,
@@ -12,6 +21,8 @@ export async function getAffiliatePayoutBulkAction(
     months,
     {
       exclude: ["conversionRate"],
+      orderBy,
+      orderDir,
     },
   );
 }

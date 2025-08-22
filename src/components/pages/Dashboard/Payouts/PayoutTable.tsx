@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import * as React from "react";
+import * as React from "react"
 import {
   ColumnFiltersState,
   SortingState,
@@ -10,34 +10,34 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table"
 
-import { Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Download } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import {
   getAffiliatePayouts,
   getAffiliatePayoutsBulk,
   getUnpaidMonths,
-} from "@/app/seller/[orgId]/dashboard/payout/action";
-import { useEffect, useState } from "react";
-import MonthSelect from "@/components/ui-custom/MonthSelect";
-import { useQuery } from "@tanstack/react-query";
-import { UnpaidMonth } from "@/lib/types/unpaidMonth";
-import UnpaidSelect from "@/components/ui-custom/UnpaidPicker";
-import { AffiliatePayout } from "@/lib/types/affiliateStats";
-import { TableContent } from "@/components/ui-custom/TableContent";
-import { TableTop } from "@/components/ui-custom/TableTop";
-import { PayoutColumns } from "@/components/pages/Dashboard/Payouts/PayoutColumns";
-import { useSearch } from "@/hooks/useSearch";
-import { TableLoading } from "@/components/ui-custom/TableLoading";
-import { useQueryFilter } from "@/hooks/useQueryFilter";
+} from "@/app/seller/[orgId]/dashboard/payout/action"
+import { useEffect, useState } from "react"
+import MonthSelect from "@/components/ui-custom/MonthSelect"
+import { useQuery } from "@tanstack/react-query"
+import { UnpaidMonth } from "@/lib/types/unpaidMonth"
+import UnpaidSelect from "@/components/ui-custom/UnpaidPicker"
+import { AffiliatePayout } from "@/lib/types/affiliateStats"
+import { TableContent } from "@/components/ui-custom/TableContent"
+import { TableTop } from "@/components/ui-custom/TableTop"
+import { PayoutColumns } from "@/components/pages/Dashboard/Payouts/PayoutColumns"
+import { useSearch } from "@/hooks/useSearch"
+import { TableLoading } from "@/components/ui-custom/TableLoading"
+import { useQueryFilter } from "@/hooks/useQueryFilter"
 
 interface AffiliatesTablePayoutProps {
-  data: AffiliatePayout[];
-  orgId: string;
-  affiliate: boolean;
+  data: AffiliatePayout[]
+  orgId: string
+  affiliate: boolean
 }
 export default function PayoutTable({
   data,
@@ -45,94 +45,113 @@ export default function PayoutTable({
   affiliate = false,
 }: AffiliatesTablePayoutProps) {
   const [monthYear, setMonthYear] = useState<{
-    month?: number;
-    year?: number;
-  }>({});
-  const [unpaidMonths, setUnpaidMonths] = useState<UnpaidMonth[]>([]);
-  const [selectedMonths, setSelectedMonths] = useState<UnpaidMonth[]>([]);
-  const [isUnpaidMode, setIsUnpaidMode] = useState(false);
-  const { filters, setFilters } = useQueryFilter();
-  const [unpaidOpen, setUnpaidOpen] = useState(false);
+    month?: number
+    year?: number
+  }>({})
+  const [unpaidMonths, setUnpaidMonths] = useState<UnpaidMonth[]>([])
+  const [selectedMonths, setSelectedMonths] = useState<UnpaidMonth[]>([])
+  const [isUnpaidMode, setIsUnpaidMode] = useState(false)
+  const { filters, setFilters } = useQueryFilter()
+  const [unpaidOpen, setUnpaidOpen] = useState(false)
   /* optional: refetch when month changes */
 
-  const { data: unpaidPayouts, isPending: isPendingUnpaid } = useQuery({
-    queryKey: ["unpaid-payouts", orgId, selectedMonths],
-    queryFn: () =>
-      getAffiliatePayoutsBulk(orgId, selectedMonths).then((r) =>
-        r.ok ? r.data : [],
+  const { data: unpaidPayouts, isPending: isPendingUnpaid } = useSearch(
+    [
+      "unpaid-payouts",
+      orgId,
+      selectedMonths,
+      filters.orderBy,
+      filters.orderDir,
+    ],
+    getAffiliatePayoutsBulk,
+    [orgId, selectedMonths, filters.orderBy, filters.orderDir],
+    {
+      enabled: !!(
+        isUnpaidMode &&
+        (selectedMonths.length > 0 || filters.orderBy || filters.orderDir)
       ),
-    enabled: isUnpaidMode && selectedMonths.length > 0,
-  });
+    }
+  )
 
   const { data: regularPayouts, isPending: isPendingRegular } = useSearch(
-    ["regular-payouts", orgId, filters.year, filters.month],
+    [
+      "regular-payouts",
+      orgId,
+      filters.year,
+      filters.month,
+      filters.orderBy,
+      filters.orderDir,
+    ],
     getAffiliatePayouts,
-    [orgId, filters.year, filters.month],
+    [orgId, filters.year, filters.month, filters.orderBy, filters.orderDir],
     {
       enabled:
-        !!(!affiliate && orgId && (filters.year || filters.month)) &&
-        !isUnpaidMode,
-    },
-  );
+        !!(
+          !affiliate &&
+          orgId &&
+          (filters.year || filters.month || filters.orderBy || filters.orderDir)
+        ) && !isUnpaidMode,
+    }
+  )
   const { data: unpaidMonthData, isPending: pendingMonth } = useQuery({
     queryKey: ["unpaid-months", orgId],
     queryFn: () =>
       getUnpaidMonths(orgId).then((res) => (res.ok ? res.data : [])),
     enabled: unpaidOpen,
-  });
+  })
   const applyUnpaidMonths = () => {
     if (selectedMonths.length > 0) {
-      setIsUnpaidMode(true);
-      setMonthYear({});
+      setIsUnpaidMode(true)
+      setMonthYear({})
     }
-  };
+  }
   const clearUnpaidMonths = () => {
-    setSelectedMonths([]);
-    setIsUnpaidMode(false);
-    setMonthYear({});
-  };
-  const isPending = isUnpaidMode ? isPendingUnpaid : isPendingRegular;
+    setSelectedMonths([])
+    setIsUnpaidMode(false)
+    setMonthYear({})
+  }
+  const isPending = isUnpaidMode ? isPendingUnpaid : isPendingRegular
   useEffect(() => {
     if (unpaidMonthData) {
-      setUnpaidMonths(unpaidMonthData);
+      setUnpaidMonths(unpaidMonthData)
     }
-  }, [unpaidMonthData]);
+  }, [unpaidMonthData])
   const tableData =
-    (isUnpaidMode ? unpaidPayouts : regularPayouts) ?? data ?? [];
+    (isUnpaidMode ? unpaidPayouts : regularPayouts) ?? data ?? []
   /* CSV helper */
   const csv = React.useMemo(() => {
-    const header = "Email,Sales,Unpaid,Paid,Commission,Status,Links\n";
+    const header = "Email,Sales,Unpaid,Paid,Commission,Status,Links\n"
     return (
       header +
       tableData
         .map(
           (r) =>
-            `${r.email},${r.sales},${r.unpaid.toFixed(
-              2,
-            )},${r.paid.toFixed(2)},${r.commission.toFixed(2)},${
+            `${r.email},${r.sales},${r.unpaid.toFixed(2)},${r.paid.toFixed(
+              2
+            )},${r.commission.toFixed(2)},${
               r.unpaid > 0 ? "pending" : "paid"
-            },"${r.links.join(" ")}"`,
+            },"${r.links.join(" ")}"`
         )
         .join("\n")
-    );
-  }, [tableData]);
+    )
+  }, [tableData])
 
   const downloadCSV = () => {
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
+    const blob = new Blob([csv], { type: "text/csv" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
     a.download = `payouts_${monthYear.year ?? "all"}_${
       monthYear.month ?? "all"
-    }.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
-  const columns = PayoutColumns();
+    }.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState({})
+  const columns = PayoutColumns()
   const table = useReactTable({
     data: tableData,
     columns,
@@ -150,7 +169,7 @@ export default function PayoutTable({
       columnVisibility,
       rowSelection,
     },
-  });
+  })
 
   return (
     <div className="flex flex-col gap-6">
@@ -215,7 +234,14 @@ export default function PayoutTable({
           <CardTitle>Payment Records</CardTitle>
         </CardHeader>
         <CardContent>
-          <TableTop table={table} />
+          <TableTop
+            filters={{ orderBy: filters.orderBy, orderDir: filters.orderDir }}
+            onOrderChange={(orderBy, orderDir) =>
+              setFilters({ orderBy, orderDir })
+            }
+            affiliate={false}
+            table={table}
+          />
           {isUnpaidMode ? (
             pendingMonth || isPending ? (
               <TableLoading columns={columns} />
@@ -264,5 +290,5 @@ export default function PayoutTable({
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

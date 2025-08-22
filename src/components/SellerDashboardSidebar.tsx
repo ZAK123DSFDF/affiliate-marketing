@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
-import React from "react";
-import { usePathname } from "next/navigation";
+import React from "react"
+import { usePathname } from "next/navigation"
 import {
   BarChart3,
   Home,
@@ -12,7 +12,7 @@ import {
   Layers,
   HelpCircle,
   User,
-} from "lucide-react";
+} from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -24,16 +24,16 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import Link from "next/link";
+} from "@/components/ui/sidebar"
+import Link from "next/link"
 
 // Menu items for the sidebar
 
 type Props = {
-  orgId?: string;
-};
+  orgId?: string
+}
 const SellerDashboardSidebar = ({ orgId }: Props) => {
-  const pathname = usePathname();
+  const pathname = usePathname()
   const items = [
     {
       title: "Dashboard",
@@ -65,7 +65,7 @@ const SellerDashboardSidebar = ({ orgId }: Props) => {
       url: `/seller/${orgId}/dashboard/settings`,
       icon: Settings,
     },
-  ];
+  ]
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center justify-center py-4">
@@ -115,7 +115,7 @@ const SellerDashboardSidebar = ({ orgId }: Props) => {
         </Link>
       </SidebarFooter>
     </Sidebar>
-  );
-};
+  )
+}
 
-export default SellerDashboardSidebar;
+export default SellerDashboardSidebar
