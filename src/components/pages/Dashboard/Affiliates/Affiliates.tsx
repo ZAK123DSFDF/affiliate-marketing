@@ -87,12 +87,12 @@ export default function AffiliatesTable({
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    getCoreRowModel: getCoreRowModel(),
+    manualSorting: true,
+    manualFiltering: true,
+    manualPagination: true,
     state: {
       sorting,
       columnFilters,
@@ -129,14 +129,26 @@ export default function AffiliatesTable({
           />
         </CardHeader>
         <CardContent>
-          <TableTop table={table} affiliate={false} />
+          <TableTop
+            filters={{
+              orderBy: filters.orderBy,
+              orderDir: filters.orderDir,
+              email: filters.email,
+            }}
+            onOrderChange={(orderBy, orderDir) =>
+              setFilters({ orderBy, orderDir })
+            }
+            onEmailChange={(email) => setFilters({ email: email || undefined })}
+            affiliate={false}
+            table={table}
+          />
 
           {(filters.year !== undefined || filters.month !== undefined) &&
           searchPending ? (
             <TableLoading columns={columns} />
           ) : table.getRowModel().rows.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">
-              No links found.
+              No Affiliates found.
             </div>
           ) : (
             <TableContent table={table} affiliate={false} />

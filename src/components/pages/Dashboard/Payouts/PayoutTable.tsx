@@ -54,8 +54,6 @@ export default function PayoutTable({
   const [isUnpaidMode, setIsUnpaidMode] = useState(false);
   const { filters, setFilters } = useQueryFilter();
   const [unpaidOpen, setUnpaidOpen] = useState(false);
-  /* optional: refetch when month changes */
-
   const { data: unpaidPayouts, isPending: isPendingUnpaid } = useSearch(
     [
       "unpaid-payouts",
@@ -189,10 +187,10 @@ export default function PayoutTable({
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    manualSorting: true,
+    manualFiltering: true,
+    manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
@@ -266,7 +264,19 @@ export default function PayoutTable({
           <CardTitle>Payment Records</CardTitle>
         </CardHeader>
         <CardContent>
-          <TableTop table={table} affiliate={false} />
+          <TableTop
+            filters={{
+              orderBy: filters.orderBy,
+              orderDir: filters.orderDir,
+              email: filters.email,
+            }}
+            onOrderChange={(orderBy, orderDir) =>
+              setFilters({ orderBy, orderDir })
+            }
+            onEmailChange={(email) => setFilters({ email: email || undefined })}
+            affiliate={false}
+            table={table}
+          />
           {isUnpaidMode ? (
             pendingMonth || isPending ? (
               <TableLoading columns={columns} />

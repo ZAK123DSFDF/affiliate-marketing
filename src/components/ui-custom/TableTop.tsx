@@ -1,5 +1,3 @@
-"use client";
-
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -10,37 +8,39 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import * as React from "react";
 import { Table as ReactTable } from "@tanstack/react-table";
+import { OrderDir, OrderBy } from "@/lib/types/orderTypes";
 import OrderSelect from "@/components/ui-custom/OrderSelect";
 import { SearchInput } from "@/components/ui-custom/SearchInput";
-import { useQueryFilter } from "@/hooks/useQueryFilter";
-
 type TableProps<TData> = {
   table: ReactTable<TData>;
+  filters: { orderBy?: OrderBy; orderDir?: OrderDir; email?: string };
+  onOrderChange: (orderBy?: OrderBy, orderDir?: OrderDir) => void;
+  onEmailChange: (email: string) => void;
   affiliate: boolean;
 };
 
-export const TableTop = <TData,>({ table, affiliate }: TableProps<TData>) => {
-  const { filters, setFilters } = useQueryFilter();
-
+export const TableTop = <TData,>({
+  table,
+  filters,
+  onOrderChange,
+  onEmailChange,
+  affiliate,
+}: TableProps<TData>) => {
   return (
     <div className="flex items-center py-4">
       <div className="flex items-center space-x-2">
-        {/* Email search with debounce */}
         <SearchInput
           value={filters.email ?? ""}
-          onChange={(email) => setFilters({ email: email || undefined })}
+          onChange={onEmailChange}
           placeholder="Filter emails..."
         />
-
-        {/* Order By + Direction */}
         <OrderSelect
-          value={{ orderBy: filters.orderBy, orderDir: filters.orderDir }}
-          onChange={(orderBy, orderDir) => setFilters({ orderBy, orderDir })}
+          value={filters}
+          onChange={onOrderChange}
           affiliate={affiliate}
         />
       </div>
 
-      {/* Column visibility toggle */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="ml-auto">

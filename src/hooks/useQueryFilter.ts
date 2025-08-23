@@ -89,8 +89,6 @@ export function useQueryFilter(
 
         router.push(`?${newParams.toString()}`, { scroll: false });
       };
-
-      // Only debounce if `email` is in the update
       if ("email" in newFilters) {
         if (debounceTimer) clearTimeout(debounceTimer);
         setDebounceTimer(setTimeout(applyUpdate, debounceMs));

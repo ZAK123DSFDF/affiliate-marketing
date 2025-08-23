@@ -1,13 +1,13 @@
-"use server"
-import { returnError } from "@/lib/errorHandler"
-import { ResponseData } from "@/lib/types/response"
-import { UnpaidMonth } from "@/lib/types/unpaidMonth"
-import { getOrgAuth } from "@/lib/server/GetOrgAuth"
-import { AffiliatePayout } from "@/lib/types/affiliateStats"
-import { getAffiliatePayoutBulkAction } from "@/lib/server/getAffiliatePayoutBulk"
-import { getUnpaidPayoutAction } from "@/lib/server/getUnpaidPayout"
-import { getAffiliatePayoutAction } from "@/lib/server/getAffiliatePayout"
-import { OrderBy, OrderDir } from "@/lib/types/orderTypes"
+"use server";
+import { returnError } from "@/lib/errorHandler";
+import { ResponseData } from "@/lib/types/response";
+import { UnpaidMonth } from "@/lib/types/unpaidMonth";
+import { getOrgAuth } from "@/lib/server/GetOrgAuth";
+import { AffiliatePayout } from "@/lib/types/affiliateStats";
+import { getAffiliatePayoutBulkAction } from "@/lib/server/getAffiliatePayoutBulk";
+import { getUnpaidPayoutAction } from "@/lib/server/getUnpaidPayout";
+import { getAffiliatePayoutAction } from "@/lib/server/getAffiliatePayout";
+import { OrderBy, OrderDir } from "@/lib/types/orderTypes";
 export async function getAffiliatePayouts(
   orgId: string,
   year?: number,
@@ -15,10 +15,10 @@ export async function getAffiliatePayouts(
   orderBy?: OrderBy,
   orderDir?: OrderDir,
   offset?: number,
-  email?: string
+  email?: string,
 ): Promise<ResponseData<AffiliatePayout[]>> {
   try {
-    await getOrgAuth(orgId)
+    await getOrgAuth(orgId);
     const rows = (await getAffiliatePayoutAction(
       orgId,
       year,
@@ -27,13 +27,12 @@ export async function getAffiliatePayouts(
       orderDir,
       10,
       offset,
-      email
-    )) as AffiliatePayout[]
-    console.log("getAffiliatePayouts rows:", rows)
-    return { ok: true, data: rows }
+      email,
+    )) as AffiliatePayout[];
+    return { ok: true, data: rows };
   } catch (err) {
-    console.error("getAffiliatePayouts error:", err)
-    return returnError(err) as ResponseData<AffiliatePayout[]>
+    console.error("getAffiliatePayouts error:", err);
+    return returnError(err) as ResponseData<AffiliatePayout[]>;
   }
 }
 export async function getAffiliatePayoutsBulk(
@@ -42,10 +41,10 @@ export async function getAffiliatePayoutsBulk(
   orderBy?: OrderBy,
   orderDir?: OrderDir,
   offset?: number,
-  email?: string
+  email?: string,
 ): Promise<ResponseData<AffiliatePayout[]>> {
   try {
-    await getOrgAuth(orgId)
+    await getOrgAuth(orgId);
     const rows = (await getAffiliatePayoutBulkAction(
       orgId,
       months,
@@ -53,21 +52,21 @@ export async function getAffiliatePayoutsBulk(
       orderDir,
       10,
       offset,
-      email
-    )) as AffiliatePayout[]
-    return { ok: true, data: rows }
+      email,
+    )) as AffiliatePayout[];
+    return { ok: true, data: rows };
   } catch (err) {
-    console.error("getAffiliatePayoutsBulk error:", err)
-    return returnError(err) as ResponseData<AffiliatePayout[]>
+    console.error("getAffiliatePayoutsBulk error:", err);
+    return returnError(err) as ResponseData<AffiliatePayout[]>;
   }
 }
 
 export async function getUnpaidMonths(
-  orgId: string
+  orgId: string,
 ): Promise<ResponseData<UnpaidMonth[]>> {
   try {
-    await getOrgAuth(orgId)
-    const rows = await getUnpaidPayoutAction(orgId)
+    await getOrgAuth(orgId);
+    const rows = await getUnpaidPayoutAction(orgId);
 
     return {
       ok: true,
@@ -76,8 +75,8 @@ export async function getUnpaidMonths(
         year: row.year,
         unpaid: row.unpaid,
       })),
-    }
+    };
   } catch (e) {
-    return returnError(e) as ResponseData<UnpaidMonth[]>
+    return returnError(e) as ResponseData<UnpaidMonth[]>;
   }
 }
