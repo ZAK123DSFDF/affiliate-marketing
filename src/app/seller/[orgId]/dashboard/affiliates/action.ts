@@ -5,21 +5,18 @@ import { ResponseData } from "@/lib/types/response";
 import { AffiliateStats } from "@/lib/types/affiliateStats";
 import { getOrgAuth } from "@/lib/server/GetOrgAuth";
 import { getAffiliatesWithStatsAction } from "@/lib/server/getAffiliatesWithStats";
+import { OrderBy, OrderDir } from "@/lib/types/orderTypes";
 
 export async function getAffiliatesWithStats(
   orgId: string,
   year?: number,
   month?: number,
-  orderBy?:
-    | "conversionRate"
-    | "commission"
-    | "sales"
-    | "visits"
-    | "email"
-    | "commissionPaid"
-    | "commissionUnpaid",
-  orderDir?: "asc" | "desc",
+  orderBy?: OrderBy,
+  orderDir?: OrderDir,
+  offset?: number,
+  email?: string,
 ): Promise<ResponseData<AffiliateStats[]>> {
+  const ordered = orderBy === "none" ? undefined : orderBy;
   try {
     await getOrgAuth(orgId);
     const rows = (await getAffiliatesWithStatsAction(
@@ -28,8 +25,11 @@ export async function getAffiliatesWithStats(
       month,
       undefined,
       {
-        orderBy,
+        orderBy: ordered,
         orderDir,
+        limit: 10,
+        offset,
+        email,
       },
     )) as AffiliateStats[];
     return { ok: true, data: rows };

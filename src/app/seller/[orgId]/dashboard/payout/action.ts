@@ -13,7 +13,9 @@ export async function getAffiliatePayouts(
   year?: number,
   month?: number,
   orderBy?: OrderBy,
-  orderDir?: OrderDir
+  orderDir?: OrderDir,
+  offset?: number,
+  email?: string
 ): Promise<ResponseData<AffiliatePayout[]>> {
   try {
     await getOrgAuth(orgId)
@@ -22,7 +24,10 @@ export async function getAffiliatePayouts(
       year,
       month,
       orderBy === "none" ? undefined : orderBy,
-      orderDir
+      orderDir,
+      10,
+      offset,
+      email
     )) as AffiliatePayout[]
     console.log("getAffiliatePayouts rows:", rows)
     return { ok: true, data: rows }
@@ -35,7 +40,9 @@ export async function getAffiliatePayoutsBulk(
   orgId: string,
   months: { month: number; year: number }[],
   orderBy?: OrderBy,
-  orderDir?: OrderDir
+  orderDir?: OrderDir,
+  offset?: number,
+  email?: string
 ): Promise<ResponseData<AffiliatePayout[]>> {
   try {
     await getOrgAuth(orgId)
@@ -43,7 +50,10 @@ export async function getAffiliatePayoutsBulk(
       orgId,
       months,
       orderBy === "none" ? undefined : orderBy,
-      orderDir
+      orderDir,
+      10,
+      offset,
+      email
     )) as AffiliatePayout[]
     return { ok: true, data: rows }
   } catch (err) {

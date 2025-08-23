@@ -1,4 +1,5 @@
-import { Input } from "@/components/ui/input";
+"use client";
+
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -9,38 +10,37 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import * as React from "react";
 import { Table as ReactTable } from "@tanstack/react-table";
-import { OrderDir, OrderBy } from "@/lib/types/orderTypes";
 import OrderSelect from "@/components/ui-custom/OrderSelect";
+import { SearchInput } from "@/components/ui-custom/SearchInput";
+import { useQueryFilter } from "@/hooks/useQueryFilter";
+
 type TableProps<TData> = {
   table: ReactTable<TData>;
-  filters: { orderBy?: OrderBy; orderDir?: OrderDir };
-  onOrderChange: (orderBy?: OrderBy, orderDir?: OrderDir) => void;
   affiliate: boolean;
 };
-export const TableTop = <TData,>({
-  table,
-  filters,
-  onOrderChange,
-  affiliate,
-}: TableProps<TData>) => {
+
+export const TableTop = <TData,>({ table, affiliate }: TableProps<TData>) => {
+  const { filters, setFilters } = useQueryFilter();
+
   return (
     <div className="flex items-center py-4">
       <div className="flex items-center space-x-2">
-        <Input
+        {/* Email search with debounce */}
+        <SearchInput
+          value={filters.email ?? ""}
+          onChange={(email) => setFilters({ email: email || undefined })}
           placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
         />
+
+        {/* Order By + Direction */}
         <OrderSelect
-          value={filters}
-          onChange={onOrderChange}
+          value={{ orderBy: filters.orderBy, orderDir: filters.orderDir }}
+          onChange={(orderBy, orderDir) => setFilters({ orderBy, orderDir })}
           affiliate={affiliate}
         />
       </div>
 
+      {/* Column visibility toggle */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="ml-auto">

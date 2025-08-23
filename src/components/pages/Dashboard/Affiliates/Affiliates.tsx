@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   ColumnFiltersState,
   SortingState,
@@ -10,28 +10,26 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-
-import { Button } from "@/components/ui/button"
-
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { SidebarTrigger } from "@/components/ui/sidebar"
-import { AffiliateStats } from "@/lib/types/affiliateStats"
-import MonthSelect from "@/components/ui-custom/MonthSelect"
-import { useSearch } from "@/hooks/useSearch"
-import { getAffiliatesWithStats } from "@/app/seller/[orgId]/dashboard/affiliates/action"
-import { TableContent } from "@/components/ui-custom/TableContent"
-import { TableTop } from "@/components/ui-custom/TableTop"
-import { AffiliatesColumns } from "@/components/pages/Dashboard/Affiliates/AffiliatesColumns"
-import { TableLoading } from "@/components/ui-custom/TableLoading"
-import { useQueryFilter } from "@/hooks/useQueryFilter"
+} from "@tanstack/react-table";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { AffiliateStats } from "@/lib/types/affiliateStats";
+import MonthSelect from "@/components/ui-custom/MonthSelect";
+import { useSearch } from "@/hooks/useSearch";
+import { getAffiliatesWithStats } from "@/app/seller/[orgId]/dashboard/affiliates/action";
+import { TableContent } from "@/components/ui-custom/TableContent";
+import { TableTop } from "@/components/ui-custom/TableTop";
+import { AffiliatesColumns } from "@/components/pages/Dashboard/Affiliates/AffiliatesColumns";
+import { TableLoading } from "@/components/ui-custom/TableLoading";
+import { useQueryFilter } from "@/hooks/useQueryFilter";
+import PaginationControls from "@/components/ui-custom/PaginationControls";
 
 interface AffiliatesTableProps {
-  orgId: string
-  data: AffiliateStats[]
-  cardTitle?: string
-  showHeader?: boolean
-  affiliate: boolean
+  orgId: string;
+  data: AffiliateStats[];
+  cardTitle?: string;
+  showHeader?: boolean;
+  affiliate: boolean;
 }
 export default function AffiliatesTable({
   orgId,
@@ -40,15 +38,15 @@ export default function AffiliatesTable({
   showHeader = false,
   affiliate = false,
 }: AffiliatesTableProps) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const columns = AffiliatesColumns()
+    [],
+  );
+  const columns = AffiliatesColumns();
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
-  const { filters, setFilters } = useQueryFilter()
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const { filters, setFilters } = useQueryFilter();
   const { data: searchData, isPending: searchPending } = useSearch(
     [
       "all-affiliates",
@@ -57,6 +55,8 @@ export default function AffiliatesTable({
       filters.month,
       filters.orderBy,
       filters.orderDir,
+      filters.offset,
+      filters.email,
     ],
     getAffiliatesWithStats,
     [
@@ -65,17 +65,25 @@ export default function AffiliatesTable({
       filters.month,
       filters.orderBy === "none" ? undefined : filters.orderBy,
       filters.orderDir,
+      filters.offset,
+      filters.email,
     ],
     {
       enabled: !!(
         !affiliate &&
         orgId &&
-        (filters.year || filters.month || filters.orderBy || filters.orderDir)
+        (filters.year ||
+          filters.month ||
+          filters.orderBy ||
+          filters.orderDir ||
+          filters.offset ||
+          filters.email)
       ),
-    }
-  )
+    },
+  );
+  const tableData = searchData ?? data;
   const table = useReactTable({
-    data: searchData ?? data,
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -91,7 +99,7 @@ export default function AffiliatesTable({
       columnVisibility,
       rowSelection,
     },
-  })
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -121,14 +129,8 @@ export default function AffiliatesTable({
           />
         </CardHeader>
         <CardContent>
-          <TableTop
-            filters={{ orderBy: filters.orderBy, orderDir: filters.orderDir }}
-            onOrderChange={(orderBy, orderDir) =>
-              setFilters({ orderBy, orderDir })
-            }
-            affiliate={false}
-            table={table}
-          />
+          <TableTop table={table} affiliate={false} />
+
           {(filters.year !== undefined || filters.month !== undefined) &&
           searchPending ? (
             <TableLoading columns={columns} />
@@ -140,32 +142,13 @@ export default function AffiliatesTable({
             <TableContent table={table} affiliate={false} />
           )}
 
-          <div className="flex items-center justify-end space-x-2 py-4">
-            <div className="flex-1 text-sm text-muted-foreground">
-              {table.getFilteredSelectedRowModel().rows.length} of{" "}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
-            </div>
-            <div className="space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
+          <PaginationControls
+            offset={filters.offset}
+            tableDataLength={tableData.length}
+            setFilters={setFilters}
+          />
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

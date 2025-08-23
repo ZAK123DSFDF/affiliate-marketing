@@ -1,5 +1,5 @@
-"use server";
-import { getAffiliatesWithStatsAction } from "@/lib/server/getAffiliatesWithStats";
+"use server"
+import { getAffiliatesWithStatsAction } from "@/lib/server/getAffiliatesWithStats"
 
 export async function getAffiliatePayoutBulkAction(
   orgId: string,
@@ -13,6 +13,9 @@ export async function getAffiliatePayoutBulkAction(
     | "commissionPaid"
     | "commissionUnpaid",
   orderDir?: "asc" | "desc",
+  limit?: number,
+  offset?: number,
+  email?: string
 ) {
   return await getAffiliatesWithStatsAction(
     orgId,
@@ -23,6 +26,9 @@ export async function getAffiliatePayoutBulkAction(
       exclude: ["conversionRate"],
       orderBy,
       orderDir,
-    },
-  );
+      limit,
+      offset,
+      email,
+    }
+  )
 }
