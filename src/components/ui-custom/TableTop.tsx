@@ -57,7 +57,7 @@ export const TableTop = <TData,>({
                   key={column.id}
                   className="capitalize"
                   checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  onCheckedChange={(value) => column.toggleVisibility(value)}
                 >
                   {column.id}
                 </DropdownMenuCheckboxItem>

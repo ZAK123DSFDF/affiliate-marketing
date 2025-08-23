@@ -6,9 +6,6 @@ import {
   SortingState,
   VisibilityState,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
