@@ -1,7 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
-import { db } from "@/db/drizzle";
 
 export async function getAffiliateOrganization() {
   const cookieStore = await cookies();
