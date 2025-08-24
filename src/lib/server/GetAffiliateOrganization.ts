@@ -13,7 +13,5 @@ export async function getAffiliateOrganization() {
     organizationId: string;
   };
   if (!decoded) throw { status: 400, toast: "Invalid session" };
-  // Step 1: Fetch org info
-
   return decoded;
 }
