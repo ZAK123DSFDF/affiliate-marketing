@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardHeader,
@@ -62,6 +62,7 @@ interface CommonData {
   name: string;
   email: string;
   image?: string | null;
+  paypalEmail: string;
 }
 
 interface ProfileProps {
@@ -85,6 +86,8 @@ export default function Profile({
   const initialEmail = AffiliateData
     ? AffiliateData.email
     : (UserData?.email ?? "");
+  const initialPaypalEmail = AffiliateData?.paypalEmail ?? "";
+  console.log("AffiliateData", AffiliateData);
   const dashboardTheme = useDashboardThemeCustomizationOption();
   const dashboardCard = useDashboardCardCustomizationOption();
   const dashboardButton = useDashboardButtonCustomizationOption();
@@ -96,6 +99,7 @@ export default function Profile({
     defaultValues: {
       name: initialName,
       email: initialEmail,
+      paypalEmail: initialPaypalEmail,
     },
   });
   const currentPasswordForm = useForm({
@@ -113,9 +117,11 @@ export default function Profile({
   });
   const currentName = profileForm.watch("name");
   const currentEmail = profileForm.watch("email");
+  const currentPaypalEmail = profileForm.watch("paypalEmail");
   const isFormUnchanged =
     currentName.trim() === initialName.trim() &&
-    currentEmail.trim() === initialEmail.trim();
+    currentEmail.trim() === initialEmail.trim() &&
+    currentPaypalEmail.trim() === initialPaypalEmail.trim();
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [step, setStep] = useState<"current" | "new">("current");
@@ -380,7 +386,15 @@ export default function Profile({
                 profile
                 affiliate={affiliate}
               />
-
+              <InputField
+                control={profileForm.control}
+                name="paypalEmail"
+                label="PayPal Email"
+                placeholder="Enter your PayPal email"
+                type="email"
+                profile
+                affiliate={affiliate}
+              />
               <div>
                 <div className="flex flex-row items-center justify-between mb-4 gap-1">
                   <Separator
