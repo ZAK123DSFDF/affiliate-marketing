@@ -13,21 +13,11 @@ import { getAffiliateLinks } from "@/lib/server/getAffiliateLinks";
 import { buildWhereWithDate } from "@/util/BuildWhereWithDate";
 import { getAffiliatesWithStatsAction } from "@/lib/server/getAffiliatesWithStats";
 import { getAffiliateLinksWithStatsAction } from "@/lib/server/getAffiliateLinksWithStats";
+import { createFullUrl } from "@/lib/server/createFullUrl";
 
 export const createAffiliateLink = async () => {
-  const { org, decoded } = await getAffiliateOrganization();
-
-  const code = generateAffiliateCode(); // e.g., "7hjKpQ"
-  const param = org.referralParam;
-  const domain = org.domainName.replace(/^https?:\/\//, "");
-
-  const fullUrl = `https://${domain}/?${param}=${code}`;
-
-  await db.insert(affiliateLink).values({
-    id: code,
-    affiliateId: decoded.id,
-    organizationId: decoded.organizationId,
-  });
+  const decoded = await getAffiliateOrganization();
+  const { org, fullUrl } = await createFullUrl(decoded);
   revalidatePath(`/affiliate/${org.id}/dashboard/links`);
   return fullUrl;
 };
@@ -37,7 +27,7 @@ export const getAffiliateLinksWithStats = async (
   month?: number,
 ): Promise<ResponseData<AffiliateLinkWithStats[]>> => {
   try {
-    const { decoded } = await getAffiliateOrganization();
+    const decoded = await getAffiliateOrganization();
     const rows = await getAffiliateLinksWithStatsAction(decoded, year, month);
 
     return { ok: true, data: rows };

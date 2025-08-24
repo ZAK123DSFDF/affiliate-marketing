@@ -13,11 +13,8 @@ export async function getAffiliateOrganization() {
     id: string;
     organizationId: string;
   };
-
+  if (!decoded) throw { status: 400, toast: "Invalid session" };
   // Step 1: Fetch org info
-  const org = await db.query.organization.findFirst({
-    where: (o, { eq }) => eq(o.id, decoded.organizationId),
-  });
-  if (!org) throw new Error("Organization not found");
-  return { org, decoded };
+
+  return decoded;
 }

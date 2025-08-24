@@ -15,7 +15,7 @@ export async function getAffiliateKpiStats(
   month?: number,
 ): Promise<ResponseData<AffiliateKpiStats[]>> {
   try {
-    const { decoded } = await getAffiliateOrganization();
+    const decoded = await getAffiliateOrganization();
     const [row] = await getAffiliateKpiStatsAction(
       decoded.organizationId,
       decoded.id,
@@ -43,7 +43,7 @@ export async function getAffiliateKpiTimeSeries(
   month?: number,
 ): Promise<ResponseData<AffiliateKpiTimeSeries[]>> {
   try {
-    const { decoded } = await getAffiliateOrganization();
+    const decoded = await getAffiliateOrganization();
     const { linkIds } = await getAffiliateLinks(decoded);
     if (!linkIds.length) return { ok: true, data: [] };
 
@@ -64,7 +64,7 @@ export async function getAffiliateReferrers(
   month?: number,
 ): Promise<ResponseData<AffiliateReferrerStat[]>> {
   try {
-    const { decoded } = await getAffiliateOrganization();
+    const decoded = await getAffiliateOrganization();
 
     const { linkIds } = await getAffiliateLinks(decoded);
     if (!linkIds.length) return { ok: true, data: [] };

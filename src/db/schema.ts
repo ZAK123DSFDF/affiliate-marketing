@@ -31,6 +31,11 @@ export const referralParamEnum = pgEnum("referral_param_enum", [
   "via",
   "aff",
 ]);
+export const payoutProviderEnum = pgEnum("payout_provider", [
+  "paypal",
+  "wise",
+  "payoneer",
+]);
 // USER SCHEMA (Sellers are users who create organizations)
 export const user = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -93,6 +98,18 @@ export const affiliate = pgTable(
     ),
   }),
 );
+export const affiliatePayoutMethod = pgTable("affiliate_payout_method", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  affiliateId: uuid("affiliate_id")
+    .notNull()
+    .references(() => affiliate.id, { onDelete: "cascade" }),
+
+  provider: payoutProviderEnum("provider").notNull(),
+  accountIdentifier: text("account_identifier").notNull(),
+  isDefault: boolean("is_default").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 export const exchangeRate = pgTable(
   "exchange_rate",
   {

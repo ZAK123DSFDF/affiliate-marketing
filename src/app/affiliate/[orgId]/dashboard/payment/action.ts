@@ -10,7 +10,7 @@ export const getAffiliateCommissionByMonth = async (
   year?: number,
 ): Promise<ResponseData<AffiliatePaymentRow[]>> => {
   try {
-    const { decoded } = await getAffiliateOrganization();
+    const decoded = await getAffiliateOrganization();
     const targetYear = year ?? new Date().getFullYear();
     const rows = await getAffiliateCommissionByMonthAction(decoded, targetYear);
     return { ok: true, data: rows };
