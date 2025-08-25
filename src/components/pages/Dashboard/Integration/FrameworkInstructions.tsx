@@ -16,7 +16,7 @@ const frameworks = [
     name: "Next.js",
     description:
       "Place the script using the built-in `next/script` component, typically in your `_app.tsx` or a layout component.",
-    code: `<Script src="${scriptUrl}" strategy="afterInteractive" />`,
+    code: `<Script src="${scriptUrl}" />`,
     language: "tsx",
   },
   {

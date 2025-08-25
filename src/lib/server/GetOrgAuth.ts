@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
 import { db } from "@/db/drizzle"
 import { organization } from "@/db/schema"
-import { eq, InferSelectModel } from "drizzle-orm"
+import { eq } from "drizzle-orm"
 import { OrgAuthResult } from "@/lib/types/orgAuth"
 
 export async function getOrgAuth(orgId: string): Promise<OrgAuthResult> {

@@ -4,7 +4,7 @@
 import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
 import { db } from "@/db/drizzle"
-import { affiliate, user } from "@/db/schema"
+import { user } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { returnError } from "@/lib/errorHandler"
 import * as bcrypt from "bcrypt"

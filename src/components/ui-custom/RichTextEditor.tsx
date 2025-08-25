@@ -4,14 +4,7 @@ import { useEffect, useState } from "react"
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import TextAlign from "@tiptap/extension-text-align"
-import {
-  Bold,
-  Italic,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  Minus,
-} from "lucide-react"
+import { Bold, Italic, AlignLeft, AlignCenter, AlignRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ParagraphSpacing } from "@/lib/extensions/paragraphSpacing"
 import { Color } from "@tiptap/extension-color"

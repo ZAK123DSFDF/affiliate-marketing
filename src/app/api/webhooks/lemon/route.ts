@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
     const currency = "usd"
 
     if (eventType === "order_created") {
-      const orderId = event.data.id
       const amount = attributes.total_usd || attributes.total || 0
       const createdAt = new Date(attributes.created_at)
 

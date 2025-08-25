@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import crypto from "crypto"
 import { db } from "@/db/drizzle"
-import { affiliateInvoice, checkTransaction, organization } from "@/db/schema"
+import { affiliateInvoice, organization } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { calculateTrialDays } from "@/util/CalculateTrialDays"
 import { convertToUSD } from "@/util/CurrencyConvert"

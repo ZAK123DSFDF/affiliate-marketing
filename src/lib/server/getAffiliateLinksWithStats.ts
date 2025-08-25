@@ -7,7 +7,7 @@ import {
   affiliateLink,
   organization,
 } from "@/db/schema"
-import { and, desc, eq, inArray, sql } from "drizzle-orm"
+import { and, eq, sql } from "drizzle-orm"
 import { buildWhereWithDate } from "@/util/BuildWhereWithDate"
 export async function getAffiliateLinksWithStatsAction(
   decoded: {

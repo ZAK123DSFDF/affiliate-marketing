@@ -27,7 +27,6 @@ export const TableCustomizationOptions = ({
     tableRowBadgePaidTextColor,
     tableRowBadgePaidBackgroundColor,
     tableBorderColor,
-    setTableColor,
   } = useTableCustomizationOption()
 
   const properties: any = {

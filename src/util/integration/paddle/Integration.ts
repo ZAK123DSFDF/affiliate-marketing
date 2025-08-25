@@ -33,7 +33,7 @@ export default function Checkout() {
   };
 }`,
   vue: `<!-- Vue 3 Composition API -->
-<script setup>
+<script >
 import { ref, onMounted } from 'vue';
 import { initializePaddle } from '@paddle/paddle-js';
 
@@ -69,7 +69,7 @@ function handleCheckout() {
 `,
 
   nuxt: `<!-- Nuxt 3 Client-Side Example -->
-<script setup>
+<script >
 import { onMounted, ref } from 'vue';
 import { initializePaddle } from '@paddle/paddle-js';
 

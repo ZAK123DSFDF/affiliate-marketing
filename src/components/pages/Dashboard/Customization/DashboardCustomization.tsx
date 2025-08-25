@@ -6,7 +6,6 @@ import Profile from "@/components/pages/Dashboard/Profile/Profile"
 import PaymentTable from "@/components/pages/AffiliateDashboard/Payment/Payment"
 import Links from "@/components/pages/AffiliateDashboard/Links/Links"
 import {
-  dummyAffiliateLinks,
   dummyAffiliateLinksRaw,
   dummyAffiliatePayments,
   dummyProfileData,

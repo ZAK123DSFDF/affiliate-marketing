@@ -2,7 +2,7 @@
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import SellerDashboardSidebar from "@/components/SellerDashboardSidebar"
 import { validateOrg } from "@/util/ValidateOrg"
-import { notFound, redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import { OrgIdProps } from "@/lib/types/orgId"
 interface SellerDashboardLayoutProps extends OrgIdProps {
   children: React.ReactNode

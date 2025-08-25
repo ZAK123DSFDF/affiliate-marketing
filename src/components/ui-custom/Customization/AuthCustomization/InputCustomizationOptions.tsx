@@ -1,7 +1,4 @@
-import {
-  useCardCustomizationOption,
-  useInputCustomizationOption,
-} from "@/hooks/useAuthCustomization"
+import { useInputCustomizationOption } from "@/hooks/useAuthCustomization"
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
 import React from "react"
 import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
