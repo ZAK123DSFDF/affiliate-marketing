@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { usePathname } from "next/navigation";
-import { BarChart3, Link as LinkIcon, Users, User } from "lucide-react";
+import React, { useState } from "react"
+import { usePathname } from "next/navigation"
+import { BarChart3, Link as LinkIcon, Users, User } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -13,19 +13,19 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import Link from "next/link";
-import { SidebarCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/SidebarCustomizationOptions";
-import { DashboardCustomizationStores } from "@/store/useCustomizationStore";
-import { cn } from "@/lib/utils";
+} from "@/components/ui/sidebar"
+import Link from "next/link"
+import { SidebarCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/SidebarCustomizationOptions"
+import { DashboardCustomizationStores } from "@/store/useCustomizationStore"
+import { cn } from "@/lib/utils"
 
 type Props = {
-  orgId?: string;
-  isPreview?: boolean;
-  onSelectPage?: (page: string) => void;
-  currentPage?: string;
-  affiliate: boolean;
-};
+  orgId?: string
+  isPreview?: boolean
+  onSelectPage?: (page: string) => void
+  currentPage?: string
+  affiliate: boolean
+}
 
 const AffiliateDashboardSidebar = ({
   orgId,
@@ -34,7 +34,7 @@ const AffiliateDashboardSidebar = ({
   currentPage,
   affiliate,
 }: Props) => {
-  const pathname = usePathname();
+  const pathname = usePathname()
   const items = [
     {
       title: "Dashboard",
@@ -51,18 +51,18 @@ const AffiliateDashboardSidebar = ({
       url: `/affiliate/${orgId}/dashboard/payment`,
       icon: Users,
     },
-  ];
+  ]
   const itemsPreview = [
     { title: "Dashboard", key: "dashboard", icon: BarChart3 },
     { title: "Links", key: "links", icon: LinkIcon },
     { title: "Payment", key: "payment", icon: Users },
-  ];
-  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
-  const sidebar = DashboardCustomizationStores.useSidebarCustomization();
-  const baseSidebarClass = isPreview ? "relative h-full" : ""; // you can add full-screen layout styles here
+  ]
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null)
+  const sidebar = DashboardCustomizationStores.useSidebarCustomization()
+  const baseSidebarClass = isPreview ? "relative h-full" : "" // you can add full-screen layout styles here
   const setProfile = () => {
-    onSelectPage && onSelectPage("profile");
-  };
+    onSelectPage && onSelectPage("profile")
+  }
   return (
     <Sidebar className={baseSidebarClass}>
       <SidebarHeader
@@ -95,8 +95,8 @@ const AffiliateDashboardSidebar = ({
           <SidebarGroupContent>
             <SidebarMenu>
               {(isPreview ? itemsPreview : items).map((item: any) => {
-                const isActive = currentPage === item.key;
-                const isHovered = hoveredKey === item.key;
+                const isActive = currentPage === item.key
+                const isHovered = hoveredKey === item.key
 
                 const backgroundColor = isActive
                   ? (affiliate &&
@@ -106,7 +106,7 @@ const AffiliateDashboardSidebar = ({
                     ? (affiliate &&
                         sidebar.sideBarHoverNavigationBackgroundColor) ||
                       undefined
-                    : undefined;
+                    : undefined
 
                 const textColor = isActive
                   ? (affiliate && sidebar.sideBarActiveNavigationTextColor) ||
@@ -116,7 +116,7 @@ const AffiliateDashboardSidebar = ({
                       undefined
                     : (affiliate &&
                         sidebar.sideBarInActiveNavigationTextColor) ||
-                      undefined;
+                      undefined
 
                 return (
                   <SidebarMenuItem key={item.title}>
@@ -134,7 +134,7 @@ const AffiliateDashboardSidebar = ({
                           className={cn(
                             "flex items-center gap-2 w-full px-2 py-1.5 text-sm rounded-md transition-colors",
                             "focus:outline-none focus-visible:outline-none",
-                            "focus-visible:ring-2 focus-visible:ring-red-500",
+                            "focus-visible:ring-2 focus-visible:ring-red-500"
                           )}
                           style={{
                             backgroundColor: backgroundColor || undefined,
@@ -163,7 +163,7 @@ const AffiliateDashboardSidebar = ({
                       )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                );
+                )
               })}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -240,7 +240,7 @@ const AffiliateDashboardSidebar = ({
         )}
       </SidebarFooter>
     </Sidebar>
-  );
-};
+  )
+}
 
-export default AffiliateDashboardSidebar;
+export default AffiliateDashboardSidebar

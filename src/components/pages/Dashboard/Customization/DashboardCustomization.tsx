@@ -1,28 +1,28 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import AffiliateDashboardSidebar from "@/components/AffiliateDashboardSidebar";
-import Profile from "@/components/pages/Dashboard/Profile/Profile";
-import PaymentTable from "@/components/pages/AffiliateDashboard/Payment/Payment";
-import Links from "@/components/pages/AffiliateDashboard/Links/Links";
+import React, { useState } from "react"
+import AffiliateDashboardSidebar from "@/components/AffiliateDashboardSidebar"
+import Profile from "@/components/pages/Dashboard/Profile/Profile"
+import PaymentTable from "@/components/pages/AffiliateDashboard/Payment/Payment"
+import Links from "@/components/pages/AffiliateDashboard/Links/Links"
 import {
   dummyAffiliateLinks,
   dummyAffiliateLinksRaw,
   dummyAffiliatePayments,
   dummyProfileData,
-} from "@/lib/types/previewData";
-import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOverview/AffiliateOverview";
-import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization";
-import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
-import { dummyAffiliateKpiCardStats } from "@/lib/types/dummyKpiData";
+} from "@/lib/types/previewData"
+import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOverview/AffiliateOverview"
+import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
+import { dummyAffiliateKpiCardStats } from "@/lib/types/dummyKpiData"
 
 export function DashboardCustomization({ orgId }: { orgId: string }) {
-  const [selectedPage, setSelectedPage] = useState("dashboard");
+  const [selectedPage, setSelectedPage] = useState("dashboard")
 
-  const { mainBackgroundColor } = useDashboardThemeCustomizationOption();
+  const { mainBackgroundColor } = useDashboardThemeCustomizationOption()
 
   if (!orgId) {
-    return <div className="text-red-500">Invalid organization ID</div>;
+    return <div className="text-red-500">Invalid organization ID</div>
   }
   return (
     <div className="space-y-6">
@@ -78,5 +78,5 @@ export function DashboardCustomization({ orgId }: { orgId: string }) {
         </div>
       </div>
     </div>
-  );
+  )
 }

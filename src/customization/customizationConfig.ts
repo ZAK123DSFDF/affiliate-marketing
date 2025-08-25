@@ -1,7 +1,7 @@
 export type CustomizationConfig = {
-  booleans?: string[];
-  notes?: string[];
-};
+  booleans?: string[]
+  notes?: string[]
+}
 
 export const customizationConfig: Record<string, CustomizationConfig> = {
   useCardCustomization: {
@@ -16,4 +16,4 @@ export const customizationConfig: Record<string, CustomizationConfig> = {
   useKpiCardCustomization: {
     booleans: ["cardShadow", "cardBorder"],
   },
-};
+}

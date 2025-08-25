@@ -1,5 +1,5 @@
-import React from "react";
-import AnimatedButton from "@/components/ui-custom/AnimatedButton";
+import React from "react"
+import AnimatedButton from "@/components/ui-custom/AnimatedButton"
 
 const CTA = () => {
   return (
@@ -36,7 +36,7 @@ const CTA = () => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default CTA;
+export default CTA

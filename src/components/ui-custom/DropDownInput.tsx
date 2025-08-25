@@ -1,26 +1,26 @@
-"use client";
+"use client"
 
-import { Label } from "@/components/ui/label";
+import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+} from "@/components/ui/select"
+import { cn } from "@/lib/utils"
 
 type DropdownInputProps = {
-  label: string;
-  value: string;
-  options: { label: string; value: string }[];
-  onChange?: (val: string) => void;
-  disabled?: boolean;
-  placeholder?: string;
-  width?: string;
-  selectOpen?: boolean;
-  setSelectOpen?: (open: boolean) => void;
-};
+  label: string
+  value: string
+  options: { label: string; value: string }[]
+  onChange?: (val: string) => void
+  disabled?: boolean
+  placeholder?: string
+  width?: string
+  selectOpen?: boolean
+  setSelectOpen?: (open: boolean) => void
+}
 
 export const DropdownInput = ({
   label,
@@ -58,4 +58,4 @@ export const DropdownInput = ({
       </SelectContent>
     </Select>
   </div>
-);
+)

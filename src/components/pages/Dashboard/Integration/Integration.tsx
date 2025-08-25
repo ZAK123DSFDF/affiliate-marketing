@@ -1,14 +1,14 @@
 // app/components/ConnectStripeButton.tsx
 
-"use client";
+"use client"
 
-import React from "react";
+import React from "react"
 
 export default function ConnectStripeButton() {
   const handleConnect = () => {
     // Redirect the seller to your backend route, which will redirect to Stripe
-    window.location.href = "/api/stripe/connect";
-  };
+    window.location.href = "/api/stripe/connect"
+  }
 
   return (
     <button
@@ -17,5 +17,5 @@ export default function ConnectStripeButton() {
     >
       Connect Stripe Account
     </button>
-  );
+  )
 }

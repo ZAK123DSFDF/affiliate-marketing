@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
-import React from "react";
-import { useDashboardCardCustomizationOption } from "@/hooks/useDashboardCustomization";
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
+import React from "react"
+import { useDashboardCardCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
 
 export const DashboardCardCustomizationOptions = ({
   triggerSize,
   dropdownSize,
 }: {
-  triggerSize?: string;
-  dropdownSize?: string;
+  triggerSize?: string
+  dropdownSize?: string
 }) => {
   const {
     dashboardCardShadow,
@@ -19,7 +19,7 @@ export const DashboardCardCustomizationOptions = ({
     dashboardCardBorderColor,
     dashboardCardBackgroundColor,
     dashboardCardShadowThickness,
-  } = useDashboardCardCustomizationOption();
+  } = useDashboardCardCustomizationOption()
 
   return (
     <OptionWithSwitch
@@ -33,7 +33,7 @@ export const DashboardCardCustomizationOptions = ({
             updateDashboardCustomization(
               "useDashboardCardCustomization",
               "dashboardCardShadow",
-              val,
+              val
             ),
           children: {
             shadowColor: {
@@ -43,7 +43,7 @@ export const DashboardCardCustomizationOptions = ({
                 updateDashboardCustomization(
                   "useDashboardCardCustomization",
                   "dashboardCardShadowColor",
-                  val,
+                  val
                 ),
             },
             shadowThickness: {
@@ -59,7 +59,7 @@ export const DashboardCardCustomizationOptions = ({
                 updateDashboardCustomization(
                   "useDashboardCardCustomization",
                   "dashboardCardShadowThickness",
-                  val,
+                  val
                 ),
             },
           },
@@ -71,7 +71,7 @@ export const DashboardCardCustomizationOptions = ({
             updateDashboardCustomization(
               "useDashboardCardCustomization",
               "dashboardCardBorder",
-              val,
+              val
             ),
           children: {
             borderColor: {
@@ -81,7 +81,7 @@ export const DashboardCardCustomizationOptions = ({
                 updateDashboardCustomization(
                   "useDashboardCardCustomization",
                   "dashboardCardBorderColor",
-                  val,
+                  val
                 ),
             },
           },
@@ -93,10 +93,10 @@ export const DashboardCardCustomizationOptions = ({
             updateDashboardCustomization(
               "useDashboardCardCustomization",
               "dashboardCardBackgroundColor",
-              val,
+              val
             ),
         },
       }}
     />
-  );
-};
+  )
+}

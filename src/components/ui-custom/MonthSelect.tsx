@@ -1,20 +1,20 @@
-"use client";
+"use client"
 
-import React from "react";
+import React from "react"
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 
 interface Props {
-  value: { year?: number; month?: number };
-  onChange: (year?: number, month?: number) => void;
-  disabled?: boolean;
-  isPreview?: boolean;
-  affiliate: boolean;
+  value: { year?: number; month?: number }
+  onChange: (year?: number, month?: number) => void
+  disabled?: boolean
+  isPreview?: boolean
+  affiliate: boolean
 }
 
 export default function MonthSelect({
@@ -24,12 +24,12 @@ export default function MonthSelect({
   isPreview = false,
   affiliate,
 }: Props) {
-  const now = new Date();
-  const START_YEAR = 1990;
+  const now = new Date()
+  const START_YEAR = 1990
   const years = Array.from(
     { length: now.getUTCFullYear() - START_YEAR + 1 },
-    (_, i) => now.getUTCFullYear() - i,
-  );
+    (_, i) => now.getUTCFullYear() - i
+  )
 
   return (
     <div className={`flex gap-2 ${isPreview ? "text-xs" : ""}`}>
@@ -39,7 +39,7 @@ export default function MonthSelect({
         onValueChange={(yearVal) =>
           onChange(
             yearVal === "all" ? undefined : parseInt(yearVal),
-            value.month, // keep month
+            value.month // keep month
           )
         }
         disabled={disabled}
@@ -69,7 +69,7 @@ export default function MonthSelect({
         onValueChange={(monthVal) =>
           onChange(
             value.year, // ✅ year first
-            monthVal === "all" ? undefined : parseInt(monthVal),
+            monthVal === "all" ? undefined : parseInt(monthVal)
           )
         }
         disabled={!value.year || disabled}
@@ -97,5 +97,5 @@ export default function MonthSelect({
         </SelectContent>
       </Select>
     </div>
-  );
+  )
 }

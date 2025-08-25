@@ -45,4 +45,4 @@ export const defaultAuthCustomization = {
     customNotesLogin: "",
     customNotesSignup: "",
   },
-};
+}

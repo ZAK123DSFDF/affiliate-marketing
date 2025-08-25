@@ -1,6 +1,6 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import StripeIntegration from "@/components/pages/Dashboard/Integration/StripeIntegration";
-import PaddleIntegration from "@/components/pages/Dashboard/Integration/PaddleIntegration";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import StripeIntegration from "@/components/pages/Dashboard/Integration/StripeIntegration"
+import PaddleIntegration from "@/components/pages/Dashboard/Integration/PaddleIntegration"
 
 export default function IntegrationPage() {
   return (
@@ -19,5 +19,5 @@ export default function IntegrationPage() {
         </TabsContent>
       </Tabs>
     </div>
-  );
+  )
 }

@@ -1,41 +1,41 @@
-"use client";
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getShadowWithColor } from "@/util/GetShadowWithColor";
+"use client"
+import React from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { getShadowWithColor } from "@/util/GetShadowWithColor"
 import {
   useButtonCustomizationOption,
   useCardCustomizationOption,
   useThemeCustomizationOption,
-} from "@/hooks/useAuthCustomization";
-import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
-import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
-import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
-import { useRouter } from "next/navigation";
-import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
-import PendingState from "@/components/ui-custom/PendingState";
-import ErrorState from "@/components/ui-custom/ErrorState";
+} from "@/hooks/useAuthCustomization"
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
+import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
+import { toValidShadowSize } from "@/util/ValidateShadowColor"
+import { CheckCircle2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions"
+import { useRouter } from "next/navigation"
+import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization"
+import { useCustomizationSync } from "@/hooks/useCustomizationSync"
+import PendingState from "@/components/ui-custom/PendingState"
+import ErrorState from "@/components/ui-custom/ErrorState"
 
 type Props = {
-  orgId?: string;
-  isPreview?: boolean;
-  setMainTab?: (tab: string) => void;
-  affiliate: boolean;
-};
+  orgId?: string
+  isPreview?: boolean
+  setMainTab?: (tab: string) => void
+  affiliate: boolean
+}
 
 const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
-  const { backgroundColor } = useThemeCustomizationOption();
+  const { backgroundColor } = useThemeCustomizationOption()
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "auth")
-    : { isPending: false, isError: false, refetch: () => {} };
+    : { isPending: false, isError: false, refetch: () => {} }
   const {
     emailVerifiedPrimaryColor,
     emailVerifiedSecondaryColor,
     emailVerifiedIconColor,
-  } = useThemeCustomizationOption();
+  } = useThemeCustomizationOption()
   const {
     cardShadow,
     cardShadowColor,
@@ -43,23 +43,23 @@ const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
     cardBorderColor,
     cardBackgroundColor,
     cardShadowThickness,
-  } = useCardCustomizationOption();
+  } = useCardCustomizationOption()
   const { buttonBackgroundColor, buttonTextColor } =
-    useButtonCustomizationOption();
+    useButtonCustomizationOption()
 
-  const router = useRouter();
+  const router = useRouter()
   const handleClick = () => {
     if (isPreview) {
-      setMainTab?.("sidebar");
+      setMainTab?.("sidebar")
     } else {
-      router.push("/dashboard");
+      router.push("/dashboard")
     }
-  };
+  }
   if (isPending) {
-    return <PendingState />;
+    return <PendingState />
   }
   if (isError) {
-    return <ErrorState onRetry={refetch} />;
+    return <ErrorState onRetry={refetch} />
   }
   return (
     <div
@@ -87,7 +87,7 @@ const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
               ? {
                   boxShadow: getShadowWithColor(
                     toValidShadowSize(cardShadowThickness),
-                    cardShadowColor,
+                    cardShadowColor
                   ),
                 }
               : {}),
@@ -189,7 +189,7 @@ const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default EmailVerified;
+export default EmailVerified

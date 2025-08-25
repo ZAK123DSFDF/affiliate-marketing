@@ -1,15 +1,15 @@
-"use server";
-import { user } from "@/db/schema"; // Renamed 'user' to 'users' for clarity and to avoid conflict
-import { eq } from "drizzle-orm";
-import { db } from "@/db/drizzle";
-import * as bcrypt from "bcrypt";
-import jwt from "jsonwebtoken"; // <--- Add this import!
-import { InferInsertModel } from "drizzle-orm";
-import { cookies } from "next/headers";
-import { returnError } from "@/lib/errorHandler"; // Recommended for type safety
+"use server"
+import { user } from "@/db/schema" // Renamed 'user' to 'users' for clarity and to avoid conflict
+import { eq } from "drizzle-orm"
+import { db } from "@/db/drizzle"
+import * as bcrypt from "bcrypt"
+import jwt from "jsonwebtoken" // <--- Add this import!
+import { InferInsertModel } from "drizzle-orm"
+import { cookies } from "next/headers"
+import { returnError } from "@/lib/errorHandler" // Recommended for type safety
 
 // Define the type for user creation using Drizzle's InferInsertModel
-type CreateUserPayload = InferInsertModel<typeof user>;
+type CreateUserPayload = InferInsertModel<typeof user>
 
 export const SignupServer = async ({
   name,
@@ -28,14 +28,14 @@ export const SignupServer = async ({
           password: !password ? "Password is required" : "",
           name: !name ? "Name is required" : "",
         },
-      };
+      }
     }
-    const cookieStore = await cookies();
+    const cookieStore = await cookies()
     // Check if user already exists
     const existingUser = await db
       .select()
       .from(user) // Use 'users' from schema
-      .where(eq(user.email, email));
+      .where(eq(user.email, email))
 
     if (existingUser.length > 0) {
       throw {
@@ -43,10 +43,10 @@ export const SignupServer = async ({
         error: "Email already exists",
         toast: "This email is already registered. Please try logging in.",
         fields: { email: "This email is already in use" },
-      };
+      }
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10)
 
     // Insert new user
     const [newUser] = await db
@@ -57,7 +57,7 @@ export const SignupServer = async ({
         password: hashedPassword,
         type: "SELLER",
       })
-      .returning();
+      .returning()
 
     // Ensure a user was actually created and returned
     if (!newUser) {
@@ -65,7 +65,7 @@ export const SignupServer = async ({
         status: 500,
         error: "Failed to create user.",
         toast: "Something went wrong during user creation. Please try again.",
-      };
+      }
     }
 
     // Create JWT token
@@ -77,19 +77,19 @@ export const SignupServer = async ({
         type: newUser.type,
       },
       process.env.SECRET_KEY as string,
-      { expiresIn: "7d" },
-    );
+      { expiresIn: "7d" }
+    )
 
     // Set cookie
     cookieStore.set({
       name: "token",
       value: token,
       httpOnly: true,
-    });
+    })
 
-    return { user: newUser, token }; // Return newUser as 'user'
+    return { user: newUser, token } // Return newUser as 'user'
   } catch (error: any) {
-    console.error("Signup error:", error); // Log the full error for debugging
-    return returnError(error);
+    console.error("Signup error:", error) // Log the full error for debugging
+    return returnError(error)
   }
-};
+}

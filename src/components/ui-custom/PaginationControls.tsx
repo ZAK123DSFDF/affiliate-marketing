@@ -1,13 +1,13 @@
 // components/PaginationControls.tsx
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface PaginationControlsProps {
-  offset: number | undefined;
-  tableDataLength: number;
-  setFilters: (filters: { offset: number }) => void;
+  offset: number | undefined
+  tableDataLength: number
+  setFilters: (filters: { offset: number }) => void
 }
 
 export default function PaginationControls({
@@ -15,7 +15,7 @@ export default function PaginationControls({
   tableDataLength,
   setFilters,
 }: PaginationControlsProps) {
-  const currentPage = offset ?? 1;
+  const currentPage = offset ?? 1
 
   return (
     <div className="flex items-center justify-between space-x-6 py-4">
@@ -57,5 +57,5 @@ export default function PaginationControls({
         </Button>
       </div>
     </div>
-  );
+  )
 }

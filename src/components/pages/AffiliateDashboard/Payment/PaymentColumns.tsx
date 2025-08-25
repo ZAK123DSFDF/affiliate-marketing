@@ -1,13 +1,13 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow";
-import { Badge } from "@/components/ui/badge";
-import React from "react";
-import { useTableCustomizationOption } from "@/hooks/useDashboardCustomization";
+import { ColumnDef } from "@tanstack/react-table"
+import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow"
+import { Badge } from "@/components/ui/badge"
+import React from "react"
+import { useTableCustomizationOption } from "@/hooks/useDashboardCustomization"
 
 export const paymentColumns = (
-  affiliate: boolean,
+  affiliate: boolean
 ): ColumnDef<AffiliatePaymentRow>[] => {
-  const dashboardTable = useTableCustomizationOption();
+  const dashboardTable = useTableCustomizationOption()
   return [
     {
       accessorKey: "month",
@@ -46,11 +46,11 @@ export const paymentColumns = (
         </span>
       ),
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("totalCommission"));
+        const amount = parseFloat(row.getValue("totalCommission"))
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
-        }).format(amount);
+        }).format(amount)
         return (
           <div
             className=" font-medium"
@@ -62,7 +62,7 @@ export const paymentColumns = (
           >
             {formatted}
           </div>
-        );
+        )
       },
     },
     {
@@ -78,11 +78,11 @@ export const paymentColumns = (
         </span>
       ),
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("paidCommission"));
+        const amount = parseFloat(row.getValue("paidCommission"))
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
-        }).format(amount);
+        }).format(amount)
         return (
           <div
             className=" font-medium"
@@ -94,7 +94,7 @@ export const paymentColumns = (
           >
             {formatted}
           </div>
-        );
+        )
       },
     },
     {
@@ -110,11 +110,11 @@ export const paymentColumns = (
         </span>
       ),
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("unpaidCommission"));
+        const amount = parseFloat(row.getValue("unpaidCommission"))
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
-        }).format(amount);
+        }).format(amount)
         return (
           <div
             className=" font-medium"
@@ -126,7 +126,7 @@ export const paymentColumns = (
           >
             {formatted}
           </div>
-        );
+        )
       },
     },
     {
@@ -142,59 +142,59 @@ export const paymentColumns = (
         </span>
       ),
       cell: ({ row }) => {
-        const unpaid = parseFloat(row.getValue("unpaidCommission"));
-        const monthStr = row.getValue("month") as string;
+        const unpaid = parseFloat(row.getValue("unpaidCommission"))
+        const monthStr = row.getValue("month") as string
 
-        const today = new Date();
-        const [year, month] = monthStr.split("-").map(Number);
-        const rowDate = new Date(year, month - 1);
+        const today = new Date()
+        const [year, month] = monthStr.split("-").map(Number)
+        const rowDate = new Date(year, month - 1)
 
-        const currentMonth = today.getMonth();
-        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth()
+        const currentYear = today.getFullYear()
         const isSameMonth =
           rowDate.getMonth() === currentMonth &&
-          rowDate.getFullYear() === currentYear;
+          rowDate.getFullYear() === currentYear
 
-        let status = "Paid";
+        let status = "Paid"
 
         let defaultClass =
-          "bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800";
+          "bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800"
         let textColor =
-          (affiliate && dashboardTable.tableRowBadgePaidTextColor) || undefined;
+          (affiliate && dashboardTable.tableRowBadgePaidTextColor) || undefined
         let backgroundColor =
           (affiliate && dashboardTable.tableRowBadgePaidBackgroundColor) ||
-          undefined;
+          undefined
 
         if (unpaid > 0) {
           if (isSameMonth) {
-            status = "Pending";
+            status = "Pending"
             defaultClass =
-              "bg-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:text-yellow-800";
+              "bg-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:text-yellow-800"
             textColor =
               (affiliate && dashboardTable.tableRowBadgePendingTextColor) ||
-              undefined;
+              undefined
             backgroundColor =
               (affiliate &&
                 dashboardTable.tableRowBadgePendingBackgroundColor) ||
-              undefined;
+              undefined
           } else if (
             rowDate.getFullYear() < currentYear ||
             (rowDate.getFullYear() === currentYear &&
               rowDate.getMonth() < currentMonth)
           ) {
-            status = "Overdue";
+            status = "Overdue"
             defaultClass =
-              "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-800";
+              "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-800"
             textColor = affiliate
               ? dashboardTable.tableRowBadgeOverDueTextColor
-              : undefined;
+              : undefined
             backgroundColor = affiliate
               ? dashboardTable.tableRowBadgeOverDueBackgroundColor
-              : undefined;
+              : undefined
           }
         }
 
-        const hasCustomStyle = textColor || backgroundColor;
+        const hasCustomStyle = textColor || backgroundColor
 
         return hasCustomStyle ? (
           <Badge
@@ -207,8 +207,8 @@ export const paymentColumns = (
           </Badge>
         ) : (
           <Badge className={defaultClass}>{status}</Badge>
-        );
+        )
       },
     },
-  ];
-};
+  ]
+}

@@ -1,7 +1,7 @@
-import React from "react";
+import React from "react"
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear()
 
   return (
     <footer className="bg-secondary py-16 px-6">
@@ -159,7 +159,7 @@ const Footer = () => {
         </div>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

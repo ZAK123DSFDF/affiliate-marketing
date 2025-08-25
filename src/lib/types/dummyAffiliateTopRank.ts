@@ -1,4 +1,4 @@
-import { AffiliateStats } from "@/lib/types/affiliateStats";
+import { AffiliateStats } from "@/lib/types/affiliateStats"
 
 export const dummyAffiliateTopRankData: AffiliateStats[] = [
   {
@@ -56,4 +56,4 @@ export const dummyAffiliateTopRankData: AffiliateStats[] = [
     unpaid: 60,
     conversionRate: parseFloat(((40 / 150) * 100).toFixed(2)), // 26.67%
   },
-];
+]

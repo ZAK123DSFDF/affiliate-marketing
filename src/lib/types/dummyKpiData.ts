@@ -6,7 +6,7 @@ import {
   Users,
   Wallet,
   XCircle,
-} from "lucide-react";
+} from "lucide-react"
 
 export const initialKpiData = [
   {
@@ -65,7 +65,7 @@ export const initialKpiData = [
     color: "text-red-600",
     bg: "bg-red-100",
   },
-];
+]
 export const dummyAffiliateKpiCardStats = [
   {
     affiliateId: "aff1",
@@ -78,7 +78,7 @@ export const dummyAffiliateKpiCardStats = [
     totalCommissionPaid: 2200,
     totalCommissionUnpaid: 1950,
   },
-];
+]
 export const months = [
   "January",
   "February",
@@ -92,6 +92,6 @@ export const months = [
   "October",
   "November",
   "December",
-];
+]
 
-export const years = [2023, 2024, 2025];
+export const years = [2023, 2024, 2025]

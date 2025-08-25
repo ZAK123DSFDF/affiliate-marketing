@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
-import React from "react";
-import { useChartCustomizationOption } from "@/hooks/useDashboardCustomization";
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
+import React from "react"
+import { useChartCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
 
 export const ChartCustomizationOptions = ({
   triggerSize,
   dropdownSize,
 }: {
-  triggerSize?: string;
-  dropdownSize?: string;
+  triggerSize?: string
+  dropdownSize?: string
 }) => {
   const {
     chartHorizontalLineColor,
@@ -23,7 +23,7 @@ export const ChartCustomizationOptions = ({
     toolTipBackgroundColor,
     toolTipTextColor,
     toolTipNumberColor,
-  } = useChartCustomizationOption();
+  } = useChartCustomizationOption()
 
   return (
     <OptionWithSwitch
@@ -37,7 +37,7 @@ export const ChartCustomizationOptions = ({
             updateDashboardCustomization(
               "useChartCustomization",
               "chartHorizontalLineColor",
-              val,
+              val
             ),
         },
         dateColor: {
@@ -47,7 +47,7 @@ export const ChartCustomizationOptions = ({
             updateDashboardCustomization(
               "useChartCustomization",
               "chartDateColor",
-              val,
+              val
             ),
         },
         primaryColor: {
@@ -57,7 +57,7 @@ export const ChartCustomizationOptions = ({
             updateDashboardCustomization(
               "useChartCustomization",
               "chartPrimaryColor",
-              val,
+              val
             ),
         },
         secondaryColor: {
@@ -67,7 +67,7 @@ export const ChartCustomizationOptions = ({
             updateDashboardCustomization(
               "useChartCustomization",
               "chartSecondaryColor",
-              val,
+              val
             ),
         },
         tertiaryColor: {
@@ -77,7 +77,7 @@ export const ChartCustomizationOptions = ({
             updateDashboardCustomization(
               "useChartCustomization",
               "chartTertiaryColor",
-              val,
+              val
             ),
         },
         legendTextColor: {
@@ -87,7 +87,7 @@ export const ChartCustomizationOptions = ({
             updateDashboardCustomization(
               "useChartCustomization",
               "chartLegendTextColor",
-              val,
+              val
             ),
         },
         toolTipChartDateColor: {
@@ -97,7 +97,7 @@ export const ChartCustomizationOptions = ({
             updateDashboardCustomization(
               "useChartCustomization",
               "toolTipChartDateColor",
-              val,
+              val
             ),
         },
         toolTipBackgroundColor: {
@@ -107,7 +107,7 @@ export const ChartCustomizationOptions = ({
             updateDashboardCustomization(
               "useChartCustomization",
               "toolTipBackgroundColor",
-              val,
+              val
             ),
         },
         toolTipTextColor: {
@@ -117,7 +117,7 @@ export const ChartCustomizationOptions = ({
             updateDashboardCustomization(
               "useChartCustomization",
               "toolTipTextColor",
-              val,
+              val
             ),
         },
         toolTipNumberColor: {
@@ -127,10 +127,10 @@ export const ChartCustomizationOptions = ({
             updateDashboardCustomization(
               "useChartCustomization",
               "toolTipNumberColor",
-              val,
+              val
             ),
         },
       }}
     />
-  );
-};
+  )
+}

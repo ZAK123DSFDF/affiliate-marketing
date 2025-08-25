@@ -1,19 +1,19 @@
 // app/create-company/page.tsx
-"use client";
+"use client"
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
+import { useMutation } from "@tanstack/react-query"
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 import {
   Form,
   FormControl,
@@ -21,13 +21,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/components/ui/form"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { CreateOrganization } from "@/app/create-company/action";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Loader2 } from "lucide-react"
+import { CreateOrganization } from "@/app/create-company/action"
 
 export const companySchema = z.object({
   name: z.string().min(2),
@@ -36,7 +36,7 @@ export const companySchema = z.object({
     .min(2)
     .regex(
       /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}|localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/i,
-      "Invalid domain format (e.g., 'example.com' or 'localhost')",
+      "Invalid domain format (e.g., 'example.com' or 'localhost')"
     ),
   logoUrl: z.string().url().optional().or(z.literal("")),
   referralParam: z.enum(["ref", "via", "aff"]),
@@ -47,9 +47,9 @@ export const companySchema = z.object({
   commissionDurationValue: z.coerce.number().min(1),
   commissionDurationUnit: z.enum(["day", "week", "month", "year"]),
   currency: z.enum(["USD", "EUR", "GBP", "CAD", "AUD"]),
-});
+})
 
-type CompanySchema = z.infer<typeof companySchema>;
+type CompanySchema = z.infer<typeof companySchema>
 
 export default function CreateCompany() {
   const form = useForm<CompanySchema>({
@@ -67,10 +67,10 @@ export default function CreateCompany() {
       commissionDurationUnit: "day",
       currency: "USD",
     },
-  });
+  })
 
-  const { toast } = useToast();
-  const router = useRouter();
+  const { toast } = useToast()
+  const router = useRouter()
 
   const { mutate, isPending } = useMutation({
     mutationFn: CreateOrganization,
@@ -78,19 +78,19 @@ export default function CreateCompany() {
       toast({
         title: "Company created successfully!",
         description: "Your organization is ready to use.",
-      });
-      router.push("/dashboard");
+      })
+      router.push("/dashboard")
     },
     onError: (err: any) => {
       toast({
         variant: "destructive",
         title: "Error creating company",
         description: err.message ?? "Something went wrong.",
-      });
+      })
     },
-  });
+  })
 
-  const onSubmit = (data: CompanySchema) => mutate(data);
+  const onSubmit = (data: CompanySchema) => mutate(data)
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -385,5 +385,5 @@ export default function CreateCompany() {
         </Card>
       </div>
     </div>
-  );
+  )
 }

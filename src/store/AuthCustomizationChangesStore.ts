@@ -1,11 +1,11 @@
-import { create } from "zustand";
+import { create } from "zustand"
 
-type AuthCustomizationChanges = Record<string, Record<string, any>>;
+type AuthCustomizationChanges = Record<string, Record<string, any>>
 
 interface AuthCustomizationChangesState {
-  changes: AuthCustomizationChanges;
-  setChange: (storeKey: string, key: string, value: any) => void;
-  resetChanges: () => void;
+  changes: AuthCustomizationChanges
+  setChange: (storeKey: string, key: string, value: any) => void
+  resetChanges: () => void
 }
 
 export const useAuthCustomizationChangesStore =
@@ -22,4 +22,4 @@ export const useAuthCustomizationChangesStore =
         },
       })),
     resetChanges: () => set({ changes: {} }),
-  }));
+  }))

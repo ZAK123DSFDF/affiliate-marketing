@@ -1,8 +1,8 @@
-import React, { Suspense } from "react";
-import ResetPassword from "@/components/pages/Reset-password";
-import { validateOrg } from "@/util/ValidateOrg";
-import { redirect } from "next/navigation";
-import { OrgIdProps } from "@/lib/types/orgId";
+import React, { Suspense } from "react"
+import ResetPassword from "@/components/pages/Reset-password"
+import { validateOrg } from "@/util/ValidateOrg"
+import { redirect } from "next/navigation"
+import { OrgIdProps } from "@/lib/types/orgId"
 
 const resetPasswordPage = async () => {
   return (
@@ -11,6 +11,6 @@ const resetPasswordPage = async () => {
         <ResetPassword affiliate={false} />
       </Suspense>
     </>
-  );
-};
-export default resetPasswordPage;
+  )
+}
+export default resetPasswordPage

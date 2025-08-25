@@ -1,46 +1,46 @@
-"use client";
+"use client"
 
-import React, { useEffect } from "react";
-import { Pie, PieChart } from "recharts";
+import React, { useEffect } from "react"
+import { Pie, PieChart } from "recharts"
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   ChartConfig,
-} from "@/components/ui/chart";
-import MonthSelect from "@/components/ui-custom/MonthSelect";
-import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
-import { Separator } from "@/components/ui/separator";
+} from "@/components/ui/chart"
+import MonthSelect from "@/components/ui-custom/MonthSelect"
+import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
+import { Separator } from "@/components/ui/separator"
 import {
   useDashboardCardCustomizationOption,
   useDashboardThemeCustomizationOption,
   usePieChartCustomizationOption,
-} from "@/hooks/useDashboardCustomization";
-import { PieChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/PieChartCustomization";
-import { getShadowWithColor } from "@/util/GetShadowWithColor";
-import { toValidShadowSize } from "@/util/ValidateShadowColor";
+} from "@/hooks/useDashboardCustomization"
+import { PieChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/PieChartCustomization"
+import { getShadowWithColor } from "@/util/GetShadowWithColor"
+import { toValidShadowSize } from "@/util/ValidateShadowColor"
 import {
   AffiliateReferrerStat,
   SellerReferrerStat,
-} from "@/lib/types/affiliateReferrerStat";
-import { useSearch } from "@/hooks/useSearch";
-import { getAffiliateReferrers } from "@/app/affiliate/[orgId]/dashboard/action";
+} from "@/lib/types/affiliateReferrerStat"
+import { useSearch } from "@/hooks/useSearch"
+import { getAffiliateReferrers } from "@/app/affiliate/[orgId]/dashboard/action"
 import {
   getSellerKpiStats,
   getSellerReferrer,
-} from "@/app/seller/[orgId]/dashboard/action";
-import { useQueryFilter } from "@/hooks/useQueryFilter";
+} from "@/app/seller/[orgId]/dashboard/action"
+import { useQueryFilter } from "@/hooks/useQueryFilter"
 
 const chartConfig: ChartConfig = {
   visitors: { label: "Visitors" },
-};
+}
 
 export default function SocialTrafficPieChart({
   orgId,
@@ -48,20 +48,20 @@ export default function SocialTrafficPieChart({
   isPreview = false,
   affiliate = false,
 }: {
-  orgId: string;
-  referrerStats?: AffiliateReferrerStat[];
-  isPreview?: boolean;
-  affiliate: boolean;
+  orgId: string
+  referrerStats?: AffiliateReferrerStat[]
+  isPreview?: boolean
+  affiliate: boolean
 }) {
-  const innerRadius = isPreview ? 60 : 100;
-  const outerRadius = isPreview ? 90 : 140;
-  const ThemeCustomization = useDashboardThemeCustomizationOption();
-  const pieCustomization = usePieChartCustomizationOption();
-  const dashboardCard = useDashboardCardCustomizationOption();
+  const innerRadius = isPreview ? 60 : 100
+  const outerRadius = isPreview ? 90 : 140
+  const ThemeCustomization = useDashboardThemeCustomizationOption()
+  const pieCustomization = usePieChartCustomizationOption()
+  const dashboardCard = useDashboardCardCustomizationOption()
   const { filters, setFilters } = useQueryFilter({
     yearKey: "sourceYear",
     monthKey: "sourceMonth",
-  });
+  })
   const { data: affiliateData, isPending: affiliatePending } = useSearch(
     ["affiliate-source", orgId, filters.year, filters.month],
     getAffiliateReferrers,
@@ -73,8 +73,8 @@ export default function SocialTrafficPieChart({
         (filters.year || filters.month) &&
         !isPreview
       ),
-    },
-  );
+    }
+  )
   const { data: sellerData, isPending: sellerPending } = useSearch(
     ["seller-source", orgId, filters.year, filters.month],
     getSellerReferrer,
@@ -86,25 +86,25 @@ export default function SocialTrafficPieChart({
         (filters.year || filters.month) &&
         !isPreview
       ),
-    },
-  );
-  const searchData = affiliate ? affiliateData : sellerData;
-  const searchPending = affiliate ? affiliatePending : sellerPending;
+    }
+  )
+  const searchData = affiliate ? affiliateData : sellerData
+  const searchPending = affiliate ? affiliatePending : sellerPending
   const effectiveData: AffiliateReferrerStat[] = React.useMemo(() => {
     if (affiliate && searchData) {
-      return searchData as AffiliateReferrerStat[];
+      return searchData as AffiliateReferrerStat[]
     }
     if (!affiliate && searchData) {
-      return searchData as SellerReferrerStat[];
+      return searchData as SellerReferrerStat[]
     }
 
-    return referrerStats || [];
-  }, [searchData, referrerStats, affiliate]);
+    return referrerStats || []
+  }, [searchData, referrerStats, affiliate])
   useEffect(() => {
-    console.log("search data", searchData);
-  }, [searchData]);
+    console.log("search data", searchData)
+  }, [searchData])
   const chartData = React.useMemo(() => {
-    if (!effectiveData || effectiveData.length === 0) return [];
+    if (!effectiveData || effectiveData.length === 0) return []
 
     const colorPalette = [
       pieCustomization.pieColor1 || "#ef4444",
@@ -116,14 +116,14 @@ export default function SocialTrafficPieChart({
       pieCustomization.pieColor7 || "#3b82f6",
       pieCustomization.pieColor8 || "#0ea5e9",
       pieCustomization.pieFallbackColor || "#a855f7",
-    ];
+    ]
 
     return effectiveData.map((stat, index) => ({
       platform: stat.referrer,
       visitors: stat.clicks,
       fill: colorPalette[index % colorPalette.length],
-    }));
-  }, [effectiveData, pieCustomization]);
+    }))
+  }, [effectiveData, pieCustomization])
   return (
     <Card
       className={`${isPreview ? "h-[340px]" : "h-[480px]"} flex flex-col relative`}
@@ -137,7 +137,7 @@ export default function SocialTrafficPieChart({
           dashboardCard.dashboardCardShadow !== "none"
             ? getShadowWithColor(
                 toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
-                dashboardCard.dashboardCardShadowColor,
+                dashboardCard.dashboardCardShadowColor
               )
             : "",
         border:
@@ -255,5 +255,5 @@ export default function SocialTrafficPieChart({
         </div>
       )}
     </Card>
-  );
+  )
 }

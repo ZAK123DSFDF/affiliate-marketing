@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
-import React from "react";
-import { usePieChartCustomizationOption } from "@/hooks/useDashboardCustomization";
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
+import React from "react"
+import { usePieChartCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
 
 export const PieChartCustomizationOptions = ({
   triggerSize,
   dropdownSize,
 }: {
-  triggerSize?: string;
-  dropdownSize?: string;
+  triggerSize?: string
+  dropdownSize?: string
 }) => {
   const {
     pieColor1,
@@ -22,7 +22,7 @@ export const PieChartCustomizationOptions = ({
     pieColor7,
     pieColor8,
     pieFallbackColor,
-  } = usePieChartCustomizationOption();
+  } = usePieChartCustomizationOption()
 
   return (
     <OptionWithSwitch
@@ -36,7 +36,7 @@ export const PieChartCustomizationOptions = ({
             updateDashboardCustomization(
               "usePieChartColorCustomization",
               "pieColor1",
-              val,
+              val
             ),
         },
         pieColor2: {
@@ -46,7 +46,7 @@ export const PieChartCustomizationOptions = ({
             updateDashboardCustomization(
               "usePieChartColorCustomization",
               "pieColor2",
-              val,
+              val
             ),
         },
         pieColor3: {
@@ -56,7 +56,7 @@ export const PieChartCustomizationOptions = ({
             updateDashboardCustomization(
               "usePieChartColorCustomization",
               "pieColor3",
-              val,
+              val
             ),
         },
         pieColor4: {
@@ -66,7 +66,7 @@ export const PieChartCustomizationOptions = ({
             updateDashboardCustomization(
               "usePieChartColorCustomization",
               "pieColor4",
-              val,
+              val
             ),
         },
         pieColor5: {
@@ -76,7 +76,7 @@ export const PieChartCustomizationOptions = ({
             updateDashboardCustomization(
               "usePieChartColorCustomization",
               "pieColor5",
-              val,
+              val
             ),
         },
         pieColor6: {
@@ -86,7 +86,7 @@ export const PieChartCustomizationOptions = ({
             updateDashboardCustomization(
               "usePieChartColorCustomization",
               "pieColor6",
-              val,
+              val
             ),
         },
         pieColor7: {
@@ -96,7 +96,7 @@ export const PieChartCustomizationOptions = ({
             updateDashboardCustomization(
               "usePieChartColorCustomization",
               "pieColor7",
-              val,
+              val
             ),
         },
         pieColor8: {
@@ -106,7 +106,7 @@ export const PieChartCustomizationOptions = ({
             updateDashboardCustomization(
               "usePieChartColorCustomization",
               "pieColor8",
-              val,
+              val
             ),
         },
         pieFallbackColor: {
@@ -116,10 +116,10 @@ export const PieChartCustomizationOptions = ({
             updateDashboardCustomization(
               "usePieChartColorCustomization",
               "pieFallbackColor",
-              val,
+              val
             ),
         },
       }}
     />
-  );
-};
+  )
+}

@@ -1,14 +1,14 @@
 import {
   AffiliateKpiStats,
   SellerKpiStats,
-} from "@/lib/types/affiliateKpiStats";
+} from "@/lib/types/affiliateKpiStats"
 import {
   DollarSign,
   Link,
   MousePointer,
   ShoppingCart,
   Users,
-} from "lucide-react";
+} from "lucide-react"
 
 export const mapAffiliateStats = (stats: AffiliateKpiStats) => [
   { label: "Total Links", value: stats.totalLinks, icon: Link },
@@ -29,7 +29,7 @@ export const mapAffiliateStats = (stats: AffiliateKpiStats) => [
     value: `$${stats.totalCommissionUnpaid}`,
     icon: DollarSign,
   },
-];
+]
 
 export const mapSellerStats = (stats: SellerKpiStats) => [
   { label: "Total Links", value: stats.totalLinks, icon: Link },
@@ -60,4 +60,4 @@ export const mapSellerStats = (stats: SellerKpiStats) => [
     value: `$${stats.totalAmount}`,
     icon: DollarSign,
   },
-];
+]

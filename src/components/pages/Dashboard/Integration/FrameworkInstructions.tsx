@@ -1,15 +1,15 @@
-"use client";
+"use client"
 
-import React from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { CopyButton } from "@/components/ui/copy-button";
-import { Card } from "@/components/ui/card";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import React from "react"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { CopyButton } from "@/components/ui/copy-button"
+import { Card } from "@/components/ui/card"
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
+import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 const scriptUrl =
-  "https://affiliate-marketing-ten.vercel.app/affiliateTrackingJavascript.js";
+  "https://affiliate-marketing-ten.vercel.app/affiliateTrackingJavascript.js"
 
 const frameworks = [
   {
@@ -40,7 +40,7 @@ const frameworks = [
     code: `<script src="${scriptUrl}"></script>`,
     language: "html",
   },
-];
+]
 
 export default function FrameworkInstructions() {
   return (
@@ -94,5 +94,5 @@ export default function FrameworkInstructions() {
         ))}
       </Tabs>
     </div>
-  );
+  )
 }

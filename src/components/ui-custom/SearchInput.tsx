@@ -1,12 +1,12 @@
-import { Input } from "@/components/ui/input";
-import { useEffect, useRef, useState } from "react";
+import { Input } from "@/components/ui/input"
+import { useEffect, useRef, useState } from "react"
 
 interface SearchInputProps {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  className?: string;
-  debounceMs?: number;
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
+  className?: string
+  debounceMs?: number
 }
 
 export function SearchInput({
@@ -16,21 +16,21 @@ export function SearchInput({
   className = "max-w-sm",
   debounceMs = 400,
 }: SearchInputProps) {
-  const [localValue, setLocalValue] = useState(value);
-  const timerRef = useRef<number | null>(null);
+  const [localValue, setLocalValue] = useState(value)
+  const timerRef = useRef<number | null>(null)
   useEffect(() => {
-    setLocalValue(value);
-  }, [value]);
+    setLocalValue(value)
+  }, [value])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const next = e.target.value;
-    setLocalValue(next);
+    const next = e.target.value
+    setLocalValue(next)
 
-    if (timerRef.current) window.clearTimeout(timerRef.current);
+    if (timerRef.current) window.clearTimeout(timerRef.current)
     timerRef.current = window.setTimeout(() => {
-      onChange(next);
-    }, debounceMs);
-  };
+      onChange(next)
+    }, debounceMs)
+  }
 
   return (
     <Input
@@ -39,5 +39,5 @@ export function SearchInput({
       onChange={handleChange}
       className={className}
     />
-  );
+  )
 }

@@ -1,10 +1,10 @@
-import React from "react";
+import React from "react"
 
 const successPage = () => {
   return (
     <>
       <div>this is the success page</div>
     </>
-  );
-};
-export default successPage;
+  )
+}
+export default successPage

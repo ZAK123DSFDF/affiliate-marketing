@@ -1,62 +1,62 @@
-"use client";
-import React, { useState, useMemo, useEffect } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { AuthCustomization } from "@/components/pages/Dashboard/Customization/AuthCustomization";
-import { DashboardCustomization } from "@/components/pages/Dashboard/Customization/DashboardCustomization";
-import { ToastCustomization } from "@/components/ui-custom/Customization/ToastCustomization";
-import { useMutation } from "@tanstack/react-query";
-import { saveCustomizationsAction } from "@/app/seller/[orgId]/dashboard/customization/action";
-import { getAuthCustomizationChanges } from "@/customization/Auth/AuthCustomizationChanges";
-import { useAuthCustomizationChangesStore } from "@/store/AuthCustomizationChangesStore";
-import { useDashboardCustomizationChangesStore } from "@/store/DashboardCustomizationChangesStore";
-import { getDashboardCustomizationChanges } from "@/customization/Dashboard/DashboardCustomizationChanges";
-import { Button } from "@/components/ui/button";
-import { useRouter, useSearchParams } from "next/navigation";
+"use client"
+import React, { useState, useMemo, useEffect } from "react"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { AuthCustomization } from "@/components/pages/Dashboard/Customization/AuthCustomization"
+import { DashboardCustomization } from "@/components/pages/Dashboard/Customization/DashboardCustomization"
+import { ToastCustomization } from "@/components/ui-custom/Customization/ToastCustomization"
+import { useMutation } from "@tanstack/react-query"
+import { saveCustomizationsAction } from "@/app/seller/[orgId]/dashboard/customization/action"
+import { getAuthCustomizationChanges } from "@/customization/Auth/AuthCustomizationChanges"
+import { useAuthCustomizationChangesStore } from "@/store/AuthCustomizationChangesStore"
+import { useDashboardCustomizationChangesStore } from "@/store/DashboardCustomizationChangesStore"
+import { getDashboardCustomizationChanges } from "@/customization/Dashboard/DashboardCustomizationChanges"
+import { Button } from "@/components/ui/button"
+import { useRouter, useSearchParams } from "next/navigation"
 
 export default function CustomizationPage({ orgId }: { orgId: string }) {
-  const [mainTab, setMainTab] = useState("sidebar");
+  const [mainTab, setMainTab] = useState("sidebar")
   // Watch store changes so we can reactively compute payload
-  const authChangesState = useAuthCustomizationChangesStore((s) => s.changes);
+  const authChangesState = useAuthCustomizationChangesStore((s) => s.changes)
   const dashboardChangesState = useDashboardCustomizationChangesStore(
-    (s) => s.changes,
-  );
+    (s) => s.changes
+  )
   const payload = useMemo(() => {
-    const authChanges = getAuthCustomizationChanges();
-    const dashboardChanges = getDashboardCustomizationChanges();
-    const result: Record<string, any> = {};
-    if (Object.keys(authChanges).length > 0) result.auth = authChanges;
+    const authChanges = getAuthCustomizationChanges()
+    const dashboardChanges = getDashboardCustomizationChanges()
+    const result: Record<string, any> = {}
+    if (Object.keys(authChanges).length > 0) result.auth = authChanges
     if (Object.keys(dashboardChanges).length > 0)
-      result.dashboard = dashboardChanges;
-    return result;
-  }, [authChangesState, dashboardChangesState]);
+      result.dashboard = dashboardChanges
+    return result
+  }, [authChangesState, dashboardChangesState])
 
-  const hasChanges = Object.keys(payload).length > 0;
+  const hasChanges = Object.keys(payload).length > 0
 
   const mutation = useMutation({
     mutationFn: async () => {
-      console.log("🟢 Changes before send:", payload);
+      console.log("🟢 Changes before send:", payload)
       if (!hasChanges) {
-        console.log("⚪ No changes to save");
-        return { success: true };
+        console.log("⚪ No changes to save")
+        return { success: true }
       }
-      return await saveCustomizationsAction(orgId, payload);
+      return await saveCustomizationsAction(orgId, payload)
     },
     onSuccess: () => {
-      console.log("✅ Customizations saved");
-      useAuthCustomizationChangesStore.getState().resetChanges();
-      useDashboardCustomizationChangesStore.getState().resetChanges();
+      console.log("✅ Customizations saved")
+      useAuthCustomizationChangesStore.getState().resetChanges()
+      useDashboardCustomizationChangesStore.getState().resetChanges()
     },
     onError: (error) => {
-      console.error("❌ Save failed:", error);
+      console.error("❌ Save failed:", error)
     },
-  });
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  })
+  const router = useRouter()
+  const searchParams = useSearchParams()
   useEffect(() => {
     if (searchParams.size > 0) {
-      router.replace("?", { scroll: false });
+      router.replace("?", { scroll: false })
     }
-  }, []);
+  }, [])
   return (
     <div className="p-6 space-y-6">
       <div>
@@ -96,5 +96,5 @@ export default function CustomizationPage({ orgId }: { orgId: string }) {
         </Button>
       </div>
     </div>
-  );
+  )
 }

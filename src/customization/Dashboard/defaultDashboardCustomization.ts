@@ -116,4 +116,4 @@ export const defaultDashboardCustomization = {
     pieColor8: "",
     pieFallbackColor: "",
   },
-};
+}

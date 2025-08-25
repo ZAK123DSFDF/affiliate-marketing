@@ -6,5 +6,5 @@ export type OrderBy =
   | "email"
   | "commissionPaid"
   | "commissionUnpaid"
-  | "none";
-export type OrderDir = "asc" | "desc";
+  | "none"
+export type OrderDir = "asc" | "desc"

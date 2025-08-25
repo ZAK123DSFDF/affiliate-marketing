@@ -1,24 +1,24 @@
 // components/pages/Check/Check.tsx
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { fetchData, logMessage, saveToDB } from "@/app/check/checkActions";
+import React, { useState } from "react"
+import { fetchData, logMessage, saveToDB } from "@/app/check/checkActions"
 
 const Check = () => {
-  const [data, setData] = useState("");
+  const [data, setData] = useState("")
 
   const handleLog = async () => {
-    await logMessage();
-  };
+    await logMessage()
+  }
 
   const handleSave = async () => {
-    await saveToDB("Sample data");
-  };
+    await saveToDB("Sample data")
+  }
 
   const handleFetch = async () => {
-    const result = await fetchData();
-    setData(result);
-  };
+    const result = await fetchData()
+    setData(result)
+  }
 
   return (
     <div className="space-y-4">
@@ -45,7 +45,7 @@ const Check = () => {
 
       {data && <p>Received: {data}</p>}
     </div>
-  );
-};
+  )
+}
 
-export default Check;
+export default Check

@@ -175,7 +175,7 @@ function handleCheckout() {
   }
 </script>
 `,
-};
+}
 export const serverSnippets = {
   Nextjs_serverAction: `// Next.js Server Action (App Router)
 /app/actions/paddle/createCheckoutSession.ts
@@ -322,18 +322,18 @@ export default defineEventHandler(async (event) => {
 
   return { url: session.url };
 });`,
-};
+}
 export const serverLabels = {
   Nextjs_serverAction: "Next.js Server Action",
   Nextjs_apiRoutes: "Next.js API Routes",
   express: "Express",
   sveltekit: "SvelteKit",
   nuxt: "Nuxt",
-};
+}
 export const clientLabels = {
   react: "React",
   vue: "Vue 3",
   nuxt: "Nuxt 3",
   svelte: "Svelte",
   sveltekit: "SvelteKit",
-};
+}

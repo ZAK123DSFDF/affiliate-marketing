@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 import {
   Table,
   TableBody,
@@ -6,24 +6,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { flexRender, Table as ReactTable } from "@tanstack/react-table";
-import React, { useState } from "react";
-import { useTableCustomizationOption } from "@/hooks/useDashboardCustomization";
+} from "@/components/ui/table"
+import { flexRender, Table as ReactTable } from "@tanstack/react-table"
+import React, { useState } from "react"
+import { useTableCustomizationOption } from "@/hooks/useDashboardCustomization"
 
 type TableProps<TData> = {
-  table: ReactTable<TData>;
-  affiliate: boolean;
-  isPreview?: boolean;
-};
+  table: ReactTable<TData>
+  affiliate: boolean
+  isPreview?: boolean
+}
 export const TableContent = <TData,>({
   table,
   affiliate,
   isPreview,
 }: TableProps<TData>) => {
-  const dashboardTable = useTableCustomizationOption();
-  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
-  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
+  const dashboardTable = useTableCustomizationOption()
+  const [isHeaderHovered, setIsHeaderHovered] = useState(false)
+  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null)
   return (
     <div
       className={cn("rounded-md border overflow-hidden", isPreview && "mb-4")}
@@ -61,7 +61,7 @@ export const TableContent = <TData,>({
                 >
                   {flexRender(
                     header.column.columnDef.header,
-                    header.getContext(),
+                    header.getContext()
                   )}
                 </TableHead>
               ))}
@@ -70,8 +70,8 @@ export const TableContent = <TData,>({
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row, idx, allRows) => {
-            const isHovered = hoveredRowId === row.id;
-            const defaultHoverBg = "#f9fafb";
+            const isHovered = hoveredRowId === row.id
+            const defaultHoverBg = "#f9fafb"
 
             return (
               <TableRow
@@ -82,7 +82,7 @@ export const TableContent = <TData,>({
                   "group",
                   idx === 0 && "rounded-t-md",
                   idx === allRows.length - 1 && "rounded-b-md",
-                  "overflow-hidden",
+                  "overflow-hidden"
                 )}
                 style={{
                   backgroundColor: isHovered
@@ -102,10 +102,10 @@ export const TableContent = <TData,>({
                   </TableCell>
                 ))}
               </TableRow>
-            );
+            )
           })}
         </TableBody>
       </Table>
     </div>
-  );
-};
+  )
+}

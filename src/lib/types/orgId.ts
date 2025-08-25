@@ -1,3 +1,3 @@
 export interface OrgIdProps {
-  params: Promise<{ orgId: string }>;
+  params: Promise<{ orgId: string }>
 }

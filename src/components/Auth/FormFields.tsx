@@ -1,31 +1,31 @@
-"use client";
-import { Eye, EyeOff } from "lucide-react";
+"use client"
+import { Eye, EyeOff } from "lucide-react"
 import {
   FormField,
   FormItem,
   FormLabel,
   FormControl,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
+import { useState } from "react"
 import {
   useCardCustomizationOption,
   useCheckboxCustomizationOption,
   useInputCustomizationOption,
-} from "@/hooks/useAuthCustomization";
+} from "@/hooks/useAuthCustomization"
 
 type InputFieldProps = {
-  control: any;
-  name: string;
-  label: string;
-  placeholder: string;
-  type: "email" | "password" | "text";
-  icon?: React.ElementType;
-  showPasswordToggle?: boolean;
-  profile?: boolean;
-  affiliate: boolean;
-};
+  control: any
+  name: string
+  label: string
+  placeholder: string
+  type: "email" | "password" | "text"
+  icon?: React.ElementType
+  showPasswordToggle?: boolean
+  profile?: boolean
+  affiliate: boolean
+}
 
 export const InputField = ({
   control,
@@ -38,8 +38,8 @@ export const InputField = ({
   profile = false,
   affiliate,
 }: InputFieldProps) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const Icon = icon;
+  const [showPassword, setShowPassword] = useState(false)
+  const Icon = icon
   const {
     inputBorderColor,
     inputErrorBorderColor,
@@ -50,8 +50,8 @@ export const InputField = ({
     inputBorderFocusColor,
     inputLabelErrorColor,
     inputTextColor,
-  } = useInputCustomizationOption();
-  const { cardBackgroundColor } = useCardCustomizationOption();
+  } = useInputCustomizationOption()
+  const { cardBackgroundColor } = useCardCustomizationOption()
   return (
     <FormField
       control={control}
@@ -146,15 +146,15 @@ export const InputField = ({
         </FormItem>
       )}
     />
-  );
-};
+  )
+}
 
 type CheckboxFieldProps = {
-  control: any;
-  name: string;
-  label: string;
-  affiliate?: boolean;
-};
+  control: any
+  name: string
+  label: string
+  affiliate?: boolean
+}
 
 export const CheckboxField = ({
   control,
@@ -163,7 +163,7 @@ export const CheckboxField = ({
   affiliate,
 }: CheckboxFieldProps) => {
   const { checkboxActiveColor, checkboxInactiveColor, checkboxLabelColor } =
-    useCheckboxCustomizationOption();
+    useCheckboxCustomizationOption()
   return (
     <FormField
       control={control}
@@ -197,8 +197,8 @@ export const CheckboxField = ({
               </FormLabel>
             </div>
           </FormItem>
-        );
+        )
       }}
     />
-  );
-};
+  )
+}

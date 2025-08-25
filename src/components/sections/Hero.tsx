@@ -1,5 +1,5 @@
-import React from "react";
-import AnimatedButton from "@/components/ui-custom/AnimatedButton";
+import React from "react"
+import AnimatedButton from "@/components/ui-custom/AnimatedButton"
 
 const Hero = () => {
   return (
@@ -64,7 +64,7 @@ const Hero = () => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default Hero;
+export default Hero

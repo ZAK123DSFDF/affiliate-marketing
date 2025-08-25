@@ -1,15 +1,15 @@
-import { useTableCustomizationOption } from "@/hooks/useDashboardCustomization";
-import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
+import { useTableCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
 
 export const TableCustomizationOptions = ({
   triggerSize,
   dropdownSize,
   type = "payment", // default type is "payment"
 }: {
-  triggerSize?: string;
-  dropdownSize?: string;
-  type?: "link" | "payment";
+  triggerSize?: string
+  dropdownSize?: string
+  type?: "link" | "payment"
 }) => {
   const {
     tableHeaderTextColor,
@@ -28,7 +28,7 @@ export const TableCustomizationOptions = ({
     tableRowBadgePaidBackgroundColor,
     tableBorderColor,
     setTableColor,
-  } = useTableCustomizationOption();
+  } = useTableCustomizationOption()
 
   const properties: any = {
     tableHeaderTextColor: {
@@ -38,7 +38,7 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableHeaderTextColor",
-          val,
+          val
         ),
     },
     tableHoverBackgroundColor: {
@@ -48,7 +48,7 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableHoverBackgroundColor",
-          val,
+          val
         ),
     },
     tableIconColor: {
@@ -58,7 +58,7 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableIconColor",
-          val,
+          val
         ),
     },
     tableIconHoverColor: {
@@ -68,7 +68,7 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableIconHoverColor",
-          val,
+          val
         ),
     },
     tableIconHoverBackgroundColor: {
@@ -78,7 +78,7 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableIconHoverBackgroundColor",
-          val,
+          val
         ),
     },
     tableRowTertiaryTextColor: {
@@ -88,7 +88,7 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableRowTertiaryTextColor",
-          val,
+          val
         ),
     },
     tableBorderColor: {
@@ -98,10 +98,10 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableBorderColor",
-          val,
+          val
         ),
     },
-  };
+  }
 
   // Add conditionally based on type
   if (type === "payment") {
@@ -112,9 +112,9 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableRowPrimaryTextColor",
-          val,
+          val
         ),
-    };
+    }
     properties.tableRowBadgeOverDueTextColor = {
       label: "Table Badge Overdue Text Color",
       value: tableRowBadgeOverDueTextColor,
@@ -122,9 +122,9 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableRowBadgeOverDueTextColor",
-          val,
+          val
         ),
-    };
+    }
     properties.tableRowBadgeOverDueBackgroundColor = {
       label: "Table Badge Overdue Background",
       value: tableRowBadgeOverDueBackgroundColor,
@@ -132,9 +132,9 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableRowBadgeOverDueBackgroundColor",
-          val,
+          val
         ),
-    };
+    }
     properties.tableRowBadgePendingTextColor = {
       label: "Table Badge Pending Text Color",
       value: tableRowBadgePendingTextColor,
@@ -142,9 +142,9 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableRowBadgePendingTextColor",
-          val,
+          val
         ),
-    };
+    }
     properties.tableRowBadgePendingBackgroundColor = {
       label: "Table Badge Pending Background",
       value: tableRowBadgePendingBackgroundColor,
@@ -152,9 +152,9 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableRowBadgePendingBackgroundColor",
-          val,
+          val
         ),
-    };
+    }
     properties.tableRowBadgePaidTextColor = {
       label: "Table Badge Paid Text Color",
       value: tableRowBadgePaidTextColor,
@@ -162,9 +162,9 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableRowBadgePaidTextColor",
-          val,
+          val
         ),
-    };
+    }
     properties.tableRowBadgePaidBackgroundColor = {
       label: "Table Badge Paid Background",
       value: tableRowBadgePaidBackgroundColor,
@@ -172,9 +172,9 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableRowBadgePaidBackgroundColor",
-          val,
+          val
         ),
-    };
+    }
   } else if (type === "link") {
     properties.tableRowSecondaryTextColor = {
       label: "Table Row Secondary Text Color",
@@ -183,9 +183,9 @@ export const TableCustomizationOptions = ({
         updateDashboardCustomization(
           "useTableCustomization",
           "tableRowSecondaryTextColor",
-          val,
+          val
         ),
-    };
+    }
   }
 
   return (
@@ -194,5 +194,5 @@ export const TableCustomizationOptions = ({
       dropdownSize={dropdownSize}
       properties={properties}
     />
-  );
-};
+  )
+}

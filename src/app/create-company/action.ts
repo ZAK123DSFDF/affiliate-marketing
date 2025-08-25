@@ -1,51 +1,51 @@
-"use server";
+"use server"
 
-import { cookies } from "next/headers";
-import { returnError } from "@/lib/errorHandler";
+import { cookies } from "next/headers"
+import { returnError } from "@/lib/errorHandler"
 import {
   organization,
   organizationAuthCustomization,
   organizationDashboardCustomization,
   userToOrganization,
-} from "@/db/schema";
-import { db } from "@/db/drizzle";
-import { companySchema } from "@/components/pages/Create-Company";
-import { z } from "zod";
-import jwt from "jsonwebtoken";
-import { calculateExpirationDate } from "@/util/CalculateExpiration";
-import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization";
-import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization";
+} from "@/db/schema"
+import { db } from "@/db/drizzle"
+import { companySchema } from "@/components/pages/Create-Company"
+import { z } from "zod"
+import jwt from "jsonwebtoken"
+import { calculateExpirationDate } from "@/util/CalculateExpiration"
+import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization"
+import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization"
 
 export const CreateOrganization = async (
-  data: z.infer<typeof companySchema>,
+  data: z.infer<typeof companySchema>
 ) => {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
 
     if (!token) {
       throw {
         status: 401,
         error: "Unauthorized",
         toast: "You must be logged in to create an organization.",
-      };
+      }
     }
 
     const decoded = jwt.decode(token) as {
-      id: string;
-      email: string;
-      role: string;
-      type: string;
-    };
+      id: string
+      email: string
+      role: string
+      type: string
+    }
     const sanitizedDomain = data.domainName
       .replace(/^https?:\/\//i, "")
-      .replace(/\/$/, "");
-    const now = new Date();
+      .replace(/\/$/, "")
+    const now = new Date()
     const expirationDate = calculateExpirationDate(
       now,
       data.commissionDurationValue,
-      data.commissionDurationUnit,
-    );
+      data.commissionDurationUnit
+    )
     // Insert the new organization
     const [newOrg] = await db
       .insert(organization)
@@ -55,21 +55,21 @@ export const CreateOrganization = async (
         commissionValue: data.commissionValue.toFixed(2),
         expirationDate,
       })
-      .returning();
+      .returning()
 
     if (!newOrg) {
       throw {
         status: 500,
         error: "Organization creation failed",
         toast: "Failed to create organization. Please try again.",
-      };
+      }
     }
 
     // Link user to organization
     await db.insert(userToOrganization).values({
       userId: decoded.id,
       organizationId: newOrg.id,
-    });
+    })
     await db
       .insert(organizationAuthCustomization)
       .values({
@@ -79,7 +79,7 @@ export const CreateOrganization = async (
       .onConflictDoUpdate({
         target: organizationAuthCustomization.id,
         set: { auth: defaultAuthCustomization },
-      });
+      })
 
     await db
       .insert(organizationDashboardCustomization)
@@ -90,10 +90,10 @@ export const CreateOrganization = async (
       .onConflictDoUpdate({
         target: organizationDashboardCustomization.id,
         set: { dashboard: defaultDashboardCustomization },
-      });
-    return { ok: true, data: newOrg };
+      })
+    return { ok: true, data: newOrg }
   } catch (err) {
-    console.error("Organization create error", err);
-    return returnError(err);
+    console.error("Organization create error", err)
+    return returnError(err)
   }
-};
+}

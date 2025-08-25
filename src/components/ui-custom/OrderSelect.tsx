@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   Select,
@@ -6,17 +6,17 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select";
-import { OrderDir, OrderBy } from "@/lib/types/orderTypes";
+} from "@/components/ui/select"
+import { OrderDir, OrderBy } from "@/lib/types/orderTypes"
 
 interface Props {
-  value: { orderBy?: OrderBy; orderDir?: OrderDir };
-  onChange: (orderBy?: OrderBy, orderDir?: OrderDir) => void;
-  affiliate: boolean;
+  value: { orderBy?: OrderBy; orderDir?: OrderDir }
+  onChange: (orderBy?: OrderBy, orderDir?: OrderDir) => void
+  affiliate: boolean
 }
 
 export default function OrderSelect({ value, onChange, affiliate }: Props) {
-  const isNone = !value.orderBy || value.orderBy === "none";
+  const isNone = !value.orderBy || value.orderBy === "none"
   return (
     <div className="flex gap-2">
       {/* Order By Select */}
@@ -24,9 +24,9 @@ export default function OrderSelect({ value, onChange, affiliate }: Props) {
         value={value.orderBy ?? "none"}
         onValueChange={(orderBy) => {
           if (orderBy === "none") {
-            onChange(undefined, undefined);
+            onChange(undefined, undefined)
           } else {
-            onChange(orderBy as OrderBy, value.orderDir ?? "desc");
+            onChange(orderBy as OrderBy, value.orderDir ?? "desc")
           }
         }}
       >
@@ -82,5 +82,5 @@ export default function OrderSelect({ value, onChange, affiliate }: Props) {
         </SelectContent>
       </Select>
     </div>
-  );
+  )
 }

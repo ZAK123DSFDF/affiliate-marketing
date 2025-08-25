@@ -1,13 +1,13 @@
-import React from "react";
-import { cn } from "@/lib/utils";
+import React from "react"
+import { cn } from "@/lib/utils"
 
 interface TestimonialCardProps {
-  quote: string;
-  author: string;
-  role: string;
-  company: string;
-  image?: string;
-  className?: string;
+  quote: string
+  author: string
+  role: string
+  company: string
+  image?: string
+  className?: string
 }
 
 const TestimonialCard: React.FC<TestimonialCardProps> = ({
@@ -22,7 +22,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
     <div
       className={cn(
         "glass-card p-8 rounded-2xl transition-all duration-300",
-        className,
+        className
       )}
     >
       <div className="mb-6">
@@ -77,7 +77,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default TestimonialCard;
+export default TestimonialCard

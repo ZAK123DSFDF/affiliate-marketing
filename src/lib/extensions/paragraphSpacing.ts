@@ -1,4 +1,4 @@
-import { Extension } from "@tiptap/core";
+import { Extension } from "@tiptap/core"
 
 export const ParagraphSpacing = Extension.create({
   name: "paragraphSpacing",
@@ -16,7 +16,7 @@ export const ParagraphSpacing = Extension.create({
           },
         },
       },
-    ];
+    ]
   },
 
   addCommands() {
@@ -26,8 +26,8 @@ export const ParagraphSpacing = Extension.create({
         ({ commands }) => {
           return commands.updateAttributes("paragraph", {
             dataSpacing: spacing,
-          });
+          })
         },
-    };
+    }
   },
-});
+})

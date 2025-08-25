@@ -1,14 +1,14 @@
-"use client";
-import React from "react";
-import Cards from "@/components/ui-custom/Cards/Cards";
-import SocialTrafficCharts from "@/components/ui-custom/Chart/DataSourceChart";
-import { ChartDailyMetrics } from "@/components/ui-custom/Chart/SalesChart";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
-import PendingState from "@/components/ui-custom/PendingState";
-import ErrorState from "@/components/ui-custom/ErrorState";
-import { AffiliateKpiStats } from "@/lib/types/affiliateKpiStats";
-import { AffiliateReferrerStat } from "@/lib/types/affiliateReferrerStat";
-import { AffiliateKpiTimeSeries } from "@/lib/types/affiliateChartStats";
+"use client"
+import React from "react"
+import Cards from "@/components/ui-custom/Cards/Cards"
+import SocialTrafficCharts from "@/components/ui-custom/Chart/DataSourceChart"
+import { ChartDailyMetrics } from "@/components/ui-custom/Chart/SalesChart"
+import { useCustomizationSync } from "@/hooks/useCustomizationSync"
+import PendingState from "@/components/ui-custom/PendingState"
+import ErrorState from "@/components/ui-custom/ErrorState"
+import { AffiliateKpiStats } from "@/lib/types/affiliateKpiStats"
+import { AffiliateReferrerStat } from "@/lib/types/affiliateReferrerStat"
+import { AffiliateKpiTimeSeries } from "@/lib/types/affiliateChartStats"
 
 const AffiliateOverview = ({
   orgId,
@@ -18,21 +18,21 @@ const AffiliateOverview = ({
   affiliateChartStats,
   referrerStats,
 }: {
-  orgId: string;
-  isPreview?: boolean;
-  affiliate: boolean;
-  kpiCardStats: AffiliateKpiStats[];
-  affiliateChartStats?: AffiliateKpiTimeSeries[];
-  referrerStats?: AffiliateReferrerStat[];
+  orgId: string
+  isPreview?: boolean
+  affiliate: boolean
+  kpiCardStats: AffiliateKpiStats[]
+  affiliateChartStats?: AffiliateKpiTimeSeries[]
+  referrerStats?: AffiliateReferrerStat[]
 }) => {
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "dashboard")
-    : { isPending: false, isError: false, refetch: () => {} };
+    : { isPending: false, isError: false, refetch: () => {} }
   if (isPending) {
-    return <PendingState withoutBackground />;
+    return <PendingState withoutBackground />
   }
   if (isError) {
-    return <ErrorState onRetry={refetch} />;
+    return <ErrorState onRetry={refetch} />
   }
   return (
     <div className="space-y-8">
@@ -61,7 +61,7 @@ const AffiliateOverview = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AffiliateOverview;
+export default AffiliateOverview

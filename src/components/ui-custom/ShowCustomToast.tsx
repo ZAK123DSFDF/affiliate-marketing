@@ -1,8 +1,8 @@
 // utils/showCustomToast.ts
-import { useToast } from "@/hooks/use-toast";
-import { useToastCustomizationOption } from "@/hooks/useDashboardCustomization";
+import { useToast } from "@/hooks/use-toast"
+import { useToastCustomizationOption } from "@/hooks/useDashboardCustomization"
 
-type ToastType = "success" | "error";
+type ToastType = "success" | "error"
 
 export const useCustomToast = () => {
   const {
@@ -12,31 +12,31 @@ export const useCustomToast = () => {
     toastErrorBackgroundColor,
     toastErrorTitleColor,
     toastErrorDescriptionColor,
-  } = useToastCustomizationOption();
-  const { toast } = useToast();
+  } = useToastCustomizationOption()
+  const { toast } = useToast()
   const showCustomToast = ({
     type,
     title,
     description,
     affiliate,
   }: {
-    type: ToastType;
-    title: string;
-    description: string;
-    affiliate: boolean;
+    type: ToastType
+    title: string
+    description: string
+    affiliate: boolean
   }) => {
-    const isError = type === "error";
+    const isError = type === "error"
 
     const titleColor = isError
       ? affiliate && toastErrorTitleColor
-      : affiliate && toastTitleColor;
+      : affiliate && toastTitleColor
     const descriptionColor = isError
       ? affiliate && toastErrorDescriptionColor
-      : affiliate && toastDescriptionColor;
+      : affiliate && toastDescriptionColor
 
     const backgroundColor = isError
       ? affiliate && toastErrorBackgroundColor
-      : affiliate && toastBackgroundColor;
+      : affiliate && toastBackgroundColor
 
     toast({
       title: (
@@ -71,8 +71,8 @@ export const useCustomToast = () => {
             },
           }
         : {}),
-    });
-  };
+    })
+  }
 
-  return { showCustomToast };
-};
+  return { showCustomToast }
+}

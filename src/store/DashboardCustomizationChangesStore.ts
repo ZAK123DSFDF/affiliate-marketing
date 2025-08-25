@@ -1,11 +1,11 @@
-import { create } from "zustand";
+import { create } from "zustand"
 
-type DashboardCustomizationChanges = Record<string, Record<string, any>>;
+type DashboardCustomizationChanges = Record<string, Record<string, any>>
 
 interface DashboardCustomizationChangesState {
-  changes: DashboardCustomizationChanges;
-  setChange: (storeKey: string, key: string, value: any) => void;
-  resetChanges: () => void;
+  changes: DashboardCustomizationChanges
+  setChange: (storeKey: string, key: string, value: any) => void
+  resetChanges: () => void
 }
 
 export const useDashboardCustomizationChangesStore =
@@ -22,4 +22,4 @@ export const useDashboardCustomizationChangesStore =
         },
       })),
     resetChanges: () => set({ changes: {} }),
-  }));
+  }))

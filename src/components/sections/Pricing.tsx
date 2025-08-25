@@ -1,5 +1,5 @@
-import React from "react";
-import PriceCard from "@/components/ui-custom/PriceCard";
+import React from "react"
+import PriceCard from "@/components/ui-custom/PriceCard"
 
 const pricingPlans = [
   {
@@ -56,7 +56,7 @@ const pricingPlans = [
     buttonText: "Contact Sales",
     popular: false,
   },
-];
+]
 
 const Pricing = () => {
   return (
@@ -95,7 +95,7 @@ const Pricing = () => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default Pricing;
+export default Pricing

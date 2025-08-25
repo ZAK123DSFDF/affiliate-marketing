@@ -1,22 +1,22 @@
-"use client";
+"use client"
 
-import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
-import React from "react";
-import { useDialogCustomizationOption } from "@/hooks/useDashboardCustomization";
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
+import React from "react"
+import { useDialogCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
 
 export const DialogCustomizationOptions = ({
   triggerSize,
   dropdownSize,
 }: {
-  triggerSize?: string;
-  dropdownSize?: string;
+  triggerSize?: string
+  dropdownSize?: string
 }) => {
   const {
     dialogBackgroundColor,
     dialogCloseIconColor,
     dialogCloseIconBorderColor,
-  } = useDialogCustomizationOption();
+  } = useDialogCustomizationOption()
 
   return (
     <OptionWithSwitch
@@ -30,7 +30,7 @@ export const DialogCustomizationOptions = ({
             updateDashboardCustomization(
               "useDialogCustomization",
               "dialogBackgroundColor",
-              val,
+              val
             ),
         },
         dialogCloseIconColor: {
@@ -40,7 +40,7 @@ export const DialogCustomizationOptions = ({
             updateDashboardCustomization(
               "useDialogCustomization",
               "dialogCloseIconColor",
-              val,
+              val
             ),
         },
         dialogCloseIconBorderColor: {
@@ -50,10 +50,10 @@ export const DialogCustomizationOptions = ({
             updateDashboardCustomization(
               "useDialogCustomization",
               "dialogCloseIconBorderColor",
-              val,
+              val
             ),
         },
       }}
     />
-  );
-};
+  )
+}

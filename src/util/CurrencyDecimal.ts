@@ -27,9 +27,9 @@ const currencyDecimals: Record<string, number> = {
   lyd: 3,
   omr: 3,
   tnd: 3,
-};
+}
 
 export function getCurrencyDecimals(inputCode: string): number {
-  const code = inputCode.toLowerCase();
-  return currencyDecimals[code] ?? 2;
+  const code = inputCode.toLowerCase()
+  return currencyDecimals[code] ?? 2
 }

@@ -1,14 +1,14 @@
-"use client";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+"use client"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -16,22 +16,22 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/table"
 
 type Recipient = {
-  email: string;
-  amount: string;
-  currency: string;
-  wallet: string;
-  note?: string;
-};
+  email: string
+  amount: string
+  currency: string
+  wallet: string
+  note?: string
+}
 
 export default function PayPalMassPayout() {
   const [recipients, setRecipients] = useState<Recipient[]>([
     { email: "", amount: "", currency: "USD", wallet: "PayPal" },
-  ]);
-  const [defaultCurrency, setDefaultCurrency] = useState("USD");
-  const [defaultWallet, setDefaultWallet] = useState("PayPal");
+  ])
+  const [defaultCurrency, setDefaultCurrency] = useState("USD")
+  const [defaultWallet, setDefaultWallet] = useState("PayPal")
 
   const addRecipient = () => {
     setRecipients([
@@ -42,46 +42,46 @@ export default function PayPalMassPayout() {
         currency: defaultCurrency,
         wallet: defaultWallet,
       },
-    ]);
-  };
+    ])
+  }
 
   const updateRecipient = (
     index: number,
     field: keyof Recipient,
-    value: string,
+    value: string
   ) => {
-    const updated = [...recipients];
-    updated[index][field] = value;
-    setRecipients(updated);
-  };
+    const updated = [...recipients]
+    updated[index][field] = value
+    setRecipients(updated)
+  }
 
   const removeRecipient = (index: number) => {
-    setRecipients(recipients.filter((_, i) => i !== index));
-  };
+    setRecipients(recipients.filter((_, i) => i !== index))
+  }
 
   const generateCSV = () => {
-    const headers = "Email/Phone,Amount,Currency Code,Recipient Wallet,Note\n";
+    const headers = "Email/Phone,Amount,Currency Code,Recipient Wallet,Note\n"
     const rows = recipients
       .map(
         (r) =>
-          `${r.email},${r.amount},${r.currency},${r.wallet},${r.note || ""}`,
+          `${r.email},${r.amount},${r.currency},${r.wallet},${r.note || ""}`
       )
-      .join("\n");
-    return headers + rows;
-  };
+      .join("\n")
+    return headers + rows
+  }
 
   const downloadCSV = () => {
-    const csvContent = generateCSV();
-    const blob = new Blob([csvContent], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `payouts_${new Date().toISOString().split("T")[0]}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
+    const csvContent = generateCSV()
+    const blob = new Blob([csvContent], { type: "text/csv" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `payouts_${new Date().toISOString().split("T")[0]}.csv`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <div className="space-y-6">
@@ -243,13 +243,13 @@ export default function PayPalMassPayout() {
         </Button>
         <Button
           onClick={() => {
-            downloadCSV();
-            window.open("https://www.paypal.com/mep/payoutsweb", "_blank");
+            downloadCSV()
+            window.open("https://www.paypal.com/mep/payoutsweb", "_blank")
           }}
         >
           Process Payouts
         </Button>
       </div>
     </div>
-  );
+  )
 }

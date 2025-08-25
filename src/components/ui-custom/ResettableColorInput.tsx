@@ -1,23 +1,23 @@
-"use client";
+"use client"
 
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { useState, useRef, useEffect } from "react";
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { useState, useRef, useEffect } from "react"
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/components/ui/popover";
-import { HexColorPicker } from "react-colorful";
+} from "@/components/ui/popover"
+import { HexColorPicker } from "react-colorful"
 
 type ResettableColorInputProps = {
-  label: string;
-  value: string;
-  onChange: (val: string) => void;
-  disabled?: boolean;
-  showLabel?: boolean;
-  buttonSize?: string;
-};
+  label: string
+  value: string
+  onChange: (val: string) => void
+  disabled?: boolean
+  showLabel?: boolean
+  buttonSize?: string
+}
 
 export const ResettableColorInput = ({
   label,
@@ -27,16 +27,16 @@ export const ResettableColorInput = ({
   showLabel = true,
   buttonSize = "w-8 h-8",
 }: ResettableColorInputProps) => {
-  const [open, setOpen] = useState(false);
-  const [color, setColor] = useState(value || "#84C5F4");
+  const [open, setOpen] = useState(false)
+  const [color, setColor] = useState(value || "#84C5F4")
   useEffect(() => {
-    setColor(value || "#84C5F4");
-  }, [value]);
+    setColor(value || "#84C5F4")
+  }, [value])
 
   const handleChange = (newColor: string) => {
-    setColor(newColor);
-    onChange(newColor);
-  };
+    setColor(newColor)
+    onChange(newColor)
+  }
 
   return (
     <div>
@@ -71,8 +71,8 @@ export const ResettableColorInput = ({
                 <button
                   type="button"
                   onClick={() => {
-                    onChange("");
-                    setOpen(false);
+                    onChange("")
+                    setOpen(false)
                   }}
                   className="text-xs text-muted-foreground hover:text-destructive ml-2"
                   disabled={disabled}
@@ -96,5 +96,5 @@ export const ResettableColorInput = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}

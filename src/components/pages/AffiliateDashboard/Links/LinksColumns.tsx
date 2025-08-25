@@ -1,14 +1,14 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Check, Copy } from "lucide-react";
-import { useTableCustomizationOption } from "@/hooks/useDashboardCustomization";
+import { ColumnDef } from "@tanstack/react-table"
+import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats"
+import React, { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Check, Copy } from "lucide-react"
+import { useTableCustomizationOption } from "@/hooks/useDashboardCustomization"
 
 export const LinksColumns = (
-  affiliate: boolean,
+  affiliate: boolean
 ): ColumnDef<AffiliateLinkWithStats>[] => {
-  const dashboardTable = useTableCustomizationOption();
+  const dashboardTable = useTableCustomizationOption()
   return [
     {
       accessorKey: "fullUrl",
@@ -23,28 +23,28 @@ export const LinksColumns = (
         </span>
       ),
       cell: ({ row }) => {
-        const url: string = row.getValue("fullUrl");
-        const [isHovered, setIsHovered] = useState(false);
-        const [copied, setCopied] = useState(false);
+        const url: string = row.getValue("fullUrl")
+        const [isHovered, setIsHovered] = useState(false)
+        const [copied, setCopied] = useState(false)
 
         const handleCopy = () => {
           navigator.clipboard.writeText(url).then(() => {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1000);
-          });
-        };
+            setCopied(true)
+            setTimeout(() => setCopied(false), 1000)
+          })
+        }
         const iconColor = copied
           ? (affiliate && dashboardTable.tableIconHoverColor) || "#2563eb"
           : isHovered
             ? (affiliate && dashboardTable.tableIconHoverColor) || "#2563eb"
-            : (affiliate && dashboardTable.tableIconColor) || "";
+            : (affiliate && dashboardTable.tableIconColor) || ""
 
         const iconBgColor = copied
           ? "transparent"
           : isHovered
             ? (affiliate && dashboardTable.tableIconHoverBackgroundColor) ||
               "#dbeafe"
-            : "transparent";
+            : "transparent"
         return (
           <div
             className="flex items-center"
@@ -78,7 +78,7 @@ export const LinksColumns = (
               )}
             </Button>
           </div>
-        );
+        )
       },
     },
     {
@@ -177,5 +177,5 @@ export const LinksColumns = (
         </div>
       ),
     },
-  ];
-};
+  ]
+}

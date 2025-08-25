@@ -1,54 +1,49 @@
-"use client";
-import React, { useState } from "react";
-import { Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
-import Link from "next/link";
-import { InputField } from "@/components/Auth/FormFields";
-import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema";
-import { useMutation } from "@tanstack/react-query";
-import { SignupAffiliateServer } from "@/app/affiliate/[orgId]/signup/action";
-import { SignupServer } from "@/app/signup/action";
-import { getShadowWithColor } from "@/util/GetShadowWithColor";
+"use client"
+import React, { useState } from "react"
+import { Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { Form } from "@/components/ui/form"
+import Link from "next/link"
+import { InputField } from "@/components/Auth/FormFields"
+import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema"
+import { useMutation } from "@tanstack/react-query"
+import { SignupAffiliateServer } from "@/app/affiliate/[orgId]/signup/action"
+import { SignupServer } from "@/app/signup/action"
+import { getShadowWithColor } from "@/util/GetShadowWithColor"
 import {
   useButtonCustomizationOption,
   useCardCustomizationOption,
   useNotesCustomizationOption,
   useThemeCustomizationOption,
-} from "@/hooks/useAuthCustomization";
+} from "@/hooks/useAuthCustomization"
 
-import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
-import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions";
-import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
-import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
-import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
-import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
-import { LinkButton } from "@/components/ui-custom/LinkButton";
-import { IsRichTextEmpty } from "@/util/IsRichTextEmpty";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
-import PendingState from "@/components/ui-custom/PendingState";
-import ErrorState from "@/components/ui-custom/ErrorState";
+import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
+import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions"
+import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor"
+import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions"
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
+import { toValidShadowSize } from "@/util/ValidateShadowColor"
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import { LinkButton } from "@/components/ui-custom/LinkButton"
+import { IsRichTextEmpty } from "@/util/IsRichTextEmpty"
+import { useCustomizationSync } from "@/hooks/useCustomizationSync"
+import PendingState from "@/components/ui-custom/PendingState"
+import ErrorState from "@/components/ui-custom/ErrorState"
 type Props = {
-  orgId?: string;
-  isPreview?: boolean;
-  setTab?: (tab: string) => void;
-  affiliate: boolean;
-};
+  orgId?: string
+  isPreview?: boolean
+  setTab?: (tab: string) => void
+  affiliate: boolean
+}
 const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
-  const [previewLoading, setPreviewLoading] = useState(false);
-  const { customNotesSignup } = useNotesCustomizationOption();
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const { customNotesSignup } = useNotesCustomizationOption()
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "auth")
-    : { isPending: false, isError: false, refetch: () => {} };
+    : { isPending: false, isError: false, refetch: () => {} }
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -57,9 +52,9 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
       password: "",
       confirmPassword: "",
     },
-  });
+  })
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
-    useThemeCustomizationOption();
+    useThemeCustomizationOption()
   const {
     cardShadow,
     cardShadowColor,
@@ -67,35 +62,35 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     cardBorderColor,
     cardBackgroundColor,
     cardShadowThickness,
-  } = useCardCustomizationOption();
+  } = useCardCustomizationOption()
   const {
     buttonDisabledTextColor,
     buttonBackgroundColor,
     buttonDisabledBackgroundColor,
     buttonTextColor,
-  } = useButtonCustomizationOption();
-  const { showCustomToast } = useCustomToast();
+  } = useButtonCustomizationOption()
+  const { showCustomToast } = useCustomToast()
   const affiliateMutation = useMutation({
     mutationFn: SignupAffiliateServer,
     onSuccess: (data) =>
       console.log("Affiliate signup success", data, affiliate),
-  });
+  })
 
   const normalMutation = useMutation({
     mutationFn: SignupServer,
     onSuccess: (data) => console.log("Normal signup success", data),
-  });
+  })
   const isLoading = isPreview
     ? previewLoading
     : orgId
       ? affiliateMutation.isPending
-      : normalMutation.isPending;
+      : normalMutation.isPending
 
   const onSubmit = async (data: any) => {
     if (isPreview) {
-      setPreviewLoading(true);
-      await new Promise((res) => setTimeout(res, 1500));
-      setPreviewLoading(false);
+      setPreviewLoading(true)
+      await new Promise((res) => setTimeout(res, 1500))
+      setPreviewLoading(false)
 
       if (data.email === "already@used.com") {
         showCustomToast({
@@ -103,33 +98,33 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
           title: "Signup Failed",
           description: "This Email Already Registered",
           affiliate,
-        });
+        })
       } else {
         showCustomToast({
           type: "success",
           title: "Signup Successful",
           description: "Your Account Have Created",
           affiliate,
-        });
+        })
       }
 
-      return;
+      return
     }
     try {
       if (orgId) {
-        affiliateMutation.mutate({ ...data, organizationId: orgId });
+        affiliateMutation.mutate({ ...data, organizationId: orgId })
       } else {
-        normalMutation.mutate(data);
+        normalMutation.mutate(data)
       }
     } catch (err) {
-      console.error("Signup failed:", err);
+      console.error("Signup failed:", err)
     }
-  };
+  }
   if (isPending) {
-    return <PendingState />;
+    return <PendingState />
   }
   if (isError) {
-    return <ErrorState onRetry={refetch} />;
+    return <ErrorState onRetry={refetch} />
   }
   return (
     <div
@@ -168,7 +163,7 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
               ? {
                   boxShadow: getShadowWithColor(
                     toValidShadowSize(cardShadowThickness),
-                    cardShadowColor,
+                    cardShadowColor
                   ),
                 }
               : {}),
@@ -343,7 +338,7 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Signup;
+export default Signup

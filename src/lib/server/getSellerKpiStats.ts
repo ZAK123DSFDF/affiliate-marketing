@@ -1,33 +1,33 @@
-import { db } from "@/db/drizzle";
-import { eq, sql } from "drizzle-orm";
+import { db } from "@/db/drizzle"
+import { eq, sql } from "drizzle-orm"
 import {
   affiliate,
   affiliateClick,
   affiliateInvoice,
   affiliateLink,
-} from "@/db/schema";
-import { buildWhereWithDate } from "@/util/BuildWhereWithDate";
+} from "@/db/schema"
+import { buildWhereWithDate } from "@/util/BuildWhereWithDate"
 
 export async function getSellerKpiStatsAction(
   orgId: string,
   year?: number,
-  month?: number,
+  month?: number
 ) {
   return db
     .select({
       totalAffiliates: sql<number>`COUNT(DISTINCT ${affiliate.id})`.mapWith(
-        Number,
+        Number
       ),
       totalLinks: sql<number>`COUNT(DISTINCT ${affiliateLink.id})`.mapWith(
-        Number,
+        Number
       ),
 
       totalVisitors: sql<number>`COUNT(DISTINCT ${affiliateClick.id})`.mapWith(
-        Number,
+        Number
       ),
 
       subs: sql<number>`COUNT(DISTINCT ${affiliateInvoice.subscriptionId})`.mapWith(
-        Number,
+        Number
       ),
 
       singles: sql<number>`COUNT(DISTINCT CASE 
@@ -43,17 +43,17 @@ export async function getSellerKpiStatsAction(
 
       commission:
         sql<number>`COALESCE(SUM(${affiliateInvoice.commission}),0)`.mapWith(
-          Number,
+          Number
         ),
       paid: sql<number>`COALESCE(SUM(${affiliateInvoice.paidAmount}),0)`.mapWith(
-        Number,
+        Number
       ),
       unpaid:
         sql<number>`COALESCE(SUM(${affiliateInvoice.unpaidAmount}),0)`.mapWith(
-          Number,
+          Number
         ),
       amount: sql<number>`COALESCE(SUM(${affiliateInvoice.amount}),0)`.mapWith(
-        Number,
+        Number
       ),
     })
     .from(affiliate)
@@ -64,8 +64,8 @@ export async function getSellerKpiStatsAction(
         [eq(affiliateClick.affiliateLinkId, affiliateLink.id)],
         affiliateClick,
         year,
-        month,
-      ),
+        month
+      )
     )
     .leftJoin(
       affiliateInvoice,
@@ -73,8 +73,8 @@ export async function getSellerKpiStatsAction(
         [eq(affiliateInvoice.affiliateLinkId, affiliateLink.id)],
         affiliateInvoice,
         year,
-        month,
-      ),
+        month
+      )
     )
-    .where(eq(affiliate.organizationId, orgId));
+    .where(eq(affiliate.organizationId, orgId))
 }

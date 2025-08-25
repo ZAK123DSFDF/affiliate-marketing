@@ -1,26 +1,24 @@
-import React, { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
+import React, { useState, useEffect } from "react"
+import { cn } from "@/lib/utils"
+import Link from "next/link"
 
 const Header = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
+      setIsScrolled(window.scrollY > 10)
+    }
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   return (
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 py-4 px-6 transition-all duration-300 ease-in-out",
-        isScrolled
-          ? "bg-white/80 backdrop-blur-md shadow-sm"
-          : "bg-transparent",
+        isScrolled ? "bg-white/80 backdrop-blur-md shadow-sm" : "bg-transparent"
       )}
     >
       <div className="container mx-auto flex items-center justify-between">
@@ -71,7 +69,7 @@ const Header = () => {
         </div>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

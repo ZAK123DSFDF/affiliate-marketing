@@ -1,3 +1,3 @@
-import { affiliate } from "@/db/schema";
+import { affiliate } from "@/db/schema"
 
-export type SafeAffiliateData = Omit<typeof affiliate.$inferSelect, "password">;
+export type SafeAffiliateData = Omit<typeof affiliate.$inferSelect, "password">

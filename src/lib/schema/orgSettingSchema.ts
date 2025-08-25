@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod"
 export const orgSettingsSchema = z.object({
   orgId: z.string().min(1),
   name: z.string().min(2),
@@ -12,4 +12,4 @@ export const orgSettingsSchema = z.object({
   commissionDurationValue: z.coerce.number().min(1),
   commissionDurationUnit: z.enum(["day", "week", "month", "year"]),
   currency: z.enum(["USD", "EUR", "GBP", "CAD", "AUD"]),
-});
+})

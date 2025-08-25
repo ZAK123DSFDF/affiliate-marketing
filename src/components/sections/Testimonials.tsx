@@ -1,5 +1,5 @@
-import React from "react";
-import TestimonialCard from "@/components/ui-custom/TestimonialCard";
+import React from "react"
+import TestimonialCard from "@/components/ui-custom/TestimonialCard"
 
 const testimonials = [
   {
@@ -23,7 +23,7 @@ const testimonials = [
     role: "Partnership Lead",
     company: "CloudSecurity",
   },
-];
+]
 
 const Testimonials = () => {
   return (
@@ -56,7 +56,7 @@ const Testimonials = () => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default Testimonials;
+export default Testimonials

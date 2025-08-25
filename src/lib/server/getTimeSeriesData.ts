@@ -1,15 +1,15 @@
-"use server";
-import { db } from "@/db/drizzle";
-import { inArray, sql } from "drizzle-orm";
-import { affiliateClick, affiliateInvoice } from "@/db/schema";
-import { buildWhereWithDate } from "@/util/BuildWhereWithDate";
+"use server"
+import { db } from "@/db/drizzle"
+import { inArray, sql } from "drizzle-orm"
+import { affiliateClick, affiliateInvoice } from "@/db/schema"
+import { buildWhereWithDate } from "@/util/BuildWhereWithDate"
 export async function getTimeSeriesData<T>(
   linkIds: string[],
   year?: number,
-  month?: number,
+  month?: number
 ) {
-  const clickDay = sql<string>`(${affiliateClick.createdAt}::date)`;
-  const invoiceDay = sql<string>`(${affiliateInvoice.createdAt}::date)`;
+  const clickDay = sql<string>`(${affiliateClick.createdAt}::date)`
+  const invoiceDay = sql<string>`(${affiliateInvoice.createdAt}::date)`
 
   const [clicksAgg, salesAgg] = await Promise.all([
     db
@@ -24,8 +24,8 @@ export async function getTimeSeriesData<T>(
           affiliateClick,
           year,
           month,
-          true,
-        ),
+          true
+        )
       )
       .groupBy(clickDay),
 
@@ -34,15 +34,15 @@ export async function getTimeSeriesData<T>(
         day: invoiceDay,
         subscriptionId: affiliateInvoice.subscriptionId,
         subs: sql<number>`count(distinct ${affiliateInvoice.subscriptionId})`.mapWith(
-          Number,
+          Number
         ), // unique subs that day
         singles:
           sql<number>`sum(case when ${affiliateInvoice.subscriptionId} is null then 1 else 0 end)`.mapWith(
-            Number,
+            Number
           ), // null subs (one-off)
         commission:
           sql<number>`coalesce(sum(${affiliateInvoice.commission}), 0)`.mapWith(
-            Number,
+            Number
           ),
       })
       .from(affiliateInvoice)
@@ -52,41 +52,41 @@ export async function getTimeSeriesData<T>(
           affiliateInvoice,
           year,
           month,
-          true,
-        ),
+          true
+        )
       )
       .groupBy(invoiceDay, affiliateInvoice.subscriptionId),
-  ]);
+  ])
 
   // Merge by day (include days that exist in either aggregate)
   const byDay = new Map<
     string,
     { visits: number; sales: number; commission: number }
-  >();
+  >()
 
   for (const row of clicksAgg) {
-    const d = row.day; // already 'YYYY-MM-DD' via ::date
-    const curr = byDay.get(d) ?? { visits: 0, sales: 0, commission: 0 };
-    curr.visits += row.visits;
-    byDay.set(d, curr);
+    const d = row.day // already 'YYYY-MM-DD' via ::date
+    const curr = byDay.get(d) ?? { visits: 0, sales: 0, commission: 0 }
+    curr.visits += row.visits
+    byDay.set(d, curr)
   }
 
-  const seenSubs = new Set<string>();
+  const seenSubs = new Set<string>()
 
   for (const row of salesAgg) {
-    const d = row.day;
-    const curr = byDay.get(d) ?? { visits: 0, sales: 0, commission: 0 };
+    const d = row.day
+    const curr = byDay.get(d) ?? { visits: 0, sales: 0, commission: 0 }
 
     if (row.subscriptionId === null) {
       // always count one-time sales
-      curr.sales += 1;
+      curr.sales += 1
     } else {
       if (!seenSubs.has(row.subscriptionId)) {
-        curr.sales += 1;
-        seenSubs.add(row.subscriptionId);
+        curr.sales += 1
+        seenSubs.add(row.subscriptionId)
       }
     }
-    byDay.set(d, curr);
+    byDay.set(d, curr)
   }
 
   return Array.from(byDay.entries())
@@ -102,5 +102,5 @@ export async function getTimeSeriesData<T>(
             ? 100
             : 0,
     }))
-    .sort((a, b) => a.createdAt.localeCompare(b.createdAt)) as T[];
+    .sort((a, b) => a.createdAt.localeCompare(b.createdAt)) as T[]
 }

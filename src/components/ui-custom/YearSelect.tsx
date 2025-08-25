@@ -1,20 +1,20 @@
-"use client";
+"use client"
 
-import React from "react";
+import React from "react"
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 
 interface Props {
-  value: { year?: number };
-  onChange: (year?: number) => void;
-  disabled?: boolean;
-  affiliate: boolean;
-  allowAll?: boolean;
+  value: { year?: number }
+  onChange: (year?: number) => void
+  disabled?: boolean
+  affiliate: boolean
+  allowAll?: boolean
 }
 
 export default function YearSelect({
@@ -24,15 +24,15 @@ export default function YearSelect({
   affiliate,
   allowAll = true,
 }: Props) {
-  const now = new Date();
-  const START_YEAR = 1990;
+  const now = new Date()
+  const START_YEAR = 1990
   const years = Array.from(
     { length: now.getUTCFullYear() - START_YEAR + 1 },
-    (_, i) => now.getUTCFullYear() - i,
-  );
+    (_, i) => now.getUTCFullYear() - i
+  )
   const currentSelectedValue =
     value.year?.toString() ??
-    (allowAll ? "all" : now.getUTCFullYear().toString());
+    (allowAll ? "all" : now.getUTCFullYear().toString())
   return (
     <div className="flex gap-2">
       <Select
@@ -72,5 +72,5 @@ export default function YearSelect({
         </SelectContent>
       </Select>
     </div>
-  );
+  )
 }

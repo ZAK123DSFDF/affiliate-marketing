@@ -1,10 +1,10 @@
 // components/ui/google-icon.tsx
-import React from "react";
+import React from "react"
 
 export const GoogleIcon = ({
   className = "w-4 h-4",
 }: {
-  className?: string;
+  className?: string
 }) => (
   <svg
     className={className}
@@ -29,4 +29,4 @@ export const GoogleIcon = ({
       fill="#EA4335"
     />
   </svg>
-);
+)

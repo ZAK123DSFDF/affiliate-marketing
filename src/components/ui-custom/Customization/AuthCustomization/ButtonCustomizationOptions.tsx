@@ -1,22 +1,22 @@
-"use client";
+"use client"
 
-import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
-import { useButtonCustomizationOption } from "@/hooks/useAuthCustomization";
-import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges";
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
+import { useButtonCustomizationOption } from "@/hooks/useAuthCustomization"
+import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
 
 export const ButtonCustomizationOptions = ({
   size,
   onlyShowEnabled,
 }: {
-  size?: string;
-  onlyShowEnabled?: boolean;
+  size?: string
+  onlyShowEnabled?: boolean
 }) => {
   const {
     buttonTextColor,
     buttonBackgroundColor,
     buttonDisabledTextColor,
     buttonDisabledBackgroundColor,
-  } = useButtonCustomizationOption();
+  } = useButtonCustomizationOption()
   // Base properties
   const enabledProps = {
     buttonTextColor: {
@@ -26,7 +26,7 @@ export const ButtonCustomizationOptions = ({
         updateAuthCustomization(
           "useButtonCustomization",
           "buttonTextColor",
-          val,
+          val
         ),
     },
     buttonBackgroundColor: {
@@ -36,10 +36,10 @@ export const ButtonCustomizationOptions = ({
         updateAuthCustomization(
           "useButtonCustomization",
           "buttonBackgroundColor",
-          val,
+          val
         ),
     },
-  };
+  }
 
   // Extra props only if not filtering
   const disabledProps = {
@@ -50,7 +50,7 @@ export const ButtonCustomizationOptions = ({
         updateAuthCustomization(
           "useButtonCustomization",
           "buttonDisabledTextColor",
-          val,
+          val
         ),
     },
     buttonDisabledBackgroundColor: {
@@ -60,14 +60,14 @@ export const ButtonCustomizationOptions = ({
         updateAuthCustomization(
           "useButtonCustomization",
           "buttonDisabledBackgroundColor",
-          val,
+          val
         ),
     },
-  };
+  }
 
   const properties = onlyShowEnabled
     ? enabledProps
-    : { ...enabledProps, ...disabledProps };
+    : { ...enabledProps, ...disabledProps }
 
-  return <OptionWithSwitch triggerSize={size} properties={properties} />;
-};
+  return <OptionWithSwitch triggerSize={size} properties={properties} />
+}

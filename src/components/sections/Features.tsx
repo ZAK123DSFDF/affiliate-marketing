@@ -1,5 +1,5 @@
-import React from "react";
-import FeatureCard from "@/components/ui-custom/FeatureCard";
+import React from "react"
+import FeatureCard from "@/components/ui-custom/FeatureCard"
 
 const Features = () => {
   const features = [
@@ -141,7 +141,7 @@ const Features = () => {
       description:
         "Integrate with your existing tech stack in minutes with our API and pre-built connectors.",
     },
-  ];
+  ]
 
   return (
     <section id="features" className="py-20 px-6">
@@ -172,7 +172,7 @@ const Features = () => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default Features;
+export default Features

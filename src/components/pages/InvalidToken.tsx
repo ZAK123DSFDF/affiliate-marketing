@@ -1,30 +1,30 @@
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getShadowWithColor } from "@/util/GetShadowWithColor";
+import React from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { getShadowWithColor } from "@/util/GetShadowWithColor"
 import {
   useCardCustomizationOption,
   useThemeCustomizationOption,
-} from "@/hooks/useAuthCustomization";
-import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
-import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
-import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
-import PendingState from "@/components/ui-custom/PendingState";
-import ErrorState from "@/components/ui-custom/ErrorState";
+} from "@/hooks/useAuthCustomization"
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
+import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
+import { toValidShadowSize } from "@/util/ValidateShadowColor"
+import { useCustomizationSync } from "@/hooks/useCustomizationSync"
+import PendingState from "@/components/ui-custom/PendingState"
+import ErrorState from "@/components/ui-custom/ErrorState"
 type Props = {
-  orgId?: string;
-  isPreview?: boolean;
-  affiliate: boolean;
-};
+  orgId?: string
+  isPreview?: boolean
+  affiliate: boolean
+}
 const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "auth")
-    : { isPending: false, isError: false, refetch: () => {} };
+    : { isPending: false, isError: false, refetch: () => {} }
   const {
     backgroundColor,
     InvalidPrimaryCustomization,
     InvalidSecondaryCustomization,
-  } = useThemeCustomizationOption();
+  } = useThemeCustomizationOption()
   const {
     cardShadow,
     cardShadowColor,
@@ -32,12 +32,12 @@ const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
     cardBorderColor,
     cardBackgroundColor,
     cardShadowThickness,
-  } = useCardCustomizationOption();
+  } = useCardCustomizationOption()
   if (isPending) {
-    return <PendingState />;
+    return <PendingState />
   }
   if (isError) {
-    return <ErrorState onRetry={refetch} />;
+    return <ErrorState onRetry={refetch} />
   }
   return (
     <div
@@ -65,7 +65,7 @@ const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
               ? {
                   boxShadow: getShadowWithColor(
                     toValidShadowSize(cardShadowThickness),
-                    cardShadowColor,
+                    cardShadowColor
                   ),
                 }
               : {}),
@@ -131,6 +131,6 @@ const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
         </div>
       )}
     </div>
-  );
-};
-export default InvalidToken;
+  )
+}
+export default InvalidToken

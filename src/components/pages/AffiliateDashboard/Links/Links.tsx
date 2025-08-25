@@ -1,50 +1,50 @@
-"use client";
+"use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"
 import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useMutation } from "@tanstack/react-query";
+} from "@tanstack/react-table"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { useMutation } from "@tanstack/react-query"
 import {
   createAffiliateLink,
   getAffiliateLinksWithStats,
-} from "@/app/affiliate/[orgId]/dashboard/links/action";
-import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
-import { getShadowWithColor } from "@/util/GetShadowWithColor";
-import MonthSelect from "@/components/ui-custom/MonthSelect";
-import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
-import { DashboardButtonCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardButtonCustomizationOptions";
-import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions";
-import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions";
-import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions";
+} from "@/app/affiliate/[orgId]/dashboard/links/action"
+import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats"
+import { getShadowWithColor } from "@/util/GetShadowWithColor"
+import MonthSelect from "@/components/ui-custom/MonthSelect"
+import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
+import { DashboardButtonCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardButtonCustomizationOptions"
+import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions"
+import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions"
+import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions"
 import {
   useDashboardButtonCustomizationOption,
   useDashboardCardCustomizationOption,
   useDashboardThemeCustomizationOption,
-} from "@/hooks/useDashboardCustomization";
-import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
-import PendingState from "@/components/ui-custom/PendingState";
-import ErrorState from "@/components/ui-custom/ErrorState";
-import { useSearch } from "@/hooks/useSearch";
-import { useQueryFilter } from "@/hooks/useQueryFilter";
-import { TableContent } from "@/components/ui-custom/TableContent";
-import { LinksColumns } from "@/components/pages/AffiliateDashboard/Links/LinksColumns";
-import { TableLoading } from "@/components/ui-custom/TableLoading";
-import { DummyAffiliateLink } from "@/lib/types/DummyAffiliateLink";
+} from "@/hooks/useDashboardCustomization"
+import { toValidShadowSize } from "@/util/ValidateShadowColor"
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import { useCustomizationSync } from "@/hooks/useCustomizationSync"
+import PendingState from "@/components/ui-custom/PendingState"
+import ErrorState from "@/components/ui-custom/ErrorState"
+import { useSearch } from "@/hooks/useSearch"
+import { useQueryFilter } from "@/hooks/useQueryFilter"
+import { TableContent } from "@/components/ui-custom/TableContent"
+import { LinksColumns } from "@/components/pages/AffiliateDashboard/Links/LinksColumns"
+import { TableLoading } from "@/components/ui-custom/TableLoading"
+import { DummyAffiliateLink } from "@/lib/types/DummyAffiliateLink"
 
 interface AffiliateLinkProps {
-  orgId: string;
-  data: AffiliateLinkWithStats[] | DummyAffiliateLink[];
-  isPreview?: boolean;
-  affiliate: boolean;
+  orgId: string
+  data: AffiliateLinkWithStats[] | DummyAffiliateLink[]
+  isPreview?: boolean
+  affiliate: boolean
 }
 export default function Links({
   orgId,
@@ -52,63 +52,63 @@ export default function Links({
   isPreview,
   affiliate,
 }: AffiliateLinkProps) {
-  const dashboardTheme = useDashboardThemeCustomizationOption();
-  const dashboardButton = useDashboardButtonCustomizationOption();
-  const dashboardCard = useDashboardCardCustomizationOption();
-  const { showCustomToast } = useCustomToast();
+  const dashboardTheme = useDashboardThemeCustomizationOption()
+  const dashboardButton = useDashboardButtonCustomizationOption()
+  const dashboardCard = useDashboardCardCustomizationOption()
+  const { showCustomToast } = useCustomToast()
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "dashboard")
-    : { isPending: false, isError: false, refetch: () => {} };
+    : { isPending: false, isError: false, refetch: () => {} }
 
-  const [isFakeLoading, setIsFakeLoading] = useState(false);
-  const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false);
-  const { filters, setFilters } = useQueryFilter();
+  const [isFakeLoading, setIsFakeLoading] = useState(false)
+  const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false)
+  const { filters, setFilters } = useQueryFilter()
   useEffect(() => {
-    if (!isPreview) return;
+    if (!isPreview) return
 
-    setIsFakeLoadingPreview(true);
+    setIsFakeLoadingPreview(true)
 
     const timer = setTimeout(() => {
-      setIsFakeLoadingPreview(false);
-    }, 1500);
+      setIsFakeLoadingPreview(false)
+    }, 1500)
 
-    return () => clearTimeout(timer);
-  }, [filters, isPreview]);
+    return () => clearTimeout(timer)
+  }, [filters, isPreview])
   const filteredPreviewData = React.useMemo(() => {
-    if (!isPreview) return data as AffiliateLinkWithStats[];
+    if (!isPreview) return data as AffiliateLinkWithStats[]
 
     return (data as DummyAffiliateLink[]).map((link) => {
       const filteredClicks = link.clicks.filter((c) => {
-        const d = new Date(c.createdAt);
+        const d = new Date(c.createdAt)
         const matchesYear = filters.year
           ? d.getFullYear() === filters.year
-          : true;
+          : true
         const matchesMonth =
           filters.year === undefined
             ? true
             : filters.month
               ? d.getMonth() + 1 === filters.month
-              : true;
-        return matchesYear && matchesMonth;
-      });
+              : true
+        return matchesYear && matchesMonth
+      })
 
       const filteredSales = link.sales.filter((s) => {
-        const d = new Date(s.createdAt);
+        const d = new Date(s.createdAt)
         const matchesYear = filters.year
           ? d.getFullYear() === filters.year
-          : true;
+          : true
         const matchesMonth = filters.month
           ? d.getMonth() + 1 === filters.month
-          : true;
-        return matchesYear && matchesMonth;
-      });
+          : true
+        return matchesYear && matchesMonth
+      })
 
-      const totalClicks = filteredClicks.reduce((sum, c) => sum + c.count, 0);
-      const totalSales = filteredSales.reduce((sum, s) => sum + s.count, 0);
+      const totalClicks = filteredClicks.reduce((sum, c) => sum + c.count, 0)
+      const totalSales = filteredSales.reduce((sum, s) => sum + s.count, 0)
       const conversionRate =
         totalClicks > 0
           ? parseFloat(((totalSales / totalClicks) * 100).toFixed(2))
-          : 0;
+          : 0
 
       return {
         id: link.id,
@@ -117,17 +117,17 @@ export default function Links({
         clicks: totalClicks,
         sales: totalSales,
         conversionRate,
-      } satisfies AffiliateLinkWithStats;
-    });
-  }, [data, filters, isPreview]);
+      } satisfies AffiliateLinkWithStats
+    })
+  }, [data, filters, isPreview])
   const { data: searchData, isPending: searchPending } = useSearch(
     ["affiliate-links", orgId, filters.year, filters.month],
     getAffiliateLinksWithStats,
     [filters.year, filters.month],
     {
       enabled: !!(orgId && (filters.year || filters.month) && !isPreview),
-    },
-  );
+    }
+  )
   const mutation = useMutation({
     mutationFn: createAffiliateLink,
     onSuccess: async (newLink: string) => {
@@ -136,7 +136,7 @@ export default function Links({
         title: "Link created!",
         description: newLink,
         affiliate,
-      });
+      })
     },
     onError: () => {
       showCustomToast({
@@ -144,27 +144,27 @@ export default function Links({
         title: "Something went wrong",
         description: "We couldn't create the affiliate link.",
         affiliate,
-      });
+      })
     },
-  });
+  })
 
   const handleCreate = () => {
     if (isPreview) {
-      setIsFakeLoading(true);
+      setIsFakeLoading(true)
       setTimeout(() => {
-        setIsFakeLoading(false);
+        setIsFakeLoading(false)
         showCustomToast({
           type: "success",
           title: "Preview Mode",
           description: "Simulated link creation.",
           affiliate,
-        });
-      }, 1500);
+        })
+      }, 1500)
     } else {
-      mutation.mutate();
+      mutation.mutate()
     }
-  };
-  const columns = LinksColumns(affiliate);
+  }
+  const columns = LinksColumns(affiliate)
   const table = useReactTable({
     data: isPreview
       ? filteredPreviewData
@@ -174,12 +174,12 @@ export default function Links({
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-  });
+  })
   if (isPending) {
-    return <PendingState withoutBackground />;
+    return <PendingState withoutBackground />
   }
   if (isError) {
-    return <ErrorState onRetry={refetch} />;
+    return <ErrorState onRetry={refetch} />
   }
   return (
     <div className="flex flex-col gap-6">
@@ -267,7 +267,7 @@ export default function Links({
               ? affiliate &&
                 getShadowWithColor(
                   toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
-                  dashboardCard.dashboardCardShadowColor,
+                  dashboardCard.dashboardCardShadowColor
                 )
               : "",
           border:
@@ -338,5 +338,5 @@ export default function Links({
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

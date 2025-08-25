@@ -1,23 +1,23 @@
-"use client";
+"use client"
 
-import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
-import React from "react";
-import { useDashboardButtonCustomizationOption } from "@/hooks/useDashboardCustomization";
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
+import React from "react"
+import { useDashboardButtonCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
 
 export const DashboardButtonCustomizationOptions = ({
   triggerSize,
   dropdownSize,
 }: {
-  triggerSize?: string;
-  dropdownSize?: string;
+  triggerSize?: string
+  dropdownSize?: string
 }) => {
   const {
     dashboardButtonBackgroundColor,
     dashboardButtonTextColor,
     dashboardButtonDisabledBackgroundColor,
     dashboardButtonDisabledTextColor,
-  } = useDashboardButtonCustomizationOption();
+  } = useDashboardButtonCustomizationOption()
 
   return (
     <OptionWithSwitch
@@ -31,7 +31,7 @@ export const DashboardButtonCustomizationOptions = ({
             updateDashboardCustomization(
               "useDashboardButtonCustomization",
               "dashboardButtonBackgroundColor",
-              val,
+              val
             ),
         },
         buttonTextColor: {
@@ -41,7 +41,7 @@ export const DashboardButtonCustomizationOptions = ({
             updateDashboardCustomization(
               "useDashboardButtonCustomization",
               "dashboardButtonTextColor",
-              val,
+              val
             ),
         },
         buttonDisabledBackgroundColor: {
@@ -51,7 +51,7 @@ export const DashboardButtonCustomizationOptions = ({
             updateDashboardCustomization(
               "useDashboardButtonCustomization",
               "dashboardButtonDisabledBackgroundColor",
-              val,
+              val
             ),
         },
         buttonDisabledTextColor: {
@@ -61,10 +61,10 @@ export const DashboardButtonCustomizationOptions = ({
             updateDashboardCustomization(
               "useDashboardButtonCustomization",
               "dashboardButtonDisabledTextColor",
-              val,
+              val
             ),
         },
       }}
     />
-  );
-};
+  )
+}

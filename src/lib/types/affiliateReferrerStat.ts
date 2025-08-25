@@ -1,5 +1,5 @@
 export interface AffiliateReferrerStat {
-  referrer: string;
-  clicks: number;
+  referrer: string
+  clicks: number
 }
-export type SellerReferrerStat = AffiliateReferrerStat;
+export type SellerReferrerStat = AffiliateReferrerStat

@@ -1,10 +1,10 @@
 import {
   useCardCustomizationOption,
   useInputCustomizationOption,
-} from "@/hooks/useAuthCustomization";
-import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
-import React from "react";
-import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges";
+} from "@/hooks/useAuthCustomization"
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
+import React from "react"
+import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
 
 export const InputCustomizationOptions = ({ size }: { size?: string }) => {
   const {
@@ -17,7 +17,7 @@ export const InputCustomizationOptions = ({ size }: { size?: string }) => {
     inputErrorBorderColor,
     inputBorderFocusColor,
     inputLabelErrorColor,
-  } = useInputCustomizationOption();
+  } = useInputCustomizationOption()
   return (
     <OptionWithSwitch
       triggerSize={size}
@@ -29,7 +29,7 @@ export const InputCustomizationOptions = ({ size }: { size?: string }) => {
             updateAuthCustomization(
               "useInputCustomization",
               "inputLabelColor",
-              val,
+              val
             ),
         },
         inputIconColor: {
@@ -39,7 +39,7 @@ export const InputCustomizationOptions = ({ size }: { size?: string }) => {
             updateAuthCustomization(
               "useInputCustomization",
               "inputIconColor",
-              val,
+              val
             ),
         },
         inputTextColor: {
@@ -49,7 +49,7 @@ export const InputCustomizationOptions = ({ size }: { size?: string }) => {
             updateAuthCustomization(
               "useInputCustomization",
               "inputTextColor",
-              val,
+              val
             ),
         },
         inputErrorTextColor: {
@@ -59,7 +59,7 @@ export const InputCustomizationOptions = ({ size }: { size?: string }) => {
             updateAuthCustomization(
               "useInputCustomization",
               "inputErrorTextColor",
-              val,
+              val
             ),
         },
         inputBorderColor: {
@@ -69,7 +69,7 @@ export const InputCustomizationOptions = ({ size }: { size?: string }) => {
             updateAuthCustomization(
               "useInputCustomization",
               "inputBorderColor",
-              val,
+              val
             ),
         },
         inputPlaceholderTextColor: {
@@ -79,7 +79,7 @@ export const InputCustomizationOptions = ({ size }: { size?: string }) => {
             updateAuthCustomization(
               "useInputCustomization",
               "inputPlaceholderTextColor",
-              val,
+              val
             ),
         },
         inputErrorBorderColor: {
@@ -89,7 +89,7 @@ export const InputCustomizationOptions = ({ size }: { size?: string }) => {
             updateAuthCustomization(
               "useInputCustomization",
               "inputErrorBorderColor",
-              val,
+              val
             ),
         },
         inputBorderFocusColor: {
@@ -99,7 +99,7 @@ export const InputCustomizationOptions = ({ size }: { size?: string }) => {
             updateAuthCustomization(
               "useInputCustomization",
               "inputBorderFocusColor",
-              val,
+              val
             ),
         },
         inputLabelErrorColor: {
@@ -109,10 +109,10 @@ export const InputCustomizationOptions = ({ size }: { size?: string }) => {
             updateAuthCustomization(
               "useInputCustomization",
               "inputLabelErrorColor",
-              val,
+              val
             ),
         },
       }}
     />
-  );
-};
+  )
+}

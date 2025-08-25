@@ -1,14 +1,14 @@
-"use server";
-import nodemailer from "nodemailer";
+"use server"
+import nodemailer from "nodemailer"
 
 export async function sendEmail({
   to,
   subject,
   text,
 }: {
-  to: string;
-  subject: string;
-  text: string;
+  to: string
+  subject: string
+  text: string
 }) {
   // Local SMTP server configuration (MailDev/MailHog)
   const transporter = nodemailer.createTransport({
@@ -17,10 +17,10 @@ export async function sendEmail({
     secure: false, // No TLS for local dev
     ignoreTLS: true, // Skip certificate verification
     // No auth needed for local dev
-  });
+  })
 
   // Default "from" address for development
-  const devFrom = "dev@localhost.com";
+  const devFrom = "dev@localhost.com"
 
   try {
     const info = await transporter.sendMail({
@@ -28,20 +28,20 @@ export async function sendEmail({
       to: to.toLowerCase().trim(),
       subject: subject.trim(),
       text: text.trim(),
-    });
+    })
 
-    console.log("Email sent (dev mode):", info.messageId);
-    console.log("Preview URL: http://localhost:1080"); // MailDev web interface
+    console.log("Email sent (dev mode):", info.messageId)
+    console.log("Preview URL: http://localhost:1080") // MailDev web interface
 
     return {
       success: true,
       messageId: info.messageId,
-    };
+    }
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("Error sending email:", error)
     return {
       success: false,
       message: "Failed to send email. Is your local MailDev/MailHog running?",
-    };
+    }
   }
 }

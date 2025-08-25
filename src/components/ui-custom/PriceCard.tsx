@@ -1,21 +1,21 @@
-import React from "react";
-import { cn } from "@/lib/utils";
-import AnimatedButton from "./AnimatedButton";
+import React from "react"
+import { cn } from "@/lib/utils"
+import AnimatedButton from "./AnimatedButton"
 
 interface PriceFeature {
-  text: string;
-  included: boolean;
+  text: string
+  included: boolean
 }
 
 interface PriceCardProps {
-  popular?: boolean;
-  name: string;
-  price: string;
-  description: string;
-  features: PriceFeature[];
-  buttonText: string;
-  className?: string;
-  period?: string;
+  popular?: boolean
+  name: string
+  price: string
+  description: string
+  features: PriceFeature[]
+  buttonText: string
+  className?: string
+  period?: string
 }
 
 const PriceCard: React.FC<PriceCardProps> = ({
@@ -35,7 +35,7 @@ const PriceCard: React.FC<PriceCardProps> = ({
         popular
           ? "border-primary/30 shadow-lg shadow-primary/10 scale-105"
           : "hover:shadow-md",
-        className,
+        className
       )}
     >
       {popular && (
@@ -113,7 +113,7 @@ const PriceCard: React.FC<PriceCardProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PriceCard;
+export default PriceCard

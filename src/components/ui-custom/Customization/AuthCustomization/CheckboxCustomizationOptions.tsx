@@ -1,11 +1,11 @@
-import { useCheckboxCustomizationOption } from "@/hooks/useAuthCustomization";
-import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
-import React from "react";
-import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges";
+import { useCheckboxCustomizationOption } from "@/hooks/useAuthCustomization"
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
+import React from "react"
+import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
 
 export const CheckboxCustomizationOptions = ({ size }: { size?: string }) => {
   const { checkboxLabelColor, checkboxActiveColor, checkboxInactiveColor } =
-    useCheckboxCustomizationOption();
+    useCheckboxCustomizationOption()
   return (
     <OptionWithSwitch
       triggerSize={size}
@@ -17,7 +17,7 @@ export const CheckboxCustomizationOptions = ({ size }: { size?: string }) => {
             updateAuthCustomization(
               "useCheckboxCustomization",
               "checkboxLabelColor",
-              val,
+              val
             ),
         },
         checkboxActiveColor: {
@@ -27,7 +27,7 @@ export const CheckboxCustomizationOptions = ({ size }: { size?: string }) => {
             updateAuthCustomization(
               "useCheckboxCustomization",
               "checkboxActiveColor",
-              val,
+              val
             ),
         },
         checkboxInactiveColor: {
@@ -37,10 +37,10 @@ export const CheckboxCustomizationOptions = ({ size }: { size?: string }) => {
             updateAuthCustomization(
               "useCheckboxCustomization",
               "checkboxInactiveColor",
-              val,
+              val
             ),
         },
       }}
     />
-  );
-};
+  )
+}

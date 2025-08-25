@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod"
 
 export const profileSchema = z.object({
   name: z.string().min(1, "Username is required"),
@@ -7,4 +7,4 @@ export const profileSchema = z.object({
     .string()
     .min(1, "PayPal email is required")
     .email("Invalid PayPal email"),
-});
+})

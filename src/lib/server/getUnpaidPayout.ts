@@ -1,34 +1,34 @@
-import { db } from "@/db/drizzle";
-import { and, eq, sql } from "drizzle-orm";
-import { affiliateInvoice, affiliateLink } from "@/db/schema";
+import { db } from "@/db/drizzle"
+import { and, eq, sql } from "drizzle-orm"
+import { affiliateInvoice, affiliateLink } from "@/db/schema"
 
 export async function getUnpaidPayoutAction(orgId: string) {
   return await db
     .select({
       month:
         sql<number>`extract(month from ${affiliateInvoice.createdAt})`.mapWith(
-          Number,
+          Number
         ),
       year: sql<number>`extract(year from ${affiliateInvoice.createdAt})`.mapWith(
-        Number,
+        Number
       ),
       unpaid: sql<number>`sum(${affiliateInvoice.unpaidAmount})`.mapWith(
-        Number,
+        Number
       ),
     })
     .from(affiliateInvoice)
     .innerJoin(
       affiliateLink,
-      eq(affiliateInvoice.affiliateLinkId, affiliateLink.id),
+      eq(affiliateInvoice.affiliateLinkId, affiliateLink.id)
     )
     .where(
       and(
         eq(affiliateLink.organizationId, orgId),
-        sql`${affiliateInvoice.unpaidAmount} > 0`,
-      ),
+        sql`${affiliateInvoice.unpaidAmount} > 0`
+      )
     )
     .groupBy(
       sql`EXTRACT(YEAR FROM ${affiliateInvoice.createdAt})`,
-      sql`EXTRACT(MONTH FROM ${affiliateInvoice.createdAt})`,
-    );
+      sql`EXTRACT(MONTH FROM ${affiliateInvoice.createdAt})`
+    )
 }

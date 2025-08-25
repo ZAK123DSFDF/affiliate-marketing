@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"
 
 export function middleware() {
   // retrieve the current response
 
-  return NextResponse.next();
+  return NextResponse.next()
 }
 
 // ----------------------------------------

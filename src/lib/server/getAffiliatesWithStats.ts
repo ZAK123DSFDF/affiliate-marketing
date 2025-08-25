@@ -1,19 +1,19 @@
-"use server";
-import { db } from "@/db/drizzle";
+"use server"
+import { db } from "@/db/drizzle"
 import {
   affiliate,
   affiliateLink,
   affiliateClick,
   affiliateInvoice,
   organization,
-} from "@/db/schema";
-import { and, desc, eq, ilike, sql } from "drizzle-orm";
-import { buildWhereWithDate } from "@/util/BuildWhereWithDate";
-import { AffiliateStatsField } from "@/util/AffiliateStatFields";
+} from "@/db/schema"
+import { and, desc, eq, ilike, sql } from "drizzle-orm"
+import { buildWhereWithDate } from "@/util/BuildWhereWithDate"
+import { AffiliateStatsField } from "@/util/AffiliateStatFields"
 import {
   buildAffiliateStatsSelect,
   ExcludableFields,
-} from "@/util/BuildAffiliateStatsSelect";
+} from "@/util/BuildAffiliateStatsSelect"
 
 type OrderableFields =
   | "conversionRate"
@@ -22,18 +22,18 @@ type OrderableFields =
   | "visits"
   | "email"
   | "commissionPaid"
-  | "commissionUnpaid";
+  | "commissionUnpaid"
 function applyOptionalLimitAndOffset<
   T extends { limit: (n: number) => any; offset: (n: number) => any },
 >(q: T, limit?: number, offset?: number) {
-  let query = q;
+  let query = q
   if (typeof limit === "number") {
-    query = query.limit(limit);
+    query = query.limit(limit)
   }
   if (typeof offset === "number") {
-    query = query.offset(offset);
+    query = query.offset(offset)
   }
-  return query;
+  return query
 }
 export async function getAffiliatesWithStatsAction(
   orgId: string,
@@ -41,22 +41,22 @@ export async function getAffiliatesWithStatsAction(
   month?: number,
   months?: { month: number; year: number }[],
   opts?: {
-    include?: AffiliateStatsField[];
-    exclude?: ExcludableFields[];
-    orderBy?: OrderableFields;
-    orderDir?: "asc" | "desc";
-    limit?: number;
-    offset?: number;
-    email?: string;
-  },
+    include?: AffiliateStatsField[]
+    exclude?: ExcludableFields[]
+    orderBy?: OrderableFields
+    orderDir?: "asc" | "desc"
+    limit?: number
+    offset?: number
+    email?: string
+  }
 ) {
-  const selectedFields = buildAffiliateStatsSelect(opts);
-  const whereConditions = [eq(affiliate.organizationId, orgId)];
+  const selectedFields = buildAffiliateStatsSelect(opts)
+  const whereConditions = [eq(affiliate.organizationId, orgId)]
   if (opts?.email) {
-    whereConditions.push(ilike(affiliate.email, `%${opts.email}%`));
+    whereConditions.push(ilike(affiliate.email, `%${opts.email}%`))
   }
   const orderExpr = (() => {
-    if (!opts?.orderBy) return undefined;
+    if (!opts?.orderBy) return undefined
     const conversionRateSql = sql`
       CASE
         WHEN COUNT(DISTINCT ${affiliateClick.id}) = 0 THEN 0
@@ -70,19 +70,19 @@ export async function getAffiliatesWithStatsAction(
           )::float / COUNT(DISTINCT ${affiliateClick.id})::float
         ) * 100
       END
-    `;
-    const commissionSql = sql`COALESCE(SUM(${affiliateInvoice.commission}), 0)`;
+    `
+    const commissionSql = sql`COALESCE(SUM(${affiliateInvoice.commission}), 0)`
     const salesSql = sql`
       COUNT(DISTINCT ${affiliateInvoice.subscriptionId})
       + COUNT(DISTINCT CASE 
           WHEN ${affiliateInvoice.subscriptionId} IS NULL 
           THEN ${affiliateInvoice.id} END
         )
-    `;
-    const visitsSql = sql`COUNT(DISTINCT ${affiliateClick.id})`;
-    const commissionPaidSql = sql`COALESCE(SUM(${affiliateInvoice.paidAmount}), 0)`;
-    const commissionUnpaidSql = sql`COALESCE(SUM(${affiliateInvoice.unpaidAmount}), 0)`;
-    const emailSql = affiliate.email;
+    `
+    const visitsSql = sql`COUNT(DISTINCT ${affiliateClick.id})`
+    const commissionPaidSql = sql`COALESCE(SUM(${affiliateInvoice.paidAmount}), 0)`
+    const commissionUnpaidSql = sql`COALESCE(SUM(${affiliateInvoice.unpaidAmount}), 0)`
+    const emailSql = affiliate.email
     const orderByMap: Record<string, any> = {
       conversionRate: conversionRateSql,
       commission: commissionSql,
@@ -90,11 +90,11 @@ export async function getAffiliatesWithStatsAction(
       visits: visitsSql,
       commissionPaid: commissionPaidSql,
       commissionUnpaid: commissionUnpaidSql,
-    };
+    }
 
-    const base = orderByMap[opts.orderBy] ?? emailSql;
-    return opts.orderDir === "asc" ? base : desc(base);
-  })();
+    const base = orderByMap[opts.orderBy] ?? emailSql
+    return opts.orderDir === "asc" ? base : desc(base)
+  })()
   const chained = db
     .select(selectedFields)
     .from(affiliate)
@@ -102,8 +102,8 @@ export async function getAffiliatesWithStatsAction(
       affiliateLink,
       and(
         eq(affiliateLink.affiliateId, affiliate.id),
-        eq(affiliateLink.organizationId, orgId),
-      ),
+        eq(affiliateLink.organizationId, orgId)
+      )
     )
     .leftJoin(
       affiliateClick,
@@ -113,8 +113,8 @@ export async function getAffiliatesWithStatsAction(
         year,
         month,
         false,
-        months,
-      ),
+        months
+      )
     )
     .leftJoin(
       affiliateInvoice,
@@ -124,12 +124,12 @@ export async function getAffiliatesWithStatsAction(
         year,
         month,
         false,
-        months,
-      ),
+        months
+      )
     )
     .leftJoin(organization, eq(organization.id, orgId))
     .where(and(...whereConditions))
     .groupBy(affiliate.id, affiliate.email)
-    .orderBy(...(orderExpr ? [orderExpr] : []));
-  return applyOptionalLimitAndOffset(chained, opts?.limit, opts?.offset);
+    .orderBy(...(orderExpr ? [orderExpr] : []))
+  return applyOptionalLimitAndOffset(chained, opts?.limit, opts?.offset)
 }

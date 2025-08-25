@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
-import React from "react";
-import { useKpiCardCustomizationOption } from "@/hooks/useDashboardCustomization";
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
+import React from "react"
+import { useKpiCardCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
 
 export const KpiCardCustomizationOptions = ({
   triggerSize,
   dropdownSize,
 }: {
-  triggerSize?: string;
-  dropdownSize?: string;
+  triggerSize?: string
+  dropdownSize?: string
 }) => {
   const {
     cardShadow,
@@ -27,7 +27,7 @@ export const KpiCardCustomizationOptions = ({
     cardIconSecondaryBackgroundColor,
     cardIconTertiaryBackgroundColor,
     cardBackgroundColor,
-  } = useKpiCardCustomizationOption();
+  } = useKpiCardCustomizationOption()
 
   return (
     <OptionWithSwitch
@@ -41,7 +41,7 @@ export const KpiCardCustomizationOptions = ({
             updateDashboardCustomization(
               "useKpiCardCustomization",
               "cardShadow",
-              val,
+              val
             ),
           children: {
             shadowColor: {
@@ -51,7 +51,7 @@ export const KpiCardCustomizationOptions = ({
                 updateDashboardCustomization(
                   "useKpiCardCustomization",
                   "cardShadowColor",
-                  val,
+                  val
                 ),
             },
             shadowThickness: {
@@ -67,7 +67,7 @@ export const KpiCardCustomizationOptions = ({
                 updateDashboardCustomization(
                   "useKpiCardCustomization",
                   "cardShadowThickness",
-                  val,
+                  val
                 ),
             },
           },
@@ -79,7 +79,7 @@ export const KpiCardCustomizationOptions = ({
             updateDashboardCustomization(
               "useKpiCardCustomization",
               "cardBorder",
-              val,
+              val
             ),
           children: {
             borderColor: {
@@ -89,7 +89,7 @@ export const KpiCardCustomizationOptions = ({
                 updateDashboardCustomization(
                   "useKpiCardCustomization",
                   "cardBorderColor",
-                  val,
+                  val
                 ),
             },
           },
@@ -101,7 +101,7 @@ export const KpiCardCustomizationOptions = ({
             updateDashboardCustomization(
               "useKpiCardCustomization",
               "cardBackgroundColor",
-              val,
+              val
             ),
         },
         primaryTextColor: {
@@ -111,7 +111,7 @@ export const KpiCardCustomizationOptions = ({
             updateDashboardCustomization(
               "useKpiCardCustomization",
               "cardPrimaryTextColor",
-              val,
+              val
             ),
         },
         secondaryTextColor: {
@@ -121,7 +121,7 @@ export const KpiCardCustomizationOptions = ({
             updateDashboardCustomization(
               "useKpiCardCustomization",
               "cardSecondaryTextColor",
-              val,
+              val
             ),
         },
         iconPrimaryColor: {
@@ -131,7 +131,7 @@ export const KpiCardCustomizationOptions = ({
             updateDashboardCustomization(
               "useKpiCardCustomization",
               "cardIconPrimaryColor",
-              val,
+              val
             ),
         },
         iconSecondaryColor: {
@@ -141,7 +141,7 @@ export const KpiCardCustomizationOptions = ({
             updateDashboardCustomization(
               "useKpiCardCustomization",
               "cardIconSecondaryColor",
-              val,
+              val
             ),
         },
         iconTertiaryColor: {
@@ -151,7 +151,7 @@ export const KpiCardCustomizationOptions = ({
             updateDashboardCustomization(
               "useKpiCardCustomization",
               "cardIconTertiaryColor",
-              val,
+              val
             ),
         },
         iconPrimaryBackgroundColor: {
@@ -161,7 +161,7 @@ export const KpiCardCustomizationOptions = ({
             updateDashboardCustomization(
               "useKpiCardCustomization",
               "cardIconPrimaryBackgroundColor",
-              val,
+              val
             ),
         },
         iconSecondaryBackgroundColor: {
@@ -171,7 +171,7 @@ export const KpiCardCustomizationOptions = ({
             updateDashboardCustomization(
               "useKpiCardCustomization",
               "cardIconSecondaryBackgroundColor",
-              val,
+              val
             ),
         },
         iconTertiaryBackgroundColor: {
@@ -181,10 +181,10 @@ export const KpiCardCustomizationOptions = ({
             updateDashboardCustomization(
               "useKpiCardCustomization",
               "cardIconTertiaryBackgroundColor",
-              val,
+              val
             ),
         },
       }}
     />
-  );
-};
+  )
+}

@@ -1,13 +1,13 @@
 // app/dashboard/page.tsx
-"use client";
-import React from "react";
+"use client"
+import React from "react"
 import {
   Activity,
   ArrowUpRight,
   DollarSign,
   Link as LinkIcon,
   Users,
-} from "lucide-react";
+} from "lucide-react"
 import {
   Card,
   CardContent,
@@ -15,7 +15,7 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -23,16 +23,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+} from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+} from "@/components/ui/chart"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 
 const performanceData = [
   { month: "Jan", revenue: 1200, conversions: 12 },
@@ -42,7 +42,7 @@ const performanceData = [
   { month: "May", revenue: 2500, conversions: 25 },
   { month: "Jun", revenue: 2300, conversions: 23 },
   { month: "Jul", revenue: 2800, conversions: 28 },
-];
+]
 
 const recentReferrals = [
   {
@@ -80,7 +80,7 @@ const recentReferrals = [
     status: "Expired",
     amount: "-",
   },
-];
+]
 
 const chartConfig = {
   revenue: {
@@ -97,10 +97,10 @@ const chartConfig = {
       dark: "#4ade80",
     },
   },
-};
+}
 
 export default function DashboardPage() {
-  const [chartTimeframe, setChartTimeframe] = React.useState("monthly");
+  const [chartTimeframe, setChartTimeframe] = React.useState("monthly")
   return (
     <div className="flex flex-col gap-6">
       {/* Dashboard Header */}
@@ -181,7 +181,7 @@ export default function DashboardPage() {
               type="single"
               value={chartTimeframe}
               onValueChange={(value) => {
-                if (value) setChartTimeframe(value);
+                if (value) setChartTimeframe(value)
               }}
             >
               <ToggleGroupItem value="weekly" aria-label="Weekly view">
@@ -376,5 +376,5 @@ export default function DashboardPage() {
         </CardFooter>
       </Card>
     </div>
-  );
+  )
 }

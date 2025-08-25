@@ -1,13 +1,13 @@
-import { ClickAggRow, InvoiceAggRow } from "@/lib/types/aggregateTypes";
+import { ClickAggRow, InvoiceAggRow } from "@/lib/types/aggregateTypes"
 
 export function getOrgClicksAndInvoiceAggregate<T>(
   clickAgg: ClickAggRow[],
   invoiceAgg: InvoiceAggRow[],
   affRows: { id: string; email: string }[],
   linksByAffiliate: Record<string, string[]>,
-  calculateConversionRate = false,
+  calculateConversionRate = false
 ) {
-  const clicksMap = new Map(clickAgg.map((r) => [r.linkId, r.visits]));
+  const clicksMap = new Map(clickAgg.map((r) => [r.linkId, r.visits]))
   const invoiceMap = new Map(
     invoiceAgg.map((r) => [
       r.linkId,
@@ -17,29 +17,29 @@ export function getOrgClicksAndInvoiceAggregate<T>(
         paid: r.paid,
         unpaid: r.unpaid,
       },
-    ]),
-  );
+    ])
+  )
 
   return affRows.map((aff) => {
-    const urls = linksByAffiliate[aff.id] ?? [];
+    const urls = linksByAffiliate[aff.id] ?? []
 
-    let visitors = 0;
-    let sales = 0;
-    let commission = 0;
-    let paid = 0;
-    let unpaid = 0;
+    let visitors = 0
+    let sales = 0
+    let commission = 0
+    let paid = 0
+    let unpaid = 0
 
     for (const url of urls) {
-      const linkId = url.split("=").pop()!;
+      const linkId = url.split("=").pop()!
 
-      visitors += clicksMap.get(linkId) ?? 0;
+      visitors += clicksMap.get(linkId) ?? 0
 
-      const inv = invoiceMap.get(linkId);
+      const inv = invoiceMap.get(linkId)
       if (inv) {
-        sales += inv.sales;
-        commission += inv.commission;
-        paid += inv.paid;
-        unpaid += inv.unpaid;
+        sales += inv.sales
+        commission += inv.commission
+        paid += inv.paid
+        unpaid += inv.unpaid
       }
     }
     return {
@@ -54,6 +54,6 @@ export function getOrgClicksAndInvoiceAggregate<T>(
       ...(calculateConversionRate && {
         conversionRate: visitors > 0 ? (sales / visitors) * 100 : 0,
       }),
-    } as T;
-  });
+    } as T
+  })
 }

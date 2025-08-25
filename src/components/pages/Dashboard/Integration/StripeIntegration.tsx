@@ -1,35 +1,35 @@
-"use client";
+"use client"
 
-import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import FrameworkInstructions from "@/components/pages/Dashboard/Integration/FrameworkInstructions";
-import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { CopyButton } from "@/components/ui/copy-button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import React, { useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
+import FrameworkInstructions from "@/components/pages/Dashboard/Integration/FrameworkInstructions"
+import { Card, CardContent } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { CopyButton } from "@/components/ui/copy-button"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
+import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism"
 
 export default function StripeIntegration() {
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState(false)
 
   useEffect(() => {
     fetch("/api/stripe/status")
       .then((res) => res.json())
-      .then((data) => setConnected(data.connected));
-  }, []);
+      .then((data) => setConnected(data.connected))
+  }, [])
 
   const handleConnect = () => {
-    window.location.href = "/api/stripe/connect";
-  };
+    window.location.href = "/api/stripe/connect"
+  }
 
   const handleDisconnect = async () => {
     await fetch("/api/stripe/disconnect", {
       method: "POST",
       body: JSON.stringify({ stripeAccountId: "your_account_id_here" }),
-    });
-    setConnected(false);
-  };
+    })
+    setConnected(false)
+  }
 
   const snippets = {
     Nextjs_serverAction: `// Next.js Server Action (App Router)
@@ -168,7 +168,7 @@ export default defineEventHandler(async (event) => {
 
   return { url: session.url };
 });`,
-  };
+  }
 
   const labels = {
     Nextjs_serverAction: "Next.js Server Action",
@@ -176,7 +176,7 @@ export default defineEventHandler(async (event) => {
     express: "Express",
     sveltekit: "SvelteKit",
     nuxt: "Nuxt",
-  };
+  }
   return (
     <div className="space-y-10">
       {/* STEP 1 */}
@@ -267,5 +267,5 @@ export default defineEventHandler(async (event) => {
         </Tabs>
       </section>
     </div>
-  );
+  )
 }

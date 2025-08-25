@@ -1,12 +1,12 @@
-import { db } from "@/db/drizzle";
-import { affiliateClick } from "@/db/schema";
-import { inArray, sql } from "drizzle-orm";
-import { buildWhereWithDate } from "@/util/BuildWhereWithDate";
+import { db } from "@/db/drizzle"
+import { affiliateClick } from "@/db/schema"
+import { inArray, sql } from "drizzle-orm"
+import { buildWhereWithDate } from "@/util/BuildWhereWithDate"
 
 export async function getReferrerStats(
   linkIds: string[],
   year?: number,
-  month?: number,
+  month?: number
 ) {
   return db
     .select({
@@ -19,8 +19,8 @@ export async function getReferrerStats(
         [inArray(affiliateClick.affiliateLinkId, linkIds)],
         affiliateClick,
         year,
-        month,
-      ),
+        month
+      )
     )
-    .groupBy(affiliateClick.referrer);
+    .groupBy(affiliateClick.referrer)
 }

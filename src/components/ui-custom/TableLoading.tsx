@@ -1,10 +1,10 @@
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import React from "react";
-import { ColumnDef } from "@tanstack/react-table";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
+import React from "react"
+import { ColumnDef } from "@tanstack/react-table"
 
 type TableLoadingProps<TData> = {
-  columns: ColumnDef<TData, any>[];
-};
+  columns: ColumnDef<TData, any>[]
+}
 
 export const TableLoading = <TData,>({ columns }: TableLoadingProps<TData>) => {
   return (
@@ -24,5 +24,5 @@ export const TableLoading = <TData,>({ columns }: TableLoadingProps<TData>) => {
         </TableBody>
       </Table>
     </div>
-  );
-};
+  )
+}

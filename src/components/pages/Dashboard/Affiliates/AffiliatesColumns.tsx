@@ -4,11 +4,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import * as React from "react";
-import { ColumnDef } from "@tanstack/react-table";
-import { AffiliateStats } from "@/lib/types/affiliateStats";
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import * as React from "react"
+import { ColumnDef } from "@tanstack/react-table"
+import { AffiliateStats } from "@/lib/types/affiliateStats"
 
 export const AffiliatesColumns = (): ColumnDef<AffiliateStats>[] => {
   return [
@@ -23,7 +23,7 @@ export const AffiliatesColumns = (): ColumnDef<AffiliateStats>[] => {
       id: "links",
       header: "Links",
       cell: ({ row }) => {
-        const links = row.original.links;
+        const links = row.original.links
         return (
           <Dialog>
             <DialogTrigger asChild>
@@ -51,7 +51,7 @@ export const AffiliatesColumns = (): ColumnDef<AffiliateStats>[] => {
               </ul>
             </DialogContent>
           </Dialog>
-        );
+        )
       },
     },
     {
@@ -68,48 +68,48 @@ export const AffiliatesColumns = (): ColumnDef<AffiliateStats>[] => {
       accessorKey: "conversionRate",
       header: "Conversion Rate",
       cell: ({ row }) => {
-        const rate = parseFloat(row.getValue("conversionRate"));
-        return <div>{rate.toFixed(2)}%</div>;
+        const rate = parseFloat(row.getValue("conversionRate"))
+        return <div>{rate.toFixed(2)}%</div>
       },
     },
     {
       accessorKey: "commission",
       header: () => <div className="text-right">Commission</div>,
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("commission"));
+        const amount = parseFloat(row.getValue("commission"))
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
-        }).format(amount);
+        }).format(amount)
 
-        return <div className="text-right font-medium">{formatted}</div>;
+        return <div className="text-right font-medium">{formatted}</div>
       },
     },
     {
       accessorKey: "paid",
       header: () => <div className="text-right">Paid</div>,
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("paid"));
+        const amount = parseFloat(row.getValue("paid"))
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
-        }).format(amount);
+        }).format(amount)
 
-        return <div className="text-right font-medium">{formatted}</div>;
+        return <div className="text-right font-medium">{formatted}</div>
       },
     },
     {
       accessorKey: "unpaid",
       header: () => <div className="text-right">Unpaid</div>,
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("unpaid"));
+        const amount = parseFloat(row.getValue("unpaid"))
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
-        }).format(amount);
+        }).format(amount)
 
-        return <div className="text-right font-medium">{formatted}</div>;
+        return <div className="text-right font-medium">{formatted}</div>
       },
     },
-  ];
-};
+  ]
+}

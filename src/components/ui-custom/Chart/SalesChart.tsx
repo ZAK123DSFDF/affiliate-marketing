@@ -1,20 +1,20 @@
-"use client";
+"use client"
 
-import React from "react";
+import React from "react"
 import {
   Area,
   AreaChart,
   CartesianGrid,
   XAxis,
   ResponsiveContainer,
-} from "recharts";
+} from "recharts"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
 import {
   ChartConfig,
   ChartContainer,
@@ -22,29 +22,29 @@ import {
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
-import MonthSelect from "@/components/ui-custom/MonthSelect";
-import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
-import { Separator } from "@/components/ui/separator";
+} from "@/components/ui/chart"
+import MonthSelect from "@/components/ui-custom/MonthSelect"
+import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
+import { Separator } from "@/components/ui/separator"
 import {
   useChartCustomizationOption,
   useDashboardCardCustomizationOption,
-} from "@/hooks/useDashboardCustomization";
-import { DashboardCustomizationStores } from "@/store/useCustomizationStore";
-import { ChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/ChartCustomizationOptions";
-import { getShadowWithColor } from "@/util/GetShadowWithColor";
-import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { AffiliateKpiTimeSeries } from "@/lib/types/affiliateChartStats";
-import { useSearch } from "@/hooks/useSearch";
-import { getAffiliateKpiTimeSeries } from "@/app/affiliate/[orgId]/dashboard/action";
-import { getSellerKpiTimeSeries } from "@/app/seller/[orgId]/dashboard/action";
-import { useQueryFilter } from "@/hooks/useQueryFilter";
+} from "@/hooks/useDashboardCustomization"
+import { DashboardCustomizationStores } from "@/store/useCustomizationStore"
+import { ChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/ChartCustomizationOptions"
+import { getShadowWithColor } from "@/util/GetShadowWithColor"
+import { toValidShadowSize } from "@/util/ValidateShadowColor"
+import { AffiliateKpiTimeSeries } from "@/lib/types/affiliateChartStats"
+import { useSearch } from "@/hooks/useSearch"
+import { getAffiliateKpiTimeSeries } from "@/app/affiliate/[orgId]/dashboard/action"
+import { getSellerKpiTimeSeries } from "@/app/seller/[orgId]/dashboard/action"
+import { useQueryFilter } from "@/hooks/useQueryFilter"
 
 interface ChartDailyMetricsProps {
-  orgId: string;
-  ChartStats?: AffiliateKpiTimeSeries[];
-  affiliate: boolean;
-  isPreview?: boolean;
+  orgId: string
+  ChartStats?: AffiliateKpiTimeSeries[]
+  affiliate: boolean
+  isPreview?: boolean
 }
 
 export function ChartDailyMetrics({
@@ -56,7 +56,7 @@ export function ChartDailyMetrics({
   const { filters, setFilters } = useQueryFilter({
     yearKey: "chartYear",
     monthKey: "chartMonth",
-  });
+  })
   const { data: affiliateSearchData, isPending: affiliateSearchPending } =
     useSearch(
       ["affiliate-kpi-time-series", orgId, filters.year, filters.month],
@@ -69,8 +69,8 @@ export function ChartDailyMetrics({
           (filters.year || filters.month) &&
           !isPreview
         ),
-      },
-    );
+      }
+    )
   const { data: sellerSearchData, isPending: sellerSearchPending } = useSearch(
     ["seller-kpi-time-series", orgId, filters.year, filters.month],
     getSellerKpiTimeSeries,
@@ -82,30 +82,28 @@ export function ChartDailyMetrics({
         (filters.year || filters.month) &&
         !isPreview
       ),
-    },
-  );
-  const searchData = affiliate ? affiliateSearchData : sellerSearchData;
-  const searchPending = affiliate
-    ? affiliateSearchPending
-    : sellerSearchPending;
+    }
+  )
+  const searchData = affiliate ? affiliateSearchData : sellerSearchData
+  const searchPending = affiliate ? affiliateSearchPending : sellerSearchPending
   const data = React.useMemo(() => {
-    const source = searchData ?? ChartStats ?? [];
+    const source = searchData ?? ChartStats ?? []
     return source.map((item) => ({
       ...item,
       date: item.createdAt,
       visits: item.visitors,
-    }));
-  }, [ChartStats, searchData]);
-  const ChartCustomization = useChartCustomizationOption();
+    }))
+  }, [ChartStats, searchData])
+  const ChartCustomization = useChartCustomizationOption()
   const ThemeCustomization =
-    DashboardCustomizationStores.useDashboardThemeCustomization();
-  const dashboardCard = useDashboardCardCustomizationOption();
+    DashboardCustomizationStores.useDashboardThemeCustomization()
+  const dashboardCard = useDashboardCardCustomizationOption()
   const baseColors: any = {
     visits: (affiliate && ChartCustomization.chartPrimaryColor) || "#60A5FA",
     sales: (affiliate && ChartCustomization.chartSecondaryColor) || "#A78BFA",
     conversionRate:
       (affiliate && ChartCustomization.chartTertiaryColor) || "#5EEAD4",
-  };
+  }
   const chartConfig: ChartConfig = {
     visits: { label: "Visits", color: "var(--chart-1)" },
     sales: { label: "Sales", color: "var(--chart-2)" },
@@ -113,9 +111,9 @@ export function ChartDailyMetrics({
       label: "Conversion Rate (%)",
       color: "var(--chart-3)",
     },
-  };
+  }
 
-  const chartKeys = Object.keys(chartConfig);
+  const chartKeys = Object.keys(chartConfig)
 
   return (
     <Card
@@ -131,7 +129,7 @@ export function ChartDailyMetrics({
             ? affiliate &&
               getShadowWithColor(
                 toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
-                dashboardCard.dashboardCardShadowColor,
+                dashboardCard.dashboardCardShadowColor
               )
             : "",
         border:
@@ -308,5 +306,5 @@ export function ChartDailyMetrics({
         </div>
       )}
     </Card>
-  );
+  )
 }

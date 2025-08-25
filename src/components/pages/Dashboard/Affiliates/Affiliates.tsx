@@ -1,32 +1,32 @@
-"use client";
+"use client"
 
-import * as React from "react";
+import * as React from "react"
 import {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
   getCoreRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { AffiliateStats } from "@/lib/types/affiliateStats";
-import MonthSelect from "@/components/ui-custom/MonthSelect";
-import { useSearch } from "@/hooks/useSearch";
-import { getAffiliatesWithStats } from "@/app/seller/[orgId]/dashboard/affiliates/action";
-import { TableContent } from "@/components/ui-custom/TableContent";
-import { TableTop } from "@/components/ui-custom/TableTop";
-import { AffiliatesColumns } from "@/components/pages/Dashboard/Affiliates/AffiliatesColumns";
-import { TableLoading } from "@/components/ui-custom/TableLoading";
-import { useQueryFilter } from "@/hooks/useQueryFilter";
-import PaginationControls from "@/components/ui-custom/PaginationControls";
+} from "@tanstack/react-table"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { SidebarTrigger } from "@/components/ui/sidebar"
+import { AffiliateStats } from "@/lib/types/affiliateStats"
+import MonthSelect from "@/components/ui-custom/MonthSelect"
+import { useSearch } from "@/hooks/useSearch"
+import { getAffiliatesWithStats } from "@/app/seller/[orgId]/dashboard/affiliates/action"
+import { TableContent } from "@/components/ui-custom/TableContent"
+import { TableTop } from "@/components/ui-custom/TableTop"
+import { AffiliatesColumns } from "@/components/pages/Dashboard/Affiliates/AffiliatesColumns"
+import { TableLoading } from "@/components/ui-custom/TableLoading"
+import { useQueryFilter } from "@/hooks/useQueryFilter"
+import PaginationControls from "@/components/ui-custom/PaginationControls"
 
 interface AffiliatesTableProps {
-  orgId: string;
-  data: AffiliateStats[];
-  cardTitle?: string;
-  showHeader?: boolean;
-  affiliate: boolean;
+  orgId: string
+  data: AffiliateStats[]
+  cardTitle?: string
+  showHeader?: boolean
+  affiliate: boolean
 }
 export default function AffiliatesTable({
   orgId,
@@ -35,15 +35,15 @@ export default function AffiliatesTable({
   showHeader = false,
   affiliate = false,
 }: AffiliatesTableProps) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const columns = AffiliatesColumns();
+    []
+  )
+  const columns = AffiliatesColumns()
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const { filters, setFilters } = useQueryFilter();
+    React.useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = React.useState({})
+  const { filters, setFilters } = useQueryFilter()
   const { data: searchData, isPending: searchPending } = useSearch(
     [
       "all-affiliates",
@@ -76,9 +76,9 @@ export default function AffiliatesTable({
           filters.offset ||
           filters.email)
       ),
-    },
-  );
-  const tableData = searchData ?? data;
+    }
+  )
+  const tableData = searchData ?? data
   const table = useReactTable({
     data: tableData,
     columns,
@@ -96,7 +96,7 @@ export default function AffiliatesTable({
       columnVisibility,
       rowSelection,
     },
-  });
+  })
 
   return (
     <div className="flex flex-col gap-6">
@@ -159,5 +159,5 @@ export default function AffiliatesTable({
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

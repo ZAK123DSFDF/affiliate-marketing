@@ -1,9 +1,9 @@
-import React from "react";
-import { Loader2 } from "lucide-react";
+import React from "react"
+import { Loader2 } from "lucide-react"
 
 type PendingStateProps = {
-  withoutBackground?: boolean;
-};
+  withoutBackground?: boolean
+}
 
 const PendingState = ({ withoutBackground }: PendingStateProps) => {
   return (
@@ -14,7 +14,7 @@ const PendingState = ({ withoutBackground }: PendingStateProps) => {
     >
       <Loader2 className="w-16 h-16 animate-spin text-blue-500" />
     </div>
-  );
-};
+  )
+}
 
-export default PendingState;
+export default PendingState

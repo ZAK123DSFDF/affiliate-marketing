@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
-import React from "react";
-import { useSidebarCustomizationOption } from "@/hooks/useDashboardCustomization";
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
+import React from "react"
+import { useSidebarCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
 
 export const SidebarCustomizationOptions = ({
   triggerSize,
   dropdownSize,
 }: {
-  triggerSize?: string;
-  dropdownSize?: string;
+  triggerSize?: string
+  dropdownSize?: string
 }) => {
   const {
     sideBarBackgroundColor,
@@ -23,7 +23,7 @@ export const SidebarCustomizationOptions = ({
     sideBarProfileTextPrimaryColor,
     sideBarProfileTextSecondaryColor,
     sideBarNavigationFocusRingColor,
-  } = useSidebarCustomizationOption();
+  } = useSidebarCustomizationOption()
 
   return (
     <OptionWithSwitch
@@ -37,7 +37,7 @@ export const SidebarCustomizationOptions = ({
             updateDashboardCustomization(
               "useSidebarCustomization",
               "sideBarBackgroundColor",
-              val,
+              val
             ),
         },
         sideBarActiveNavigationTextColor: {
@@ -47,7 +47,7 @@ export const SidebarCustomizationOptions = ({
             updateDashboardCustomization(
               "useSidebarCustomization",
               "sideBarActiveNavigationTextColor",
-              val,
+              val
             ),
         },
         sideBarInActiveNavigationTextColor: {
@@ -57,7 +57,7 @@ export const SidebarCustomizationOptions = ({
             updateDashboardCustomization(
               "useSidebarCustomization",
               "sideBarInActiveNavigationTextColor",
-              val,
+              val
             ),
         },
         sideBarActiveNavigationBackgroundColor: {
@@ -67,7 +67,7 @@ export const SidebarCustomizationOptions = ({
             updateDashboardCustomization(
               "useSidebarCustomization",
               "sideBarActiveNavigationBackgroundColor",
-              val,
+              val
             ),
         },
         sideBarHoverNavigationBackgroundColor: {
@@ -77,7 +77,7 @@ export const SidebarCustomizationOptions = ({
             updateDashboardCustomization(
               "useSidebarCustomization",
               "sideBarHoverNavigationBackgroundColor",
-              val,
+              val
             ),
         },
         sideBarHoverNavigationTextColor: {
@@ -87,7 +87,7 @@ export const SidebarCustomizationOptions = ({
             updateDashboardCustomization(
               "useSidebarCustomization",
               "sideBarHoverNavigationTextColor",
-              val,
+              val
             ),
         },
         sideBarProfileBackgroundColor: {
@@ -97,7 +97,7 @@ export const SidebarCustomizationOptions = ({
             updateDashboardCustomization(
               "useSidebarCustomization",
               "sideBarProfileBackgroundColor",
-              val,
+              val
             ),
         },
         sideBarProfileTextPrimaryColor: {
@@ -107,7 +107,7 @@ export const SidebarCustomizationOptions = ({
             updateDashboardCustomization(
               "useSidebarCustomization",
               "sideBarProfileTextPrimaryColor",
-              val,
+              val
             ),
         },
         sideBarProfileTextSecondaryColor: {
@@ -117,7 +117,7 @@ export const SidebarCustomizationOptions = ({
             updateDashboardCustomization(
               "useSidebarCustomization",
               "sideBarProfileTextSecondaryColor",
-              val,
+              val
             ),
         },
         sideBarNavigationFocusRingColor: {
@@ -127,10 +127,10 @@ export const SidebarCustomizationOptions = ({
             updateDashboardCustomization(
               "useSidebarCustomization",
               "sideBarNavigationFocusRingColor",
-              val,
+              val
             ),
         },
       }}
     />
-  );
-};
+  )
+}

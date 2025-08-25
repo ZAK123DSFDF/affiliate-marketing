@@ -1,46 +1,46 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import React, { useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useMutation } from "@tanstack/react-query";
-import { updateOrgSettings } from "@/app/seller/[orgId]/dashboard/settings/action";
-import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react"; // if used
+} from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { SidebarTrigger } from "@/components/ui/sidebar"
+import { useMutation } from "@tanstack/react-query"
+import { updateOrgSettings } from "@/app/seller/[orgId]/dashboard/settings/action"
+import { useToast } from "@/hooks/use-toast"
+import { Loader2 } from "lucide-react" // if used
 
 type OrgData = {
-  id: string;
-  name: string;
-  domainName: string;
-  logoUrl?: string | null;
-  referralParam: "ref" | "via" | "aff";
-  cookieLifetimeValue: number;
-  cookieLifetimeUnit: "day" | "week" | "month" | "year";
-  commissionType: "percentage" | "fixed";
-  commissionValue: string;
-  commissionDurationValue: number;
-  commissionDurationUnit: "day" | "week" | "month" | "year";
-  currency: "USD" | "EUR" | "GBP" | "CAD" | "AUD";
-};
+  id: string
+  name: string
+  domainName: string
+  logoUrl?: string | null
+  referralParam: "ref" | "via" | "aff"
+  cookieLifetimeValue: number
+  cookieLifetimeUnit: "day" | "week" | "month" | "year"
+  commissionType: "percentage" | "fixed"
+  commissionValue: string
+  commissionDurationValue: number
+  commissionDurationUnit: "day" | "week" | "month" | "year"
+  currency: "USD" | "EUR" | "GBP" | "CAD" | "AUD"
+}
 
 type Props = {
-  orgData: OrgData;
-};
+  orgData: OrgData
+}
 export default function Settings({ orgData }: Props) {
   const [formValues, setFormValues] = useState({
     ...orgData,
     orgId: orgData.id,
-  });
-  const { toast } = useToast();
+  })
+  const { toast } = useToast()
   const mut = useMutation({
     mutationFn: updateOrgSettings,
     onSuccess: (res) => {
@@ -48,13 +48,13 @@ export default function Settings({ orgData }: Props) {
         toast({
           title: "Settings updated",
           description: "Organization settings saved.",
-        });
+        })
       } else {
         toast({
           variant: "destructive",
           title: "Error",
           description: "Update failed.",
-        });
+        })
       }
     },
     onError: () =>
@@ -63,10 +63,10 @@ export default function Settings({ orgData }: Props) {
         title: "Unexpected error",
         description: "Please try again",
       }),
-  });
+  })
   const onSubmit = (data: OrgData) => {
-    mut.mutate(data);
-  };
+    mut.mutate(data)
+  }
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
@@ -337,5 +337,5 @@ export default function Settings({ orgData }: Props) {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

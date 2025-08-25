@@ -1,9 +1,9 @@
-"use client";
-import { useToastCustomizationOption } from "@/hooks/useDashboardCustomization";
-import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
-import { ToastPreview } from "@/components/ui-custom/ToastPreview";
-import React from "react";
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
+"use client"
+import { useToastCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput"
+import { ToastPreview } from "@/components/ui-custom/ToastPreview"
+import React from "react"
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
 
 type ToastColorKey =
   | "toastTitleColor"
@@ -11,7 +11,7 @@ type ToastColorKey =
   | "toastBackgroundColor"
   | "toastErrorTitleColor"
   | "toastErrorDescriptionColor"
-  | "toastErrorBackgroundColor";
+  | "toastErrorBackgroundColor"
 const customizationFields: { key: ToastColorKey; label: string }[] = [
   { key: "toastTitleColor", label: "Success Toast Text Color" },
   { key: "toastDescriptionColor", label: "Success Toast Secondary Text" },
@@ -19,9 +19,9 @@ const customizationFields: { key: ToastColorKey; label: string }[] = [
   { key: "toastErrorTitleColor", label: "Error Toast Text Color" },
   { key: "toastErrorDescriptionColor", label: "Error Toast Secondary Text" },
   { key: "toastErrorBackgroundColor", label: "Error Toast Background" },
-];
+]
 export const ToastCustomization = () => {
-  const customization = useToastCustomizationOption();
+  const customization = useToastCustomizationOption()
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -49,5 +49,5 @@ export const ToastCustomization = () => {
         description="The password you entered is incorrect."
       />
     </>
-  );
-};
+  )
+}

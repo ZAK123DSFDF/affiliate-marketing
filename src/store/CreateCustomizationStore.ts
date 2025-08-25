@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create } from "zustand"
 
 export const createCustomizationStore = <
   TColors extends Record<string, string>,
@@ -7,15 +7,15 @@ export const createCustomizationStore = <
 >(
   defaultColors: TColors,
   defaultSwitches: TSwitches,
-  defaultNotes: TNotes,
+  defaultNotes: TNotes
 ) =>
   create<
     TColors &
       TSwitches &
       TNotes & {
-        setColor: (key: keyof TColors, val: string) => void;
-        setSwitch: (key: keyof TSwitches, val: boolean) => void;
-        setNote: (key: keyof TNotes, val: string) => void;
+        setColor: (key: keyof TColors, val: string) => void
+        setSwitch: (key: keyof TSwitches, val: boolean) => void
+        setNote: (key: keyof TNotes, val: string) => void
       }
   >((set) => ({
     ...defaultColors,
@@ -36,4 +36,4 @@ export const createCustomizationStore = <
         ...state,
         [key]: val,
       })),
-  }));
+  }))

@@ -1,15 +1,15 @@
-"use client";
+"use client"
 
-import Link from "next/link";
+import Link from "next/link"
 
 interface LinkButtonProps {
-  isPreview: boolean;
-  label: string;
-  href?: string;
-  tabName?: string;
-  linkTextColor?: string;
-  className?: string;
-  setTab?: (tab: string) => void;
+  isPreview: boolean
+  label: string
+  href?: string
+  tabName?: string
+  linkTextColor?: string
+  className?: string
+  setTab?: (tab: string) => void
 }
 
 export const LinkButton = ({
@@ -33,7 +33,7 @@ export const LinkButton = ({
       >
         {label}
       </button>
-    );
+    )
   }
 
   return (
@@ -46,5 +46,5 @@ export const LinkButton = ({
     >
       {label}
     </Link>
-  );
-};
+  )
+}

@@ -1,50 +1,50 @@
-"use client";
+"use client"
 
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import MonthSelect from "@/components/ui-custom/MonthSelect";
-import { initialKpiData } from "@/lib/types/dummyKpiData";
-import React from "react";
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
+import MonthSelect from "@/components/ui-custom/MonthSelect"
+import { initialKpiData } from "@/lib/types/dummyKpiData"
+import React from "react"
 import {
   useDashboardCardCustomizationOption,
   useDashboardThemeCustomizationOption,
   useKpiCardCustomizationOption,
-} from "@/hooks/useDashboardCustomization";
-import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
-import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions";
-import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions";
-import { cn } from "@/lib/utils";
-import { KpiCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/KpiCardCustomizationOptions";
-import { getShadowWithColor } from "@/util/GetShadowWithColor";
-import { toValidShadowSize } from "@/util/ValidateShadowColor";
+} from "@/hooks/useDashboardCustomization"
+import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
+import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions"
+import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions"
+import { cn } from "@/lib/utils"
+import { KpiCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/KpiCardCustomizationOptions"
+import { getShadowWithColor } from "@/util/GetShadowWithColor"
+import { toValidShadowSize } from "@/util/ValidateShadowColor"
 import {
   AffiliateKpiStats,
   SellerKpiStats,
-} from "@/lib/types/affiliateKpiStats";
-import { mapAffiliateStats, mapSellerStats } from "@/util/mapStats";
-import { useSearch } from "@/hooks/useSearch";
-import { getAffiliateKpiStats } from "@/app/affiliate/[orgId]/dashboard/action";
-import { getSellerKpiStats } from "@/app/seller/[orgId]/dashboard/action";
-import { useQueryFilter } from "@/hooks/useQueryFilter";
+} from "@/lib/types/affiliateKpiStats"
+import { mapAffiliateStats, mapSellerStats } from "@/util/mapStats"
+import { useSearch } from "@/hooks/useSearch"
+import { getAffiliateKpiStats } from "@/app/affiliate/[orgId]/dashboard/action"
+import { getSellerKpiStats } from "@/app/seller/[orgId]/dashboard/action"
+import { useQueryFilter } from "@/hooks/useQueryFilter"
 
 interface CardsProps {
-  orgId: string;
-  affiliate: boolean;
-  isPreview?: boolean;
-  kpiCardStats?: AffiliateKpiStats[] | SellerKpiStats[] | [{}];
+  orgId: string
+  affiliate: boolean
+  isPreview?: boolean
+  kpiCardStats?: AffiliateKpiStats[] | SellerKpiStats[] | [{}]
 }
 
 const affiliateColorPairs = [
   { iconBg: "bg-blue-100", iconColor: "text-blue-600" },
   { iconBg: "bg-green-100", iconColor: "text-green-600" },
   { iconBg: "bg-purple-100", iconColor: "text-purple-600" },
-];
+]
 
 const sellerColorPairs = [
   { iconBg: "bg-blue-100", iconColor: "text-blue-600" },
   { iconBg: "bg-green-100", iconColor: "text-green-600" },
   { iconBg: "bg-purple-100", iconColor: "text-purple-600" },
   { iconBg: "bg-yellow-100", iconColor: "text-yellow-600" },
-];
+]
 
 const Cards = ({
   orgId,
@@ -52,14 +52,14 @@ const Cards = ({
   isPreview = false,
   kpiCardStats = [{}],
 }: CardsProps) => {
-  const dashboardTheme = useDashboardThemeCustomizationOption();
-  const kpiCard = useKpiCardCustomizationOption();
-  const dashboardCard = useDashboardCardCustomizationOption();
-  const stats = kpiCardStats[0];
+  const dashboardTheme = useDashboardThemeCustomizationOption()
+  const kpiCard = useKpiCardCustomizationOption()
+  const dashboardCard = useDashboardCardCustomizationOption()
+  const stats = kpiCardStats[0]
   const { filters, setFilters } = useQueryFilter({
     yearKey: "kpiYear",
     monthKey: "kpiMonth",
-  });
+  })
 
   const { data: affiliateSearchData, isPending: affiliateSearchPending } =
     useSearch(
@@ -73,8 +73,8 @@ const Cards = ({
           (filters.year || filters.month) &&
           !isPreview
         ),
-      },
-    );
+      }
+    )
   const { data: sellerSearchData, isPending: sellerSearchPending } = useSearch(
     ["seller-card", orgId, filters.year, filters.month],
     getSellerKpiStats,
@@ -86,32 +86,30 @@ const Cards = ({
         (filters.year || filters.month) &&
         !isPreview
       ),
-    },
-  );
-  const searchData = affiliate ? affiliateSearchData : sellerSearchData;
-  const searchPending = affiliate
-    ? affiliateSearchPending
-    : sellerSearchPending;
+    }
+  )
+  const searchData = affiliate ? affiliateSearchData : sellerSearchData
+  const searchPending = affiliate ? affiliateSearchPending : sellerSearchPending
   const filteredData = affiliate
     ? mapAffiliateStats(stats as AffiliateKpiStats)
-    : mapSellerStats(stats as SellerKpiStats) || initialKpiData;
-  const isFiltering = !!(filters.year || filters.month);
+    : mapSellerStats(stats as SellerKpiStats) || initialKpiData
+  const isFiltering = !!(filters.year || filters.month)
 
   const displayData = React.useMemo(() => {
-    if (isPreview) return filteredData;
+    if (isPreview) return filteredData
 
     if (isFiltering) {
-      if (searchPending) return [];
+      if (searchPending) return []
       if (searchData)
         return affiliate
           ? mapAffiliateStats(searchData[0] as AffiliateKpiStats)
-          : mapSellerStats(searchData[0] as SellerKpiStats) || initialKpiData;
+          : mapSellerStats(searchData[0] as SellerKpiStats) || initialKpiData
     }
 
-    return filteredData;
-  }, [isPreview, isFiltering, searchPending, searchData, filteredData]);
-  const colorTypes = ["Primary", "Secondary", "Tertiary"] as const;
-  const colorPairs = affiliate ? affiliateColorPairs : sellerColorPairs;
+    return filteredData
+  }, [isPreview, isFiltering, searchPending, searchData, filteredData])
+  const colorTypes = ["Primary", "Secondary", "Tertiary"] as const
+  const colorPairs = affiliate ? affiliateColorPairs : sellerColorPairs
 
   return (
     <div className="space-y-6">
@@ -128,7 +126,7 @@ const Cards = ({
               ? affiliate &&
                 getShadowWithColor(
                   toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
-                  dashboardCard.dashboardCardShadowColor,
+                  dashboardCard.dashboardCardShadowColor
                 )
               : "",
           border:
@@ -204,8 +202,8 @@ const Cards = ({
                   />
                 ))
               : displayData.map(({ label, value, icon: Icon }, index) => {
-                  const colorIndex = index % colorPairs.length;
-                  const defaultColorPair = colorPairs[colorIndex];
+                  const colorIndex = index % colorPairs.length
+                  const defaultColorPair = colorPairs[colorIndex]
 
                   if (!affiliate) {
                     return (
@@ -213,20 +211,20 @@ const Cards = ({
                         key={label}
                         className={cn(
                           "p-3 flex items-center gap-4 rounded-lg bg-white border shadow-sm",
-                          isPreview ? "text-sm" : "text-base",
+                          isPreview ? "text-sm" : "text-base"
                         )}
                       >
                         <div
                           className={cn(
                             "flex-shrink-0 rounded-xl flex items-center justify-center",
                             isPreview ? "w-8 h-8" : "p-3",
-                            defaultColorPair.iconBg,
+                            defaultColorPair.iconBg
                           )}
                         >
                           <Icon
                             className={cn(
                               isPreview ? "w-4 h-4" : "w-8 h-8",
-                              defaultColorPair.iconColor,
+                              defaultColorPair.iconColor
                             )}
                           />
                         </div>
@@ -239,33 +237,33 @@ const Cards = ({
                           </div>
                         </div>
                       </div>
-                    );
+                    )
                   }
 
-                  const colorType = colorTypes[colorIndex % colorTypes.length];
+                  const colorType = colorTypes[colorIndex % colorTypes.length]
                   const iconBgColor: string | undefined =
                     (kpiCard[
                       `cardIcon${colorType}BackgroundColor` as keyof typeof kpiCard
                     ] as unknown as string | undefined) ||
                     (affiliate && defaultColorPair.iconBg) ||
-                    undefined;
+                    undefined
 
                   const iconTextColor: string | undefined =
                     (kpiCard[
                       `cardIcon${colorType}Color` as keyof typeof kpiCard
                     ] as unknown as string | undefined) ||
                     (affiliate && defaultColorPair.iconColor) ||
-                    undefined;
+                    undefined
 
                   const borderColor =
-                    (affiliate && kpiCard.cardBorderColor) || "#e5e7eb";
+                    (affiliate && kpiCard.cardBorderColor) || "#e5e7eb"
                   const shadowColor =
                     (affiliate && kpiCard.cardShadowColor) ||
-                    "rgba(0, 0, 0, 0.1)";
+                    "rgba(0, 0, 0, 0.1)"
                   const primaryTextColor =
-                    (affiliate && kpiCard.cardPrimaryTextColor) || "inherit";
+                    (affiliate && kpiCard.cardPrimaryTextColor) || "inherit"
                   const secondaryTextColor =
-                    (affiliate && kpiCard.cardSecondaryTextColor) || "#6b7280";
+                    (affiliate && kpiCard.cardSecondaryTextColor) || "#6b7280"
 
                   return (
                     <div
@@ -276,7 +274,7 @@ const Cards = ({
                         affiliate && kpiCard.cardBorder && "border",
                         affiliate &&
                           kpiCard.cardShadow &&
-                          `shadow-${(affiliate && kpiCard.cardShadowThickness) || "sm"}`,
+                          `shadow-${(affiliate && kpiCard.cardShadowThickness) || "sm"}`
                       )}
                       style={{
                         borderColor:
@@ -311,7 +309,7 @@ const Cards = ({
                             affiliate &&
                             iconBgColor.startsWith("bg-")
                             ? affiliate && iconBgColor
-                            : "",
+                            : ""
                         )}
                         style={{
                           backgroundColor:
@@ -329,7 +327,7 @@ const Cards = ({
                               affiliate &&
                               iconTextColor.startsWith("text-")
                               ? affiliate && iconTextColor
-                              : "",
+                              : ""
                           )}
                           style={{
                             color:
@@ -357,13 +355,13 @@ const Cards = ({
                         </div>
                       </div>
                     </div>
-                  );
+                  )
                 })}
           </div>
         </CardContent>
       </Card>
     </div>
-  );
-};
+  )
+}
 
-export default Cards;
+export default Cards

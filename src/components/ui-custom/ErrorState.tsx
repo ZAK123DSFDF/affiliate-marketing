@@ -1,9 +1,9 @@
-import React from "react";
-import { AlertTriangle } from "lucide-react";
+import React from "react"
+import { AlertTriangle } from "lucide-react"
 
 interface ErrorStateProps {
-  message?: string;
-  onRetry?: () => void;
+  message?: string
+  onRetry?: () => void
 }
 
 const ErrorState: React.FC<ErrorStateProps> = ({
@@ -23,7 +23,7 @@ const ErrorState: React.FC<ErrorStateProps> = ({
         </button>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ErrorState;
+export default ErrorState

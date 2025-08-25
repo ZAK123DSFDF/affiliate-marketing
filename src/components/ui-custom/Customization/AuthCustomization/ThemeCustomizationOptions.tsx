@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
-import { useThemeCustomizationOption } from "@/hooks/useAuthCustomization";
-import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges";
+import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput"
+import { useThemeCustomizationOption } from "@/hooks/useAuthCustomization"
+import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
 
 // These are the valid keys
 type ThemeKeys =
@@ -15,13 +15,13 @@ type ThemeKeys =
   | "InvalidSecondaryCustomization"
   | "emailVerifiedPrimaryColor"
   | "emailVerifiedSecondaryColor"
-  | "emailVerifiedIconColor";
+  | "emailVerifiedIconColor"
 
 type Props = {
-  name: ThemeKeys;
-  showLabel?: boolean;
-  buttonSize?: string;
-};
+  name: ThemeKeys
+  showLabel?: boolean
+  buttonSize?: string
+}
 
 export const ThemeCustomizationOptions = ({
   name,
@@ -39,7 +39,7 @@ export const ThemeCustomizationOptions = ({
     emailVerifiedPrimaryColor,
     emailVerifiedSecondaryColor,
     emailVerifiedIconColor,
-  } = useThemeCustomizationOption();
+  } = useThemeCustomizationOption()
 
   const valueMap: Record<ThemeKeys, string> = {
     backgroundColor,
@@ -52,7 +52,7 @@ export const ThemeCustomizationOptions = ({
     emailVerifiedPrimaryColor,
     emailVerifiedSecondaryColor,
     emailVerifiedIconColor,
-  };
+  }
 
   const labelMap: Record<ThemeKeys, string> = {
     backgroundColor: "Background",
@@ -65,7 +65,7 @@ export const ThemeCustomizationOptions = ({
     emailVerifiedPrimaryColor: "Email Verified Primary",
     emailVerifiedSecondaryColor: "Email Verified Secondary",
     emailVerifiedIconColor: "Email Verified Icon",
-  };
+  }
 
   return (
     <ResettableColorInput
@@ -77,5 +77,5 @@ export const ThemeCustomizationOptions = ({
       showLabel={showLabel}
       buttonSize={buttonSize}
     />
-  );
-};
+  )
+}

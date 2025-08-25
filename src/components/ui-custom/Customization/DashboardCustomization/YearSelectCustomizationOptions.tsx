@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
-import React from "react";
-import { useYearSelectCustomizationOption } from "@/hooks/useDashboardCustomization";
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
+import React from "react"
+import { useYearSelectCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
 
 export const YearSelectCustomizationOptions = ({
   triggerSize,
   dropdownSize,
 }: {
-  triggerSize?: string;
-  dropdownSize?: string;
+  triggerSize?: string
+  dropdownSize?: string
 }) => {
   const {
     yearSelectBackgroundColor,
@@ -23,7 +23,7 @@ export const YearSelectCustomizationOptions = ({
     yearSelectDropDownIconColor,
     yearSelectDropDownHoverBackgroundColor,
     yearSelectDropDownHoverTextColor,
-  } = useYearSelectCustomizationOption();
+  } = useYearSelectCustomizationOption()
 
   return (
     <OptionWithSwitch
@@ -37,7 +37,7 @@ export const YearSelectCustomizationOptions = ({
             updateDashboardCustomization(
               "useYearSelectCustomization",
               "yearSelectBackgroundColor",
-              val,
+              val
             ),
         },
         yearSelectTextColor: {
@@ -47,7 +47,7 @@ export const YearSelectCustomizationOptions = ({
             updateDashboardCustomization(
               "useYearSelectCustomization",
               "yearSelectTextColor",
-              val,
+              val
             ),
         },
         yearSelectActiveBorderColor: {
@@ -57,7 +57,7 @@ export const YearSelectCustomizationOptions = ({
             updateDashboardCustomization(
               "useYearSelectCustomization",
               "yearSelectActiveBorderColor",
-              val,
+              val
             ),
         },
         yearSelectDropDownBackgroundColor: {
@@ -67,7 +67,7 @@ export const YearSelectCustomizationOptions = ({
             updateDashboardCustomization(
               "useYearSelectCustomization",
               "yearSelectDropDownBackgroundColor",
-              val,
+              val
             ),
         },
         yearSelectDropDownTextColor: {
@@ -77,7 +77,7 @@ export const YearSelectCustomizationOptions = ({
             updateDashboardCustomization(
               "useYearSelectCustomization",
               "yearSelectDropDownTextColor",
-              val,
+              val
             ),
         },
         yearSelectDropDownActiveTextColor: {
@@ -87,7 +87,7 @@ export const YearSelectCustomizationOptions = ({
             updateDashboardCustomization(
               "useYearSelectCustomization",
               "yearSelectDropDownActiveTextColor",
-              val,
+              val
             ),
         },
         yearSelectDropDownActiveBackgroundColor: {
@@ -97,7 +97,7 @@ export const YearSelectCustomizationOptions = ({
             updateDashboardCustomization(
               "useYearSelectCustomization",
               "yearSelectDropDownActiveBackgroundColor",
-              val,
+              val
             ),
         },
         yearSelectDropDownIconColor: {
@@ -107,7 +107,7 @@ export const YearSelectCustomizationOptions = ({
             updateDashboardCustomization(
               "useYearSelectCustomization",
               "yearSelectDropDownIconColor",
-              val,
+              val
             ),
         },
         yearSelectDropDownHoverBackgroundColor: {
@@ -117,7 +117,7 @@ export const YearSelectCustomizationOptions = ({
             updateDashboardCustomization(
               "useYearSelectCustomization",
               "yearSelectDropDownHoverBackgroundColor",
-              val,
+              val
             ),
         },
         yearSelectDropDownHoverTextColor: {
@@ -127,10 +127,10 @@ export const YearSelectCustomizationOptions = ({
             updateDashboardCustomization(
               "useYearSelectCustomization",
               "yearSelectDropDownHoverTextColor",
-              val,
+              val
             ),
         },
       }}
     />
-  );
-};
+  )
+}

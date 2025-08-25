@@ -1,6 +1,6 @@
-import React from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import React from "react"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import {
   Table,
   TableBody,
@@ -8,15 +8,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/table"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
-import Payouts from "@/components/pages/Dashboard/Payouts/Payouts";
+} from "@/components/ui/dropdown-menu"
+import { MoreHorizontal } from "lucide-react"
+import Payouts from "@/components/pages/Dashboard/Payouts/Payouts"
 
 const payoutData = [
   {
@@ -43,7 +43,7 @@ const payoutData = [
     paid: 2100,
     status: "paid",
   },
-];
+]
 
 export default function PayoutPage() {
   return (
@@ -117,5 +117,5 @@ export default function PayoutPage() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

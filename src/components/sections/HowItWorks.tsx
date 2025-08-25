@@ -1,5 +1,5 @@
-import React from "react";
-import { cn } from "@/lib/utils";
+import React from "react"
+import { cn } from "@/lib/utils"
 
 const steps = [
   {
@@ -38,7 +38,7 @@ const steps = [
       "https://images.unsplash.com/photo-1565514020179-026b92b2d169?q=80&w=1470&auto=format&fit=crop",
     alt: "Automatic Affiliates payouts",
   },
-];
+]
 
 const HowItWorks = () => {
   return (
@@ -58,7 +58,7 @@ const HowItWorks = () => {
               key={index}
               className={cn(
                 "flex flex-col lg:flex-row items-center gap-10 animate-fade-in",
-                index % 2 === 1 ? "lg:flex-row-reverse" : "",
+                index % 2 === 1 ? "lg:flex-row-reverse" : ""
               )}
             >
               <div className="flex-1 lg:px-6">
@@ -84,7 +84,7 @@ const HowItWorks = () => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default HowItWorks;
+export default HowItWorks

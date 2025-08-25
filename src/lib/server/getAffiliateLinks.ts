@@ -1,11 +1,11 @@
-"use server";
-import { db } from "@/db/drizzle";
-import { affiliate, affiliateLink } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+"use server"
+import { db } from "@/db/drizzle"
+import { affiliate, affiliateLink } from "@/db/schema"
+import { and, eq } from "drizzle-orm"
 
 export async function getAffiliateLinks(decoded: {
-  organizationId: string;
-  id: string;
+  organizationId: string
+  id: string
 }) {
   const affiliates = await db
     .select({
@@ -17,13 +17,13 @@ export async function getAffiliateLinks(decoded: {
     .where(
       and(
         eq(affiliate.organizationId, decoded.organizationId),
-        eq(affiliate.id, decoded.id),
-      ),
-    );
+        eq(affiliate.id, decoded.id)
+      )
+    )
 
-  if (!affiliates.length) return { affiliates: [], linkIds: [] };
+  if (!affiliates.length) return { affiliates: [], linkIds: [] }
 
-  const affiliateId = affiliates[0].affiliateId;
+  const affiliateId = affiliates[0].affiliateId
 
   const links = await db
     .select({ id: affiliateLink.id, createdAt: affiliateLink.createdAt })
@@ -31,9 +31,9 @@ export async function getAffiliateLinks(decoded: {
     .where(
       and(
         eq(affiliateLink.affiliateId, affiliateId),
-        eq(affiliateLink.organizationId, decoded.organizationId),
-      ),
-    );
+        eq(affiliateLink.organizationId, decoded.organizationId)
+      )
+    )
 
-  return { affiliates, linkIds: links.map((l) => l.id), links };
+  return { affiliates, linkIds: links.map((l) => l.id), links }
 }

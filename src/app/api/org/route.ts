@@ -1,22 +1,22 @@
 // File: /app/api/org/route.ts
-import { db } from "@/db/drizzle";
-import { affiliateLink, organization } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
+import { db } from "@/db/drizzle"
+import { affiliateLink, organization } from "@/db/schema"
+import { eq } from "drizzle-orm"
+import { NextResponse } from "next/server"
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
+}
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const code = searchParams.get("code");
+  const { searchParams } = new URL(req.url)
+  const code = searchParams.get("code")
 
   if (!code) {
     return NextResponse.json(
       { error: "Missing referral code" },
-      { status: 400 },
-    );
+      { status: 400 }
+    )
   }
 
   const [result] = await db
@@ -32,7 +32,7 @@ export async function GET(req: Request) {
     .from(affiliateLink)
     .innerJoin(organization, eq(affiliateLink.organizationId, organization.id))
     .where(eq(affiliateLink.id, code))
-    .limit(1);
+    .limit(1)
 
   if (!result) {
     return new NextResponse(
@@ -40,8 +40,8 @@ export async function GET(req: Request) {
       {
         status: 404,
         headers: corsHeaders,
-      },
-    );
+      }
+    )
   }
 
   return new NextResponse(JSON.stringify(result), {
@@ -50,11 +50,11 @@ export async function GET(req: Request) {
       ...corsHeaders,
       "Content-Type": "application/json",
     },
-  });
+  })
 }
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
     headers: corsHeaders,
-  });
+  })
 }

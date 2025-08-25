@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput";
-import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization";
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges";
+import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput"
+import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
 
 // Valid keys for dashboard theme customization
 type DashboardThemeKeys =
@@ -13,13 +13,13 @@ type DashboardThemeKeys =
   | "cardHeaderPrimaryTextColor"
   | "cardHeaderSecondaryTextColor"
   | "cardHeaderDescriptionTextColor"
-  | "dialogHeaderColor";
+  | "dialogHeaderColor"
 
 type Props = {
-  name: DashboardThemeKeys;
-  showLabel?: boolean;
-  buttonSize?: string;
-};
+  name: DashboardThemeKeys
+  showLabel?: boolean
+  buttonSize?: string
+}
 
 export const DashboardThemeCustomizationOptions = ({
   name,
@@ -35,7 +35,7 @@ export const DashboardThemeCustomizationOptions = ({
     cardHeaderSecondaryTextColor,
     cardHeaderDescriptionTextColor,
     dialogHeaderColor,
-  } = useDashboardThemeCustomizationOption();
+  } = useDashboardThemeCustomizationOption()
 
   const valueMap: Record<DashboardThemeKeys, string> = {
     mainBackgroundColor,
@@ -46,7 +46,7 @@ export const DashboardThemeCustomizationOptions = ({
     cardHeaderSecondaryTextColor,
     cardHeaderDescriptionTextColor,
     dialogHeaderColor,
-  };
+  }
 
   const labelMap: Record<DashboardThemeKeys, string> = {
     mainBackgroundColor: "Main Background",
@@ -57,7 +57,7 @@ export const DashboardThemeCustomizationOptions = ({
     cardHeaderSecondaryTextColor: "Card Header Secondary Text",
     cardHeaderDescriptionTextColor: "Card Header Description Text",
     dialogHeaderColor: "Dialog Header",
-  };
+  }
 
   return (
     <ResettableColorInput
@@ -67,11 +67,11 @@ export const DashboardThemeCustomizationOptions = ({
         updateDashboardCustomization(
           "useDashboardThemeCustomization",
           name,
-          val,
+          val
         )
       }
       showLabel={showLabel}
       buttonSize={buttonSize}
     />
-  );
-};
+  )
+}

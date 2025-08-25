@@ -1,13 +1,13 @@
 interface ErrorResponse {
-  ok: boolean;
-  status: number;
-  error: string;
-  toast?: string; // Unified message for client-side display
-  fields?: Record<string, string> | null; // Optional field errors
+  ok: boolean
+  status: number
+  error: string
+  toast?: string // Unified message for client-side display
+  fields?: Record<string, string> | null // Optional field errors
 }
 
 export function returnError(err: unknown): ErrorResponse {
-  console.error("Full error object:", err);
+  console.error("Full error object:", err)
 
   // Handle Drizzle/Postgres errors
   if (err instanceof Error) {
@@ -17,17 +17,17 @@ export function returnError(err: unknown): ErrorResponse {
       error: err.message,
       toast: "Database query failed",
       fields: null,
-    };
+    }
   }
   if (typeof err === "object" && err !== null) {
-    const errorObj = err as Partial<ErrorResponse>;
+    const errorObj = err as Partial<ErrorResponse>
     return {
       ok: false,
       status: errorObj.status || 500,
       error: errorObj.error || "Unknown error",
       toast: errorObj.toast || "Something went wrong",
       fields: errorObj.fields || null,
-    };
+    }
   }
 
   return {
@@ -35,5 +35,5 @@ export function returnError(err: unknown): ErrorResponse {
     status: 500,
     error: "Internal server error",
     toast: "Something went wrong",
-  };
+  }
 }

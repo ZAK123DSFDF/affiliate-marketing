@@ -1,13 +1,13 @@
-"use client";
-import React from "react";
-import { cn } from "@/lib/utils";
-import { useToastCustomizationOption } from "@/hooks/useDashboardCustomization";
+"use client"
+import React from "react"
+import { cn } from "@/lib/utils"
+import { useToastCustomizationOption } from "@/hooks/useDashboardCustomization"
 
 type Props = {
-  type: "success" | "error";
-  title: string;
-  description: string;
-};
+  type: "success" | "error"
+  title: string
+  description: string
+}
 
 export const ToastPreview = ({ type, title, description }: Props) => {
   const {
@@ -17,23 +17,21 @@ export const ToastPreview = ({ type, title, description }: Props) => {
     toastErrorBackgroundColor,
     toastErrorTitleColor,
     toastErrorDescriptionColor,
-  } = useToastCustomizationOption();
+  } = useToastCustomizationOption()
 
-  const isError = type === "error";
-  const bgColor = isError ? toastErrorBackgroundColor : toastBackgroundColor;
-  const titleColor = isError ? toastErrorTitleColor : toastTitleColor;
-  const descColor = isError
-    ? toastErrorDescriptionColor
-    : toastDescriptionColor;
+  const isError = type === "error"
+  const bgColor = isError ? toastErrorBackgroundColor : toastBackgroundColor
+  const titleColor = isError ? toastErrorTitleColor : toastTitleColor
+  const descColor = isError ? toastErrorDescriptionColor : toastDescriptionColor
   const variantClasses = isError
     ? "border-destructive bg-destructive text-destructive-foreground"
-    : "border bg-background text-foreground";
+    : "border bg-background text-foreground"
 
   return (
     <div
       className={cn(
         "w-full rounded-md p-4 shadow-[0_2px_8px_-1px_rgba(0,0,0,0.1)]",
-        !bgColor && variantClasses,
+        !bgColor && variantClasses
       )}
       style={{
         backgroundColor: bgColor || undefined,
@@ -49,5 +47,5 @@ export const ToastPreview = ({ type, title, description }: Props) => {
         {description}
       </div>
     </div>
-  );
-};
+  )
+}

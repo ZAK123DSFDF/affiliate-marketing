@@ -1,14 +1,14 @@
-import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch";
-import React from "react";
-import { useCardCustomizationOption } from "@/hooks/useAuthCustomization";
-import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges";
+import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
+import React from "react"
+import { useCardCustomizationOption } from "@/hooks/useAuthCustomization"
+import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
 
 export const CardCustomizationOptions = ({
   triggerSize,
   dropdownSize,
 }: {
-  triggerSize?: string;
-  dropdownSize?: string;
+  triggerSize?: string
+  dropdownSize?: string
 }) => {
   const {
     cardShadow,
@@ -17,7 +17,7 @@ export const CardCustomizationOptions = ({
     cardBorderColor,
     cardBackgroundColor,
     cardShadowThickness,
-  } = useCardCustomizationOption();
+  } = useCardCustomizationOption()
   return (
     <OptionWithSwitch
       triggerSize={triggerSize}
@@ -36,7 +36,7 @@ export const CardCustomizationOptions = ({
                 updateAuthCustomization(
                   "useCardCustomization",
                   "cardShadowColor",
-                  val,
+                  val
                 ),
             },
             shadowThickness: {
@@ -52,7 +52,7 @@ export const CardCustomizationOptions = ({
                 updateAuthCustomization(
                   "useCardCustomization",
                   "cardShadowThickness",
-                  val,
+                  val
                 ),
             },
           },
@@ -70,7 +70,7 @@ export const CardCustomizationOptions = ({
                 updateAuthCustomization(
                   "useCardCustomization",
                   "cardBorderColor",
-                  val,
+                  val
                 ),
             },
           },
@@ -82,10 +82,10 @@ export const CardCustomizationOptions = ({
             updateAuthCustomization(
               "useCardCustomization",
               "cardBackgroundColor",
-              val,
+              val
             ),
         },
       }}
     />
-  );
-};
+  )
+}

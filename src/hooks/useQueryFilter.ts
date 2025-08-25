@@ -1,19 +1,19 @@
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState, useMemo } from "react";
-import { OrderBy } from "@/lib/types/orderTypes";
+import { useRouter, useSearchParams } from "next/navigation"
+import { useCallback, useState, useMemo } from "react"
+import { OrderBy } from "@/lib/types/orderTypes"
 
-type OrderDir = "asc" | "desc";
+type OrderDir = "asc" | "desc"
 
 export function useQueryFilter(
   keys: {
-    yearKey?: string;
-    monthKey?: string;
-    orderByKey?: string;
-    orderDirKey?: string;
-    offsetKey?: string;
-    emailKey?: string;
+    yearKey?: string
+    monthKey?: string
+    orderByKey?: string
+    orderDirKey?: string
+    offsetKey?: string
+    emailKey?: string
   } = {},
-  options: { debounceMs?: number } = {},
+  options: { debounceMs?: number } = {}
 ) {
   const {
     yearKey = "year",
@@ -22,13 +22,13 @@ export function useQueryFilter(
     orderDirKey = "orderDir",
     offsetKey = "page",
     emailKey = "email",
-  } = keys;
+  } = keys
 
-  const { debounceMs = 300 } = options;
+  const { debounceMs = 300 } = options
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const params = Object.fromEntries(searchParams.entries());
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const params = Object.fromEntries(searchParams.entries())
 
   const initialFilters = useMemo(
     () => ({
@@ -39,61 +39,61 @@ export function useQueryFilter(
       offset: params[offsetKey] ? Number(params[offsetKey]) : undefined,
       email: params[emailKey] || undefined,
     }),
-    [params, yearKey, monthKey, orderByKey, orderDirKey, offsetKey, emailKey],
-  );
+    [params, yearKey, monthKey, orderByKey, orderDirKey, offsetKey, emailKey]
+  )
 
-  const [filters, setFiltersState] = useState(initialFilters);
+  const [filters, setFiltersState] = useState(initialFilters)
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(
-    null,
-  );
+    null
+  )
 
   const setFilters = useCallback(
     (newFilters: Partial<typeof initialFilters>) => {
       const applyUpdate = () => {
-        const merged = { ...filters, ...newFilters };
-        if (merged.year === undefined) merged.month = undefined;
-        setFiltersState(merged);
+        const merged = { ...filters, ...newFilters }
+        if (merged.year === undefined) merged.month = undefined
+        setFiltersState(merged)
 
-        const newParams = new URLSearchParams(searchParams.toString());
+        const newParams = new URLSearchParams(searchParams.toString())
 
         if (merged.year !== undefined)
-          newParams.set(yearKey, String(merged.year));
-        else newParams.delete(yearKey);
+          newParams.set(yearKey, String(merged.year))
+        else newParams.delete(yearKey)
 
         if (merged.month !== undefined)
-          newParams.set(monthKey, String(merged.month));
-        else newParams.delete(monthKey);
+          newParams.set(monthKey, String(merged.month))
+        else newParams.delete(monthKey)
 
         if (merged.orderBy) {
-          newParams.set(orderByKey, merged.orderBy);
+          newParams.set(orderByKey, merged.orderBy)
         } else {
-          newParams.delete(orderByKey);
-          newParams.delete(orderDirKey);
+          newParams.delete(orderByKey)
+          newParams.delete(orderDirKey)
         }
 
         if (merged.orderDir && merged.orderBy) {
-          newParams.set(orderDirKey, merged.orderDir);
+          newParams.set(orderDirKey, merged.orderDir)
         } else {
-          newParams.delete(orderDirKey);
+          newParams.delete(orderDirKey)
         }
 
         if (merged.offset !== undefined)
-          newParams.set(offsetKey, String(merged.offset));
-        else newParams.delete(offsetKey);
+          newParams.set(offsetKey, String(merged.offset))
+        else newParams.delete(offsetKey)
 
         if (merged.email !== undefined && merged.email !== "") {
-          newParams.set(emailKey, merged.email);
+          newParams.set(emailKey, merged.email)
         } else {
-          newParams.delete(emailKey);
+          newParams.delete(emailKey)
         }
 
-        router.push(`?${newParams.toString()}`, { scroll: false });
-      };
+        router.push(`?${newParams.toString()}`, { scroll: false })
+      }
       if ("email" in newFilters) {
-        if (debounceTimer) clearTimeout(debounceTimer);
-        setDebounceTimer(setTimeout(applyUpdate, debounceMs));
+        if (debounceTimer) clearTimeout(debounceTimer)
+        setDebounceTimer(setTimeout(applyUpdate, debounceMs))
       } else {
-        applyUpdate();
+        applyUpdate()
       }
     },
     [
@@ -108,8 +108,8 @@ export function useQueryFilter(
       orderDirKey,
       offsetKey,
       emailKey,
-    ],
-  );
+    ]
+  )
 
-  return { filters, setFilters };
+  return { filters, setFilters }
 }

@@ -1,43 +1,43 @@
-"use client";
+"use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"
 import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow";
-import YearSelect from "@/components/ui-custom/YearSelect";
-import { getAffiliateCommissionByMonth } from "@/app/affiliate/[orgId]/dashboard/payment/action";
-import { getShadowWithColor } from "@/util/GetShadowWithColor";
-import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
-import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions";
-import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions";
-import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions";
+import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow"
+import YearSelect from "@/components/ui-custom/YearSelect"
+import { getAffiliateCommissionByMonth } from "@/app/affiliate/[orgId]/dashboard/payment/action"
+import { getShadowWithColor } from "@/util/GetShadowWithColor"
+import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
+import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions"
+import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions"
+import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions"
 import {
   useDashboardCardCustomizationOption,
   useDashboardThemeCustomizationOption,
-} from "@/hooks/useDashboardCustomization";
-import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
-import PendingState from "@/components/ui-custom/PendingState";
-import ErrorState from "@/components/ui-custom/ErrorState";
-import { TableContent } from "@/components/ui-custom/TableContent";
-import { TableLoading } from "@/components/ui-custom/TableLoading";
-import { paymentColumns } from "@/components/pages/AffiliateDashboard/Payment/PaymentColumns";
-import { useSearch } from "@/hooks/useSearch";
-import { useQueryFilter } from "@/hooks/useQueryFilter";
+} from "@/hooks/useDashboardCustomization"
+import { toValidShadowSize } from "@/util/ValidateShadowColor"
+import { useCustomizationSync } from "@/hooks/useCustomizationSync"
+import PendingState from "@/components/ui-custom/PendingState"
+import ErrorState from "@/components/ui-custom/ErrorState"
+import { TableContent } from "@/components/ui-custom/TableContent"
+import { TableLoading } from "@/components/ui-custom/TableLoading"
+import { paymentColumns } from "@/components/pages/AffiliateDashboard/Payment/PaymentColumns"
+import { useSearch } from "@/hooks/useSearch"
+import { useQueryFilter } from "@/hooks/useQueryFilter"
 
 interface AffiliateCommissionTableProps {
-  orgId: string;
-  data: AffiliatePaymentRow[];
-  isPreview?: boolean;
-  affiliate: boolean;
+  orgId: string
+  data: AffiliatePaymentRow[]
+  isPreview?: boolean
+  affiliate: boolean
 }
 
 export default function AffiliateCommissionTable({
@@ -46,45 +46,45 @@ export default function AffiliateCommissionTable({
   isPreview,
   affiliate = false,
 }: AffiliateCommissionTableProps) {
-  const dashboardTheme = useDashboardThemeCustomizationOption();
-  const dashboardCard = useDashboardCardCustomizationOption();
-  const { filters, setFilters } = useQueryFilter();
+  const dashboardTheme = useDashboardThemeCustomizationOption()
+  const dashboardCard = useDashboardCardCustomizationOption()
+  const { filters, setFilters } = useQueryFilter()
   const {
     isPending: globalPending,
     isError,
     refetch,
   } = affiliate
     ? useCustomizationSync(orgId, "dashboard")
-    : { isPending: false, isError: false, refetch: () => {} };
-  const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false);
+    : { isPending: false, isError: false, refetch: () => {} }
+  const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false)
   useEffect(() => {
-    if (!isPreview) return;
+    if (!isPreview) return
 
-    setIsFakeLoadingPreview(true);
+    setIsFakeLoadingPreview(true)
 
     const timer = setTimeout(() => {
-      setIsFakeLoadingPreview(false);
-    }, 1500);
+      setIsFakeLoadingPreview(false)
+    }, 1500)
 
-    return () => clearTimeout(timer);
-  }, [filters, isPreview]);
+    return () => clearTimeout(timer)
+  }, [filters, isPreview])
   const filteredData = React.useMemo(() => {
-    if (!isPreview) return data;
-    if (!filters.year) return data;
+    if (!isPreview) return data
+    if (!filters.year) return data
 
     return data.filter((row) =>
-      filters.year ? row.month.startsWith(filters.year.toString()) : true,
-    );
-  }, [data, filters.year, isPreview]);
+      filters.year ? row.month.startsWith(filters.year.toString()) : true
+    )
+  }, [data, filters.year, isPreview])
   const { data: yearSelectedData, isPending } = useSearch(
     ["affiliate-commissions", orgId, filters.year],
     getAffiliateCommissionByMonth,
     [filters.year],
     {
       enabled: !!(orgId && filters.year && !isPreview),
-    },
-  );
-  const columns = paymentColumns(affiliate);
+    }
+  )
+  const columns = paymentColumns(affiliate)
   const table = useReactTable({
     data: isPreview
       ? filteredData
@@ -96,12 +96,12 @@ export default function AffiliateCommissionTable({
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-  });
+  })
   if (globalPending) {
-    return <PendingState withoutBackground />;
+    return <PendingState withoutBackground />
   }
   if (isError) {
-    return <ErrorState onRetry={refetch} />;
+    return <ErrorState onRetry={refetch} />
   }
   return (
     <div className="flex flex-col gap-6">
@@ -158,7 +158,7 @@ export default function AffiliateCommissionTable({
               ? affiliate &&
                 getShadowWithColor(
                   toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
-                  dashboardCard.dashboardCardShadowColor,
+                  dashboardCard.dashboardCardShadowColor
                 )
               : "",
           border:
@@ -228,5 +228,5 @@ export default function AffiliateCommissionTable({
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

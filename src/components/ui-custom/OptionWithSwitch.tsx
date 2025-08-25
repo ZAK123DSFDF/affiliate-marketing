@@ -1,48 +1,48 @@
-"use client";
+"use client"
 
-import { Switch } from "@/components/ui/switch";
-import { ResettableColorInput } from "./ResettableColorInput";
+import { Switch } from "@/components/ui/switch"
+import { ResettableColorInput } from "./ResettableColorInput"
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Settings } from "lucide-react";
-import { DropdownInput } from "@/components/ui-custom/DropDownInput";
-import { useState } from "react";
+} from "@/components/ui/accordion"
+import { Settings } from "lucide-react"
+import { DropdownInput } from "@/components/ui-custom/DropDownInput"
+import { useState } from "react"
 type ColorProperty = {
-  label: string;
-  value: string;
-  onChange: (val: string) => void;
-};
+  label: string
+  value: string
+  onChange: (val: string) => void
+}
 
 type SwitchProperty = {
-  label: string;
-  enabled: boolean;
-  onToggle: (val: boolean) => void;
-  children?: Record<string, ColorProperty | SwitchProperty | DropdownProperty>;
-};
+  label: string
+  enabled: boolean
+  onToggle: (val: boolean) => void
+  children?: Record<string, ColorProperty | SwitchProperty | DropdownProperty>
+}
 
 type DropdownProperty = {
-  label: string;
-  value: string;
-  options: { label: string; value: string }[];
-  onChange: (val: string) => void;
-  size?: string;
-};
+  label: string
+  value: string
+  options: { label: string; value: string }[]
+  onChange: (val: string) => void
+  size?: string
+}
 
 type OptionProps<T> = {
-  properties: T;
-  triggerSize?: string;
-  dropdownSize?: string;
-};
+  properties: T
+  triggerSize?: string
+  dropdownSize?: string
+}
 
 export const OptionWithSwitch = <
   T extends Record<string, ColorProperty | SwitchProperty | DropdownProperty>,
@@ -51,8 +51,8 @@ export const OptionWithSwitch = <
   triggerSize = "w-8 h-8",
   dropdownSize,
 }: OptionProps<T>) => {
-  const [open, setOpen] = useState(false);
-  const [selectOpen, setSelectOpen] = useState(false);
+  const [open, setOpen] = useState(false)
+  const [selectOpen, setSelectOpen] = useState(false)
   return (
     <Popover open={open} onOpenChange={(v) => !selectOpen && setOpen(v)}>
       <PopoverTrigger asChild>
@@ -63,14 +63,14 @@ export const OptionWithSwitch = <
             "cursor-pointer transition-colors",
             "flex items-center justify-center",
             "relative",
-            triggerSize,
+            triggerSize
           )}
         >
           <Settings
             className={cn(
               "w-4 h-4",
               triggerSize,
-              "text-blue-600 dark:text-blue-400",
+              "text-blue-600 dark:text-blue-400"
             )}
           />
         </div>
@@ -90,7 +90,7 @@ export const OptionWithSwitch = <
                   selectOpen={selectOpen}
                   setSelectOpen={setSelectOpen}
                 />
-              );
+              )
             }
 
             if ("value" in prop) {
@@ -101,7 +101,7 @@ export const OptionWithSwitch = <
                   value={prop.value}
                   onChange={prop.onChange}
                 />
-              );
+              )
             }
 
             if ("enabled" in prop) {
@@ -117,7 +117,7 @@ export const OptionWithSwitch = <
                   <AccordionTrigger
                     className={cn(
                       "px-2 text-left hover:no-underline",
-                      !prop.enabled && "pointer-events-none opacity-50",
+                      !prop.enabled && "pointer-events-none opacity-50"
                     )}
                   >
                     <span className="text-xs text-muted-foreground">
@@ -145,7 +145,7 @@ export const OptionWithSwitch = <
                                   selectOpen={selectOpen}
                                   setSelectOpen={setSelectOpen}
                                 />
-                              );
+                              )
                             }
 
                             if ("value" in childProp) {
@@ -157,7 +157,7 @@ export const OptionWithSwitch = <
                                   onChange={childProp.onChange}
                                   disabled={!prop.enabled}
                                 />
-                              );
+                              )
                             }
 
                             if ("enabled" in childProp) {
@@ -175,22 +175,22 @@ export const OptionWithSwitch = <
                                     disabled={!prop.enabled}
                                   />
                                 </div>
-                              );
+                              )
                             }
 
-                            return null;
-                          },
+                            return null
+                          }
                         )}
                     </div>
                   </AccordionContent>
                 </AccordionItem>
-              );
+              )
             }
 
-            return null;
+            return null
           })}
         </Accordion>
       </PopoverContent>
     </Popover>
-  );
-};
+  )
+}

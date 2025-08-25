@@ -1,6 +1,6 @@
-import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
-import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow";
-import { DummyAffiliateLink } from "@/lib/types/DummyAffiliateLink";
+import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats"
+import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow"
+import { DummyAffiliateLink } from "@/lib/types/DummyAffiliateLink"
 
 export const dummyAffiliateLinksRaw: DummyAffiliateLink[] = [
   {
@@ -26,11 +26,11 @@ export const dummyAffiliateLinksRaw: DummyAffiliateLink[] = [
     ],
     sales: [{ createdAt: new Date("2025-08-02"), count: 1 }],
   },
-];
+]
 export const dummyAffiliateLinks: AffiliateLinkWithStats[] =
   dummyAffiliateLinksRaw.map((link) => {
-    const totalClicks = link.clicks.reduce((sum, c) => sum + c.count, 0);
-    const totalSales = link.sales.reduce((sum, s) => sum + s.count, 0);
+    const totalClicks = link.clicks.reduce((sum, c) => sum + c.count, 0)
+    const totalSales = link.sales.reduce((sum, s) => sum + s.count, 0)
     return {
       id: link.id,
       fullUrl: link.fullUrl,
@@ -38,8 +38,8 @@ export const dummyAffiliateLinks: AffiliateLinkWithStats[] =
       clicks: totalClicks,
       sales: totalSales,
       conversionRate: parseFloat(((totalSales / totalClicks) * 100).toFixed(2)),
-    };
-  });
+    }
+  })
 export const dummyAffiliatePayments: AffiliatePaymentRow[] = [
   {
     month: "2025-06",
@@ -59,9 +59,9 @@ export const dummyAffiliatePayments: AffiliatePaymentRow[] = [
     paidCommission: 200.0,
     unpaidCommission: 0.0,
   },
-];
+]
 export const dummyProfileData = {
   id: "demo-profile-id",
   name: "Preview User",
   email: "preview.user@example.com",
-};
+}

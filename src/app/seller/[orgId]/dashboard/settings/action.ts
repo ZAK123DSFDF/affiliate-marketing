@@ -1,65 +1,65 @@
 // app/actions/auth/orgInfo.ts
-"use server";
+"use server"
 
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
-import { db } from "@/db/drizzle";
-import { returnError } from "@/lib/errorHandler";
-import { OrgData } from "@/lib/types/organization";
-import { organization } from "@/db/schema";
-import { orgSettingsSchema } from "@/lib/schema/orgSettingSchema";
-import { eq } from "drizzle-orm";
-import { ResponseData } from "@/lib/types/response";
+import { cookies } from "next/headers"
+import jwt from "jsonwebtoken"
+import { db } from "@/db/drizzle"
+import { returnError } from "@/lib/errorHandler"
+import { OrgData } from "@/lib/types/organization"
+import { organization } from "@/db/schema"
+import { orgSettingsSchema } from "@/lib/schema/orgSettingSchema"
+import { eq } from "drizzle-orm"
+import { ResponseData } from "@/lib/types/response"
 
 export const orgInfo = async (
-  orgId: string,
+  orgId: string
 ): Promise<ResponseData<OrgData>> => {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
 
     if (!token) {
       throw {
         status: 401,
         error: "Unauthorized",
         toast: "You must be logged in.",
-      };
+      }
     }
 
-    const decoded = jwt.decode(token) as { id: string };
+    const decoded = jwt.decode(token) as { id: string }
     if (!decoded?.id) {
       throw {
         status: 400,
         error: "Invalid token",
         toast: "Session invalid or expired.",
-      };
+      }
     }
 
-    const userId = decoded.id;
+    const userId = decoded.id
     const relation = await db.query.userToOrganization.findFirst({
       where: (uto, { and, eq }) =>
         and(eq(uto.userId, userId), eq(uto.organizationId, orgId)),
-    });
+    })
 
     if (!relation) {
       throw {
         status: 403,
         error: "Access denied",
         toast: "You do not have access to this organization.",
-      };
+      }
     }
 
     // Fetch organization details
     const org = await db.query.organization.findFirst({
       where: (org, { eq }) => eq(org.id, orgId),
-    });
+    })
 
     if (!org) {
       throw {
         status: 404,
         error: "Organization not found",
         toast: "The requested organization does not exist.",
-      };
+      }
     }
 
     return {
@@ -93,25 +93,25 @@ export const orgInfo = async (
         createdAt: org.createdAt,
         updatedAt: org.updatedAt,
       },
-    };
+    }
   } catch (err) {
-    console.error("orgInfo error:", err);
-    return returnError(err) as ResponseData<OrgData>;
+    console.error("orgInfo error:", err)
+    return returnError(err) as ResponseData<OrgData>
   }
-};
+}
 export async function updateOrgSettings(raw: unknown) {
   try {
-    const data = orgSettingsSchema.parse(raw);
-    const cookiesStore = await cookies();
-    const token = cookiesStore.get("token")?.value;
-    if (!token) throw { status: 401, toast: "Unauthorized" };
-    const { id: userId } = jwt.decode(token) as { id: string };
-    if (!userId) throw { status: 400, toast: "Invalid session" };
+    const data = orgSettingsSchema.parse(raw)
+    const cookiesStore = await cookies()
+    const token = cookiesStore.get("token")?.value
+    if (!token) throw { status: 401, toast: "Unauthorized" }
+    const { id: userId } = jwt.decode(token) as { id: string }
+    if (!userId) throw { status: 400, toast: "Invalid session" }
     const relation = await db.query.userToOrganization.findFirst({
       where: (uto, { and, eq }) =>
         and(eq(uto.userId, userId), eq(uto.organizationId, data.orgId)),
-    });
-    if (!relation) throw { status: 403, toast: "Forbidden" };
+    })
+    if (!relation) throw { status: 403, toast: "Forbidden" }
     await db
       .update(organization)
       .set({
@@ -127,10 +127,10 @@ export async function updateOrgSettings(raw: unknown) {
         commissionDurationUnit: data.commissionDurationUnit,
         currency: data.currency,
       })
-      .where(eq(organization.id, data.orgId));
-    return { ok: true };
+      .where(eq(organization.id, data.orgId))
+    return { ok: true }
   } catch (err) {
-    console.error("updateOrgSettings error", err);
-    return returnError(err);
+    console.error("updateOrgSettings error", err)
+    return returnError(err)
   }
 }

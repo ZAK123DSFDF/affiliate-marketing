@@ -1,7 +1,7 @@
 export interface AffiliateKpiTimeSeries {
-  createdAt: string;
-  visitors: number;
-  sales: number;
-  conversionRate: number;
+  createdAt: string
+  visitors: number
+  sales: number
+  conversionRate: number
 }
-export type SellerKpiTimeSeries = AffiliateKpiTimeSeries;
+export type SellerKpiTimeSeries = AffiliateKpiTimeSeries

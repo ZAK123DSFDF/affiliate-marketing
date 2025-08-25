@@ -1,11 +1,11 @@
-import React, { Suspense } from "react";
-import CreateCompany from "@/components/pages/Create-Company";
+import React, { Suspense } from "react"
+import CreateCompany from "@/components/pages/Create-Company"
 
 const createCompanyPage = () => {
   return (
     <>
       <CreateCompany />
     </>
-  );
-};
-export default createCompanyPage;
+  )
+}
+export default createCompanyPage

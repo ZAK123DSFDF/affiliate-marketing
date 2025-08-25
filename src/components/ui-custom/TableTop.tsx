@@ -3,21 +3,21 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
-import * as React from "react";
-import { Table as ReactTable } from "@tanstack/react-table";
-import { OrderDir, OrderBy } from "@/lib/types/orderTypes";
-import OrderSelect from "@/components/ui-custom/OrderSelect";
-import { SearchInput } from "@/components/ui-custom/SearchInput";
+} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+import { ChevronDown } from "lucide-react"
+import * as React from "react"
+import { Table as ReactTable } from "@tanstack/react-table"
+import { OrderDir, OrderBy } from "@/lib/types/orderTypes"
+import OrderSelect from "@/components/ui-custom/OrderSelect"
+import { SearchInput } from "@/components/ui-custom/SearchInput"
 type TableProps<TData> = {
-  table: ReactTable<TData>;
-  filters: { orderBy?: OrderBy; orderDir?: OrderDir; email?: string };
-  onOrderChange: (orderBy?: OrderBy, orderDir?: OrderDir) => void;
-  onEmailChange: (email: string) => void;
-  affiliate: boolean;
-};
+  table: ReactTable<TData>
+  filters: { orderBy?: OrderBy; orderDir?: OrderDir; email?: string }
+  onOrderChange: (orderBy?: OrderBy, orderDir?: OrderDir) => void
+  onEmailChange: (email: string) => void
+  affiliate: boolean
+}
 
 export const TableTop = <TData,>({
   table,
@@ -61,10 +61,10 @@ export const TableTop = <TData,>({
                 >
                   {column.id}
                 </DropdownMenuCheckboxItem>
-              );
+              )
             })}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  );
-};
+  )
+}

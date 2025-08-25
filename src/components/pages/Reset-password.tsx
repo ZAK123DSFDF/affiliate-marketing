@@ -1,9 +1,9 @@
-"use client";
-import React, { useState } from "react";
-import { Lock, ArrowRight, Loader2 } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
+"use client"
+import React, { useState } from "react"
+import { Lock, ArrowRight, Loader2 } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -11,52 +11,52 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
-import Link from "next/link";
+} from "@/components/ui/card"
+import { Form } from "@/components/ui/form"
+import Link from "next/link"
 
-import { useSearchParams } from "next/navigation";
-import { InputField } from "@/components/Auth/FormFields";
+import { useSearchParams } from "next/navigation"
+import { InputField } from "@/components/Auth/FormFields"
 import {
   ResetPasswordFormValues,
   passwordSchema,
-} from "@/lib/schema/passwordSchema";
-import InvalidToken from "@/components/pages/InvalidToken";
-import { getShadowWithColor } from "@/util/GetShadowWithColor";
+} from "@/lib/schema/passwordSchema"
+import InvalidToken from "@/components/pages/InvalidToken"
+import { getShadowWithColor } from "@/util/GetShadowWithColor"
 import {
   useButtonCustomizationOption,
   useCardCustomizationOption,
   useThemeCustomizationOption,
-} from "@/hooks/useAuthCustomization";
-import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
-import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions";
-import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
-import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
-import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
-import { LinkButton } from "@/components/ui-custom/LinkButton";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
-import PendingState from "@/components/ui-custom/PendingState";
-import ErrorState from "@/components/ui-custom/ErrorState";
+} from "@/hooks/useAuthCustomization"
+import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
+import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions"
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
+import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions"
+import { toValidShadowSize } from "@/util/ValidateShadowColor"
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import { LinkButton } from "@/components/ui-custom/LinkButton"
+import { useCustomizationSync } from "@/hooks/useCustomizationSync"
+import PendingState from "@/components/ui-custom/PendingState"
+import ErrorState from "@/components/ui-custom/ErrorState"
 type Props = {
-  orgId?: string;
-  isPreview?: boolean;
-  setTab?: (tab: string) => void;
-  affiliate: boolean;
-};
+  orgId?: string
+  isPreview?: boolean
+  setTab?: (tab: string) => void
+  affiliate: boolean
+}
 const ResetPassword = ({
   orgId,
   isPreview = false,
   setTab,
   affiliate,
 }: Props) => {
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams()
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "auth")
-    : { isPending: false, isError: false, refetch: () => {} };
-  const token = searchParams.get("token");
+    : { isPending: false, isError: false, refetch: () => {} }
+  const token = searchParams.get("token")
   if (!token && !isPreview) {
-    return <InvalidToken affiliate={affiliate} orgId={orgId} />;
+    return <InvalidToken affiliate={affiliate} orgId={orgId} />
   }
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(passwordSchema),
@@ -64,12 +64,12 @@ const ResetPassword = ({
       password: "",
       confirmPassword: "",
     },
-  });
+  })
 
-  const [pending, setPending] = useState(false);
-  const { showCustomToast } = useCustomToast();
+  const [pending, setPending] = useState(false)
+  const { showCustomToast } = useCustomToast()
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
-    useThemeCustomizationOption();
+    useThemeCustomizationOption()
   const {
     cardShadow,
     cardShadowColor,
@@ -77,21 +77,21 @@ const ResetPassword = ({
     cardBorderColor,
     cardBackgroundColor,
     cardShadowThickness,
-  } = useCardCustomizationOption();
+  } = useCardCustomizationOption()
   const {
     buttonDisabledTextColor,
     buttonBackgroundColor,
     buttonDisabledBackgroundColor,
     buttonTextColor,
-  } = useButtonCustomizationOption();
+  } = useButtonCustomizationOption()
   const { primaryCustomization, secondaryCustomization } =
-    useThemeCustomizationOption();
+    useThemeCustomizationOption()
 
   const onSubmit = async (data: ResetPasswordFormValues) => {
     if (isPreview) {
-      setPending(true);
-      await new Promise((res) => setTimeout(res, 1500));
-      setPending(false);
+      setPending(true)
+      await new Promise((res) => setTimeout(res, 1500))
+      setPending(false)
 
       if (data.password === "notcorrect123") {
         showCustomToast({
@@ -99,7 +99,7 @@ const ResetPassword = ({
           title: "something went wrong",
           description: "something went wrong",
           affiliate,
-        });
+        })
       } else {
         // Simulate success
         showCustomToast({
@@ -107,17 +107,17 @@ const ResetPassword = ({
           title: "Password Changed Successfully",
           description: "Password Changed Successfully",
           affiliate,
-        });
+        })
       }
 
-      return;
+      return
     }
-  };
+  }
   if (isPending) {
-    return <PendingState />;
+    return <PendingState />
   }
   if (isError) {
-    return <ErrorState onRetry={refetch} />;
+    return <ErrorState onRetry={refetch} />
   }
   return (
     <div
@@ -156,7 +156,7 @@ const ResetPassword = ({
               ? {
                   boxShadow: getShadowWithColor(
                     toValidShadowSize(cardShadowThickness),
-                    cardShadowColor,
+                    cardShadowColor
                   ),
                 }
               : {}),
@@ -328,7 +328,7 @@ const ResetPassword = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ResetPassword;
+export default ResetPassword

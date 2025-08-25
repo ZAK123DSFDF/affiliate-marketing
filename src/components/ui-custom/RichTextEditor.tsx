@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import TextAlign from "@tiptap/extension-text-align";
+import { useEffect, useState } from "react"
+import { useEditor, EditorContent } from "@tiptap/react"
+import StarterKit from "@tiptap/starter-kit"
+import TextAlign from "@tiptap/extension-text-align"
 import {
   Bold,
   Italic,
@@ -11,28 +11,28 @@ import {
   AlignCenter,
   AlignRight,
   Minus,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ParagraphSpacing } from "@/lib/extensions/paragraphSpacing";
-import { Color } from "@tiptap/extension-color";
-import { TextStyle } from "@tiptap/extension-text-style";
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { ParagraphSpacing } from "@/lib/extensions/paragraphSpacing"
+import { Color } from "@tiptap/extension-color"
+import { TextStyle } from "@tiptap/extension-text-style"
 
 // Extend TipTap commands
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     paragraphSpacing: {
-      setSpacing: (spacing: "medium" | "large" | null) => ReturnType;
-    };
+      setSpacing: (spacing: "medium" | "large" | null) => ReturnType
+    }
   }
 }
 
 type Props = {
-  content: string;
-  onChange: (html: string) => void;
-};
+  content: string
+  onChange: (html: string) => void
+}
 
 export const RichTextEditor = ({ content, onChange }: Props) => {
-  const [textColor, setTextColor] = useState("#000000");
+  const [textColor, setTextColor] = useState("#000000")
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -48,7 +48,7 @@ export const RichTextEditor = ({ content, onChange }: Props) => {
     ],
     content,
     onUpdate({ editor }) {
-      onChange(editor.getHTML());
+      onChange(editor.getHTML())
     },
     editorProps: {
       attributes: {
@@ -57,15 +57,15 @@ export const RichTextEditor = ({ content, onChange }: Props) => {
       },
     },
     immediatelyRender: false,
-  });
+  })
 
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content);
+      editor.commands.setContent(content)
     }
-  }, [content]);
+  }, [content])
 
-  if (!editor) return null;
+  if (!editor) return null
 
   return (
     <div className="w-full max-w-xl">
@@ -172,7 +172,7 @@ export const RichTextEditor = ({ content, onChange }: Props) => {
               .setSpacing(
                 editor.isActive("paragraph", { dataSpacing: "medium" })
                   ? null
-                  : "medium",
+                  : "medium"
               )
               .run()
           }
@@ -195,7 +195,7 @@ export const RichTextEditor = ({ content, onChange }: Props) => {
               .setSpacing(
                 editor.isActive("paragraph", { dataSpacing: "large" })
                   ? null
-                  : "large",
+                  : "large"
               )
               .run()
           }
@@ -207,9 +207,9 @@ export const RichTextEditor = ({ content, onChange }: Props) => {
           type="color"
           value={textColor}
           onChange={(e) => {
-            const color = e.target.value;
-            setTextColor(color);
-            editor.chain().focus().setColor(color).run();
+            const color = e.target.value
+            setTextColor(color)
+            editor.chain().focus().setColor(color).run()
           }}
           className="w-8 h-8 border rounded"
           title="Text color"
@@ -218,8 +218,8 @@ export const RichTextEditor = ({ content, onChange }: Props) => {
           type="button"
           variant="outline"
           onClick={() => {
-            editor.chain().focus().unsetColor().run();
-            setTextColor("#000000");
+            editor.chain().focus().unsetColor().run()
+            setTextColor("#000000")
           }}
           size="sm"
         >
@@ -230,5 +230,5 @@ export const RichTextEditor = ({ content, onChange }: Props) => {
       {/* Editor */}
       <EditorContent editor={editor} />
     </div>
-  );
-};
+  )
+}

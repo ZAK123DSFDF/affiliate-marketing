@@ -1,10 +1,10 @@
-"use client";
-import React, { useState } from "react";
-import { Mail, ArrowRight, Loader2 } from "lucide-react";
+"use client"
+import React, { useState } from "react"
+import { Mail, ArrowRight, Loader2 } from "lucide-react"
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -12,36 +12,36 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
-import Link from "next/link";
-import { InputField } from "@/components/Auth/FormFields";
+} from "@/components/ui/card"
+import { Form } from "@/components/ui/form"
+import Link from "next/link"
+import { InputField } from "@/components/Auth/FormFields"
 import {
   ForgotPasswordFormValues,
   forgotPasswordSchema,
-} from "@/lib/schema/forgotPasswordSchema";
-import { getShadowWithColor } from "@/util/GetShadowWithColor";
+} from "@/lib/schema/forgotPasswordSchema"
+import { getShadowWithColor } from "@/util/GetShadowWithColor"
 import {
   useButtonCustomizationOption,
   useCardCustomizationOption,
   useThemeCustomizationOption,
-} from "@/hooks/useAuthCustomization";
-import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
-import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions";
-import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
-import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
-import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
-import { LinkButton } from "@/components/ui-custom/LinkButton";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
-import PendingState from "@/components/ui-custom/PendingState";
-import ErrorState from "@/components/ui-custom/ErrorState";
+} from "@/hooks/useAuthCustomization"
+import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
+import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions"
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
+import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions"
+import { toValidShadowSize } from "@/util/ValidateShadowColor"
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import { LinkButton } from "@/components/ui-custom/LinkButton"
+import { useCustomizationSync } from "@/hooks/useCustomizationSync"
+import PendingState from "@/components/ui-custom/PendingState"
+import ErrorState from "@/components/ui-custom/ErrorState"
 type Props = {
-  orgId?: string;
-  isPreview?: boolean;
-  setTab?: (tab: string) => void;
-  affiliate: boolean;
-};
+  orgId?: string
+  isPreview?: boolean
+  setTab?: (tab: string) => void
+  affiliate: boolean
+}
 const ForgotPassword = ({
   orgId,
   isPreview = false,
@@ -53,22 +53,22 @@ const ForgotPassword = ({
     defaultValues: {
       email: "",
     },
-  });
-  const [pending, setPending] = useState(false);
+  })
+  const [pending, setPending] = useState(false)
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "auth")
-    : { isPending: false, isError: false, refetch: () => {} };
-  const { showCustomToast } = useCustomToast();
+    : { isPending: false, isError: false, refetch: () => {} }
+  const { showCustomToast } = useCustomToast()
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
-    useThemeCustomizationOption();
+    useThemeCustomizationOption()
   const {
     buttonDisabledTextColor,
     buttonBackgroundColor,
     buttonDisabledBackgroundColor,
     buttonTextColor,
-  } = useButtonCustomizationOption();
+  } = useButtonCustomizationOption()
   const { primaryCustomization, secondaryCustomization } =
-    useThemeCustomizationOption();
+    useThemeCustomizationOption()
   const {
     cardShadow,
     cardShadowColor,
@@ -76,12 +76,12 @@ const ForgotPassword = ({
     cardBorderColor,
     cardBackgroundColor,
     cardShadowThickness,
-  } = useCardCustomizationOption();
+  } = useCardCustomizationOption()
   const onSubmit = async (data: ForgotPasswordFormValues) => {
     if (isPreview) {
-      setPending(true);
-      await new Promise((res) => setTimeout(res, 1500));
-      setPending(false);
+      setPending(true)
+      await new Promise((res) => setTimeout(res, 1500))
+      setPending(false)
 
       if (data.email === "notfound@gmail.com") {
         showCustomToast({
@@ -89,7 +89,7 @@ const ForgotPassword = ({
           title: "Email Not Found",
           description: "We couldn't find an account with this email.",
           affiliate,
-        });
+        })
       } else {
         // Simulate success
         showCustomToast({
@@ -97,17 +97,17 @@ const ForgotPassword = ({
           title: "Email Sent",
           description: "If the email exists, a reset link has been sent.",
           affiliate,
-        });
+        })
       }
 
-      return;
+      return
     }
-  };
+  }
   if (isPending) {
-    return <PendingState />;
+    return <PendingState />
   }
   if (isError) {
-    return <ErrorState onRetry={refetch} />;
+    return <ErrorState onRetry={refetch} />
   }
   return (
     <div
@@ -146,7 +146,7 @@ const ForgotPassword = ({
               ? {
                   boxShadow: getShadowWithColor(
                     toValidShadowSize(cardShadowThickness),
-                    cardShadowColor,
+                    cardShadowColor
                   ),
                 }
               : {}),
@@ -306,7 +306,7 @@ const ForgotPassword = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ForgotPassword;
+export default ForgotPassword

@@ -1,24 +1,24 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import React, { useState } from "react"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
-import Login from "@/components/pages/Login";
-import Signup from "@/components/pages/Signup";
+import Login from "@/components/pages/Login"
+import Signup from "@/components/pages/Signup"
 
-import ForgotPassword from "@/components/pages/Forgot-password";
-import ResetPassword from "@/components/pages/Reset-password";
-import InvalidToken from "@/components/pages/InvalidToken";
-import EmailVerified from "@/components/pages/Email-verified";
+import ForgotPassword from "@/components/pages/Forgot-password"
+import ResetPassword from "@/components/pages/Reset-password"
+import InvalidToken from "@/components/pages/InvalidToken"
+import EmailVerified from "@/components/pages/Email-verified"
 interface AuthCustomizationProps {
-  setMainTab?: (tab: string) => void;
-  orgId: string;
+  setMainTab?: (tab: string) => void
+  orgId: string
 }
 export const AuthCustomization = ({
   setMainTab,
   orgId,
 }: AuthCustomizationProps) => {
-  const [tab, setTab] = useState("login");
+  const [tab, setTab] = useState("login")
   return (
     <>
       <div className="border rounded-lg p-4 transition-all duration-300 mt-6 shadow-md">
@@ -57,5 +57,5 @@ export const AuthCustomization = ({
         </Tabs>
       </div>
     </>
-  );
-};
+  )
+}

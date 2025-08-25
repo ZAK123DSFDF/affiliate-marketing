@@ -1,16 +1,16 @@
 // components/auth/GoogleAuthButton.tsx
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
-import { GoogleIcon } from "@/components/ui/google-icon";
-import { Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { Button } from "@/components/ui/button"
+import { GoogleIcon } from "@/components/ui/google-icon"
+import { Loader2 } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import { useState } from "react"
 
 interface GoogleAuthButtonProps {
-  action: "login" | "signup";
-  redirectTo?: string;
-  buttonText?: string;
+  action: "login" | "signup"
+  redirectTo?: string
+  buttonText?: string
 }
 
 export const GoogleAuthButton = ({
@@ -18,11 +18,11 @@ export const GoogleAuthButton = ({
   redirectTo = "/dashboard",
   buttonText = "Continue with Google",
 }: GoogleAuthButtonProps) => {
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast()
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleGoogleAuth = async () => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       toast({
         title:
@@ -31,17 +31,17 @@ export const GoogleAuthButton = ({
           action === "login"
             ? "Welcome back!"
             : "Your account has been created successfully",
-      });
+      })
     } catch (error) {
       toast({
         variant: "destructive",
         title: action === "login" ? "Sign in failed" : "Sign up failed",
         description: `Could not ${action} with Google`,
-      });
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <Button
@@ -59,5 +59,5 @@ export const GoogleAuthButton = ({
         </>
       )}
     </Button>
-  );
-};
+  )
+}

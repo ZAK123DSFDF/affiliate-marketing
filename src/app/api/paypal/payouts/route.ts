@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"
 
 export async function POST(request: Request) {
   try {
-    const { clientId, clientSecret } = await request.json();
+    const { clientId, clientSecret } = await request.json()
 
     if (!clientId || !clientSecret) {
-      throw new Error("PayPal credentials are required");
+      throw new Error("PayPal credentials are required")
     }
 
     // Get access token with user's credentials
@@ -16,18 +16,18 @@ export async function POST(request: Request) {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           Authorization: `Basic ${Buffer.from(
-            `${clientId}:${clientSecret}`,
+            `${clientId}:${clientSecret}`
           ).toString("base64")}`,
         },
         body: "grant_type=client_credentials",
-      },
-    );
+      }
+    )
 
     if (!authResponse.ok) {
-      throw new Error("Failed to authenticate with PayPal");
+      throw new Error("Failed to authenticate with PayPal")
     }
 
-    const { access_token } = await authResponse.json();
+    const { access_token } = await authResponse.json()
 
     // Create payout (rest of your existing code)
     const payoutResponse = await fetch(
@@ -68,28 +68,28 @@ export async function POST(request: Request) {
             },
           ],
         }),
-      },
-    );
+      }
+    )
 
-    const result = await payoutResponse.json();
+    const result = await payoutResponse.json()
 
     if (!payoutResponse.ok) {
-      throw new Error(result.message || "Failed to process payout");
+      throw new Error(result.message || "Failed to process payout")
     }
 
     return NextResponse.json({
       success: true,
       batchId: result.batch_header.payout_batch_id,
       status: result.batch_header.batch_status,
-    });
+    })
   } catch (err: any) {
-    console.error("PayPal Payout Error:", err);
+    console.error("PayPal Payout Error:", err)
     return NextResponse.json(
       {
         success: false,
         error: err.message || "Failed to process payout",
       },
-      { status: 500 },
-    );
+      { status: 500 }
+    )
   }
 }

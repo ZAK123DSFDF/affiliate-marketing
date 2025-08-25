@@ -1,51 +1,46 @@
-"use client";
-import React, { useState } from "react";
-import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import Link from "next/link";
-import { InputField, CheckboxField } from "@/components/Auth/FormFields";
-import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema";
-import { useMutation } from "@tanstack/react-query";
-import { LoginAffiliateServer } from "@/app/affiliate/[orgId]/login/action";
-import { LoginServer } from "@/app/login/action";
-import { getShadowWithColor } from "@/util/GetShadowWithColor";
+"use client"
+import React, { useState } from "react"
+import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { Form } from "@/components/ui/form"
+import { useForm } from "react-hook-form"
+import Link from "next/link"
+import { InputField, CheckboxField } from "@/components/Auth/FormFields"
+import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema"
+import { useMutation } from "@tanstack/react-query"
+import { LoginAffiliateServer } from "@/app/affiliate/[orgId]/login/action"
+import { LoginServer } from "@/app/login/action"
+import { getShadowWithColor } from "@/util/GetShadowWithColor"
 import {
   useButtonCustomizationOption,
   useCardCustomizationOption,
   useNotesCustomizationOption,
   useThemeCustomizationOption,
-} from "@/hooks/useAuthCustomization";
-import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions";
-import { CheckboxCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CheckboxCustomizationOptions";
-import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions";
-import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions";
-import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions";
-import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor";
-import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
-import { LinkButton } from "@/components/ui-custom/LinkButton";
-import { IsRichTextEmpty } from "@/util/IsRichTextEmpty";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
-import PendingState from "@/components/ui-custom/PendingState";
-import ErrorState from "@/components/ui-custom/ErrorState";
+} from "@/hooks/useAuthCustomization"
+import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
+import { CheckboxCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CheckboxCustomizationOptions"
+import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions"
+import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions"
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
+import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor"
+import { toValidShadowSize } from "@/util/ValidateShadowColor"
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import { LinkButton } from "@/components/ui-custom/LinkButton"
+import { IsRichTextEmpty } from "@/util/IsRichTextEmpty"
+import { useCustomizationSync } from "@/hooks/useCustomizationSync"
+import PendingState from "@/components/ui-custom/PendingState"
+import ErrorState from "@/components/ui-custom/ErrorState"
 type Props = {
-  orgId?: string;
-  isPreview?: boolean;
-  setTab?: (tab: string) => void;
-  affiliate: boolean;
-};
+  orgId?: string
+  isPreview?: boolean
+  setTab?: (tab: string) => void
+  affiliate: boolean
+}
 const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
-  const { showCustomToast } = useCustomToast();
-  const [previewLoading, setPreviewLoading] = useState(false);
+  const { showCustomToast } = useCustomToast()
+  const [previewLoading, setPreviewLoading] = useState(false)
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -53,9 +48,9 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
       password: "",
       rememberMe: false,
     },
-  });
+  })
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
-    useThemeCustomizationOption();
+    useThemeCustomizationOption()
 
   const {
     cardShadow,
@@ -64,42 +59,42 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     cardBorderColor,
     cardBackgroundColor,
     cardShadowThickness,
-  } = useCardCustomizationOption();
+  } = useCardCustomizationOption()
   const {
     buttonDisabledTextColor,
     buttonBackgroundColor,
     buttonDisabledBackgroundColor,
     buttonTextColor,
-  } = useButtonCustomizationOption();
-  const { customNotesLogin } = useNotesCustomizationOption();
+  } = useButtonCustomizationOption()
+  const { customNotesLogin } = useNotesCustomizationOption()
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "auth")
-    : { isPending: false, isError: false, refetch: () => {} };
+    : { isPending: false, isError: false, refetch: () => {} }
   const affiliateMutation = useMutation({
     mutationFn: LoginAffiliateServer,
     onSuccess: (data: any) => {
-      console.log("Affiliate login success", data);
+      console.log("Affiliate login success", data)
     },
-  });
+  })
   const normalMutation = useMutation({
     mutationFn: LoginServer,
     onSuccess: (data: any) => {
-      console.log("Normal login success", data);
+      console.log("Normal login success", data)
     },
-  });
+  })
   const isLoading = isPreview
     ? previewLoading
     : orgId
       ? affiliateMutation.isPending
-      : normalMutation.isPending;
+      : normalMutation.isPending
   const onSubmit = async (data: any) => {
     if (isPreview) {
-      setPreviewLoading(true);
+      setPreviewLoading(true)
 
       // Simulate loading delay
-      await new Promise((res) => setTimeout(res, 1500));
+      await new Promise((res) => setTimeout(res, 1500))
 
-      setPreviewLoading(false);
+      setPreviewLoading(false)
 
       // Simulate error if password is "incorrect123"
       if (data.password === "incorrect123") {
@@ -108,33 +103,33 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
           title: "Login Failed",
           description: "The password you entered is incorrect.",
           affiliate,
-        });
+        })
       } else {
         showCustomToast({
           type: "success",
           title: "Login Successful",
           description: "Welcome back!",
           affiliate,
-        });
+        })
       }
 
-      return;
+      return
     }
     try {
       if (orgId) {
-        affiliateMutation.mutate({ ...data, organizationId: orgId });
+        affiliateMutation.mutate({ ...data, organizationId: orgId })
       } else {
-        normalMutation.mutate(data);
+        normalMutation.mutate(data)
       }
     } catch (error) {
-      console.error("Login failed", error);
+      console.error("Login failed", error)
     }
-  };
+  }
   if (isPending) {
-    return <PendingState />;
+    return <PendingState />
   }
   if (isError) {
-    return <ErrorState onRetry={refetch} />;
+    return <ErrorState onRetry={refetch} />
   }
   return (
     <div
@@ -173,7 +168,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
               ? {
                   boxShadow: getShadowWithColor(
                     toValidShadowSize(cardShadowThickness),
-                    cardShadowColor,
+                    cardShadowColor
                   ),
                 }
               : {}),
@@ -349,7 +344,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

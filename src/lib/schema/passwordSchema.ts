@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod"
 
 export const passwordSchema = z
   .object({
@@ -10,7 +10,7 @@ export const passwordSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
-  });
+  })
 export const newPasswordSchema = z
   .object({
     newPassword: z
@@ -23,8 +23,8 @@ export const newPasswordSchema = z
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
-  });
+  })
 export const currentPasswordSchema = z.object({
   currentPassword: z.string().min(1, "Password is required"),
-});
-export type ResetPasswordFormValues = z.infer<typeof passwordSchema>;
+})
+export type ResetPasswordFormValues = z.infer<typeof passwordSchema>

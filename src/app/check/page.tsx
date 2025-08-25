@@ -1,6 +1,6 @@
 // app/check/page.tsx
-import React from "react";
-import Check from "@/components/pages/Check/Check";
+import React from "react"
+import Check from "@/components/pages/Check/Check"
 
 export default function CheckPage() {
   return (
@@ -9,5 +9,5 @@ export default function CheckPage() {
       {/* No props needed! Actions are imported directly in the Client Component */}
       <Check />
     </div>
-  );
+  )
 }

@@ -1,11 +1,11 @@
-import { RichTextEditor } from "@/components/ui-custom/RichTextEditor";
-import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges";
-import { useNotesCustomizationOption } from "@/hooks/useAuthCustomization";
-import { useState } from "react";
-import { Pencil } from "lucide-react";
-import { IsRichTextEmpty } from "@/util/IsRichTextEmpty";
+import { RichTextEditor } from "@/components/ui-custom/RichTextEditor"
+import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
+import { useNotesCustomizationOption } from "@/hooks/useAuthCustomization"
+import { useState } from "react"
+import { Pencil } from "lucide-react"
+import { IsRichTextEmpty } from "@/util/IsRichTextEmpty"
 
-type NotesKey = "customNotesLogin" | "customNotesSignup";
+type NotesKey = "customNotesLogin" | "customNotesSignup"
 
 const DefaultAuthHeader = ({ name }: { name: NotesKey }) => {
   if (name === "customNotesLogin") {
@@ -18,7 +18,7 @@ const DefaultAuthHeader = ({ name }: { name: NotesKey }) => {
           Enter your credentials to access your account
         </p>
       </>
-    );
+    )
   }
   return (
     <>
@@ -29,17 +29,17 @@ const DefaultAuthHeader = ({ name }: { name: NotesKey }) => {
         Enter Your Information to Sign Up
       </p>
     </>
-  );
-};
+  )
+}
 
 export const InlineNotesEditor = ({ name }: { name: NotesKey }) => {
-  const { customNotesLogin, customNotesSignup } = useNotesCustomizationOption();
+  const { customNotesLogin, customNotesSignup } = useNotesCustomizationOption()
 
   const currentContent =
-    name === "customNotesLogin" ? customNotesLogin : customNotesSignup;
+    name === "customNotesLogin" ? customNotesLogin : customNotesSignup
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [tempContent, setTempContent] = useState<string>(currentContent || "");
+  const [isEditing, setIsEditing] = useState(false)
+  const [tempContent, setTempContent] = useState<string>(currentContent || "")
 
   if (isEditing) {
     return (
@@ -52,9 +52,9 @@ export const InlineNotesEditor = ({ name }: { name: NotesKey }) => {
               updateAuthCustomization(
                 "useNotesCustomization",
                 name,
-                tempContent,
-              );
-              setIsEditing(false);
+                tempContent
+              )
+              setIsEditing(false)
             }}
           >
             Save
@@ -67,10 +67,10 @@ export const InlineNotesEditor = ({ name }: { name: NotesKey }) => {
           </button>
         </div>
       </div>
-    );
+    )
   }
 
-  const showDefault = IsRichTextEmpty(currentContent);
+  const showDefault = IsRichTextEmpty(currentContent)
 
   return (
     <div className="space-y-2">
@@ -94,5 +94,5 @@ export const InlineNotesEditor = ({ name }: { name: NotesKey }) => {
         </button>
       </div>
     </div>
-  );
-};
+  )
+}

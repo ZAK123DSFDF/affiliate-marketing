@@ -1,4 +1,4 @@
 export interface UnpaidMonth {
-  month: number;
-  year: number;
+  month: number
+  year: number
 }

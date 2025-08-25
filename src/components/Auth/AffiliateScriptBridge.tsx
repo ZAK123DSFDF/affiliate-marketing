@@ -1,6 +1,6 @@
 // components/AffiliateScriptBridge.tsx
-"use client";
-import Script from "next/script";
+"use client"
+import Script from "next/script"
 
 export function AffiliateScriptBridge() {
   return (
@@ -8,5 +8,5 @@ export function AffiliateScriptBridge() {
       src="http://localhost:3000/api/check"
       strategy="beforeInteractive"
     />
-  );
+  )
 }

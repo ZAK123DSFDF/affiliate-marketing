@@ -1,4 +1,4 @@
-import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats";
+import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats"
 
 export const dummyLinksData: AffiliateLinkWithStats[] = [
   {
@@ -81,4 +81,4 @@ export const dummyLinksData: AffiliateLinkWithStats[] = [
     createdAt: new Date("2024-06-19"),
     conversionRate: +((27 / 110) * 100).toFixed(2),
   },
-];
+]

@@ -1,26 +1,26 @@
-"use client";
+"use client"
 
-import React from "react";
+import React from "react"
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectLabel,
   SelectGroup,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { UnpaidMonth } from "@/lib/types/unpaidMonth";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { UnpaidMonth } from "@/lib/types/unpaidMonth"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface UnpaidSelectProps {
-  months: UnpaidMonth[];
-  selection: UnpaidMonth[];
-  setSelection: React.Dispatch<React.SetStateAction<UnpaidMonth[]>>;
-  loading: boolean;
-  onApply: () => void;
-  disabled?: boolean;
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  months: UnpaidMonth[]
+  selection: UnpaidMonth[]
+  setSelection: React.Dispatch<React.SetStateAction<UnpaidMonth[]>>
+  loading: boolean
+  onApply: () => void
+  disabled?: boolean
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function UnpaidSelect({
@@ -37,15 +37,15 @@ export default function UnpaidSelect({
     setSelection((prev) =>
       prev.some((x) => x.month === m.month && x.year === m.year)
         ? prev.filter((x) => !(x.month === m.month && x.year === m.year))
-        : [...prev, m],
-    );
-    console.log("Toggled month:", m);
-  };
+        : [...prev, m]
+    )
+    console.log("Toggled month:", m)
+  }
 
   const handleApply = () => {
-    onApply();
-    setOpen(false);
-  };
+    onApply()
+    setOpen(false)
+  }
 
   return (
     <Select open={open} onOpenChange={setOpen} disabled={disabled}>
@@ -68,10 +68,10 @@ export default function UnpaidSelect({
             <>
               <div className="space-y-2 max-h-[300px] overflow-y-auto">
                 {months.map((m) => {
-                  const id = `${m.year}-${m.month}`;
+                  const id = `${m.year}-${m.month}`
                   const checked = selection.some(
-                    (x) => x.month === m.month && x.year === m.year,
-                  );
+                    (x) => x.month === m.month && x.year === m.year
+                  )
                   return (
                     <div
                       key={id}
@@ -91,11 +91,11 @@ export default function UnpaidSelect({
                           {
                             month: "long",
                             year: "numeric",
-                          },
+                          }
                         )}
                       </label>
                     </div>
-                  );
+                  )
                 })}
               </div>
               <div className="flex justify-end pt-2 border-t">
@@ -112,5 +112,5 @@ export default function UnpaidSelect({
         </SelectGroup>
       </SelectContent>
     </Select>
-  );
+  )
 }

@@ -1,21 +1,21 @@
-"use server";
-import { db } from "@/db/drizzle";
+"use server"
+import { db } from "@/db/drizzle"
 import {
   affiliate,
   affiliateClick,
   affiliateInvoice,
   affiliateLink,
   organization,
-} from "@/db/schema";
-import { and, desc, eq, inArray, sql } from "drizzle-orm";
-import { buildWhereWithDate } from "@/util/BuildWhereWithDate";
+} from "@/db/schema"
+import { and, desc, eq, inArray, sql } from "drizzle-orm"
+import { buildWhereWithDate } from "@/util/BuildWhereWithDate"
 export async function getAffiliateLinksWithStatsAction(
   decoded: {
-    id: string;
-    organizationId: string;
+    id: string
+    organizationId: string
   },
   year?: number,
-  month?: number,
+  month?: number
 ) {
   return db
     .select({
@@ -23,7 +23,7 @@ export async function getAffiliateLinksWithStatsAction(
       createdAt: affiliateLink.createdAt,
       clicks: sql<number>`count(distinct ${affiliateClick.id})`.mapWith(Number),
       subs: sql<number>`COUNT(DISTINCT ${affiliateInvoice.subscriptionId})`.mapWith(
-        Number,
+        Number
       ),
 
       singles: sql<number>`COUNT(DISTINCT CASE 
@@ -63,8 +63,8 @@ export async function getAffiliateLinksWithStatsAction(
       affiliateLink,
       and(
         eq(affiliateLink.affiliateId, affiliate.id),
-        eq(affiliateLink.organizationId, decoded.organizationId),
-      ),
+        eq(affiliateLink.organizationId, decoded.organizationId)
+      )
     )
     .leftJoin(
       affiliateClick,
@@ -72,8 +72,8 @@ export async function getAffiliateLinksWithStatsAction(
         [eq(affiliateClick.affiliateLinkId, affiliateLink.id)],
         affiliateClick,
         year,
-        month,
-      ),
+        month
+      )
     )
     .leftJoin(
       affiliateInvoice,
@@ -81,19 +81,19 @@ export async function getAffiliateLinksWithStatsAction(
         [eq(affiliateInvoice.affiliateLinkId, affiliateLink.id)],
         affiliateInvoice,
         year,
-        month,
-      ),
+        month
+      )
     )
     .leftJoin(organization, eq(organization.id, affiliateLink.organizationId))
     .where(
       and(
         eq(affiliate.organizationId, decoded.organizationId),
-        eq(affiliate.id, decoded.id),
-      ),
+        eq(affiliate.id, decoded.id)
+      )
     )
     .groupBy(
       affiliateLink.id,
       organization.domainName,
-      organization.referralParam,
-    );
+      organization.referralParam
+    )
 }
