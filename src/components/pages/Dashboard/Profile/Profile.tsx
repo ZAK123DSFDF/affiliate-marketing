@@ -57,17 +57,22 @@ import { useCustomizationSync } from "@/hooks/useCustomizationSync"
 import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
 
-interface CommonData {
+interface BaseData {
   id: string
   name: string
   email: string
   image?: string | null
-  paypalEmail: string
 }
 
+interface AffiliateData extends BaseData {
+  paypalEmail: string | null
+}
+
+type SellerData = BaseData
+
 interface ProfileProps {
-  AffiliateData?: CommonData
-  UserData?: CommonData
+  AffiliateData?: AffiliateData
+  UserData?: SellerData
   isPreview?: boolean
   affiliate: boolean
   orgId: string

@@ -14,9 +14,7 @@ const profilePage = async ({ params }: OrgIdProps) => {
   }
 
   const userResponse = await getUserData()
-  // Check if the response was successful
   if (!userResponse.ok) {
-    // Handle the error case - you might want to redirect or show an error
     redirect(`/error?message=${encodeURIComponent(userResponse.error)}`)
   }
   return (

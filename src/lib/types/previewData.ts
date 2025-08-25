@@ -64,4 +64,5 @@ export const dummyProfileData = {
   id: "demo-profile-id",
   name: "Preview User",
   email: "preview.user@example.com",
+  paypalEmail: "preview.paypal@gmail.com",
 }
