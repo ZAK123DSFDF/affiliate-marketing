@@ -1,76 +1,76 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
+import React, { useState } from "react"
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+} from "@/components/ui/card"
+import { Form } from "@/components/ui/form"
+import { Button } from "@/components/ui/button"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+} from "@/components/ui/dialog"
+import { useForm } from "react-hook-form"
+import { useMutation } from "@tanstack/react-query"
 
 import {
   updateAffiliatePassword,
   updateAffiliateProfile,
   validateCurrentPassword,
-} from "@/app/affiliate/[orgId]/dashboard/profile/action";
-import { Loader2, Mail, Lock, User } from "lucide-react";
+} from "@/app/affiliate/[orgId]/dashboard/profile/action"
+import { Loader2, Mail, Lock, User } from "lucide-react"
 import {
   updateUserPassword,
   updateUserProfile,
   validateCurrentSellerPassword,
-} from "@/app/seller/[orgId]/dashboard/profile/action";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { profileSchema } from "@/lib/schema/profileSchema";
+} from "@/app/seller/[orgId]/dashboard/profile/action"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { profileSchema } from "@/lib/schema/profileSchema"
 import {
   currentPasswordSchema,
   newPasswordSchema,
-} from "@/lib/schema/passwordSchema";
-import { InputField } from "@/components/Auth/FormFields";
-import { getShadowWithColor } from "@/util/GetShadowWithColor";
-import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions";
-import { DashboardButtonCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardButtonCustomizationOptions";
-import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions";
-import { Separator } from "@/components/ui/separator";
-import { DialogCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DialogCustomizationOptions";
-import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions";
+} from "@/lib/schema/passwordSchema"
+import { InputField } from "@/components/Auth/FormFields"
+import { getShadowWithColor } from "@/util/GetShadowWithColor"
+import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
+import { DashboardButtonCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardButtonCustomizationOptions"
+import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions"
+import { Separator } from "@/components/ui/separator"
+import { DialogCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DialogCustomizationOptions"
+import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions"
 import {
   useDashboardButtonCustomizationOption,
   useDashboardCardCustomizationOption,
   useDashboardThemeCustomizationOption,
-} from "@/hooks/useDashboardCustomization";
-import { toValidShadowSize } from "@/util/ValidateShadowColor";
-import { useCustomToast } from "@/components/ui-custom/ShowCustomToast";
-import { useCustomizationSync } from "@/hooks/useCustomizationSync";
-import PendingState from "@/components/ui-custom/PendingState";
-import ErrorState from "@/components/ui-custom/ErrorState";
+} from "@/hooks/useDashboardCustomization"
+import { toValidShadowSize } from "@/util/ValidateShadowColor"
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import { useCustomizationSync } from "@/hooks/useCustomizationSync"
+import PendingState from "@/components/ui-custom/PendingState"
+import ErrorState from "@/components/ui-custom/ErrorState"
 
 interface CommonData {
-  id: string;
-  name: string;
-  email: string;
-  image?: string | null;
-  paypalEmail: string;
+  id: string
+  name: string
+  email: string
+  image?: string | null
+  paypalEmail: string
 }
 
 interface ProfileProps {
-  AffiliateData?: CommonData;
-  UserData?: CommonData;
-  isPreview?: boolean;
-  affiliate: boolean;
-  orgId: string;
+  AffiliateData?: CommonData
+  UserData?: CommonData
+  isPreview?: boolean
+  affiliate: boolean
+  orgId: string
 }
 
 export default function Profile({
@@ -82,18 +82,18 @@ export default function Profile({
 }: ProfileProps) {
   const initialName = AffiliateData
     ? AffiliateData.name
-    : (UserData?.name ?? "");
+    : (UserData?.name ?? "")
   const initialEmail = AffiliateData
     ? AffiliateData.email
-    : (UserData?.email ?? "");
-  const initialPaypalEmail = AffiliateData?.paypalEmail ?? "";
-  console.log("AffiliateData", AffiliateData);
-  const dashboardTheme = useDashboardThemeCustomizationOption();
-  const dashboardCard = useDashboardCardCustomizationOption();
-  const dashboardButton = useDashboardButtonCustomizationOption();
+    : (UserData?.email ?? "")
+  const initialPaypalEmail = AffiliateData?.paypalEmail ?? ""
+  console.log("AffiliateData", AffiliateData)
+  const dashboardTheme = useDashboardThemeCustomizationOption()
+  const dashboardCard = useDashboardCardCustomizationOption()
+  const dashboardButton = useDashboardButtonCustomizationOption()
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "dashboard")
-    : { isPending: false, isError: false, refetch: () => {} };
+    : { isPending: false, isError: false, refetch: () => {} }
   const profileForm = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -101,41 +101,41 @@ export default function Profile({
       email: initialEmail,
       paypalEmail: initialPaypalEmail,
     },
-  });
+  })
   const currentPasswordForm = useForm({
     resolver: zodResolver(currentPasswordSchema),
     defaultValues: {
       currentPassword: "",
     },
-  });
+  })
   const newPasswordForm = useForm({
     resolver: zodResolver(newPasswordSchema),
     defaultValues: {
       newPassword: "",
       confirmPassword: "",
     },
-  });
-  const currentName = profileForm.watch("name");
-  const currentEmail = profileForm.watch("email");
-  const currentPaypalEmail = profileForm.watch("paypalEmail");
+  })
+  const currentName = profileForm.watch("name")
+  const currentEmail = profileForm.watch("email")
+  const currentPaypalEmail = profileForm.watch("paypalEmail")
   const isFormUnchanged =
     currentName.trim() === initialName.trim() &&
     currentEmail.trim() === initialEmail.trim() &&
-    currentPaypalEmail.trim() === initialPaypalEmail.trim();
+    currentPaypalEmail.trim() === initialPaypalEmail.trim()
 
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [step, setStep] = useState<"current" | "new">("current");
-  const { showCustomToast } = useCustomToast();
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [step, setStep] = useState<"current" | "new">("current")
+  const { showCustomToast } = useCustomToast()
   const updateProfile = useMutation({
     mutationFn: async (data: any) => {
       if (isPreview) {
         return new Promise((resolve) =>
-          setTimeout(() => resolve({ ok: true }), 1000),
-        );
+          setTimeout(() => resolve({ ok: true }), 1000)
+        )
       }
       return AffiliateData
         ? updateAffiliateProfile(orgId, data)
-        : updateUserProfile(orgId, data);
+        : updateUserProfile(orgId, data)
     },
     onSuccess: () => {
       showCustomToast({
@@ -143,7 +143,7 @@ export default function Profile({
         title: "Profile updated successfully",
         description: "Your profile was updated.",
         affiliate,
-      });
+      })
     },
     onError: (err: any) => {
       showCustomToast({
@@ -151,39 +151,39 @@ export default function Profile({
         title: "Update Error",
         description: err.message ?? "Something went wrong.",
         affiliate,
-      });
+      })
     },
-  });
+  })
 
   const validatePassword = useMutation({
     mutationFn: async (password: string) => {
       if (isPreview) {
         return new Promise((resolve) =>
-          setTimeout(() => resolve({ ok: password === "correct123" }), 1000),
-        );
+          setTimeout(() => resolve({ ok: password === "correct123" }), 1000)
+        )
       }
 
       return AffiliateData
         ? validateCurrentPassword(password)
-        : validateCurrentSellerPassword(password);
+        : validateCurrentSellerPassword(password)
     },
     onSuccess: (res: any) => {
       if (res?.ok) {
-        setStep("new");
-        newPasswordForm.reset({ newPassword: "", confirmPassword: "" });
+        setStep("new")
+        newPasswordForm.reset({ newPassword: "", confirmPassword: "" })
         showCustomToast({
           type: "success",
           title: "Password validated",
           description: "Enter your new password below.",
           affiliate,
-        });
+        })
       } else {
         showCustomToast({
           type: "error",
           title: "Invalid Password",
           description: "Incorrect password.",
           affiliate,
-        });
+        })
       }
     },
     onError: () => {
@@ -192,21 +192,21 @@ export default function Profile({
         title: "Something went wrong",
         description: "Unexpected error. Please try again.",
         affiliate,
-      });
+      })
     },
-  });
+  })
 
   const updatePassword = useMutation({
     mutationFn: async (newPassword: string) => {
       if (isPreview) {
         return new Promise((resolve) =>
-          setTimeout(() => resolve({ ok: true }), 1000),
-        );
+          setTimeout(() => resolve({ ok: true }), 1000)
+        )
       }
 
       return AffiliateData
         ? updateAffiliatePassword(newPassword)
-        : updateUserPassword(newPassword);
+        : updateUserPassword(newPassword)
     },
     onSuccess: (res: any) => {
       if (res?.ok) {
@@ -215,15 +215,15 @@ export default function Profile({
           title: "Password updated successfully",
           description: "You can now use your new password.",
           affiliate,
-        });
-        resetPasswordModal();
+        })
+        resetPasswordModal()
       } else {
         showCustomToast({
           type: "error",
           title: "Update Failed",
           description: "Unable to change password.",
           affiliate,
-        });
+        })
       }
     },
     onError: () => {
@@ -232,31 +232,31 @@ export default function Profile({
         title: "Unexpected Error",
         description: "Please try again later.",
         affiliate,
-      });
+      })
     },
-  });
+  })
 
   const onSubmit = (data: any) => {
-    updateProfile.mutate(data);
-  };
+    updateProfile.mutate(data)
+  }
   const onSubmitValidateCurrent = (data: any) => {
-    validatePassword.mutate(data.currentPassword);
-  };
+    validatePassword.mutate(data.currentPassword)
+  }
   const onSubmitUpdatePassword = (data: any) => {
-    updatePassword.mutate(data.newPassword);
-  };
+    updatePassword.mutate(data.newPassword)
+  }
 
   const resetPasswordModal = () => {
-    setShowPasswordModal(false);
-    setStep("current");
-    currentPasswordForm.reset();
-    newPasswordForm.reset();
-  };
+    setShowPasswordModal(false)
+    setStep("current")
+    currentPasswordForm.reset()
+    newPasswordForm.reset()
+  }
   if (isPending) {
-    return <PendingState withoutBackground />;
+    return <PendingState withoutBackground />
   }
   if (isError) {
-    return <ErrorState onRetry={refetch} />;
+    return <ErrorState onRetry={refetch} />
   }
   return (
     <div className="flex flex-col gap-6">
@@ -317,12 +317,14 @@ export default function Profile({
               ? affiliate &&
                 getShadowWithColor(
                   toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
-                  dashboardCard.dashboardCardShadowColor,
+                  dashboardCard.dashboardCardShadowColor
                 )
               : "",
           border:
             affiliate && dashboardCard.dashboardCardBorder
-              ? `1px solid ${affiliate && dashboardCard.dashboardCardBorderColor}`
+              ? `1px solid ${
+                  affiliate && dashboardCard.dashboardCardBorderColor
+                }`
               : "none",
         }}
       >
@@ -528,7 +530,7 @@ export default function Profile({
             <Form {...currentPasswordForm}>
               <form
                 onSubmit={currentPasswordForm.handleSubmit(
-                  onSubmitValidateCurrent,
+                  onSubmitValidateCurrent
                 )}
                 className=" relative space-y-4"
               >
@@ -661,5 +663,5 @@ export default function Profile({
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }

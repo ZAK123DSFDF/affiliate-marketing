@@ -1,5 +1,5 @@
 // app/api/check/route.ts
-export const runtime = "edge";
+export const runtime = "edge"
 
 export function GET() {
   return new Response(
@@ -70,6 +70,6 @@ export function GET() {
         "Content-Type": "application/javascript",
         "Access-Control-Allow-Origin": "*",
       },
-    },
-  );
+    }
+  )
 }

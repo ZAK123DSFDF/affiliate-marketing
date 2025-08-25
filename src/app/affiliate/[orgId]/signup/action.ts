@@ -1,17 +1,17 @@
-"use server";
-import { affiliate } from "@/db/schema";
-import { db } from "@/db/drizzle";
-import { eq, and } from "drizzle-orm";
-import * as bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { cookies } from "next/headers";
-import { returnError } from "@/lib/errorHandler";
-import { InferInsertModel } from "drizzle-orm";
+"use server"
+import { affiliate } from "@/db/schema"
+import { db } from "@/db/drizzle"
+import { eq, and } from "drizzle-orm"
+import * as bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
+import { cookies } from "next/headers"
+import { returnError } from "@/lib/errorHandler"
+import { InferInsertModel } from "drizzle-orm"
 
 type CreateAffiliatePayload = Omit<
   InferInsertModel<typeof affiliate>,
   "id" | "createdAt" | "updatedAt"
->;
+>
 
 export const SignupAffiliateServer = async ({
   name,
@@ -31,10 +31,10 @@ export const SignupAffiliateServer = async ({
           name: !name ? "Name is required" : "",
           organizationId: !organizationId ? "Organization is required" : "",
         },
-      };
+      }
     }
 
-    const cookieStore = await cookies();
+    const cookieStore = await cookies()
 
     const existingAffiliate = await db
       .select()
@@ -42,9 +42,9 @@ export const SignupAffiliateServer = async ({
       .where(
         and(
           eq(affiliate.email, email),
-          eq(affiliate.organizationId, organizationId),
-        ),
-      );
+          eq(affiliate.organizationId, organizationId)
+        )
+      )
 
     if (existingAffiliate.length > 0) {
       throw {
@@ -53,10 +53,10 @@ export const SignupAffiliateServer = async ({
         toast:
           "This email is already registered under the selected organization.",
         fields: { email: "Email already in use in this organization" },
-      };
+      }
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10)
 
     const [newAffiliate] = await db
       .insert(affiliate)
@@ -67,14 +67,14 @@ export const SignupAffiliateServer = async ({
         type: "AFFILIATE",
         organizationId,
       })
-      .returning();
+      .returning()
 
     if (!newAffiliate) {
       throw {
         status: 500,
         error: "Affiliate creation failed.",
         toast: "Something went wrong while creating affiliate.",
-      };
+      }
     }
 
     const token = jwt.sign(
@@ -85,18 +85,18 @@ export const SignupAffiliateServer = async ({
         organizationId: newAffiliate.organizationId,
       },
       process.env.SECRET_KEY as string,
-      { expiresIn: "7d" },
-    );
+      { expiresIn: "7d" }
+    )
 
     cookieStore.set({
       name: "token",
       value: token,
       httpOnly: true,
-    });
+    })
 
-    return { user: newAffiliate, token };
+    return { user: newAffiliate, token }
   } catch (error: any) {
-    console.error("Affiliate Signup Error:", error);
-    return returnError(error);
+    console.error("Affiliate Signup Error:", error)
+    return returnError(error)
   }
-};
+}

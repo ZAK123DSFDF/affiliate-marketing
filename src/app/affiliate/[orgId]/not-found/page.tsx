@@ -1,10 +1,10 @@
-import React from "react";
+import React from "react"
 
 const notFoundPage = () => {
   return (
     <>
       <div>notFoundPage</div>
     </>
-  );
-};
-export default notFoundPage;
+  )
+}
+export default notFoundPage

@@ -1,15 +1,15 @@
-import React from "react";
+import React from "react"
 
 const subDomainPage = async ({
   params,
 }: {
-  params: Promise<{ orgId: string }>;
+  params: Promise<{ orgId: string }>
 }) => {
-  const { orgId } = await params;
+  const { orgId } = await params
   return (
     <>
       <div>the page: {orgId}</div>
     </>
-  );
-};
-export default subDomainPage;
+  )
+}
+export default subDomainPage

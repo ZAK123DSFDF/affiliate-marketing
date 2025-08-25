@@ -1,8 +1,8 @@
 // app/api/log-Affiliates/route.ts
-export const runtime = "edge";
+export const runtime = "edge"
 
 export async function POST(request: Request) {
-  const data = await request.json();
+  const data = await request.json()
 
   console.log("Affiliate tracking:", {
     // Required fields
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     campaign: data.campaign || "none",
     source: data.source || "unknown",
     url: data.url || window.location.href,
-  });
+  })
 
-  return new Response(null, { status: 204 }); // 204 No Content
+  return new Response(null, { status: 204 }) // 204 No Content
 }

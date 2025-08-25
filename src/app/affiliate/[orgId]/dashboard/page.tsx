@@ -1,34 +1,34 @@
 // app/dashboard/page.tsx
-import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOverview/AffiliateOverview";
-import { validateOrg } from "@/util/ValidateOrg";
-import { redirect } from "next/navigation";
-import { OrgIdProps } from "@/lib/types/orgId";
+import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOverview/AffiliateOverview"
+import { validateOrg } from "@/util/ValidateOrg"
+import { redirect } from "next/navigation"
+import { OrgIdProps } from "@/lib/types/orgId"
 import {
   getAffiliateKpiStats,
   getAffiliateKpiTimeSeries,
   getAffiliateReferrers,
-} from "@/app/affiliate/[orgId]/dashboard/action";
+} from "@/app/affiliate/[orgId]/dashboard/action"
 
 const DashboardPage = async ({ params }: OrgIdProps) => {
-  const { orgId } = await params;
-  const org = await validateOrg(orgId);
+  const { orgId } = await params
+  const org = await validateOrg(orgId)
 
   if (!org.orgFound) {
-    redirect(`/affiliate/${orgId}/not-found`);
+    redirect(`/affiliate/${orgId}/not-found`)
   }
-  const kpiCardStats = await getAffiliateKpiStats();
+  const kpiCardStats = await getAffiliateKpiStats()
   if (!kpiCardStats.ok) {
-    redirect(`/error?message=${encodeURIComponent(kpiCardStats.error)}`);
+    redirect(`/error?message=${encodeURIComponent(kpiCardStats.error)}`)
   }
-  const referrerStats = await getAffiliateReferrers();
+  const referrerStats = await getAffiliateReferrers()
   if (!referrerStats.ok) {
-    redirect(`/error?message=${encodeURIComponent(referrerStats.error)}`);
+    redirect(`/error?message=${encodeURIComponent(referrerStats.error)}`)
   }
-  const affiliateChartStats = await getAffiliateKpiTimeSeries();
+  const affiliateChartStats = await getAffiliateKpiTimeSeries()
   if (!affiliateChartStats.ok) {
-    redirect(`/error?message=${encodeURIComponent(affiliateChartStats.error)}`);
+    redirect(`/error?message=${encodeURIComponent(affiliateChartStats.error)}`)
   }
-  console.log("referrerStats", referrerStats.data);
+  console.log("referrerStats", referrerStats.data)
   return (
     <>
       <AffiliateOverview
@@ -39,7 +39,7 @@ const DashboardPage = async ({ params }: OrgIdProps) => {
         orgId={orgId}
       />
     </>
-  );
-};
+  )
+}
 
-export default DashboardPage;
+export default DashboardPage
