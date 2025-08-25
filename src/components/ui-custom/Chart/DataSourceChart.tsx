@@ -51,6 +51,7 @@ export default function SocialTrafficPieChart({
   const innerRadius = isPreview ? 60 : 100
   const outerRadius = isPreview ? 90 : 140
   const ThemeCustomization = useDashboardThemeCustomizationOption()
+  const dashboardCardStyle = useDashboardCard(affiliate)
   const pieCustomization = usePieChartCustomizationOption()
   const { filters, setFilters } = useQueryFilter({
     yearKey: "sourceYear",
@@ -121,7 +122,7 @@ export default function SocialTrafficPieChart({
   return (
     <Card
       className={`${isPreview ? "h-[340px]" : "h-[480px]"} flex flex-col relative`}
-      style={useDashboardCard(affiliate)}
+      style={dashboardCardStyle}
     >
       <CardHeader
         className={`flex items-center gap-2 space-y-0 ${isPreview ? "py-2" : "py-5"} sm:flex-row`}

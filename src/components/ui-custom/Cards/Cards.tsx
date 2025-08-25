@@ -51,6 +51,7 @@ const Cards = ({
   kpiCardStats = [{}],
 }: CardsProps) => {
   const dashboardTheme = useDashboardThemeCustomizationOption()
+  const dashboardCardStyle = useDashboardCard(affiliate)
   const kpiCard = useKpiCardCustomizationOption()
   const stats = kpiCardStats[0]
   const { filters, setFilters } = useQueryFilter({
@@ -112,7 +113,7 @@ const Cards = ({
     <div className="space-y-6">
       <Card
         className={cn(isPreview && "mt-2", "relative")}
-        style={useDashboardCard(affiliate)}
+        style={dashboardCardStyle}
       >
         {isPreview && affiliate && (
           <div className="absolute bottom-0 left-0 p-2">

@@ -57,12 +57,9 @@ export const getUserData = async (): Promise<ResponseData<SafeUserData>> => {
 }
 export async function updateUserProfile(
   orgId: string,
-  {
-    name,
-    email,
-  }: {
-    name: string
-    email: string
+  data: {
+    name?: string
+    email?: string
   }
 ) {
   try {
@@ -72,8 +69,11 @@ export async function updateUserProfile(
 
     const { id } = jwt.decode(token) as { id: string }
     if (!id) throw { status: 400, toast: "Invalid session" }
+    const updateData: Record<string, string> = {}
+    if (data.name) updateData.name = data.name
+    if (data.email) updateData.email = data.email
 
-    await db.update(user).set({ name, email }).where(eq(user.id, id))
+    await db.update(user).set(updateData).where(eq(user.id, id))
     revalidatePath(`/seller/${orgId}/dashboard/profile`)
     return { ok: true }
   } catch (err) {

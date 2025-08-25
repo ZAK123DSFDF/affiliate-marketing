@@ -43,6 +43,7 @@ export default function AffiliateCommissionTable({
   affiliate = false,
 }: AffiliateCommissionTableProps) {
   const dashboardTheme = useDashboardThemeCustomizationOption()
+  const dashboardCardStyle = useDashboardCard(affiliate)
   const { filters, setFilters } = useQueryFilter()
   const {
     isPending: globalPending,
@@ -140,7 +141,7 @@ export default function AffiliateCommissionTable({
           </div>
         </div>
       </div>
-      <Card className="relative" style={useDashboardCard(affiliate)}>
+      <Card className="relative" style={dashboardCardStyle}>
         {isPreview && (
           <div className="absolute bottom-0 left-0 p-2">
             <DashboardCardCustomizationOptions

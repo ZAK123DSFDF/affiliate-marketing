@@ -53,6 +53,7 @@ export function ChartDailyMetrics({
     yearKey: "chartYear",
     monthKey: "chartMonth",
   })
+  const dashboardCardStyle = useDashboardCard(affiliate)
   const { data: affiliateSearchData, isPending: affiliateSearchPending } =
     useSearch(
       ["affiliate-kpi-time-series", orgId, filters.year, filters.month],
@@ -113,7 +114,7 @@ export function ChartDailyMetrics({
   return (
     <Card
       className={`${isPreview ? "h-[340px]" : "h-[480px]"} flex flex-col relative`}
-      style={useDashboardCard(affiliate)}
+      style={dashboardCardStyle}
     >
       <CardHeader
         className={`flex items-center gap-2 space-y-0 ${isPreview ? "py-2" : "py-5"} sm:flex-row`}

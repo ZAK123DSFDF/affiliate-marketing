@@ -79,12 +79,16 @@ export default function Profile({
     currentName.trim() === initialName.trim() &&
     currentEmail.trim() === initialEmail.trim() &&
     currentPaypalEmail.trim() === initialPaypalEmail.trim()
-
+  const dashboardCardStyle = useDashboardCard(affiliate)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [step, setStep] = useState<"current" | "new">("current")
   const { showCustomToast } = useCustomToast()
   const updateProfile = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: {
+      name?: string
+      email?: string
+      paypalEmail?: string
+    }) => {
       if (isPreview) {
         return new Promise((resolve) =>
           setTimeout(() => resolve({ ok: true }), 1000)
@@ -219,7 +223,7 @@ export default function Profile({
     <div className="flex flex-col gap-6">
       <ProfileHeader affiliate={affiliate} isPreview={isPreview} />
 
-      <Card className="relative" style={useDashboardCard(affiliate)}>
+      <Card className="relative" style={dashboardCardStyle}>
         {isPreview && (
           <div className="absolute bottom-0 left-0 p-2">
             <DashboardCardCustomizationOptions

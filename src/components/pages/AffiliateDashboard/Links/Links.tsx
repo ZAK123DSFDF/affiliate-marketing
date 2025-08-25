@@ -52,6 +52,7 @@ export default function Links({
 }: AffiliateLinkProps) {
   const dashboardTheme = useDashboardThemeCustomizationOption()
   const dashboardButton = useDashboardButtonCustomizationOption()
+  const dashboardCardStyle = useDashboardCard(affiliate)
   const { showCustomToast } = useCustomToast()
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "dashboard")
@@ -251,7 +252,7 @@ export default function Links({
         </div>
       </div>
 
-      <Card className="relative" style={useDashboardCard(affiliate)}>
+      <Card className="relative" style={dashboardCardStyle}>
         {isPreview && (
           <div className="absolute bottom-0 left-0 p-2">
             <DashboardCardCustomizationOptions

@@ -59,6 +59,7 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     buttonDisabledBackgroundColor,
     buttonTextColor,
   } = useButtonCustomizationOption()
+  const authCardStyle = useAuthCard(affiliate)
   const { showCustomToast } = useCustomToast()
   const affiliateMutation = useMutation({
     mutationFn: SignupAffiliateServer,
@@ -141,7 +142,7 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
 
         <Card
           className="relative transition-shadow duration-300 "
-          style={useAuthCard(affiliate)}
+          style={authCardStyle}
         >
           <CardHeader className="space-y-1">
             {isPreview ? (

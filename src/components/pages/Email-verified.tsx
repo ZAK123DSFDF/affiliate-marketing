@@ -35,7 +35,7 @@ const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
   } = useThemeCustomizationOption()
   const { buttonBackgroundColor, buttonTextColor } =
     useButtonCustomizationOption()
-
+  const authCardStyle = useAuthCard(affiliate)
   const router = useRouter()
   const handleClick = () => {
     if (isPreview) {
@@ -64,7 +64,7 @@ const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
       <div className="relative w-full max-w-md">
         <Card
           className="relative transition-shadow duration-300"
-          style={useAuthCard(affiliate)}
+          style={authCardStyle}
         >
           <CardHeader className="space-y-1 flex flex-col items-center">
             <div className="flex flex-row gap-2 justify-center">

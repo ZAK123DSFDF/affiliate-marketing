@@ -55,6 +55,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     buttonDisabledBackgroundColor,
     buttonTextColor,
   } = useButtonCustomizationOption()
+  const authCardStyle = useAuthCard(affiliate)
   const { customNotesLogin } = useNotesCustomizationOption()
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "auth")
@@ -114,6 +115,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
       console.error("Login failed", error)
     }
   }
+
   if (isPending) {
     return <PendingState />
   }
@@ -145,7 +147,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
 
         <Card
           className="relative transition-shadow duration-300"
-          style={useAuthCard(affiliate)}
+          style={authCardStyle}
         >
           <CardHeader className="space-y-1">
             {isPreview ? (

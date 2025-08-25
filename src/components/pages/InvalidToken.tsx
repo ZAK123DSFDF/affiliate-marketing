@@ -21,6 +21,7 @@ const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
     InvalidPrimaryCustomization,
     InvalidSecondaryCustomization,
   } = useThemeCustomizationOption()
+  const authCardStyle = useAuthCard(affiliate)
   if (isPending) {
     return <PendingState />
   }
@@ -41,7 +42,7 @@ const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
       <div className="w-full max-w-md">
         <Card
           className="relative transition-shadow duration-300"
-          style={useAuthCard(affiliate)}
+          style={authCardStyle}
         >
           <CardHeader className="space-y-1">
             <div className="flex flex-row gap-2 justify-center">

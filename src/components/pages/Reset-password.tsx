@@ -76,7 +76,7 @@ const ResetPassword = ({
   } = useButtonCustomizationOption()
   const { primaryCustomization, secondaryCustomization } =
     useThemeCustomizationOption()
-
+  const authCardStyle = useAuthCard(affiliate)
   const onSubmit = async (data: ResetPasswordFormValues) => {
     if (isPreview) {
       setPending(true)
@@ -134,7 +134,7 @@ const ResetPassword = ({
 
         <Card
           className="relative transition-shadow duration-300"
-          style={useAuthCard(affiliate)}
+          style={authCardStyle}
         >
           <CardHeader className="space-y-1">
             <div className="flex flex-row gap-2 justify-center">

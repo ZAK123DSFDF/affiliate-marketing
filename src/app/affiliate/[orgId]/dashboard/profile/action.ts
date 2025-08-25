@@ -26,17 +26,15 @@ export const getAffiliateData = async (): Promise<
 
 export async function updateAffiliateProfile(
   orgId: string,
-  {
-    name,
-    email,
-  }: {
-    name: string
-    email: string
+  data: {
+    name?: string
+    email?: string
+    paypalEmail?: string
   }
 ) {
   try {
     const decoded = await getAffiliateOrganization()
-    await updateAffiliateProfileAction(decoded, { name, email })
+    await updateAffiliateProfileAction(decoded, data)
     revalidatePath(`/affiliate/${orgId}/dashboard/profile`)
     return { ok: true }
   } catch (err) {

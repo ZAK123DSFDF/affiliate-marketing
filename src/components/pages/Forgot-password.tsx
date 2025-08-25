@@ -67,6 +67,7 @@ const ForgotPassword = ({
   } = useButtonCustomizationOption()
   const { primaryCustomization, secondaryCustomization } =
     useThemeCustomizationOption()
+  const authCardStyle = useAuthCard(affiliate)
   const onSubmit = async (data: ForgotPasswordFormValues) => {
     if (isPreview) {
       setPending(true)
@@ -124,7 +125,7 @@ const ForgotPassword = ({
 
         <Card
           className="relative transition-shadow duration-300"
-          style={useAuthCard(affiliate)}
+          style={authCardStyle}
         >
           <CardHeader className="space-y-1">
             <div className="flex flex-row gap-2 justify-center">
