@@ -14,16 +14,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow"
 import YearSelect from "@/components/ui-custom/YearSelect"
 import { getAffiliateCommissionByMonth } from "@/app/affiliate/[orgId]/dashboard/payment/action"
-import { getShadowWithColor } from "@/util/GetShadowWithColor"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
 import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions"
 import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions"
 import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions"
-import {
-  useDashboardCardCustomizationOption,
-  useDashboardThemeCustomizationOption,
-} from "@/hooks/useDashboardCustomization"
-import { toValidShadowSize } from "@/util/ValidateShadowColor"
+import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization"
 import { useCustomizationSync } from "@/hooks/useCustomizationSync"
 import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
@@ -32,6 +27,7 @@ import { TableLoading } from "@/components/ui-custom/TableLoading"
 import { paymentColumns } from "@/components/pages/AffiliateDashboard/Payment/PaymentColumns"
 import { useSearch } from "@/hooks/useSearch"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
+import { useDashboardCard } from "@/hooks/useDashboardCard"
 
 interface AffiliateCommissionTableProps {
   orgId: string
@@ -47,7 +43,6 @@ export default function AffiliateCommissionTable({
   affiliate = false,
 }: AffiliateCommissionTableProps) {
   const dashboardTheme = useDashboardThemeCustomizationOption()
-  const dashboardCard = useDashboardCardCustomizationOption()
   const { filters, setFilters } = useQueryFilter()
   const {
     isPending: globalPending,
@@ -145,28 +140,7 @@ export default function AffiliateCommissionTable({
           </div>
         </div>
       </div>
-      <Card
-        className="relative"
-        style={{
-          backgroundColor:
-            (affiliate && dashboardCard.dashboardCardBackgroundColor) ||
-            undefined,
-          boxShadow:
-            affiliate &&
-            dashboardCard.dashboardCardShadow &&
-            dashboardCard.dashboardCardShadow !== "none"
-              ? affiliate &&
-                getShadowWithColor(
-                  toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
-                  dashboardCard.dashboardCardShadowColor
-                )
-              : "",
-          border:
-            affiliate && dashboardCard.dashboardCardBorder
-              ? `1px solid ${affiliate && dashboardCard.dashboardCardBorderColor}`
-              : "none",
-        }}
-      >
+      <Card className="relative" style={useDashboardCard(affiliate)}>
         {isPreview && (
           <div className="absolute bottom-0 left-0 p-2">
             <DashboardCardCustomizationOptions

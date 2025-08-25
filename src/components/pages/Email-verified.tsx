@@ -1,23 +1,20 @@
 "use client"
 import React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { getShadowWithColor } from "@/util/GetShadowWithColor"
 import {
   useButtonCustomizationOption,
-  useCardCustomizationOption,
   useThemeCustomizationOption,
 } from "@/hooks/useAuthCustomization"
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
-import { toValidShadowSize } from "@/util/ValidateShadowColor"
 import { CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions"
 import { useRouter } from "next/navigation"
-import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization"
 import { useCustomizationSync } from "@/hooks/useCustomizationSync"
 import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
+import { useAuthCard } from "@/hooks/useAuthCard"
 
 type Props = {
   orgId?: string
@@ -36,14 +33,6 @@ const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
     emailVerifiedSecondaryColor,
     emailVerifiedIconColor,
   } = useThemeCustomizationOption()
-  const {
-    cardShadow,
-    cardShadowColor,
-    cardBorder,
-    cardBorderColor,
-    cardBackgroundColor,
-    cardShadowThickness,
-  } = useCardCustomizationOption()
   const { buttonBackgroundColor, buttonTextColor } =
     useButtonCustomizationOption()
 
@@ -74,28 +63,8 @@ const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
     >
       <div className="relative w-full max-w-md">
         <Card
-          className={`relative transition-shadow duration-300 ${
-            affiliate && cardShadow && cardShadowThickness
-              ? `shadow-${affiliate && cardShadowThickness}`
-              : affiliate && cardShadow
-                ? "shadow-lg"
-                : ""
-          } ${affiliate && cardBorder ? "border" : "border-none"}`}
-          style={{
-            backgroundColor: (affiliate && cardBackgroundColor) || undefined,
-            ...(affiliate && cardShadow
-              ? {
-                  boxShadow: getShadowWithColor(
-                    toValidShadowSize(cardShadowThickness),
-                    cardShadowColor
-                  ),
-                }
-              : {}),
-            borderColor:
-              affiliate && cardBorder && cardBorderColor
-                ? affiliate && cardBorderColor
-                : undefined,
-          }}
+          className="relative transition-shadow duration-300"
+          style={useAuthCard(affiliate)}
         >
           <CardHeader className="space-y-1 flex flex-col items-center">
             <div className="flex flex-row gap-2 justify-center">

@@ -19,13 +19,10 @@ import MonthSelect from "@/components/ui-custom/MonthSelect"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
 import { Separator } from "@/components/ui/separator"
 import {
-  useDashboardCardCustomizationOption,
   useDashboardThemeCustomizationOption,
   usePieChartCustomizationOption,
 } from "@/hooks/useDashboardCustomization"
 import { PieChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/PieChartCustomization"
-import { getShadowWithColor } from "@/util/GetShadowWithColor"
-import { toValidShadowSize } from "@/util/ValidateShadowColor"
 import {
   AffiliateReferrerStat,
   SellerReferrerStat,
@@ -34,6 +31,7 @@ import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateReferrers } from "@/app/affiliate/[orgId]/dashboard/action"
 import { getSellerReferrer } from "@/app/seller/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
+import { useDashboardCard } from "@/hooks/useDashboardCard"
 
 const chartConfig: ChartConfig = {
   visitors: { label: "Visitors" },
@@ -54,7 +52,6 @@ export default function SocialTrafficPieChart({
   const outerRadius = isPreview ? 90 : 140
   const ThemeCustomization = useDashboardThemeCustomizationOption()
   const pieCustomization = usePieChartCustomizationOption()
-  const dashboardCard = useDashboardCardCustomizationOption()
   const { filters, setFilters } = useQueryFilter({
     yearKey: "sourceYear",
     monthKey: "sourceMonth",
@@ -124,24 +121,7 @@ export default function SocialTrafficPieChart({
   return (
     <Card
       className={`${isPreview ? "h-[340px]" : "h-[480px]"} flex flex-col relative`}
-      style={{
-        backgroundColor:
-          (affiliate && dashboardCard.dashboardCardBackgroundColor) ||
-          undefined,
-        boxShadow:
-          affiliate &&
-          dashboardCard.dashboardCardShadow &&
-          dashboardCard.dashboardCardShadow !== "none"
-            ? getShadowWithColor(
-                toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
-                dashboardCard.dashboardCardShadowColor
-              )
-            : "",
-        border:
-          affiliate && dashboardCard.dashboardCardBorder
-            ? `1px solid ${affiliate && dashboardCard.dashboardCardBorderColor}`
-            : "none",
-      }}
+      style={useDashboardCard(affiliate)}
     >
       <CardHeader
         className={`flex items-center gap-2 space-y-0 ${isPreview ? "py-2" : "py-5"} sm:flex-row`}

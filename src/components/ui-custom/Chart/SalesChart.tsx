@@ -26,19 +26,15 @@ import {
 import MonthSelect from "@/components/ui-custom/MonthSelect"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
 import { Separator } from "@/components/ui/separator"
-import {
-  useChartCustomizationOption,
-  useDashboardCardCustomizationOption,
-} from "@/hooks/useDashboardCustomization"
+import { useChartCustomizationOption } from "@/hooks/useDashboardCustomization"
 import { DashboardCustomizationStores } from "@/store/useCustomizationStore"
 import { ChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/ChartCustomizationOptions"
-import { getShadowWithColor } from "@/util/GetShadowWithColor"
-import { toValidShadowSize } from "@/util/ValidateShadowColor"
 import { AffiliateKpiTimeSeries } from "@/lib/types/affiliateChartStats"
 import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateKpiTimeSeries } from "@/app/affiliate/[orgId]/dashboard/action"
 import { getSellerKpiTimeSeries } from "@/app/seller/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
+import { useDashboardCard } from "@/hooks/useDashboardCard"
 
 interface ChartDailyMetricsProps {
   orgId: string
@@ -97,7 +93,6 @@ export function ChartDailyMetrics({
   const ChartCustomization = useChartCustomizationOption()
   const ThemeCustomization =
     DashboardCustomizationStores.useDashboardThemeCustomization()
-  const dashboardCard = useDashboardCardCustomizationOption()
   const baseColors: any = {
     visits: (affiliate && ChartCustomization.chartPrimaryColor) || "#60A5FA",
     sales: (affiliate && ChartCustomization.chartSecondaryColor) || "#A78BFA",
@@ -118,25 +113,7 @@ export function ChartDailyMetrics({
   return (
     <Card
       className={`${isPreview ? "h-[340px]" : "h-[480px]"} flex flex-col relative`}
-      style={{
-        backgroundColor:
-          (affiliate && dashboardCard.dashboardCardBackgroundColor) ||
-          undefined,
-        boxShadow:
-          affiliate &&
-          dashboardCard.dashboardCardShadow &&
-          dashboardCard.dashboardCardShadow !== "none"
-            ? affiliate &&
-              getShadowWithColor(
-                toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
-                dashboardCard.dashboardCardShadowColor
-              )
-            : "",
-        border:
-          affiliate && dashboardCard.dashboardCardBorder
-            ? `1px solid ${affiliate && dashboardCard.dashboardCardBorderColor}`
-            : "none",
-      }}
+      style={useDashboardCard(affiliate)}
     >
       <CardHeader
         className={`flex items-center gap-2 space-y-0 ${isPreview ? "py-2" : "py-5"} sm:flex-row`}

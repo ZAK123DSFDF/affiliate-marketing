@@ -21,10 +21,7 @@ import {
   currentPasswordSchema,
   newPasswordSchema,
 } from "@/lib/schema/passwordSchema"
-import { getShadowWithColor } from "@/util/GetShadowWithColor"
 import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions"
-import { useDashboardCardCustomizationOption } from "@/hooks/useDashboardCustomization"
-import { toValidShadowSize } from "@/util/ValidateShadowColor"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { useCustomizationSync } from "@/hooks/useCustomizationSync"
 import PendingState from "@/components/ui-custom/PendingState"
@@ -35,6 +32,7 @@ import ProfileCardContent from "@/components/pages/Dashboard/Profile/ProfileCard
 import ProfileCardFooter from "@/components/pages/Dashboard/Profile/ProfileCardFooter"
 import ProfileDialog from "@/components/pages/Dashboard/Profile/ProfileDialog"
 import { ProfileProps } from "@/lib/types/profileTypes"
+import { useDashboardCard } from "@/hooks/useDashboardCard"
 
 export default function Profile({
   AffiliateData,
@@ -50,8 +48,6 @@ export default function Profile({
     ? AffiliateData.email
     : (UserData?.email ?? "")
   const initialPaypalEmail = AffiliateData?.paypalEmail ?? ""
-  console.log("AffiliateData", AffiliateData)
-  const dashboardCard = useDashboardCardCustomizationOption()
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "dashboard")
     : { isPending: false, isError: false, refetch: () => {} }
@@ -223,30 +219,7 @@ export default function Profile({
     <div className="flex flex-col gap-6">
       <ProfileHeader affiliate={affiliate} isPreview={isPreview} />
 
-      <Card
-        className="relative"
-        style={{
-          backgroundColor:
-            (affiliate && dashboardCard.dashboardCardBackgroundColor) ||
-            undefined,
-          boxShadow:
-            affiliate &&
-            dashboardCard.dashboardCardShadow &&
-            dashboardCard.dashboardCardShadow !== "none"
-              ? affiliate &&
-                getShadowWithColor(
-                  toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
-                  dashboardCard.dashboardCardShadowColor
-                )
-              : "",
-          border:
-            affiliate && dashboardCard.dashboardCardBorder
-              ? `1px solid ${
-                  affiliate && dashboardCard.dashboardCardBorderColor
-                }`
-              : "none",
-        }}
-      >
+      <Card className="relative" style={useDashboardCard(affiliate)}>
         {isPreview && (
           <div className="absolute bottom-0 left-0 p-2">
             <DashboardCardCustomizationOptions

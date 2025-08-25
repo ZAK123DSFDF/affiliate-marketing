@@ -1,16 +1,12 @@
 import React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { getShadowWithColor } from "@/util/GetShadowWithColor"
-import {
-  useCardCustomizationOption,
-  useThemeCustomizationOption,
-} from "@/hooks/useAuthCustomization"
+import { useThemeCustomizationOption } from "@/hooks/useAuthCustomization"
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
-import { toValidShadowSize } from "@/util/ValidateShadowColor"
 import { useCustomizationSync } from "@/hooks/useCustomizationSync"
 import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
+import { useAuthCard } from "@/hooks/useAuthCard"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -25,14 +21,6 @@ const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
     InvalidPrimaryCustomization,
     InvalidSecondaryCustomization,
   } = useThemeCustomizationOption()
-  const {
-    cardShadow,
-    cardShadowColor,
-    cardBorder,
-    cardBorderColor,
-    cardBackgroundColor,
-    cardShadowThickness,
-  } = useCardCustomizationOption()
   if (isPending) {
     return <PendingState />
   }
@@ -52,28 +40,8 @@ const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
     >
       <div className="w-full max-w-md">
         <Card
-          className={`relative transition-shadow duration-300 ${
-            affiliate && cardShadow && cardShadowThickness
-              ? `shadow-${affiliate && cardShadowThickness}`
-              : affiliate && cardShadow
-                ? "shadow-lg"
-                : ""
-          } ${affiliate && cardBorder ? "border" : "border-none"}`}
-          style={{
-            backgroundColor: (affiliate && cardBackgroundColor) || undefined,
-            ...(affiliate && cardShadow
-              ? {
-                  boxShadow: getShadowWithColor(
-                    toValidShadowSize(cardShadowThickness),
-                    cardShadowColor
-                  ),
-                }
-              : {}),
-            borderColor:
-              affiliate && cardBorder && cardBorderColor
-                ? affiliate && cardBorderColor
-                : undefined,
-          }}
+          className="relative transition-shadow duration-300"
+          style={useAuthCard(affiliate)}
         >
           <CardHeader className="space-y-1">
             <div className="flex flex-row gap-2 justify-center">

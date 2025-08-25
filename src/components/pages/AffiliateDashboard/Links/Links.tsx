@@ -16,7 +16,6 @@ import {
   getAffiliateLinksWithStats,
 } from "@/app/affiliate/[orgId]/dashboard/links/action"
 import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats"
-import { getShadowWithColor } from "@/util/GetShadowWithColor"
 import MonthSelect from "@/components/ui-custom/MonthSelect"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
 import { DashboardButtonCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardButtonCustomizationOptions"
@@ -25,10 +24,8 @@ import { TableCustomizationOptions } from "@/components/ui-custom/Customization/
 import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions"
 import {
   useDashboardButtonCustomizationOption,
-  useDashboardCardCustomizationOption,
   useDashboardThemeCustomizationOption,
 } from "@/hooks/useDashboardCustomization"
-import { toValidShadowSize } from "@/util/ValidateShadowColor"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { useCustomizationSync } from "@/hooks/useCustomizationSync"
 import PendingState from "@/components/ui-custom/PendingState"
@@ -39,6 +36,7 @@ import { TableContent } from "@/components/ui-custom/TableContent"
 import { LinksColumns } from "@/components/pages/AffiliateDashboard/Links/LinksColumns"
 import { TableLoading } from "@/components/ui-custom/TableLoading"
 import { DummyAffiliateLink } from "@/lib/types/DummyAffiliateLink"
+import { useDashboardCard } from "@/hooks/useDashboardCard"
 
 interface AffiliateLinkProps {
   orgId: string
@@ -54,7 +52,6 @@ export default function Links({
 }: AffiliateLinkProps) {
   const dashboardTheme = useDashboardThemeCustomizationOption()
   const dashboardButton = useDashboardButtonCustomizationOption()
-  const dashboardCard = useDashboardCardCustomizationOption()
   const { showCustomToast } = useCustomToast()
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "dashboard")
@@ -254,28 +251,7 @@ export default function Links({
         </div>
       </div>
 
-      <Card
-        className="relative"
-        style={{
-          backgroundColor:
-            (affiliate && dashboardCard.dashboardCardBackgroundColor) ||
-            undefined,
-          boxShadow:
-            affiliate &&
-            dashboardCard.dashboardCardShadow &&
-            dashboardCard.dashboardCardShadow !== "none"
-              ? affiliate &&
-                getShadowWithColor(
-                  toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
-                  dashboardCard.dashboardCardShadowColor
-                )
-              : "",
-          border:
-            affiliate && dashboardCard.dashboardCardBorder
-              ? `1px solid ${affiliate && dashboardCard.dashboardCardBorderColor}`
-              : "none",
-        }}
-      >
+      <Card className="relative" style={useDashboardCard(affiliate)}>
         {isPreview && (
           <div className="absolute bottom-0 left-0 p-2">
             <DashboardCardCustomizationOptions

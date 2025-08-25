@@ -12,10 +12,8 @@ import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema"
 import { useMutation } from "@tanstack/react-query"
 import { LoginAffiliateServer } from "@/app/affiliate/[orgId]/login/action"
 import { LoginServer } from "@/app/login/action"
-import { getShadowWithColor } from "@/util/GetShadowWithColor"
 import {
   useButtonCustomizationOption,
-  useCardCustomizationOption,
   useNotesCustomizationOption,
   useThemeCustomizationOption,
 } from "@/hooks/useAuthCustomization"
@@ -25,13 +23,13 @@ import { InputCustomizationOptions } from "@/components/ui-custom/Customization/
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions"
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
 import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor"
-import { toValidShadowSize } from "@/util/ValidateShadowColor"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { LinkButton } from "@/components/ui-custom/LinkButton"
 import { IsRichTextEmpty } from "@/util/IsRichTextEmpty"
 import { useCustomizationSync } from "@/hooks/useCustomizationSync"
 import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
+import { useAuthCard } from "@/hooks/useAuthCard"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -51,15 +49,6 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   })
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
     useThemeCustomizationOption()
-
-  const {
-    cardShadow,
-    cardShadowColor,
-    cardBorder,
-    cardBorderColor,
-    cardBackgroundColor,
-    cardShadowThickness,
-  } = useCardCustomizationOption()
   const {
     buttonDisabledTextColor,
     buttonBackgroundColor,
@@ -155,28 +144,8 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
         </div>
 
         <Card
-          className={`relative transition-shadow duration-300 ${
-            affiliate && cardShadow && cardShadowThickness
-              ? `shadow-${affiliate && cardShadowThickness}`
-              : affiliate && cardShadow
-                ? "shadow-lg"
-                : ""
-          } ${affiliate && cardBorder ? "border" : "border-none"}`}
-          style={{
-            backgroundColor: (affiliate && cardBackgroundColor) || undefined,
-            ...(affiliate && cardShadow
-              ? {
-                  boxShadow: getShadowWithColor(
-                    toValidShadowSize(cardShadowThickness),
-                    cardShadowColor
-                  ),
-                }
-              : {}),
-            borderColor:
-              affiliate && cardBorder && cardBorderColor
-                ? affiliate && cardBorderColor
-                : undefined,
-          }}
+          className="relative transition-shadow duration-300"
+          style={useAuthCard(affiliate)}
         >
           <CardHeader className="space-y-1">
             {isPreview ? (

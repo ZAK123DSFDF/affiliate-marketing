@@ -5,7 +5,6 @@ import MonthSelect from "@/components/ui-custom/MonthSelect"
 import { initialKpiData } from "@/lib/types/dummyKpiData"
 import React from "react"
 import {
-  useDashboardCardCustomizationOption,
   useDashboardThemeCustomizationOption,
   useKpiCardCustomizationOption,
 } from "@/hooks/useDashboardCustomization"
@@ -14,8 +13,6 @@ import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customiza
 import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions"
 import { cn } from "@/lib/utils"
 import { KpiCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/KpiCardCustomizationOptions"
-import { getShadowWithColor } from "@/util/GetShadowWithColor"
-import { toValidShadowSize } from "@/util/ValidateShadowColor"
 import {
   AffiliateKpiStats,
   SellerKpiStats,
@@ -25,6 +22,7 @@ import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateKpiStats } from "@/app/affiliate/[orgId]/dashboard/action"
 import { getSellerKpiStats } from "@/app/seller/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
+import { useDashboardCard } from "@/hooks/useDashboardCard"
 
 interface CardsProps {
   orgId: string
@@ -54,7 +52,6 @@ const Cards = ({
 }: CardsProps) => {
   const dashboardTheme = useDashboardThemeCustomizationOption()
   const kpiCard = useKpiCardCustomizationOption()
-  const dashboardCard = useDashboardCardCustomizationOption()
   const stats = kpiCardStats[0]
   const { filters, setFilters } = useQueryFilter({
     yearKey: "kpiYear",
@@ -115,25 +112,7 @@ const Cards = ({
     <div className="space-y-6">
       <Card
         className={cn(isPreview && "mt-2", "relative")}
-        style={{
-          backgroundColor:
-            (affiliate && dashboardCard.dashboardCardBackgroundColor) ||
-            undefined,
-          boxShadow:
-            affiliate &&
-            dashboardCard.dashboardCardShadow &&
-            dashboardCard.dashboardCardShadow !== "none"
-              ? affiliate &&
-                getShadowWithColor(
-                  toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
-                  dashboardCard.dashboardCardShadowColor
-                )
-              : "",
-          border:
-            affiliate && dashboardCard.dashboardCardBorder
-              ? `1px solid ${affiliate && dashboardCard.dashboardCardBorderColor}`
-              : "none",
-        }}
+        style={useDashboardCard(affiliate)}
       >
         {isPreview && affiliate && (
           <div className="absolute bottom-0 left-0 p-2">
