@@ -32,10 +32,7 @@ import {
 } from "@/lib/types/affiliateReferrerStat"
 import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateReferrers } from "@/app/affiliate/[orgId]/dashboard/action"
-import {
-  getSellerKpiStats,
-  getSellerReferrer,
-} from "@/app/seller/[orgId]/dashboard/action"
+import { getSellerReferrer } from "@/app/seller/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 
 const chartConfig: ChartConfig = {

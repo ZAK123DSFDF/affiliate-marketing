@@ -110,11 +110,6 @@
   .glass-card {
     @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-sm;
   }
-
-  .text-balance {
-    text-wrap: balance;
-  }
-
   .text-gradient {
     @apply bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent;
   }
