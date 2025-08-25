@@ -1,6 +1,5 @@
 // app/dashboard/page.tsx
 import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOverview/AffiliateOverview"
-import { validateOrg } from "@/util/ValidateOrg"
 import { redirect } from "next/navigation"
 import { OrgIdProps } from "@/lib/types/orgId"
 import {
@@ -8,14 +7,12 @@ import {
   getAffiliateKpiTimeSeries,
   getAffiliateReferrers,
 } from "@/app/affiliate/[orgId]/dashboard/action"
+import { MissingPaypalEmailCard } from "@/components/ui-custom/MissingPayoutEmailCard"
+import React from "react"
+import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 
 const DashboardPage = async ({ params }: OrgIdProps) => {
-  const { orgId } = await params
-  const org = await validateOrg(orgId)
-
-  if (!org.orgFound) {
-    redirect(`/affiliate/${orgId}/not-found`)
-  }
+  const orgId = await getValidatedOrgFromParams({ params })
   const kpiCardStats = await getAffiliateKpiStats()
   if (!kpiCardStats.ok) {
     redirect(`/error?message=${encodeURIComponent(kpiCardStats.error)}`)
@@ -28,9 +25,9 @@ const DashboardPage = async ({ params }: OrgIdProps) => {
   if (!affiliateChartStats.ok) {
     redirect(`/error?message=${encodeURIComponent(affiliateChartStats.error)}`)
   }
-  console.log("referrerStats", referrerStats.data)
   return (
-    <>
+    <div className="space-y-6">
+      <MissingPaypalEmailCard orgId={orgId} />
       <AffiliateOverview
         kpiCardStats={kpiCardStats.data}
         affiliateChartStats={affiliateChartStats.data}
@@ -38,7 +35,7 @@ const DashboardPage = async ({ params }: OrgIdProps) => {
         affiliate
         orgId={orgId}
       />
-    </>
+    </div>
   )
 }
 

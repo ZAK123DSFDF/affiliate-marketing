@@ -3,6 +3,7 @@ import { db } from "@/db/drizzle"
 import { eq, and } from "drizzle-orm"
 import { affiliate, affiliatePayoutMethod } from "@/db/schema"
 import { decodedType } from "@/lib/types/decodedType"
+import { getPayoutEmailMethod } from "@/lib/server/getPayoutEmailMethod"
 
 export const getAffiliateDataAction = async (decoded: decodedType) => {
   const affiliateData = await db.query.affiliate.findFirst({
@@ -21,12 +22,7 @@ export const getAffiliateDataAction = async (decoded: decodedType) => {
   }
 
   // Fetch PayPal payout method (if any)
-  const paypalMethod = await db.query.affiliatePayoutMethod.findFirst({
-    where: and(
-      eq(affiliatePayoutMethod.affiliateId, decoded.id),
-      eq(affiliatePayoutMethod.provider, "paypal")
-    ),
-  })
+  const paypalMethod = await getPayoutEmailMethod(decoded)
 
   return {
     ...affiliateData,

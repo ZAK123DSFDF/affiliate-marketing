@@ -1,9 +1,8 @@
 // app/dashboard/layout.tsx
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
-import { validateOrg } from "@/util/ValidateOrg"
-import { notFound } from "next/navigation"
 import { OrgIdProps } from "@/lib/types/orgId"
 import AffiliateDashboardSidebar from "@/components/AffiliateDashboardSidebar"
+import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 interface AffiliateDashboardLayoutProps extends OrgIdProps {
   children: React.ReactNode
 }
@@ -11,11 +10,7 @@ export default async function DashboardLayout({
   children,
   params,
 }: AffiliateDashboardLayoutProps) {
-  const { orgId } = await params
-  const org = await validateOrg(orgId)
-  if (!org.orgFound) {
-    notFound()
-  }
+  const orgId = await getValidatedOrgFromParams({ params })
   return (
     <SidebarProvider affiliate orgId={orgId}>
       <AffiliateDashboardSidebar affiliate orgId={orgId} />

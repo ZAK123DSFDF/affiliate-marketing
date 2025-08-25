@@ -4,20 +4,15 @@ import { getAffiliatesWithStats } from "@/app/seller/[orgId]/dashboard/affiliate
 import { OrgIdProps } from "@/lib/types/orgId"
 import { validateOrg } from "@/util/ValidateOrg"
 import { redirect } from "next/navigation"
+import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
+import { ErrorCard } from "@/components/ui-custom/ErrorCard"
 
 const affiliatePage = async ({ params }: OrgIdProps) => {
-  const { orgId } = await params
-  const org = await validateOrg(orgId)
-
-  if (!org.orgFound) {
-    redirect(`/affiliate/${orgId}/not-found`)
-  }
+  const orgId = await getValidatedOrgFromParams({ params })
 
   const rows = await getAffiliatesWithStats(orgId)
-  // Check if the response was successful
   if (!rows.ok) {
-    // Handle the error case - you might want to redirect or show an error
-    redirect(`/error?message=${encodeURIComponent(rows.error)}`)
+    return <ErrorCard message={rows.error || "Something went wrong"} />
   }
   return (
     <>

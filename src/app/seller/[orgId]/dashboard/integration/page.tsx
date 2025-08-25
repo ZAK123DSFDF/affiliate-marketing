@@ -1,8 +1,11 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import StripeIntegration from "@/components/pages/Dashboard/Integration/StripeIntegration"
 import PaddleIntegration from "@/components/pages/Dashboard/Integration/PaddleIntegration"
+import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
+import { OrgIdProps } from "@/lib/types/orgId"
 
-export default function IntegrationPage() {
+export default async function IntegrationPage({ params }: OrgIdProps) {
+  await getValidatedOrgFromParams({ params })
   return (
     <div className="p-4">
       <Tabs defaultValue="stripe" className="w-full">

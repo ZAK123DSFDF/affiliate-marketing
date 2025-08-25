@@ -1,19 +1,16 @@
 import React from "react"
 import { OrgIdProps } from "@/lib/types/orgId"
-import { validateOrg } from "@/util/ValidateOrg"
 import { redirect } from "next/navigation"
 import { getAffiliatePayouts } from "@/app/seller/[orgId]/dashboard/payout/action"
 import PayoutTable from "@/components/pages/Dashboard/Payouts/PayoutTable"
+import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
+import { ErrorCard } from "@/components/ui-custom/ErrorCard"
 
 const payoutPage = async ({ params }: OrgIdProps) => {
-  const { orgId } = await params
-  const org = await validateOrg(orgId)
-  if (!org.orgFound) {
-    redirect(`/affiliate/${orgId}/not-found`)
-  }
+  const orgId = await getValidatedOrgFromParams({ params })
   const res = await getAffiliatePayouts(orgId)
   if (!res.ok) {
-    redirect(`/error?message=${encodeURIComponent(res.error)}`)
+    return <ErrorCard message={res.error || "Something went wrong"} />
   }
   return (
     <>

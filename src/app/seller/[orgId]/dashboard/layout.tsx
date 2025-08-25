@@ -1,9 +1,8 @@
 // app/dashboard/layout.tsx
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import SellerDashboardSidebar from "@/components/SellerDashboardSidebar"
-import { validateOrg } from "@/util/ValidateOrg"
-import { notFound } from "next/navigation"
 import { OrgIdProps } from "@/lib/types/orgId"
+import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 interface SellerDashboardLayoutProps extends OrgIdProps {
   children: React.ReactNode
 }
@@ -11,11 +10,7 @@ export default async function DashboardLayout({
   children,
   params,
 }: SellerDashboardLayoutProps) {
-  const { orgId } = await params
-  const org = await validateOrg(orgId)
-  if (!org.orgFound) {
-    notFound()
-  }
+  const orgId = await getValidatedOrgFromParams({ params })
   return (
     <SidebarProvider affiliate={false} orgId={orgId}>
       <SellerDashboardSidebar orgId={orgId} />

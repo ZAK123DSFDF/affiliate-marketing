@@ -1,14 +1,9 @@
 import React from "react"
 import Signup from "@/components/pages/Signup"
-import { validateOrg } from "@/util/ValidateOrg"
-import { redirect } from "next/navigation"
 import { OrgIdProps } from "@/lib/types/orgId"
+import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 const AffiliateSignupPage = async ({ params }: OrgIdProps) => {
-  const { orgId } = await params
-  const org = await validateOrg(orgId)
-  if (!org.orgFound) {
-    redirect(`/affiliate/${orgId}/not-found`)
-  }
+  const orgId = await getValidatedOrgFromParams({ params })
   return (
     <>
       <Signup affiliate orgId={orgId} />

@@ -10,6 +10,7 @@ import { updateAffiliatePasswordAction } from "@/lib/server/updateAffiliatePassw
 import { validateAffiliatePasswordAction } from "@/lib/server/validateAffiliatePassword"
 import { updateAffiliateProfileAction } from "@/lib/server/updateAffiliateProfile"
 import { getAffiliateDataAction } from "@/lib/server/getAffiliateData"
+import { getPayoutEmailMethod } from "@/lib/server/getPayoutEmailMethod"
 
 export const getAffiliateData = async (): Promise<
   ResponseData<SafeAffiliateData>
@@ -23,7 +24,21 @@ export const getAffiliateData = async (): Promise<
     return returnError(err) as ResponseData<SafeAffiliateData>
   }
 }
-
+export const getAffiliatePaymentMethod = async (): Promise<
+  ResponseData<AffiliatePaymentMethod>
+> => {
+  try {
+    const decoded = await getAffiliateOrganization()
+    const paypalMethod = await getPayoutEmailMethod(decoded)
+    return {
+      ok: true,
+      data: { paypalEmail: paypalMethod?.accountIdentifier ?? null },
+    }
+  } catch (err) {
+    console.error("getUserData error:", err)
+    return returnError(err) as ResponseData<AffiliatePaymentMethod>
+  }
+}
 export async function updateAffiliateProfile(
   orgId: string,
   data: {

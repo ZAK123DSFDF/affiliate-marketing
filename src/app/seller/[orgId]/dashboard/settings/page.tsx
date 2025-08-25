@@ -4,23 +4,16 @@ import { validateOrg } from "@/util/ValidateOrg"
 import { redirect } from "next/navigation"
 import { orgInfo } from "@/app/seller/[orgId]/dashboard/settings/action"
 import { OrgIdProps } from "@/lib/types/orgId"
+import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
+import { ErrorCard } from "@/components/ui-custom/ErrorCard"
 
 const SettingsPage = async ({ params }: OrgIdProps) => {
-  const { orgId } = await params
-  const org = await validateOrg(orgId)
-
-  if (!org.orgFound) {
-    redirect(`/affiliate/${orgId}/not-found`)
-  }
-
+  const orgId = await getValidatedOrgFromParams({ params })
   const orgResponse = await orgInfo(orgId)
-  // Check if the response was successful
   if (!orgResponse.ok) {
-    // Handle the error case - you might want to redirect or show an error
-    redirect(`/error?message=${encodeURIComponent(orgResponse.error)}`)
+    return <ErrorCard message={orgResponse.error || "Something went wrong"} />
   }
 
-  // Now TypeScript knows orgResponse has a data property
   return <Settings orgData={orgResponse.data} />
 }
 

@@ -1,5 +1,4 @@
 import Overview from "@/components/pages/Dashboard/Overview/Overview"
-import { validateOrg } from "@/util/ValidateOrg"
 import { redirect } from "next/navigation"
 import { OrgIdProps } from "@/lib/types/orgId"
 import {
@@ -8,14 +7,10 @@ import {
   getSellerReferrer,
   getTopAffiliates,
 } from "@/app/seller/[orgId]/dashboard/action"
+import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 
 const DashboardPage = async ({ params }: OrgIdProps) => {
-  const { orgId } = await params
-  const org = await validateOrg(orgId)
-
-  if (!org.orgFound) {
-    redirect(`/affiliate/${orgId}/not-found`)
-  }
+  const orgId = await getValidatedOrgFromParams({ params })
   const kpiCardStats = await getSellerKpiStats(orgId)
   if (!kpiCardStats.ok) {
     redirect(`/error?message=${encodeURIComponent(kpiCardStats.error)}`)

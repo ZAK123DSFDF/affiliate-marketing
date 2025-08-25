@@ -3,13 +3,9 @@ import CustomizationPage from "@/components/pages/Dashboard/Customization/Custom
 import { validateOrg } from "@/util/ValidateOrg"
 import { redirect } from "next/navigation"
 import { OrgIdProps } from "@/lib/types/orgId"
+import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 export default async function CustomizationServerPage({ params }: OrgIdProps) {
-  const { orgId } = await params
-  const org = await validateOrg(orgId)
-
-  if (!org.orgFound) {
-    redirect(`/affiliate/${orgId}/not-found`)
-  }
+  const orgId = await getValidatedOrgFromParams({ params })
   return (
     <>
       <CustomizationPage orgId={orgId} />
