@@ -18,6 +18,7 @@ const topAffiliatesPage = async ({ params }: OrgIdProps) => {
         orgId={orgId}
         data={TopAffiliates.data}
         cardTitle="Top Affiliates"
+        mode="top"
       />
     </>
   )

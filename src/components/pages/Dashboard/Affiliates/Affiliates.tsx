@@ -20,6 +20,7 @@ import { AffiliatesColumns } from "@/components/pages/Dashboard/Affiliates/Affil
 import { TableLoading } from "@/components/ui-custom/TableLoading"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import PaginationControls from "@/components/ui-custom/PaginationControls"
+import { useEffect } from "react"
 
 interface AffiliatesTableProps {
   orgId: string
@@ -27,6 +28,7 @@ interface AffiliatesTableProps {
   cardTitle?: string
   showHeader?: boolean
   affiliate: boolean
+  mode?: "default" | "top"
 }
 export default function AffiliatesTable({
   orgId,
@@ -34,6 +36,7 @@ export default function AffiliatesTable({
   cardTitle = "Overview of all affiliate activities",
   showHeader = false,
   affiliate = false,
+  mode = "default",
 }: AffiliatesTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -138,6 +141,7 @@ export default function AffiliatesTable({
             onEmailChange={(email) => setFilters({ email: email || undefined })}
             affiliate={false}
             table={table}
+            mode={mode}
           />
 
           {(filters.year !== undefined || filters.month !== undefined) &&
@@ -150,12 +154,13 @@ export default function AffiliatesTable({
           ) : (
             <TableContent table={table} affiliate={false} />
           )}
-
-          <PaginationControls
-            offset={filters.offset}
-            tableDataLength={tableData.length}
-            setFilters={setFilters}
-          />
+          {mode === "default" && (
+            <PaginationControls
+              offset={filters.offset}
+              tableDataLength={tableData.length}
+              setFilters={setFilters}
+            />
+          )}
         </CardContent>
       </Card>
     </div>

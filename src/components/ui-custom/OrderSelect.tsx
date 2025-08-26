@@ -13,10 +13,37 @@ interface Props {
   value: { orderBy?: OrderBy; orderDir?: OrderDir }
   onChange: (orderBy?: OrderBy, orderDir?: OrderDir) => void
   affiliate: boolean
+  mode?: "default" | "top"
 }
 
-export default function OrderSelect({ value, onChange, affiliate }: Props) {
+export default function OrderSelect({
+  value,
+  onChange,
+  affiliate,
+  mode = "default",
+}: Props) {
   const isNone = !value.orderBy || value.orderBy === "none"
+
+  // Define all options
+  const allOptions: { value: OrderBy | "none"; label: string }[] = [
+    { value: "none", label: "None" },
+    { value: "sales", label: "Sales" },
+    { value: "commission", label: "Commission" },
+    { value: "conversionRate", label: "Conversion Rate" },
+    { value: "visits", label: "Visits" },
+    { value: "commissionPaid", label: "Commission Paid" },
+    { value: "commissionUnpaid", label: "Commission Unpaid" },
+    { value: "email", label: "Email" },
+  ]
+
+  // Filter if mode is "top"
+  const filteredOptions =
+    mode === "top"
+      ? allOptions.filter((o) =>
+          ["none", "visits", "sales", "conversionRate"].includes(o.value)
+        )
+      : allOptions
+
   return (
     <div className="flex gap-2">
       {/* Order By Select */}
@@ -34,30 +61,11 @@ export default function OrderSelect({ value, onChange, affiliate }: Props) {
           <SelectValue placeholder="Order By" />
         </SelectTrigger>
         <SelectContent affiliate={affiliate}>
-          <SelectItem affiliate={affiliate} value="none">
-            None
-          </SelectItem>
-          <SelectItem affiliate={affiliate} value="sales">
-            Sales
-          </SelectItem>
-          <SelectItem affiliate={affiliate} value="commission">
-            Commission
-          </SelectItem>
-          <SelectItem affiliate={affiliate} value="conversionRate">
-            Conversion Rate
-          </SelectItem>
-          <SelectItem affiliate={affiliate} value="visits">
-            Visits
-          </SelectItem>
-          <SelectItem affiliate={affiliate} value="commissionPaid">
-            Commission Paid
-          </SelectItem>
-          <SelectItem affiliate={affiliate} value="commissionUnpaid">
-            Commission Unpaid
-          </SelectItem>
-          <SelectItem affiliate={affiliate} value="email">
-            Email
-          </SelectItem>
+          {filteredOptions.map((opt) => (
+            <SelectItem key={opt.value} affiliate={affiliate} value={opt.value}>
+              {opt.label}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
 
