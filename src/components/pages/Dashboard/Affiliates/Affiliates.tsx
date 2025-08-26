@@ -20,7 +20,6 @@ import { AffiliatesColumns } from "@/components/pages/Dashboard/Affiliates/Affil
 import { TableLoading } from "@/components/ui-custom/TableLoading"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import PaginationControls from "@/components/ui-custom/PaginationControls"
-import { useEffect } from "react"
 
 interface AffiliatesTableProps {
   orgId: string
