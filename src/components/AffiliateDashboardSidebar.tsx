@@ -38,7 +38,7 @@ const AffiliateDashboardSidebar = ({
   const items = [
     {
       title: "Dashboard",
-      url: `/affiliate/${orgId}/dashboard`,
+      url: `/affiliate/${orgId}/dashboard/analytics`,
       icon: BarChart3,
     },
     {
