@@ -36,7 +36,26 @@ export const payoutProviderEnum = pgEnum("payout_provider", [
   "wise",
   "payoneer",
 ])
-// USER SCHEMA (Sellers are users who create organizations)
+export const planEnum = pgEnum("plan", ["FREE", "PRO", "ULTIMATE"])
+export const subscriptionTypeEnum = pgEnum("subscription_type", [
+  "RECURRING",
+  "ONE_TIME",
+])
+export const billingIntervalEnum = pgEnum("billing_interval", [
+  "MONTHLY",
+  "YEARLY",
+])
+export const attributionModelEnum = pgEnum("attribution_model", [
+  "FIRST_CLICK",
+  "LAST_CLICK",
+])
+export const currencyEnum = pgEnum("currency", [
+  "USD",
+  "EUR",
+  "GBP",
+  "CAD",
+  "AUD",
+])
 export const user = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
@@ -49,7 +68,23 @@ export const user = pgTable("user", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
-
+export const subscription = pgTable("subscription", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  plan: planEnum("plan").notNull().default("FREE"),
+  subscriptionType: subscriptionTypeEnum("subscription_type")
+    .notNull()
+    .default("RECURRING"),
+  billingInterval: billingIntervalEnum("billing_interval"),
+  currency: text("currency").default("USD"),
+  price: numeric("price", { precision: 10, scale: 2 }),
+  isActive: boolean("is_active").notNull().default(true),
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+})
 // ORGANIZATION SCHEMA
 export const organization = pgTable("organization", {
   id: text("id")
@@ -57,19 +92,22 @@ export const organization = pgTable("organization", {
     .$defaultFn(() => generateOrganizationId()),
   name: text("name").notNull(),
   domainName: text("domain_name").notNull().unique(),
-  logoUrl: text("logo_url"), // Optional logo
-  referralParam: referralParamEnum("referral_param").default("ref"), // e.g., ref/aff
-  cookieLifetimeValue: integer("cookie_lifetime_value").default(30), // e.g., 30
-  cookieLifetimeUnit: text("cookie_lifetime_unit").default("day"), // year/month/week/day
-  commissionType: text("commission_type").default("percentage"), // 'percentage' or 'fixed'
+  logoUrl: text("logo_url"),
+  referralParam: referralParamEnum("referral_param").default("ref"),
+  cookieLifetimeValue: integer("cookie_lifetime_value").default(30),
+  cookieLifetimeUnit: text("cookie_lifetime_unit").default("day"),
+  commissionType: text("commission_type").default("percentage"),
   commissionValue: numeric("commission_value", {
     precision: 10,
     scale: 2,
   }).default("0.00"),
   commissionDurationValue: integer("commission_duration_value").default(0),
   commissionDurationUnit: text("commission_duration_unit").default("day"),
+  attributionModel: attributionModelEnum("attribution_model")
+    .notNull()
+    .default("LAST_CLICK"),
   expirationDate: timestamp("expiration_date").defaultNow().notNull(),
-  currency: text("currency").default("USD"),
+  currency: currencyEnum("currency").notNull().default("USD"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
