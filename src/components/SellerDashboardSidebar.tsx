@@ -4,13 +4,11 @@ import React from "react"
 import { usePathname } from "next/navigation"
 import {
   BarChart3,
-  Home,
   Link as LinkIcon,
   Users,
   Settings,
   CreditCard,
   Layers,
-  HelpCircle,
   User,
 } from "lucide-react"
 import {
@@ -19,7 +17,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
