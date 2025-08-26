@@ -37,7 +37,7 @@ const SellerDashboardSidebar = ({ orgId }: Props) => {
   const items = [
     {
       title: "Dashboard",
-      url: `/seller/${orgId}/dashboard`,
+      url: `/seller/${orgId}/dashboard/analytics`,
       icon: BarChart3,
     },
     {

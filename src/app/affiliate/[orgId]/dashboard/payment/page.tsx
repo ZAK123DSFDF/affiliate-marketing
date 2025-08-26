@@ -1,6 +1,5 @@
 import React from "react"
 import { OrgIdProps } from "@/lib/types/orgId"
-import { redirect } from "next/navigation"
 import { getAffiliateCommissionByMonth } from "@/app/affiliate/[orgId]/dashboard/payment/action"
 import PaymentTable from "@/components/pages/AffiliateDashboard/Payment/Payment"
 import { MissingPaypalEmailCard } from "@/components/ui-custom/MissingPayoutEmailCard"

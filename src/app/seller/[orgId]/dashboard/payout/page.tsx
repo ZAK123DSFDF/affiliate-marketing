@@ -1,6 +1,5 @@
 import React from "react"
 import { OrgIdProps } from "@/lib/types/orgId"
-import { redirect } from "next/navigation"
 import { getAffiliatePayouts } from "@/app/seller/[orgId]/dashboard/payout/action"
 import PayoutTable from "@/components/pages/Dashboard/Payouts/PayoutTable"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"

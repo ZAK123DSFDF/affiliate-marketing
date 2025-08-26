@@ -1,6 +1,5 @@
 import React from "react"
 import Profile from "@/components/pages/Dashboard/Profile/Profile"
-import { redirect } from "next/navigation"
 import { OrgIdProps } from "@/lib/types/orgId"
 import { getAffiliateData } from "@/app/affiliate/[orgId]/dashboard/profile/action"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"

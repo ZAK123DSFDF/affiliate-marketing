@@ -1,7 +1,6 @@
 import React from "react"
 import Links from "@/components/pages/AffiliateDashboard/Links/Links"
 import { getAffiliateLinksWithStats } from "@/app/affiliate/[orgId]/dashboard/links/action"
-import { redirect } from "next/navigation"
 import { OrgIdProps } from "@/lib/types/orgId"
 import { MissingPaypalEmailCard } from "@/components/ui-custom/MissingPayoutEmailCard"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
