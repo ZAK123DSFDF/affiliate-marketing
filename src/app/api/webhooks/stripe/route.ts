@@ -54,10 +54,11 @@ export async function POST(req: NextRequest) {
         ? (session.subscription as string)
         : null
       const rawAmount = safeFormatAmount(session.amount_total)
+      const rawCurrency = session.currency ?? "usd"
       const decimals = getCurrencyDecimals(session.currency ?? "usd")
       const { amount, currency } = await convertToUSD(
         parseFloat(rawAmount),
-        session.currency ?? "usd",
+        rawCurrency,
         decimals
       )
       // Calculate commission
@@ -73,7 +74,9 @@ export async function POST(req: NextRequest) {
           subscriptionId,
           customerId,
           amount: amount.toString(),
-          currency,
+          currency: "USD",
+          rawAmount,
+          rawCurrency,
           commission: commission.toString(),
           paidAmount: "0.00",
           unpaidAmount: commission.toFixed(2),
@@ -90,7 +93,9 @@ export async function POST(req: NextRequest) {
           subscriptionId: null,
           customerId,
           amount: amount.toString(),
-          currency,
+          currency: "USD",
+          rawAmount,
+          rawCurrency,
           commission: commission.toString(),
           paidAmount: "0.00",
           unpaidAmount: commission.toFixed(2),

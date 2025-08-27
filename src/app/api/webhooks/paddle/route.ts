@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
         const rawCurrency = tx.details?.totals?.currency_code || "USD"
         const rawAmount = safeFormatAmount(tx.details?.totals?.total)
         const decimals = getCurrencyDecimals(rawCurrency)
-        const { amount, currency } = await convertToUSD(
+        const { amount } = await convertToUSD(
           parseFloat(rawAmount),
           rawCurrency,
           decimals
@@ -122,6 +122,8 @@ export async function POST(request: NextRequest) {
             currency: "USD",
             commission: commission.toString(),
             paidAmount: "0.00",
+            rawCurrency,
+            rawAmount,
             unpaidAmount: commission.toFixed(2),
             affiliateLinkId: affiliateLinkRecord.id,
           })
