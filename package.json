@@ -8,7 +8,8 @@
     "build:embed": "rollup -c",
     "start": "next start",
     "lint": "next lint",
-    "maildev": "maildev --smtp 1025 --web 1080"
+    "maildev": "maildev --smtp 1025 --web 1080",
+    "generate:seeds": "bun src/db/seeds/generateSeeds.ts && bun src/db/reset.ts && npx drizzle-kit generate && npx drizzle-kit migrate && bun src/db/currencySeed.ts && bun src/db/seeds/seedFun.ts"
   },
   "dependencies": {
     "@everapi/currencyapi-js": "^1.0.6",
