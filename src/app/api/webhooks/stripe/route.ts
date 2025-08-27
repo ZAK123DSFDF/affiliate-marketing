@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
       const rawAmount = safeFormatAmount(session.amount_total)
       const rawCurrency = session.currency ?? "usd"
       const decimals = getCurrencyDecimals(session.currency ?? "usd")
-      const { amount, currency } = await convertToUSD(
+      const { amount } = await convertToUSD(
         parseFloat(rawAmount),
         rawCurrency,
         decimals
