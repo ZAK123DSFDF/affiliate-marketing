@@ -196,7 +196,9 @@ export const affiliateInvoice = pgTable("affiliate_invoice", {
   subscriptionId: text("subscription_id"),
   customerId: text("customer_id").notNull(),
   amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
-  currency: text("currency").notNull(),
+  currency: currencyEnum("currency").notNull(),
+  rawAmount: numeric("raw_amount", { precision: 10, scale: 2 }).default("0"),
+  rawCurrency: text("raw_currency").default("USD"),
   commission: numeric("commission", { precision: 10, scale: 2 }).notNull(),
   paidAmount: numeric("paid_amount", { precision: 10, scale: 2 })
     .default("0")
