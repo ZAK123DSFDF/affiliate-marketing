@@ -56,6 +56,13 @@ export const currencyEnum = pgEnum("currency", [
   "CAD",
   "AUD",
 ])
+export const affiliateInvoiceReasonEnum = pgEnum("affiliate_invoice_reason", [
+  "subscription_create",
+  "subscription_update",
+  "one_time",
+  "refund",
+  "manual_adjustment",
+])
 export const user = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
@@ -208,6 +215,7 @@ export const affiliateInvoice = pgTable("affiliate_invoice", {
   unpaidAmount: numeric("unpaid_amount", { precision: 10, scale: 2 })
     .default("0")
     .notNull(),
+  reason: affiliateInvoiceReasonEnum("reason").notNull().default("one_time"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })

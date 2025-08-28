@@ -13,34 +13,21 @@ export const affiliateStatsFields = {
 
   visitors: sql<number>`COUNT(DISTINCT ${affiliateClick.id})`.mapWith(Number),
 
-  subs: sql<number>`COUNT(DISTINCT ${affiliateInvoice.subscriptionId})`.mapWith(
-    Number
-  ),
-
-  singles: sql<number>`COUNT(DISTINCT CASE 
-    WHEN ${affiliateInvoice.subscriptionId} IS NULL 
-    THEN ${affiliateInvoice.id} END)`.mapWith(Number),
-
-  sales: sql<number>`(
-    COUNT(DISTINCT ${affiliateInvoice.subscriptionId})
-    + COUNT(DISTINCT CASE 
-        WHEN ${affiliateInvoice.subscriptionId} IS NULL 
-        THEN ${affiliateInvoice.id} END)
-  )`.mapWith(Number),
+  sales: sql<number>`COUNT(DISTINCT CASE 
+    WHEN ${affiliateInvoice.reason} IN ('subscription_create', 'one_time') 
+    THEN ${affiliateInvoice.id} END
+)`.mapWith(Number),
 
   conversionRate: sql<number>`CASE
-    WHEN COUNT(DISTINCT ${affiliateClick.id}) = 0 THEN 0
-    ELSE (
-      (
-        COUNT(DISTINCT ${affiliateInvoice.subscriptionId})
-        + COUNT(DISTINCT (
-            CASE WHEN ${affiliateInvoice.subscriptionId} IS NULL
-            THEN ${affiliateInvoice.id} END
-          ))
-      )::float
-      / COUNT(DISTINCT ${affiliateClick.id})::float
-    ) * 100
-  END`.mapWith(Number),
+  WHEN COUNT(DISTINCT ${affiliateClick.id}) = 0 THEN 0
+  ELSE (
+    COUNT(DISTINCT CASE 
+      WHEN ${affiliateInvoice.reason} IN ('subscription_create', 'one_time') 
+      THEN ${affiliateInvoice.id} END
+    )::float
+    / COUNT(DISTINCT ${affiliateClick.id})::float
+  ) * 100
+END`.mapWith(Number),
 
   commission:
     sql<number>`COALESCE(SUM(${affiliateInvoice.commission}), 0)`.mapWith(

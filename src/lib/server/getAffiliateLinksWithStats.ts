@@ -22,35 +22,21 @@ export async function getAffiliateLinksWithStatsAction(
       id: affiliateLink.id,
       createdAt: affiliateLink.createdAt,
       clicks: sql<number>`count(distinct ${affiliateClick.id})`.mapWith(Number),
-      subs: sql<number>`COUNT(DISTINCT ${affiliateInvoice.subscriptionId})`.mapWith(
-        Number
-      ),
-
-      singles: sql<number>`COUNT(DISTINCT CASE 
-          WHEN ${affiliateInvoice.subscriptionId} IS NULL 
-          THEN ${affiliateInvoice.id} END)`.mapWith(Number),
-
-      sales: sql<number>`(
-          COUNT(DISTINCT ${affiliateInvoice.subscriptionId})
-          + COUNT(DISTINCT CASE 
-              WHEN ${affiliateInvoice.subscriptionId} IS NULL 
-              THEN ${affiliateInvoice.id} END)
-        )`.mapWith(Number),
+      sales: sql<number>`COUNT(DISTINCT CASE 
+    WHEN ${affiliateInvoice.reason} IN ('subscription_create', 'one_time') 
+    THEN ${affiliateInvoice.id} END
+)`.mapWith(Number),
 
       conversionRate: sql<number>`CASE
-        WHEN COUNT(DISTINCT ${affiliateClick.id}) = 0 THEN 0
-        ELSE (
-          (
-            COUNT(DISTINCT ${affiliateInvoice.subscriptionId})
-            + COUNT(DISTINCT (
-                CASE WHEN ${affiliateInvoice.subscriptionId} IS NULL
-                THEN ${affiliateInvoice.id} END
-              ))
-          )::float
-          / COUNT(DISTINCT ${affiliateClick.id})::float
-        ) * 100
-      END`.mapWith(Number),
-
+  WHEN COUNT(DISTINCT ${affiliateClick.id}) = 0 THEN 0
+  ELSE (
+    COUNT(DISTINCT CASE 
+      WHEN ${affiliateInvoice.reason} IN ('subscription_create', 'one_time') 
+      THEN ${affiliateInvoice.id} END
+    )::float
+    / COUNT(DISTINCT ${affiliateClick.id})::float
+  ) * 100
+END`.mapWith(Number),
       fullUrl: sql<string>`
   COALESCE(
     MIN('https://' || ${organization.domainName} || '?' || ${organization.referralParam} || '=' || ${affiliateLink.id}),

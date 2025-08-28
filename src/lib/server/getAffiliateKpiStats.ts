@@ -24,20 +24,9 @@ export async function getAffiliateKpiStatsAction(
         Number
       ),
 
-      subs: sql<number>`COUNT(DISTINCT ${affiliateInvoice.subscriptionId})`.mapWith(
-        Number
-      ),
-
-      singles: sql<number>`COUNT(DISTINCT CASE 
-        WHEN ${affiliateInvoice.subscriptionId} IS NULL 
-        THEN ${affiliateInvoice.id} END)`.mapWith(Number),
-
-      sales: sql<number>`(
-        COUNT(DISTINCT ${affiliateInvoice.subscriptionId})
-        + COUNT(DISTINCT CASE 
-            WHEN ${affiliateInvoice.subscriptionId} IS NULL 
-            THEN ${affiliateInvoice.id} END)
-      )`.mapWith(Number),
+      sales: sql<number>`COUNT(DISTINCT CASE
+        WHEN ${affiliateInvoice.reason} IN ('subscription_create', 'one_time') THEN ${affiliateInvoice.id}
+      END)`.mapWith(Number),
 
       commission:
         sql<number>`COALESCE(SUM(${affiliateInvoice.commission}),0)`.mapWith(
