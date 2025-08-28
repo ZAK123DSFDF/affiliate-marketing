@@ -2,18 +2,22 @@ import { addDays, addWeeks, addMonths, addYears } from "date-fns"
 
 export function calculateExpirationDate(
   baseDate: Date,
-  durationValue: number,
-  durationUnit: string
+  durationValue: number | null,
+  durationUnit: string | null
 ): Date {
-  switch (durationUnit) {
+  // Provide default values if null
+  const value = durationValue ?? 0
+  const unit = durationUnit ?? "day"
+
+  switch (unit) {
     case "day":
-      return addDays(baseDate, durationValue)
+      return addDays(baseDate, value)
     case "week":
-      return addWeeks(baseDate, durationValue)
+      return addWeeks(baseDate, value)
     case "month":
-      return addMonths(baseDate, durationValue)
+      return addMonths(baseDate, value)
     case "year":
-      return addYears(baseDate, durationValue)
+      return addYears(baseDate, value)
     default:
       return addDays(baseDate, 7)
   }

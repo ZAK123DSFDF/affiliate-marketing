@@ -3,7 +3,11 @@ import { NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
 
 import { db } from "@/db/drizzle"
-import { affiliateInvoice, organization } from "@/db/schema"
+import {
+  affiliateInvoice,
+  organization,
+  subscriptionExpiration,
+} from "@/db/schema"
 import { addDays } from "date-fns"
 import { eq } from "drizzle-orm"
 import { generateStripeCustomerId } from "@/util/StripeCustomerId"
@@ -11,6 +15,11 @@ import { convertToUSD } from "@/util/CurrencyConvert"
 import { getCurrencyDecimals } from "@/util/CurrencyDecimal"
 import { safeFormatAmount } from "@/util/SafeParse"
 import { invoicePaidUpdate } from "@/util/InvoicePaidUpdate"
+import { calculateTrialDays } from "@/util/CalculateTrialDays"
+import { calculateExpirationDate } from "@/util/CalculateExpiration"
+import { getAffiliateLinkRecord } from "@/services/getAffiliateLinkRecord"
+import { getOrganizationById } from "@/services/getOrganizationById"
+import { getSubscriptionExpiration } from "@/services/getSubscriptionExpiration"
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-04-30.basil",
 })
@@ -21,7 +30,6 @@ export async function POST(req: NextRequest) {
   console.log("incoming webhook request")
   const sig = req.headers.get("stripe-signature")!
   const body = await req.text()
-
   let event: Stripe.Event
   try {
     event = stripe.webhooks.constructEvent(body, sig, endpointSecret)
@@ -29,7 +37,6 @@ export async function POST(req: NextRequest) {
     console.error("❌ Webhook signature verification failed.", err.message)
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 })
   }
-
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session
@@ -37,14 +44,12 @@ export async function POST(req: NextRequest) {
       const refDataRaw = metadata.refearnapp_affiliate_code
       if (!refDataRaw) break
       const { code, commissionType, commissionValue } = JSON.parse(refDataRaw)
-      const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
-        where: (link, { eq }) => eq(link.id, code),
-      })
-
-      if (!affiliateLinkRecord) {
-        console.warn("❌ Affiliate link not found for code:", code)
-        break
-      }
+      const affiliateLinkRecord = await getAffiliateLinkRecord(code)
+      if (!affiliateLinkRecord) break
+      const organizationRecord = await getOrganizationById(
+        affiliateLinkRecord.organizationId
+      )
+      if (!organizationRecord) break
       const mode = session.mode
       const isSubscription = mode === "subscription"
       const customerId = session.customer
@@ -61,7 +66,6 @@ export async function POST(req: NextRequest) {
         rawCurrency,
         decimals
       )
-      // Calculate commission
       let commission = 0
       if (commissionType === "percentage") {
         commission = (parseFloat(amount) * parseFloat(commissionValue)) / 100
@@ -69,6 +73,26 @@ export async function POST(req: NextRequest) {
         commission = parseFloat(commissionValue)
       }
       if (subscriptionId) {
+        const subscriptionExpirationRecord =
+          await getSubscriptionExpiration(subscriptionId)
+        if (!subscriptionExpirationRecord) {
+          const expirationDate = calculateExpirationDate(
+            new Date(),
+            organizationRecord.commissionDurationValue,
+            organizationRecord.commissionDurationUnit
+          )
+
+          await db.insert(subscriptionExpiration).values({
+            subscriptionId,
+            expirationDate,
+          })
+
+          console.log(
+            "✅ Created subscription expiration record:",
+            subscriptionId
+          )
+        }
+
         await db.insert(affiliateInvoice).values({
           paymentProvider: "stripe",
           subscriptionId,
@@ -155,28 +179,32 @@ export async function POST(req: NextRequest) {
           console.warn("❌ No affiliate link found for invoice:", invoice.id)
           break
         }
-        const organizationRecord = await db.query.organization.findFirst({
-          where: (org, { eq }) =>
-            eq(org.id, affiliateLinkRecord.organizationId),
-        })
-
-        if (!organizationRecord) {
-          console.warn(
-            "❌ No organization found for affiliate link:",
-            affiliateLinkRecord.id
-          )
-          break
-        }
-
-        const updatedExpiration = addDays(
-          organizationRecord.expirationDate,
-          trialDaysOnly
+        const organizationRecord = await getOrganizationById(
+          affiliateLinkRecord.organizationId
         )
+        if (!organizationRecord) break
+        const existingExpiration =
+          await getSubscriptionExpiration(subscriptionId)
+        let expirationDate: Date
+        if (existingExpiration) {
+          expirationDate = addDays(new Date(), trialDaysOnly)
 
-        await db
-          .update(organization)
-          .set({ expirationDate: updatedExpiration })
-          .where(eq(organization.id, organizationRecord.id))
+          await db
+            .update(subscriptionExpiration)
+            .set({ expirationDate })
+            .where(eq(subscriptionExpiration.subscriptionId, subscriptionId))
+        } else {
+          expirationDate = calculateExpirationDate(
+            new Date(),
+            organizationRecord.commissionDurationValue,
+            organizationRecord.commissionDurationUnit
+          )
+
+          await db.insert(subscriptionExpiration).values({
+            subscriptionId,
+            expirationDate,
+          })
+        }
 
         console.log(
           "✅ Updated affiliate payment with trial days:",
@@ -223,33 +251,28 @@ export async function POST(req: NextRequest) {
           return
         }
 
-        const organizationRecord = await db.query.organization.findFirst({
-          where: (org, { eq }) =>
-            eq(org.id, affiliateLinkRecord.organizationId),
-        })
+        const organizationRecord = await getOrganizationById(
+          affiliateLinkRecord.organizationId
+        )
+        if (!organizationRecord) break
 
-        if (!organizationRecord) {
-          console.warn(
-            "❌ No organization found for affiliate link:",
-            affiliateLinkRecord.id
-          )
-          return
-        }
-
-        if (organizationRecord.expirationDate <= invoiceCreatedDate) {
+        const subscriptionExpirationRecord =
+          await getSubscriptionExpiration(subscriptionId)
+        if (
+          subscriptionExpirationRecord &&
+          invoiceCreatedDate > subscriptionExpirationRecord.expirationDate
+        ) {
           console.warn(
             "❌ Subscription expired — skipping update:",
             subscriptionId
           )
-          return
+          break
         }
 
         const total = String(invoice.total_excluding_tax ?? 0)
         const currency = invoice.currency
         const commissionType = organizationRecord.commissionType ?? "percentage"
         const commissionValue = organizationRecord.commissionValue ?? "0.00"
-
-        // Pass the `tx` instance to `invoicePaidUpdate`
         await invoicePaidUpdate(
           total,
           currency,

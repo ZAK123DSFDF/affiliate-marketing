@@ -157,7 +157,6 @@ export const organization_seed = [
     commissionValue: "50.00",
     commissionDurationValue: 30,
     commissionDurationUnit: "day",
-    expirationDate: parseDate("2025-08-15 11:44:05.419"),
     currency: "USD" as const,
     createdAt: parseDate("2025-07-16 11:44:07.514288"),
     updatedAt: parseDate("2025-07-16 11:44:07.514288"),

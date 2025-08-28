@@ -1,54 +1,52 @@
 "use client"
 
-import React, { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectTrigger,
+  SelectValue,
   SelectContent,
   SelectItem,
-  SelectValue,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import { Loader2 } from "lucide-react"
+import { z } from "zod"
+
 import { updateOrgSettings } from "@/app/seller/[orgId]/dashboard/settings/action"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2 } from "lucide-react" // if used
+import { orgSettingsSchema } from "@/lib/schema/orgSettingSchema"
 
-type OrgData = {
-  id: string
-  name: string
-  domainName: string
-  logoUrl?: string | null
-  referralParam: "ref" | "via" | "aff"
-  cookieLifetimeValue: number
-  cookieLifetimeUnit: "day" | "week" | "month" | "year"
-  commissionType: "percentage" | "fixed"
-  commissionValue: string
-  commissionDurationValue: number
-  commissionDurationUnit: "day" | "week" | "month" | "year"
-  currency: "USD" | "EUR" | "GBP" | "CAD" | "AUD"
-}
+type OrgData = z.infer<typeof orgSettingsSchema>
+type Props = { orgData: OrgData }
 
-type Props = {
-  orgData: OrgData
-}
 export default function Settings({ orgData }: Props) {
-  const [formValues, setFormValues] = useState({
-    ...orgData,
-    orgId: orgData.id,
-  })
   const { toast } = useToast()
+  const form = useForm<OrgData>({
+    resolver: zodResolver(orgSettingsSchema),
+    defaultValues: orgData,
+  })
+
+  const { formState } = form
+  const { isDirty } = formState
+
+  const isUnchanged = !isDirty
+
   const mut = useMutation({
     mutationFn: updateOrgSettings,
     onSuccess: (res) => {
       if (res?.ok) {
-        toast({
-          title: "Settings updated",
-          description: "Organization settings saved.",
-        })
+        toast({ title: "Settings updated", description: "Saved successfully." })
       } else {
         toast({
           variant: "destructive",
@@ -64,9 +62,11 @@ export default function Settings({ orgData }: Props) {
         description: "Please try again",
       }),
   })
+
   const onSubmit = (data: OrgData) => {
     mut.mutate(data)
   }
+
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
@@ -80,63 +80,63 @@ export default function Settings({ orgData }: Props) {
             </p>
           </div>
         </div>
-        <Button onClick={() => onSubmit(formValues)} disabled={mut.isPending}>
-          {mut.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-          Update Settings
-        </Button>
       </div>
 
-      {/* Basic Information Card - Now with side-by-side fields */}
+      {/* Settings Form */}
       <Card>
         <CardHeader>
           <CardTitle>Basic Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div>
               <label className="block text-sm font-medium">Company Name</label>
-              <Input
-                defaultValue={orgData.name}
-                onChange={(e) =>
-                  setFormValues((prev) => ({ ...prev, name: e.target.value }))
-                }
-              />
+              <Input {...form.register("name")} />
             </div>
 
-            <div className="space-y-2">
+            <div>
               <label className="block text-sm font-medium">Domain Name</label>
-              <Input
-                defaultValue={orgData.domainName}
-                onChange={(e) =>
-                  setFormValues((prev) => ({
-                    ...prev,
-                    domainName: e.target.value,
-                  }))
-                }
-              />
+              <Input {...form.register("domainName")} />
             </div>
 
-            <div className="space-y-2">
-              <label className="block text-sm font-medium">Logo URL</label>
-              <Input
-                defaultValue={orgData.logoUrl || ""}
-                onChange={(e) =>
-                  setFormValues((prev) => ({
-                    ...prev,
-                    logoUrl: e.target.value,
-                  }))
+            <div>
+              <label className="block text-sm font-medium">
+                attribution model
+              </label>
+              <Select
+                value={form.getValues("attributionModel")}
+                onValueChange={(val) =>
+                  form.setValue(
+                    "attributionModel",
+                    val as OrgData["attributionModel"]
+                  )
                 }
-              />
+              >
+                <SelectTrigger affiliate={false}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent affiliate={false}>
+                  <SelectItem affiliate={false} value="FIRST_CLICK">
+                    first_click
+                  </SelectItem>
+                  <SelectItem affiliate={false} value="LAST_CLICK">
+                    last_click
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="space-y-2">
+            <div>
               <label className="block text-sm font-medium">
                 Referral Parameter
               </label>
               <Select
-                value={formValues.referralParam}
-                onValueChange={(val: any) =>
-                  setFormValues((prev) => ({ ...prev, referralParam: val }))
+                value={form.getValues("referralParam")}
+                onValueChange={(val) =>
+                  form.setValue(
+                    "referralParam",
+                    val as OrgData["referralParam"]
+                  )
                 }
               >
                 <SelectTrigger affiliate={false}>
@@ -166,30 +166,21 @@ export default function Settings({ orgData }: Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div>
               <label className="block text-sm font-medium">
                 Cookie Lifetime
               </label>
-              <Input
-                type="number"
-                defaultValue={orgData.cookieLifetimeValue.toString()}
-                onChange={(e) =>
-                  setFormValues((prev) => ({
-                    ...prev,
-                    cookieLifetimeValue: parseInt(e.target.value, 10),
-                  }))
-                }
-              />
+              <Input type="number" {...form.register("cookieLifetimeValue")} />
             </div>
-            <div className="space-y-2">
+            <div>
               <label className="block text-sm font-medium">Lifetime Unit</label>
               <Select
-                value={formValues.cookieLifetimeUnit}
-                onValueChange={(val: any) =>
-                  setFormValues((prev) => ({
-                    ...prev,
-                    cookieLifetimeUnit: val,
-                  }))
+                value={form.getValues("cookieLifetimeUnit")}
+                onValueChange={(val) =>
+                  form.setValue(
+                    "cookieLifetimeUnit",
+                    val as OrgData["cookieLifetimeUnit"]
+                  )
                 }
               >
                 <SelectTrigger affiliate={false}>
@@ -214,14 +205,17 @@ export default function Settings({ orgData }: Props) {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div>
               <label className="block text-sm font-medium">
                 Commission Type
               </label>
               <Select
-                value={formValues.commissionType}
-                onValueChange={(val: any) =>
-                  setFormValues((prev) => ({ ...prev, commissionType: val }))
+                value={form.getValues("commissionType")}
+                onValueChange={(val) =>
+                  form.setValue(
+                    "commissionType",
+                    val as OrgData["commissionType"]
+                  )
                 }
               >
                 <SelectTrigger affiliate={false}>
@@ -237,49 +231,37 @@ export default function Settings({ orgData }: Props) {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
+            <div>
               <label className="block text-sm font-medium">
                 Commission Value
               </label>
               <Input
                 type="number"
                 step="0.01"
-                defaultValue={orgData.commissionValue}
-                onChange={(e) =>
-                  setFormValues((prev) => ({
-                    ...prev,
-                    commissionValue: parseFloat(e.target.value).toFixed(2),
-                  }))
-                }
+                {...form.register("commissionValue")}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div>
               <label className="block text-sm font-medium">
                 Commission Duration
               </label>
               <Input
                 type="number"
-                defaultValue={orgData.commissionDurationValue.toString()}
-                onChange={(e) =>
-                  setFormValues((prev) => ({
-                    ...prev,
-                    commissionDurationValue: parseInt(e.target.value, 10),
-                  }))
-                }
+                {...form.register("commissionDurationValue")}
               />
             </div>
-            <div className="space-y-2">
+            <div>
               <label className="block text-sm font-medium">Duration Unit</label>
               <Select
-                value={formValues.commissionDurationUnit}
-                onValueChange={(val: any) =>
-                  setFormValues((prev) => ({
-                    ...prev,
-                    commissionDurationUnit: val,
-                  }))
+                value={form.getValues("commissionDurationUnit")}
+                onValueChange={(val) =>
+                  form.setValue(
+                    "commissionDurationUnit",
+                    val as OrgData["commissionDurationUnit"]
+                  )
                 }
               >
                 <SelectTrigger affiliate={false}>
@@ -303,13 +285,13 @@ export default function Settings({ orgData }: Props) {
             </div>
           </div>
 
-          {/* Currency Selector - Now with constrained width */}
-          <div className="w-full space-y-2">
+          {/* Currency */}
+          <div>
             <label className="block text-sm font-medium">Currency</label>
             <Select
-              value={formValues.currency}
-              onValueChange={(val: any) =>
-                setFormValues((prev) => ({ ...prev, currency: val }))
+              value={form.getValues("currency")}
+              onValueChange={(val) =>
+                form.setValue("currency", val as OrgData["currency"])
               }
             >
               <SelectTrigger affiliate={false} className="w-full">
@@ -335,6 +317,15 @@ export default function Settings({ orgData }: Props) {
             </Select>
           </div>
         </CardContent>
+        <CardFooter className="flex justify-end">
+          <Button
+            onClick={form.handleSubmit(onSubmit)}
+            disabled={mut.isPending || isUnchanged}
+          >
+            {mut.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            Save Changes
+          </Button>
+        </CardFooter>
       </Card>
     </div>
   )

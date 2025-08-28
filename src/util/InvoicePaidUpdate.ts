@@ -17,8 +17,11 @@ export const invoicePaidUpdate = async (
   const rawAmount = safeFormatAmount(total)
   const decimals = getCurrencyDecimals(currency ?? "usd")
 
-  const { amount: invoiceAmount, currency: convertedCurrency } =
-    await convertToUSD(parseFloat(rawAmount), currency ?? "usd", decimals)
+  const { amount: invoiceAmount } = await convertToUSD(
+    parseFloat(rawAmount),
+    currency ?? "usd",
+    decimals
+  )
   let addedCommission = 0
   if (commissionType === "percentage") {
     addedCommission =
@@ -32,7 +35,7 @@ export const invoicePaidUpdate = async (
     subscriptionId,
     customerId,
     amount: invoiceAmount.toString(),
-    currency: convertedCurrency,
+    currency: "USD",
     commission: addedCommission.toString(),
     paidAmount: "0.00",
     unpaidAmount: addedCommission.toFixed(2),

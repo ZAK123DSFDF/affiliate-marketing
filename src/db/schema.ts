@@ -101,12 +101,11 @@ export const organization = pgTable("organization", {
     precision: 10,
     scale: 2,
   }).default("0.00"),
-  commissionDurationValue: integer("commission_duration_value").default(0),
+  commissionDurationValue: integer("commission_duration_value").default(1),
   commissionDurationUnit: text("commission_duration_unit").default("day"),
   attributionModel: attributionModelEnum("attribution_model")
     .notNull()
     .default("LAST_CLICK"),
-  expirationDate: timestamp("expiration_date").defaultNow().notNull(),
   currency: currencyEnum("currency").notNull().default("USD"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -209,6 +208,18 @@ export const affiliateInvoice = pgTable("affiliate_invoice", {
   unpaidAmount: numeric("unpaid_amount", { precision: 10, scale: 2 })
     .default("0")
     .notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+export const subscriptionExpiration = pgTable("subscription_expiration", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+
+  subscriptionId: text("subscription_id").notNull().unique(),
+
+  expirationDate: timestamp("expiration_date").notNull(),
+
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })

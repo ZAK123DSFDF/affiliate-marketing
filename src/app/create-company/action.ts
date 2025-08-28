@@ -41,11 +41,7 @@ export const CreateOrganization = async (
       .replace(/^https?:\/\//i, "")
       .replace(/\/$/, "")
     const now = new Date()
-    const expirationDate = calculateExpirationDate(
-      now,
-      data.commissionDurationValue,
-      data.commissionDurationUnit
-    )
+
     // Insert the new organization
     const [newOrg] = await db
       .insert(organization)
@@ -53,7 +49,6 @@ export const CreateOrganization = async (
         ...data,
         domainName: sanitizedDomain,
         commissionValue: data.commissionValue.toFixed(2),
-        expirationDate,
       })
       .returning()
 

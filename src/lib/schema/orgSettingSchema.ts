@@ -1,15 +1,17 @@
 import { z } from "zod"
+
 export const orgSettingsSchema = z.object({
-  orgId: z.string().min(1),
+  id: z.string().min(1),
   name: z.string().min(2),
   domainName: z.string().min(2),
-  logoUrl: z.string().url().optional().or(z.literal("")),
+  logoUrl: z.string().url().nullable(),
   referralParam: z.enum(["ref", "via", "aff"]),
   cookieLifetimeValue: z.coerce.number().min(1),
   cookieLifetimeUnit: z.enum(["day", "week", "month", "year"]),
   commissionType: z.enum(["percentage", "fixed"]),
-  commissionValue: z.coerce.number().min(0),
+  commissionValue: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid amount"),
   commissionDurationValue: z.coerce.number().min(1),
   commissionDurationUnit: z.enum(["day", "week", "month", "year"]),
   currency: z.enum(["USD", "EUR", "GBP", "CAD", "AUD"]),
+  attributionModel: z.enum(["FIRST_CLICK", "LAST_CLICK"]),
 })

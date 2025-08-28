@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
 import crypto from "crypto"
 import { db } from "@/db/drizzle"
-import { affiliateInvoice, organization } from "@/db/schema"
+import { affiliateInvoice, subscriptionExpiration } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { calculateTrialDays } from "@/util/CalculateTrialDays"
 import { convertToUSD } from "@/util/CurrencyConvert"
 import { getCurrencyDecimals } from "@/util/CurrencyDecimal"
 import { safeFormatAmount } from "@/util/SafeParse"
 import { addDays } from "date-fns"
+import { calculateExpirationDate } from "@/util/CalculateExpiration"
+import { getAffiliateLinkRecord } from "@/services/getAffiliateLinkRecord"
+import { getOrganizationById } from "@/services/getOrganizationById"
+import { getSubscriptionExpiration } from "@/services/getSubscriptionExpiration"
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,17 +38,11 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
-
-    // Create the signed payload
     const signedPayload = `${timestamp}:${rawBody}`
-
-    // Calculate the expected signature
     const computedSignature = crypto
       .createHmac("sha256", secret)
       .update(signedPayload)
       .digest("hex")
-
-    // Verify the signature
     if (computedSignature !== receivedSignature) {
       console.error("Invalid signature", {
         computed: computedSignature,
@@ -53,11 +51,7 @@ export async function POST(request: NextRequest) {
       })
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 })
     }
-
-    // Parse the JSON body only after verification
     const payload = JSON.parse(rawBody)
-
-    // Process the event
     switch (payload.event_type) {
       case "transaction.completed": {
         const tx = payload.data
@@ -89,28 +83,34 @@ export async function POST(request: NextRequest) {
           commission = parseFloat(amount) < 0 ? 0 : parseFloat(commissionValue)
         }
 
-        const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
-          where: (l, { eq }) => eq(l.id, code),
-        })
-
-        if (!affiliateLinkRecord) {
-          console.warn("❌ Affiliate link not found for code:", code)
-          break
-        }
-        const organizationRecord = await db.query.organization.findFirst({
-          where: (org, { eq }) =>
-            eq(org.id, affiliateLinkRecord.organizationId),
-        })
-
-        if (!organizationRecord) {
-          console.warn(
-            "❌ No organization found for affiliate link:",
-            affiliateLinkRecord.id
-          )
-          break
-        }
+        const affiliateLinkRecord = await getAffiliateLinkRecord(code)
+        if (!affiliateLinkRecord) break
+        const organizationRecord = await getOrganizationById(
+          affiliateLinkRecord.organizationId
+        )
+        if (!organizationRecord) break
         if (isSubscription) {
-          if (transactionTime > new Date(organizationRecord.expirationDate)) {
+          const subscriptionExpirationRecord =
+            await getSubscriptionExpiration(subscriptionId)
+          if (!subscriptionExpirationRecord) {
+            const expirationDate = calculateExpirationDate(
+              new Date(),
+              organizationRecord.commissionDurationValue,
+              organizationRecord.commissionDurationUnit
+            )
+
+            await db.insert(subscriptionExpiration).values({
+              subscriptionId,
+              expirationDate,
+            })
+
+            console.log("✅ Created new subscription expiration record:", {
+              subscriptionId,
+              expirationDate: expirationDate.toISOString(),
+            })
+          } else if (
+            transactionTime > subscriptionExpirationRecord.expirationDate
+          ) {
             console.log("🚫 Skipping: transaction after expiration date")
             break
           }
@@ -164,39 +164,45 @@ export async function POST(request: NextRequest) {
         if (!refDataRaw) break
 
         const { code } = JSON.parse(refDataRaw)
-        const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
-          where: (link, { eq }) => eq(link.id, code),
-        })
-
-        if (!affiliateLinkRecord) {
-          console.warn("❌ Affiliate link not found for code:", code)
-          break
-        }
-        const organizationRecord = await db.query.organization.findFirst({
-          where: (org, { eq }) =>
-            eq(org.id, affiliateLinkRecord.organizationId),
-        })
-
-        if (!organizationRecord) {
-          console.warn(
-            "❌ No organization found for affiliate link:",
-            affiliateLinkRecord.id
-          )
-          break
-        }
-        // 🟢 Use trial_period (interval + frequency)
-        const trialPeriod = sub.items?.[0]?.price?.trial_period
-        const interval = trialPeriod?.interval
-        const frequency = Number(trialPeriod?.frequency || 0)
-        const trialDays = calculateTrialDays(interval, frequency)
-        const updatedExpiration = addDays(
-          organizationRecord.expirationDate,
-          trialDays
+        const affiliateLinkRecord = await getAffiliateLinkRecord(code)
+        if (!affiliateLinkRecord) break
+        const organizationRecord = await getOrganizationById(
+          affiliateLinkRecord.organizationId
         )
-        await db
-          .update(organization)
-          .set({ expirationDate: updatedExpiration })
-          .where(eq(affiliateInvoice.subscriptionId, subscriptionId))
+        if (!organizationRecord) break
+
+        const existingExpiration =
+          await getSubscriptionExpiration(subscriptionId)
+        let expirationDate: Date
+        if (existingExpiration) {
+          const trialPeriod = sub.items?.[0]?.price?.trial_period
+          const interval = trialPeriod?.interval
+          const frequency = Number(trialPeriod?.frequency || 0)
+          const trialDays = calculateTrialDays(interval, frequency)
+
+          expirationDate = addDays(new Date(), trialDays)
+
+          await db
+            .update(subscriptionExpiration)
+            .set({ expirationDate })
+            .where(eq(subscriptionExpiration.subscriptionId, subscriptionId))
+        } else {
+          expirationDate = calculateExpirationDate(
+            new Date(),
+            organizationRecord.commissionDurationValue,
+            organizationRecord.commissionDurationUnit
+          )
+
+          await db.insert(subscriptionExpiration).values({
+            subscriptionId,
+            expirationDate,
+          })
+        }
+
+        console.log("✅ Updated subscription expiration for:", {
+          subscriptionId,
+          expirationDate: expirationDate.toISOString(),
+        })
         break
       }
 

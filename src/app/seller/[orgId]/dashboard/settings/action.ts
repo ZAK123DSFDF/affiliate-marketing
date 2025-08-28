@@ -7,9 +7,9 @@ import { db } from "@/db/drizzle"
 import { returnError } from "@/lib/errorHandler"
 import { OrgData } from "@/lib/types/organization"
 import { organization } from "@/db/schema"
-import { orgSettingsSchema } from "@/lib/schema/orgSettingSchema"
 import { eq } from "drizzle-orm"
 import { ResponseData } from "@/lib/types/response"
+import { getOrgAuth } from "@/lib/server/GetOrgAuth"
 
 export const orgInfo = async (
   orgId: string
@@ -90,8 +90,7 @@ export const orgInfo = async (
           | "GBP"
           | "CAD"
           | "AUD",
-        createdAt: org.createdAt,
-        updatedAt: org.updatedAt,
+        attributionModel: org.attributionModel,
       },
     }
   } catch (err) {
@@ -99,19 +98,9 @@ export const orgInfo = async (
     return returnError(err) as ResponseData<OrgData>
   }
 }
-export async function updateOrgSettings(raw: unknown) {
+export async function updateOrgSettings(data: OrgData) {
   try {
-    const data = orgSettingsSchema.parse(raw)
-    const cookiesStore = await cookies()
-    const token = cookiesStore.get("token")?.value
-    if (!token) throw { status: 401, toast: "Unauthorized" }
-    const { id: userId } = jwt.decode(token) as { id: string }
-    if (!userId) throw { status: 400, toast: "Invalid session" }
-    const relation = await db.query.userToOrganization.findFirst({
-      where: (uto, { and, eq }) =>
-        and(eq(uto.userId, userId), eq(uto.organizationId, data.orgId)),
-    })
-    if (!relation) throw { status: 403, toast: "Forbidden" }
+    await getOrgAuth(data.id)
     await db
       .update(organization)
       .set({
@@ -122,12 +111,13 @@ export async function updateOrgSettings(raw: unknown) {
         cookieLifetimeValue: data.cookieLifetimeValue,
         cookieLifetimeUnit: data.cookieLifetimeUnit,
         commissionType: data.commissionType,
-        commissionValue: data.commissionValue.toFixed(2),
+        commissionValue: Number(data.commissionValue).toFixed(2),
         commissionDurationValue: data.commissionDurationValue,
         commissionDurationUnit: data.commissionDurationUnit,
         currency: data.currency,
+        attributionModel: data.attributionModel,
       })
-      .where(eq(organization.id, data.orgId))
+      .where(eq(organization.id, data.id))
     return { ok: true }
   } catch (err) {
     console.error("updateOrgSettings error", err)

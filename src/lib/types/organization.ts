@@ -12,6 +12,5 @@ export interface OrgData {
   commissionDurationValue: number
   commissionDurationUnit: "day" | "week" | "month" | "year"
   currency: "USD" | "EUR" | "GBP" | "CAD" | "AUD"
-  createdAt: Date
-  updatedAt: Date
+  attributionModel: "FIRST_CLICK" | "LAST_CLICK"
 }
