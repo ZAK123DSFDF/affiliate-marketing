@@ -16,17 +16,17 @@ export const mapAffiliateStats = (stats: AffiliateKpiStats) => [
   { label: "Total Sales", value: stats.totalSales, icon: ShoppingCart },
   {
     label: "Total Commission",
-    value: `$${stats.totalCommission}`,
+    value: stats.totalCommission,
     icon: DollarSign,
   },
   {
     label: "Paid Commission",
-    value: `$${stats.totalCommissionPaid}`,
+    value: stats.totalCommissionPaid,
     icon: DollarSign,
   },
   {
     label: "Unpaid Commission",
-    value: `$${stats.totalCommissionUnpaid}`,
+    value: stats.totalCommissionUnpaid,
     icon: DollarSign,
   },
 ]
@@ -37,17 +37,17 @@ export const mapSellerStats = (stats: SellerKpiStats) => [
   { label: "Total Sales", value: stats.totalSales, icon: ShoppingCart },
   {
     label: "Total Commission",
-    value: `$${stats.totalCommission}`,
+    value: stats.totalCommission,
     icon: DollarSign,
   },
   {
     label: "Paid Commission",
-    value: `$${stats.totalCommissionPaid}`,
+    value: stats.totalCommissionPaid,
     icon: DollarSign,
   },
   {
     label: "Unpaid Commission",
-    value: `$${stats.totalCommissionUnpaid}`,
+    value: stats.totalCommissionUnpaid,
     icon: DollarSign,
   },
   {
@@ -57,7 +57,7 @@ export const mapSellerStats = (stats: SellerKpiStats) => [
   },
   {
     label: "Total Amount",
-    value: `$${stats.totalAmount}`,
+    value: stats.totalAmount,
     icon: DollarSign,
   },
 ]

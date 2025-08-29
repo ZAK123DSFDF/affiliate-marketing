@@ -9,6 +9,8 @@ import { getAffiliateLinks } from "@/lib/server/getAffiliateLinks"
 import { getTimeSeriesData } from "@/lib/server/getTimeSeriesData"
 import { getReferrerStats } from "@/lib/server/getReferrerStats"
 import { getAffiliateKpiStatsAction } from "@/lib/server/getAffiliateKpiStats"
+import { getOrganization } from "@/lib/server/getOrganization"
+import { ExchangeRate } from "@/util/ExchangeRate"
 
 export async function getAffiliateKpiStats(
   year?: number,
@@ -22,14 +24,15 @@ export async function getAffiliateKpiStats(
       year,
       month
     )
-
+    const org = await getOrganization(decoded.organizationId)
+    const rate = await ExchangeRate(org.currency)
     const affiliateKpiStats: AffiliateKpiStats = {
       totalLinks: row?.totalLinks ?? 0,
       totalVisitors: row?.totalVisitors ?? 0,
       totalSales: row?.sales ?? 0,
-      totalCommission: row?.commission ?? 0,
-      totalCommissionPaid: row?.paid ?? 0,
-      totalCommissionUnpaid: row?.unpaid ?? 0,
+      totalCommission: (row?.commission ?? 0) * rate,
+      totalCommissionPaid: (row?.paid ?? 0) * rate,
+      totalCommissionUnpaid: (row?.unpaid ?? 0) * rate,
     }
 
     return { ok: true, data: [affiliateKpiStats] }

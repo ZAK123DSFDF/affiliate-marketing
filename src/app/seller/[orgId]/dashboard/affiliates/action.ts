@@ -6,6 +6,8 @@ import { AffiliateStats } from "@/lib/types/affiliateStats"
 import { getOrgAuth } from "@/lib/server/GetOrgAuth"
 import { getAffiliatesWithStatsAction } from "@/lib/server/getAffiliatesWithStats"
 import { OrderBy, OrderDir } from "@/lib/types/orderTypes"
+import { ExchangeRate } from "@/util/ExchangeRate"
+import { convertedCurrency } from "@/util/ConvertedCurrency"
 
 export async function getAffiliatesWithStats(
   orgId: string,
@@ -18,7 +20,7 @@ export async function getAffiliatesWithStats(
 ): Promise<ResponseData<AffiliateStats[]>> {
   const ordered = orderBy === "none" ? undefined : orderBy
   try {
-    await getOrgAuth(orgId)
+    const org = await getOrgAuth(orgId)
     const rows = (await getAffiliatesWithStatsAction(
       orgId,
       year,
@@ -32,7 +34,11 @@ export async function getAffiliatesWithStats(
         email,
       }
     )) as AffiliateStats[]
-    return { ok: true, data: rows }
+    const converted = await convertedCurrency<AffiliateStats>(
+      org.currency,
+      rows
+    )
+    return { ok: true, data: converted }
   } catch (err) {
     console.error("getAffiliatesWithStats error:", err)
     return returnError(err) as ResponseData<AffiliateStats[]>

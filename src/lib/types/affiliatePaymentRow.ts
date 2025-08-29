@@ -3,4 +3,5 @@ export interface AffiliatePaymentRow {
   totalCommission: number
   paidCommission: number
   unpaidCommission: number
+  currency: string
 }

@@ -47,9 +47,10 @@ export const paymentColumns = (
       ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("totalCommission"))
+        const currency = row.original.currency || "USD"
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
-          currency: "USD",
+          currency,
         }).format(amount)
         return (
           <div
@@ -79,9 +80,10 @@ export const paymentColumns = (
       ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("paidCommission"))
+        const currency = row.original.currency || "USD"
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
-          currency: "USD",
+          currency,
         }).format(amount)
         return (
           <div
@@ -111,9 +113,10 @@ export const paymentColumns = (
       ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("unpaidCommission"))
+        const currency = row.original.currency || "USD"
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
-          currency: "USD",
+          currency,
         }).format(amount)
         return (
           <div

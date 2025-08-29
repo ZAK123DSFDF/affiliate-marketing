@@ -5,4 +5,5 @@ export type Organization = InferSelectModel<typeof organization>
 export type OrgAuthResult = {
   domain: Organization["domainName"]
   param: Organization["referralParam"]
+  currency: Organization["currency"]
 }

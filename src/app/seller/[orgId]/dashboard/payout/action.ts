@@ -8,6 +8,8 @@ import { getAffiliatePayoutBulkAction } from "@/lib/server/getAffiliatePayoutBul
 import { getUnpaidPayoutAction } from "@/lib/server/getUnpaidPayout"
 import { getAffiliatePayoutAction } from "@/lib/server/getAffiliatePayout"
 import { OrderBy, OrderDir } from "@/lib/types/orderTypes"
+import { ExchangeRate } from "@/util/ExchangeRate"
+import { convertedCurrency } from "@/util/ConvertedCurrency"
 export async function getAffiliatePayouts(
   orgId: string,
   year?: number,
@@ -18,7 +20,7 @@ export async function getAffiliatePayouts(
   email?: string
 ): Promise<ResponseData<AffiliatePayout[]>> {
   try {
-    await getOrgAuth(orgId)
+    const org = await getOrgAuth(orgId)
     const rows = (await getAffiliatePayoutAction(
       orgId,
       year,
@@ -29,7 +31,11 @@ export async function getAffiliatePayouts(
       offset,
       email
     )) as AffiliatePayout[]
-    return { ok: true, data: rows }
+    const converted = await convertedCurrency<AffiliatePayout>(
+      org.currency,
+      rows
+    )
+    return { ok: true, data: converted }
   } catch (err) {
     console.error("getAffiliatePayouts error:", err)
     return returnError(err) as ResponseData<AffiliatePayout[]>
@@ -44,7 +50,7 @@ export async function getAffiliatePayoutsBulk(
   email?: string
 ): Promise<ResponseData<AffiliatePayout[]>> {
   try {
-    await getOrgAuth(orgId)
+    const org = await getOrgAuth(orgId)
     const rows = (await getAffiliatePayoutBulkAction(
       orgId,
       months,
@@ -54,7 +60,11 @@ export async function getAffiliatePayoutsBulk(
       offset,
       email
     )) as AffiliatePayout[]
-    return { ok: true, data: rows }
+    const converted = await convertedCurrency<AffiliatePayout>(
+      org.currency,
+      rows
+    )
+    return { ok: true, data: converted }
   } catch (err) {
     console.error("getAffiliatePayoutsBulk error:", err)
     return returnError(err) as ResponseData<AffiliatePayout[]>

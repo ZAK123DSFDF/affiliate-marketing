@@ -69,9 +69,10 @@ export const PayoutColumns = (): ColumnDef<AffiliatePayout>[] => {
       header: () => <div className="text-right">Commission</div>,
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("commission"))
+        const currency = row.original.currency || "USD"
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
-          currency: "USD",
+          currency,
         }).format(amount)
 
         return <div className="text-right font-medium">{formatted}</div>
@@ -82,9 +83,10 @@ export const PayoutColumns = (): ColumnDef<AffiliatePayout>[] => {
       header: () => <div className="text-right">Paid</div>,
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("paid"))
+        const currency = row.original.currency || "USD"
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
-          currency: "USD",
+          currency,
         }).format(amount)
 
         return <div className="text-right font-medium">{formatted}</div>
@@ -95,9 +97,10 @@ export const PayoutColumns = (): ColumnDef<AffiliatePayout>[] => {
       header: () => <div className="text-right">Unpaid</div>,
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("unpaid"))
+        const currency = row.original.currency || "USD"
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
-          currency: "USD",
+          currency,
         }).format(amount)
 
         return <div className="text-right font-medium">{formatted}</div>

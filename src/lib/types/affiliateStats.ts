@@ -8,6 +8,7 @@ export interface AffiliateStats {
   unpaid: number
   links: string[]
   conversionRate: number
+  currency: string
 }
 
 export type AffiliatePayout = Omit<AffiliateStats, "conversionRate">

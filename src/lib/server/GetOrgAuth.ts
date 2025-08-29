@@ -21,6 +21,7 @@ export async function getOrgAuth(orgId: string): Promise<OrgAuthResult> {
     .select({
       domain: organization.domainName,
       param: organization.referralParam,
+      currency: organization.currency,
     })
     .from(organization)
     .where(eq(organization.id, orgId))

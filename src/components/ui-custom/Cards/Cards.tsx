@@ -23,6 +23,7 @@ import { getAffiliateKpiStats } from "@/app/affiliate/[orgId]/dashboard/action"
 import { getSellerKpiStats } from "@/app/seller/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
+import { formatValue } from "@/util/FormatValue"
 
 interface CardsProps {
   orgId: string
@@ -213,7 +214,11 @@ const Cards = ({
                             {label}
                           </div>
                           <div className="font-bold leading-tight truncate">
-                            {value}
+                            {formatValue(
+                              label,
+                              value as number,
+                              (stats as SellerKpiStats)?.currency
+                            )}
                           </div>
                         </div>
                       </div>

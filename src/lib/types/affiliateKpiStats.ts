@@ -5,8 +5,10 @@ export interface AffiliateKpiStats {
   totalCommission: number
   totalCommissionPaid: number
   totalCommissionUnpaid: number
+  currency: string
 }
 export type SellerKpiStats = AffiliateKpiStats & {
   totalAmount: number
   totalAffiliates: number
+  currency: string
 }
