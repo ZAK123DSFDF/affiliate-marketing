@@ -17,6 +17,15 @@ import { UAParser } from "ua-parser-js"
     }
     return value * (unitToSeconds[unit.toLowerCase()] || 86400)
   }
+  function getCookieValue(name: string): string | null {
+    const value = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(name + "="))
+    return value ? decodeURIComponent(value.split("=")[1]) : null
+  }
+  function setCookie(name: string, value: string, maxAge: number) {
+    document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}`
+  }
 
   async function storeRefCode(code: string) {
     try {
@@ -31,6 +40,7 @@ import { UAParser } from "ua-parser-js"
         commissionValue,
         commissionDurationValue,
         commissionDurationUnit,
+        attributionModel,
       } = await res.json()
 
       const maxAge = convertToSeconds(cookieLifetimeValue, cookieLifetimeUnit)
@@ -41,6 +51,7 @@ import { UAParser } from "ua-parser-js"
         commissionValue,
         commissionDurationValue,
         commissionDurationUnit,
+        attributionModel,
       }
 
       return { maxAge, affiliateData }
@@ -61,10 +72,12 @@ import { UAParser } from "ua-parser-js"
   }
 
   function setTempClickCookie(maxAge: number, affiliateData: any) {
-    document.cookie = `refearnapp_affiliate_cookie=${encodeURIComponent(
-      JSON.stringify(affiliateData)
-    )}; path=/; max-age=${maxAge}`
-    document.cookie = `refearnapp_affiliate_click_tracked=true; max-age=86400; path=/`
+    setCookie(
+      "refearnapp_affiliate_cookie",
+      JSON.stringify(affiliateData),
+      maxAge
+    )
+    setCookie("refearnapp_affiliate_click_tracked", affiliateData.code, maxAge)
   }
   function getDeviceInfo() {
     const parser = new UAParser()
@@ -88,24 +101,29 @@ import { UAParser } from "ua-parser-js"
       }).catch(() => {})
     }
   }
-
-  // 🔥 Only this is needed — track on landing
   const refCode = getReferralCode()
-  if (refCode && !getCookie("refearnapp_affiliate_click_tracked")) {
+  const trackedCode = getCookieValue("refearnapp_affiliate_click_tracked")
+  if (refCode) {
     storeRefCode(refCode)
       .then((result) => {
         if (!result) return
         const { maxAge, affiliateData } = result
+        if (
+          (affiliateData.attributionModel === "FIRST_CLICK" &&
+            !getCookie("refearnapp_affiliate_click_tracked")) ||
+          (affiliateData.attributionModel === "LAST_CLICK" &&
+            trackedCode !== refCode)
+        ) {
+          sendTrackingData({
+            ref: refCode,
+            referrer: document.referrer,
+            userAgent: navigator.userAgent,
+            url: window.location.href,
+            ...getDeviceInfo(),
+          })
 
-        sendTrackingData({
-          ref: refCode,
-          referrer: document.referrer,
-          userAgent: navigator.userAgent,
-          url: window.location.href,
-          ...getDeviceInfo(),
-        })
-
-        setTempClickCookie(maxAge, affiliateData)
+          setTempClickCookie(maxAge, affiliateData)
+        }
       })
       .catch((err) => {
         console.error("Failed to process affiliate tracking:", err)

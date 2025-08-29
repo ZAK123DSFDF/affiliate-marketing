@@ -28,6 +28,7 @@ export async function GET(req: Request) {
       commissionValue: organization.commissionValue,
       commissionDurationValue: organization.commissionDurationValue,
       commissionDurationUnit: organization.commissionDurationUnit,
+      attributionModel: organization.attributionModel,
     })
     .from(affiliateLink)
     .innerJoin(organization, eq(affiliateLink.organizationId, organization.id))
