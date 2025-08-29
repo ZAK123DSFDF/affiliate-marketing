@@ -1,6 +1,7 @@
 import { db } from "@/db/drizzle"
 import { affiliateClick } from "@/db/schema"
 import { NextRequest, NextResponse } from "next/server"
+import { shouldTrackTransaction } from "@/lib/server/tracking"
 
 // CORS headers for all origins
 const corsHeaders = {
@@ -15,6 +16,29 @@ export async function POST(req: NextRequest) {
     const data = await req.json()
 
     const refCode = data.ref
+    const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
+      where: (link, { eq }) => eq(link.id, refCode),
+    })
+    if (!affiliateLinkRecord) {
+      return new NextResponse(
+        JSON.stringify({ error: "Invalid affiliate code" }),
+        { status: 400 }
+      )
+    }
+    const track = await shouldTrackTransaction(
+      affiliateLinkRecord.organizationId,
+      affiliateLinkRecord.id
+    )
+
+    if (!track) {
+      return new NextResponse(
+        JSON.stringify({ success: false, reason: "Free plan limit exceeded" }),
+        {
+          status: 200,
+          headers: corsHeaders,
+        }
+      )
+    }
     await db.insert(affiliateClick).values({
       affiliateLinkId: refCode,
       userAgent: data.userAgent || null,
