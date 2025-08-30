@@ -20,7 +20,7 @@ type InputFieldProps = {
   name: string
   label: string
   placeholder: string
-  type: "email" | "password" | "text"
+  type: "email" | "password" | "text" | "number"
   icon?: React.ElementType
   showPasswordToggle?: boolean
   profile?: boolean

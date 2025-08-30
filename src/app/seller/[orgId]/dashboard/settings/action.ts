@@ -10,6 +10,7 @@ import { organization } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { ResponseData } from "@/lib/types/response"
 import { getOrgAuth } from "@/lib/server/GetOrgAuth"
+import { revalidatePath } from "next/cache"
 
 export const orgInfo = async (
   orgId: string
@@ -98,26 +99,48 @@ export const orgInfo = async (
     return returnError(err) as ResponseData<OrgData>
   }
 }
-export async function updateOrgSettings(data: OrgData) {
+export async function updateOrgSettings(
+  data: Partial<OrgData> & { id: string }
+) {
   try {
     await getOrgAuth(data.id)
+    console.log("data", data)
+    const updateData: Record<string, any> = {
+      ...(data.name && { name: data.name.trim() }),
+      ...(data.domainName && {
+        domainName: data.domainName.trim().replace(/^https?:\/\//, ""),
+      }),
+      ...(data.logoUrl !== undefined && { logoUrl: data.logoUrl || null }),
+      ...(data.referralParam && { referralParam: data.referralParam }),
+      ...(data.cookieLifetimeValue && {
+        cookieLifetimeValue: data.cookieLifetimeValue,
+      }),
+      ...(data.cookieLifetimeUnit && {
+        cookieLifetimeUnit: data.cookieLifetimeUnit,
+      }),
+      ...(data.commissionType && { commissionType: data.commissionType }),
+      ...(data.commissionValue && {
+        commissionValue: Number(data.commissionValue).toFixed(2),
+      }),
+      ...(data.commissionDurationValue && {
+        commissionDurationValue: data.commissionDurationValue,
+      }),
+      ...(data.commissionDurationUnit && {
+        commissionDurationUnit: data.commissionDurationUnit,
+      }),
+      ...(data.currency && { currency: data.currency }),
+      ...(data.attributionModel && { attributionModel: data.attributionModel }),
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return { ok: true }
+    }
+
     await db
       .update(organization)
-      .set({
-        name: data.name.trim(),
-        domainName: data.domainName.trim().replace(/^https?:\/\//, ""),
-        logoUrl: data.logoUrl || null,
-        referralParam: data.referralParam,
-        cookieLifetimeValue: data.cookieLifetimeValue,
-        cookieLifetimeUnit: data.cookieLifetimeUnit,
-        commissionType: data.commissionType,
-        commissionValue: Number(data.commissionValue).toFixed(2),
-        commissionDurationValue: data.commissionDurationValue,
-        commissionDurationUnit: data.commissionDurationUnit,
-        currency: data.currency,
-        attributionModel: data.attributionModel,
-      })
+      .set(updateData)
       .where(eq(organization.id, data.id))
+    revalidatePath(`/seller/${data.id}/dashboard/settings`)
     return { ok: true }
   } catch (err) {
     console.error("updateOrgSettings error", err)

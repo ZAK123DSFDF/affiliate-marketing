@@ -69,11 +69,9 @@ export async function updateUserProfile(
 
     const { id } = jwt.decode(token) as { id: string }
     if (!id) throw { status: 400, toast: "Invalid session" }
-    const updateData: Record<string, string> = {}
-    if (data.name) updateData.name = data.name
-    if (data.email) updateData.email = data.email
+    if (Object.keys(data).length === 0) return { ok: true }
 
-    await db.update(user).set(updateData).where(eq(user.id, id))
+    await db.update(user).set(data).where(eq(user.id, id))
     revalidatePath(`/seller/${orgId}/dashboard/profile`)
     return { ok: true }
   } catch (err) {

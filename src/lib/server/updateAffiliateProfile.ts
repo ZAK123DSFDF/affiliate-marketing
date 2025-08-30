@@ -6,21 +6,19 @@ import { decodedType } from "@/lib/types/decodedType"
 
 export const updateAffiliateProfileAction = async (
   decoded: decodedType,
-  {
-    name,
-    email,
-    paypalEmail,
-  }: { name?: string; email?: string; paypalEmail?: string }
+  data: { name?: string; email?: string; paypalEmail?: string }
 ) => {
-  const updates: Partial<{ name: string; email: string }> = {}
-  if (name) updates.name = name
-  if (email) updates.email = email
-
-  if (Object.keys(updates).length > 0) {
-    await db.update(affiliate).set(updates).where(eq(affiliate.id, decoded.id))
+  if (data.name || data.email) {
+    await db
+      .update(affiliate)
+      .set({
+        ...(data.name && { name: data.name }),
+        ...(data.email && { email: data.email }),
+      })
+      .where(eq(affiliate.id, decoded.id))
   }
 
-  if (paypalEmail) {
+  if (data.paypalEmail) {
     const existing = await db.query.affiliatePayoutMethod.findFirst({
       where: and(
         eq(affiliatePayoutMethod.affiliateId, decoded.id),
@@ -31,13 +29,13 @@ export const updateAffiliateProfileAction = async (
     if (existing) {
       await db
         .update(affiliatePayoutMethod)
-        .set({ accountIdentifier: paypalEmail, updatedAt: new Date() })
+        .set({ accountIdentifier: data.paypalEmail, updatedAt: new Date() })
         .where(eq(affiliatePayoutMethod.id, existing.id))
     } else {
       await db.insert(affiliatePayoutMethod).values({
         affiliateId: decoded.id,
         provider: "paypal",
-        accountIdentifier: paypalEmail,
+        accountIdentifier: data.paypalEmail,
         isDefault: true,
       })
     }

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
@@ -16,7 +16,10 @@ import {
   validateCurrentSellerPassword,
 } from "@/app/seller/[orgId]/dashboard/profile/action"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { profileSchema } from "@/lib/schema/profileSchema"
+import {
+  affiliateProfileSchema,
+  userProfileSchema,
+} from "@/lib/schema/profileSchema"
 import {
   currentPasswordSchema,
   newPasswordSchema,
@@ -33,6 +36,7 @@ import ProfileCardFooter from "@/components/pages/Dashboard/Profile/ProfileCardF
 import ProfileDialog from "@/components/pages/Dashboard/Profile/ProfileDialog"
 import { ProfileProps } from "@/lib/types/profileTypes"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
+import deepEqual from "fast-deep-equal"
 
 export default function Profile({
   AffiliateData,
@@ -52,12 +56,19 @@ export default function Profile({
     ? useCustomizationSync(orgId, "dashboard")
     : { isPending: false, isError: false, refetch: () => {} }
   const profileForm = useForm({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      name: initialName,
-      email: initialEmail,
-      paypalEmail: initialPaypalEmail,
-    },
+    resolver: zodResolver(
+      affiliate ? affiliateProfileSchema : userProfileSchema
+    ),
+    defaultValues: affiliate
+      ? {
+          name: initialName,
+          email: initialEmail,
+          paypalEmail: initialPaypalEmail,
+        }
+      : {
+          name: initialName,
+          email: initialEmail,
+        },
   })
   const currentPasswordForm = useForm({
     resolver: zodResolver(currentPasswordSchema),
@@ -72,13 +83,25 @@ export default function Profile({
       confirmPassword: "",
     },
   })
-  const currentName = profileForm.watch("name")
-  const currentEmail = profileForm.watch("email")
-  const currentPaypalEmail = profileForm.watch("paypalEmail")
-  const isFormUnchanged =
-    currentName.trim() === initialName.trim() &&
-    currentEmail.trim() === initialEmail.trim() &&
-    currentPaypalEmail.trim() === initialPaypalEmail.trim()
+  const safeDefaults = useMemo(() => {
+    if (affiliate) {
+      return {
+        name: initialName,
+        email: initialEmail,
+        paypalEmail: initialPaypalEmail,
+      }
+    }
+    return {
+      name: initialName,
+      email: initialEmail,
+    }
+  }, [initialName, initialEmail, initialPaypalEmail])
+
+  const currentValues = profileForm.watch()
+
+  const isFormUnchanged = useMemo(() => {
+    return deepEqual(currentValues, safeDefaults)
+  }, [currentValues, safeDefaults])
   const dashboardCardStyle = useDashboardCard(affiliate)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [step, setStep] = useState<"current" | "new">("current")
@@ -197,8 +220,20 @@ export default function Profile({
     },
   })
 
-  const onSubmit = (data: any) => {
-    updateProfile.mutate(data)
+  const onSubmit = (data: typeof safeDefaults) => {
+    const changed = (Object.keys(data) as (keyof typeof data)[]).reduce(
+      (acc, key) => {
+        if (!deepEqual(data[key], safeDefaults[key])) {
+          acc[key] = data[key]
+        }
+        return acc
+      },
+      {} as Partial<typeof data>
+    )
+
+    if (Object.keys(changed).length === 0) return
+
+    updateProfile.mutate(changed)
   }
   const onSubmitValidateCurrent = (data: any) => {
     validatePassword.mutate(data.currentPassword)

@@ -4,7 +4,7 @@ export const orgSettingsSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(2),
   domainName: z.string().min(2),
-  logoUrl: z.string().url().nullable(),
+  logoUrl: z.string().nullable(),
   referralParam: z.enum(["ref", "via", "aff"]),
   cookieLifetimeValue: z.coerce.number().min(1),
   cookieLifetimeUnit: z.enum(["day", "week", "month", "year"]),

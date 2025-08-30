@@ -63,15 +63,18 @@ export default function ProfileCardContent({
           profile
           affiliate={affiliate}
         />
-        <InputField
-          control={profileForm.control}
-          name="paypalEmail"
-          label="PayPal Email"
-          placeholder="Enter your PayPal email"
-          type="email"
-          profile
-          affiliate={affiliate}
-        />
+        {affiliate && (
+          <InputField
+            control={profileForm.control}
+            name="paypalEmail"
+            label="PayPal Email"
+            placeholder="Enter your PayPal email"
+            type="email"
+            profile
+            affiliate={affiliate}
+          />
+        )}
+
         <div>
           <div className="flex flex-row items-center justify-between mb-4 gap-1">
             <Separator
