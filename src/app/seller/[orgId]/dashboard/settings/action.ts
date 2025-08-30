@@ -69,17 +69,17 @@ export const orgInfo = async (
         id: org.id,
         name: org.name,
         domainName: org.domainName,
-        logoUrl: org.logoUrl ?? "", // Already unioned with `string | null`
+        logoUrl: org.logoUrl ?? "",
         referralParam: org.referralParam as "ref" | "via" | "aff",
-        cookieLifetimeValue: org.cookieLifetimeValue ?? 30,
+        cookieLifetimeValue: String(org.cookieLifetimeValue ?? "30"),
         cookieLifetimeUnit: org.cookieLifetimeUnit as
           | "day"
           | "week"
           | "month"
           | "year",
         commissionType: org.commissionType as "percentage" | "fixed",
-        commissionValue: org.commissionValue ?? "0.00",
-        commissionDurationValue: org.commissionDurationValue ?? 30,
+        commissionValue: String(org.commissionValue ?? "0.00"),
+        commissionDurationValue: String(org.commissionDurationValue ?? "30"),
         commissionDurationUnit: org.commissionDurationUnit as
           | "day"
           | "week"

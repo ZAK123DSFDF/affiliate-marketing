@@ -35,11 +35,11 @@ export default function Settings({ orgData }: Props) {
     domainName: orgData?.domainName ?? "",
     logoUrl: orgData?.logoUrl ?? null,
     referralParam: orgData?.referralParam ?? "ref",
-    cookieLifetimeValue: orgData?.cookieLifetimeValue ?? 30,
+    cookieLifetimeValue: orgData?.cookieLifetimeValue ?? "30",
     cookieLifetimeUnit: orgData?.cookieLifetimeUnit ?? "day",
     commissionType: orgData?.commissionType ?? "percentage",
-    commissionValue: orgData?.commissionValue ?? "0",
-    commissionDurationValue: orgData?.commissionDurationValue ?? 30,
+    commissionValue: String(parseFloat(orgData.commissionValue)) ?? "0",
+    commissionDurationValue: orgData?.commissionDurationValue ?? "30",
     commissionDurationUnit: orgData?.commissionDurationUnit ?? "day",
     currency: orgData?.currency ?? "USD",
     attributionModel: orgData?.attributionModel ?? "LAST_CLICK",
@@ -57,6 +57,7 @@ export default function Settings({ orgData }: Props) {
       updateOrgSettings(data),
     onSuccess: (res) => {
       if (res?.ok) {
+        form.reset(form.getValues())
         toast({ title: "Settings updated", description: "Saved successfully." })
       } else {
         toast({

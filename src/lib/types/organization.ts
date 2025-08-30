@@ -5,11 +5,11 @@ export interface OrgData {
   domainName: string
   logoUrl: string | null
   referralParam: "ref" | "via" | "aff"
-  cookieLifetimeValue: number
+  cookieLifetimeValue: string
   cookieLifetimeUnit: "day" | "week" | "month" | "year"
   commissionType: "fixed" | "percentage"
   commissionValue: string
-  commissionDurationValue: number
+  commissionDurationValue: string
   commissionDurationUnit: "day" | "week" | "month" | "year"
   currency: "USD" | "EUR" | "GBP" | "CAD" | "AUD"
   attributionModel: "FIRST_CLICK" | "LAST_CLICK"

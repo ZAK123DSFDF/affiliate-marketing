@@ -6,11 +6,13 @@ export const orgSettingsSchema = z.object({
   domainName: z.string().min(2),
   logoUrl: z.string().nullable(),
   referralParam: z.enum(["ref", "via", "aff"]),
-  cookieLifetimeValue: z.coerce.number().min(1),
+  cookieLifetimeValue: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid amount"),
   cookieLifetimeUnit: z.enum(["day", "week", "month", "year"]),
   commissionType: z.enum(["percentage", "fixed"]),
   commissionValue: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid amount"),
-  commissionDurationValue: z.coerce.number().min(1),
+  commissionDurationValue: z
+    .string()
+    .regex(/^\d+(\.\d{1,2})?$/, "Invalid amount"),
   commissionDurationUnit: z.enum(["day", "week", "month", "year"]),
   currency: z.enum(["USD", "EUR", "GBP", "CAD", "AUD"]),
   attributionModel: z.enum(["FIRST_CLICK", "LAST_CLICK"]),

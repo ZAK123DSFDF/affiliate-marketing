@@ -7,13 +7,22 @@ import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Custo
 import { Button } from "@/components/ui/button"
 import React from "react"
 import { UseFormReturn } from "react-hook-form"
-import { profileSchema } from "@/lib/schema/profileSchema"
 import {
   useDashboardButtonCustomizationOption,
   useDashboardThemeCustomizationOption,
 } from "@/hooks/useDashboardCustomization"
 import { z } from "zod"
-type ProfileFormValues = z.infer<typeof profileSchema>
+import {
+  affiliateProfileSchema,
+  userProfileSchema,
+} from "@/lib/schema/profileSchema"
+type UserProfileFormValues = z.infer<typeof userProfileSchema>
+type AffiliateProfileFormValues = z.infer<typeof affiliateProfileSchema>
+
+type ProfileFormValues =
+  | ({ affiliate: false } & UserProfileFormValues)
+  | ({ affiliate: true } & AffiliateProfileFormValues)
+
 interface ProfileContentProps {
   profileForm: UseFormReturn<ProfileFormValues>
   onSubmit: (data: ProfileFormValues) => void
