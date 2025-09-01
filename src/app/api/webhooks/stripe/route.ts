@@ -3,11 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
 
 import { db } from "@/db/drizzle"
-import {
-  affiliateInvoice,
-  organization,
-  subscriptionExpiration,
-} from "@/db/schema"
+import { affiliateInvoice, subscriptionExpiration } from "@/db/schema"
 import { addDays } from "date-fns"
 import { eq } from "drizzle-orm"
 import { generateStripeCustomerId } from "@/util/StripeCustomerId"
@@ -15,7 +11,6 @@ import { convertToUSD } from "@/util/CurrencyConvert"
 import { getCurrencyDecimals } from "@/util/CurrencyDecimal"
 import { safeFormatAmount } from "@/util/SafeParse"
 import { invoicePaidUpdate } from "@/util/InvoicePaidUpdate"
-import { calculateTrialDays } from "@/util/CalculateTrialDays"
 import { calculateExpirationDate } from "@/util/CalculateExpiration"
 import { getAffiliateLinkRecord } from "@/services/getAffiliateLinkRecord"
 import { getOrganizationById } from "@/services/getOrganizationById"
@@ -105,6 +100,7 @@ export async function POST(req: NextRequest) {
           paidAmount: "0.00",
           unpaidAmount: commission.toFixed(2),
           affiliateLinkId: affiliateLinkRecord.id,
+          reason: "subscription_create",
         })
 
         console.log(
@@ -124,6 +120,7 @@ export async function POST(req: NextRequest) {
           paidAmount: "0.00",
           unpaidAmount: commission.toFixed(2),
           affiliateLinkId: affiliateLinkRecord.id,
+          reason: "one_time",
         })
 
         console.log(

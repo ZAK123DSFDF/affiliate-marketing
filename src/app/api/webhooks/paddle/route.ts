@@ -26,7 +26,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Parse the signature header (format: "ts=123456789;h1=abcdef123456")
     const [tsPart, h1Part] = signatureHeader.split(";")
     const timestamp = tsPart.split("=")[1]
     const receivedSignature = h1Part.split("=")[1]
@@ -92,6 +91,13 @@ export async function POST(request: NextRequest) {
         if (isSubscription) {
           const subscriptionExpirationRecord =
             await getSubscriptionExpiration(subscriptionId)
+          const existingInvoice = await db.query.affiliateInvoice.findFirst({
+            where: eq(affiliateInvoice.subscriptionId, subscriptionId),
+          })
+
+          const reason = existingInvoice
+            ? "subscription_update"
+            : "subscription_create"
           if (!subscriptionExpirationRecord) {
             const expirationDate = calculateExpirationDate(
               new Date(),
@@ -126,6 +132,7 @@ export async function POST(request: NextRequest) {
             rawAmount,
             unpaidAmount: commission.toFixed(2),
             affiliateLinkId: affiliateLinkRecord.id,
+            reason,
           })
           console.log("✅ Inserted new affiliatePayment:", subscriptionId)
         } else {
@@ -140,6 +147,7 @@ export async function POST(request: NextRequest) {
             paidAmount: "0.00",
             unpaidAmount: commission.toFixed(2),
             affiliateLinkId: affiliateLinkRecord.id,
+            reason: "one_time",
           })
 
           console.log("✅ Inserted one-time affiliatePayment:", customerId)

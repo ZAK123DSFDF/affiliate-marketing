@@ -40,5 +40,6 @@ export const invoicePaidUpdate = async (
     paidAmount: "0.00",
     unpaidAmount: addedCommission.toFixed(2),
     affiliateLinkId,
+    reason: "subscription_update",
   })
 }
