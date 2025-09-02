@@ -119,6 +119,7 @@ import { UAParser } from "ua-parser-js"
             referrer: document.referrer,
             userAgent: navigator.userAgent,
             url: window.location.href,
+            host: window.location.hostname,
             ...getDeviceInfo(),
           })
 

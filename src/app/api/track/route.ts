@@ -1,7 +1,8 @@
 import { db } from "@/db/drizzle"
-import { affiliateClick } from "@/db/schema"
+import { affiliateClick, affiliateLink, organization } from "@/db/schema"
 import { NextRequest, NextResponse } from "next/server"
 import { shouldTrackTransaction } from "@/lib/server/tracking"
+import { eq } from "drizzle-orm"
 
 // CORS headers for all origins
 const corsHeaders = {
@@ -15,19 +16,31 @@ export async function POST(req: NextRequest) {
   try {
     const data = await req.json()
 
-    const refCode = data.ref
-    const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
-      where: (link, { eq }) => eq(link.id, refCode),
-    })
-    if (!affiliateLinkRecord) {
+    const { ref: refCode, host } = data
+    const [affiliateLinkRecord] = await db
+      .select({
+        linkId: affiliateLink.id,
+        orgId: affiliateLink.organizationId,
+        orgDomain: organization.domainName,
+      })
+      .from(affiliateLink)
+      .innerJoin(
+        organization,
+        eq(affiliateLink.organizationId, organization.id)
+      )
+      .where(eq(affiliateLink.id, refCode))
+      .limit(1)
+
+    if (!affiliateLinkRecord || affiliateLinkRecord.orgDomain !== host) {
       return new NextResponse(
-        JSON.stringify({ error: "Invalid affiliate code" }),
+        JSON.stringify({ error: "Invalid affiliate code for this domain" }),
         { status: 400 }
       )
     }
+
     const track = await shouldTrackTransaction(
-      affiliateLinkRecord.organizationId,
-      affiliateLinkRecord.id
+      affiliateLinkRecord.orgId,
+      affiliateLinkRecord.linkId
     )
 
     if (!track) {

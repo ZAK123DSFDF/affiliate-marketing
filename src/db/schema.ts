@@ -98,7 +98,7 @@ export const organization = pgTable("organization", {
     .primaryKey()
     .$defaultFn(() => generateOrganizationId()),
   name: text("name").notNull(),
-  domainName: text("domain_name").notNull().unique(),
+  domainName: text("domain_name").notNull(),
   logoUrl: text("logo_url"),
   referralParam: referralParamEnum("referral_param").default("ref"),
   cookieLifetimeValue: integer("cookie_lifetime_value").default(30),
