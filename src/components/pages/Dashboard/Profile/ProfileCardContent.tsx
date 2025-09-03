@@ -19,9 +19,7 @@ import {
 type UserProfileFormValues = z.infer<typeof userProfileSchema>
 type AffiliateProfileFormValues = z.infer<typeof affiliateProfileSchema>
 
-type ProfileFormValues =
-  | ({ affiliate: false } & UserProfileFormValues)
-  | ({ affiliate: true } & AffiliateProfileFormValues)
+type ProfileFormValues = UserProfileFormValues | AffiliateProfileFormValues
 
 interface ProfileContentProps {
   profileForm: UseFormReturn<ProfileFormValues>

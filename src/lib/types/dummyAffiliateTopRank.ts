@@ -11,6 +11,7 @@ export const dummyAffiliateTopRankData: AffiliateStats[] = [
     paid: 400,
     unpaid: 80,
     conversionRate: parseFloat(((80 / 320) * 100).toFixed(2)), // 25.00%
+    currency: "USD",
   },
   {
     id: "2",
@@ -22,6 +23,7 @@ export const dummyAffiliateTopRankData: AffiliateStats[] = [
     paid: 600,
     unpaid: 120,
     conversionRate: parseFloat(((120 / 500) * 100).toFixed(2)), // 24.00%
+    currency: "USD",
   },
   {
     id: "3",
@@ -33,6 +35,7 @@ export const dummyAffiliateTopRankData: AffiliateStats[] = [
     paid: 300,
     unpaid: 0,
     conversionRate: parseFloat(((50 / 200) * 100).toFixed(2)), // 25.00%
+    currency: "USD",
   },
   {
     id: "4",
@@ -44,6 +47,7 @@ export const dummyAffiliateTopRankData: AffiliateStats[] = [
     paid: 450,
     unpaid: 150,
     conversionRate: parseFloat(((100 / 450) * 100).toFixed(2)), // 22.22%
+    currency: "USD",
   },
   {
     id: "5",
@@ -55,5 +59,6 @@ export const dummyAffiliateTopRankData: AffiliateStats[] = [
     paid: 180,
     unpaid: 60,
     conversionRate: parseFloat(((40 / 150) * 100).toFixed(2)), // 26.67%
+    currency: "USD",
   },
 ]

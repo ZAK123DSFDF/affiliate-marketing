@@ -33,6 +33,7 @@ export async function getAffiliateKpiStats(
       totalCommission: (row?.commission ?? 0) * rate,
       totalCommissionPaid: (row?.paid ?? 0) * rate,
       totalCommissionUnpaid: (row?.unpaid ?? 0) * rate,
+      currency: org.currency,
     }
 
     return { ok: true, data: [affiliateKpiStats] }
