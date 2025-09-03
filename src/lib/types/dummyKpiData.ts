@@ -77,6 +77,7 @@ export const dummyAffiliateKpiCardStats = [
     totalCommission: 4150,
     totalCommissionPaid: 2200,
     totalCommissionUnpaid: 1950,
+    currency: "USD",
   },
 ]
 export const months = [
