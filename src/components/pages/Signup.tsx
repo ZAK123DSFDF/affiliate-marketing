@@ -30,6 +30,7 @@ import { useCustomizationSync } from "@/hooks/useCustomizationSync"
 import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
 import { useAuthCard } from "@/hooks/useAuthCard"
+import { useRouter } from "next/navigation"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -38,6 +39,7 @@ type Props = {
 }
 const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false)
+  const router = useRouter()
   const { customNotesSignup } = useNotesCustomizationOption()
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "auth")
@@ -63,13 +65,12 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { showCustomToast } = useCustomToast()
   const affiliateMutation = useMutation({
     mutationFn: SignupAffiliateServer,
-    onSuccess: (data) =>
-      console.log("Affiliate signup success", data, affiliate),
+    onSuccess: () => router.push(`/affiliate/${orgId}/checkEmail`),
   })
 
   const normalMutation = useMutation({
     mutationFn: SignupServer,
-    onSuccess: (data) => console.log("Normal signup success", data),
+    onSuccess: () => router.push(`/checkEmail`),
   })
   const isLoading = isPreview
     ? previewLoading

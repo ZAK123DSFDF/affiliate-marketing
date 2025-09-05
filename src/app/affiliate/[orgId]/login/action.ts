@@ -5,6 +5,7 @@ import * as bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { cookies } from "next/headers"
 import { returnError } from "@/lib/errorHandler"
+import { sendVerificationEmail } from "@/lib/mail"
 
 export const LoginAffiliateServer = async ({
   email,
@@ -68,19 +69,13 @@ export const LoginAffiliateServer = async ({
         organizationId: existingAffiliate.organizationId,
       },
       process.env.SECRET_KEY as string,
-      { expiresIn: "7d" }
+      { expiresIn: "15m" }
     )
 
-    cookieStore.set({
-      name: "token",
-      value: token,
-      httpOnly: true,
-    })
+    const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-login?affiliateToken=${token}`
+    await sendVerificationEmail(existingAffiliate.email, verifyUrl)
 
-    return {
-      user: existingAffiliate,
-      token,
-    }
+    return { ok: true, message: "Verification email sent" }
   } catch (error: any) {
     console.error("Affiliate Login Error:", error)
     return returnError(error)

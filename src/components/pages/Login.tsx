@@ -30,6 +30,7 @@ import { useCustomizationSync } from "@/hooks/useCustomizationSync"
 import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
 import { useAuthCard } from "@/hooks/useAuthCard"
+import { useRouter } from "next/navigation"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -38,6 +39,7 @@ type Props = {
 }
 const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { showCustomToast } = useCustomToast()
+  const router = useRouter()
   const [previewLoading, setPreviewLoading] = useState(false)
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -62,14 +64,14 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     : { isPending: false, isError: false, refetch: () => {} }
   const affiliateMutation = useMutation({
     mutationFn: LoginAffiliateServer,
-    onSuccess: (data: any) => {
-      console.log("Affiliate login success", data)
+    onSuccess: () => {
+      router.push(`/affiliate/${orgId}/checkEmail`)
     },
   })
   const normalMutation = useMutation({
     mutationFn: LoginServer,
-    onSuccess: (data: any) => {
-      console.log("Normal login success", data)
+    onSuccess: () => {
+      router.push(`/checkEmail`)
     },
   })
   const isLoading = isPreview

@@ -41,7 +41,10 @@ const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
     if (isPreview) {
       setMainTab?.("sidebar")
     } else {
-      router.push("/dashboard")
+      if (affiliate) {
+        router.push(`/affiliate/${orgId}/dashboard/analytics`)
+      }
+      router.push(`/seller/${orgId}/dashboard/analytics`)
     }
   }
   if (isPending) {

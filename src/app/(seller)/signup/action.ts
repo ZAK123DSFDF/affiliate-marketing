@@ -6,7 +6,8 @@ import * as bcrypt from "bcrypt"
 import jwt from "jsonwebtoken" // <--- Add this import!
 import { InferInsertModel } from "drizzle-orm"
 import { cookies } from "next/headers"
-import { returnError } from "@/lib/errorHandler" // Recommended for type safety
+import { returnError } from "@/lib/errorHandler"
+import { sendVerificationEmail } from "@/lib/mail" // Recommended for type safety
 
 // Define the type for user creation using Drizzle's InferInsertModel
 type CreateUserPayload = InferInsertModel<typeof user>
@@ -77,17 +78,13 @@ export const SignupServer = async ({
         type: newUser.type,
       },
       process.env.SECRET_KEY as string,
-      { expiresIn: "7d" }
+      { expiresIn: "15m" }
     )
 
-    // Set cookie
-    cookieStore.set({
-      name: "token",
-      value: token,
-      httpOnly: true,
-    })
+    const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-signup?sellerToken=${token}`
+    await sendVerificationEmail(newUser.email, verifyUrl)
 
-    return { user: newUser, token } // Return newUser as 'user'
+    return { ok: true, message: "Verification email sent" }
   } catch (error: any) {
     console.error("Signup error:", error) // Log the full error for debugging
     return returnError(error)

@@ -5,6 +5,7 @@ import * as bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { db } from "@/db/drizzle"
 import { returnError } from "@/lib/errorHandler"
+import { sendVerificationEmail } from "@/lib/mail"
 
 export const LoginServer = async ({
   email,
@@ -58,19 +59,12 @@ export const LoginServer = async ({
     }
 
     const token = jwt.sign(payload, process.env.SECRET_KEY as string, {
-      expiresIn: "7d",
+      expiresIn: "15m",
     })
 
-    cookieStore.set({
-      name: "token",
-      value: token,
-      httpOnly: true,
-    })
-
-    return {
-      user: Existuser,
-      token,
-    }
+    const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-login?sellerToken=${token}`
+    await sendVerificationEmail(Existuser.email, verifyUrl)
+    return { ok: true, message: "Verification email sent" }
   } catch (error: any) {
     console.error("Login error:", error)
     return returnError(error)
