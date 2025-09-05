@@ -8,7 +8,7 @@ import { SellerKpiTimeSeries } from "@/lib/types/affiliateChartStats"
 import { getTimeSeriesData } from "@/lib/server/getTimeSeriesData"
 import { SellerReferrerStat } from "@/lib/types/affiliateReferrerStat"
 import { getReferrerStats } from "@/lib/server/getReferrerStats"
-import { AffiliatePayout, AffiliateStats } from "@/lib/types/affiliateStats"
+import { AffiliateStats } from "@/lib/types/affiliateStats"
 import { getTopAffiliatesByConversionRate } from "@/lib/server/getTopAffiliateByConversionRate"
 import { getSellerKpiStatsAction } from "@/lib/server/getSellerKpiStats"
 import { ExchangeRate } from "@/util/ExchangeRate"
@@ -88,7 +88,6 @@ export async function getTopAffiliates(
       year,
       month
     )) as AffiliateStats[]
-    const rate = await ExchangeRate(org.currency)
     const converted = await convertedCurrency<AffiliateStats>(
       org.currency,
       TopAffiliateStats

@@ -8,7 +8,6 @@ import { getAffiliatePayoutBulkAction } from "@/lib/server/getAffiliatePayoutBul
 import { getUnpaidPayoutAction } from "@/lib/server/getUnpaidPayout"
 import { getAffiliatePayoutAction } from "@/lib/server/getAffiliatePayout"
 import { OrderBy, OrderDir } from "@/lib/types/orderTypes"
-import { ExchangeRate } from "@/util/ExchangeRate"
 import { convertedCurrency } from "@/util/ConvertedCurrency"
 export async function getAffiliatePayouts(
   orgId: string,

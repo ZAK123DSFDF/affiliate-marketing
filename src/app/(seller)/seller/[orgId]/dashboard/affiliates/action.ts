@@ -6,7 +6,6 @@ import { AffiliateStats } from "@/lib/types/affiliateStats"
 import { getOrgAuth } from "@/lib/server/GetOrgAuth"
 import { getAffiliatesWithStatsAction } from "@/lib/server/getAffiliatesWithStats"
 import { OrderBy, OrderDir } from "@/lib/types/orderTypes"
-import { ExchangeRate } from "@/util/ExchangeRate"
 import { convertedCurrency } from "@/util/ConvertedCurrency"
 
 export async function getAffiliatesWithStats(

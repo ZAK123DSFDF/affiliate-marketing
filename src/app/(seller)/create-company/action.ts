@@ -12,7 +12,6 @@ import { db } from "@/db/drizzle"
 import { companySchema } from "@/components/pages/Create-Company"
 import { z } from "zod"
 import jwt from "jsonwebtoken"
-import { calculateExpirationDate } from "@/util/CalculateExpiration"
 import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization"
 import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization"
 
@@ -40,7 +39,6 @@ export const CreateOrganization = async (
     const sanitizedDomain = data.domainName
       .replace(/^https?:\/\//i, "")
       .replace(/\/$/, "")
-    const now = new Date()
 
     // Insert the new organization
     const [newOrg] = await db
