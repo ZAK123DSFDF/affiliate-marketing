@@ -29,7 +29,7 @@ import {
 } from "@/lib/types/affiliateReferrerStat"
 import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateReferrers } from "@/app/affiliate/[orgId]/dashboard/action"
-import { getSellerReferrer } from "@/app/seller/[orgId]/dashboard/action"
+import { getSellerReferrer } from "@/app/(seller)/seller/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 

@@ -17,7 +17,7 @@ import {
   getAffiliatePayouts,
   getAffiliatePayoutsBulk,
   getUnpaidMonths,
-} from "@/app/seller/[orgId]/dashboard/payout/action"
+} from "@/app/(seller)/seller/[orgId]/dashboard/payout/action"
 import { useEffect, useState } from "react"
 import MonthSelect from "@/components/ui-custom/MonthSelect"
 import { useQuery } from "@tanstack/react-query"

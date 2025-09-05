@@ -27,7 +27,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
-import { CreateOrganization } from "@/app/create-company/action"
+import { CreateOrganization } from "@/app/(seller)/create-company/action"
 
 export const companySchema = z.object({
   name: z.string().min(2),

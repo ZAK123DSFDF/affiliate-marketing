@@ -2,7 +2,7 @@ import React from "react"
 import { OrgIdProps } from "@/lib/types/orgId"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { ChartDailyMetrics } from "@/components/ui-custom/Chart/SalesChart"
-import { getSellerKpiTimeSeries } from "@/app/seller/[orgId]/dashboard/action"
+import { getSellerKpiTimeSeries } from "@/app/(seller)/seller/[orgId]/dashboard/action"
 import { ErrorCard } from "@/components/ui-custom/ErrorCard"
 
 const chartsPage = async ({ params }: OrgIdProps) => {

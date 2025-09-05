@@ -5,7 +5,7 @@ import { AuthCustomization } from "@/components/pages/Dashboard/Customization/Au
 import { DashboardCustomization } from "@/components/pages/Dashboard/Customization/DashboardCustomization"
 import { ToastCustomization } from "@/components/ui-custom/Customization/ToastCustomization"
 import { useMutation } from "@tanstack/react-query"
-import { saveCustomizationsAction } from "@/app/seller/[orgId]/dashboard/customization/action"
+import { saveCustomizationsAction } from "@/app/(seller)/seller/[orgId]/dashboard/customization/action"
 import { getAuthCustomizationChanges } from "@/customization/Auth/AuthCustomizationChanges"
 import { useAuthCustomizationChangesStore } from "@/store/AuthCustomizationChangesStore"
 import { useDashboardCustomizationChangesStore } from "@/store/DashboardCustomizationChangesStore"

@@ -6,7 +6,7 @@ import {
   getAuthCustomization,
   getDashboardCustomization,
   getCustomizations,
-} from "@/app/seller/[orgId]/dashboard/customization/action"
+} from "@/app/(seller)/seller/[orgId]/dashboard/customization/action"
 import {
   AuthCustomizationStores,
   DashboardCustomizationStores,

@@ -1,6 +1,6 @@
 import React from "react"
 import { OrgIdProps } from "@/lib/types/orgId"
-import { getAffiliatePayouts } from "@/app/seller/[orgId]/dashboard/payout/action"
+import { getAffiliatePayouts } from "@/app/(seller)/seller/[orgId]/dashboard/payout/action"
 import PayoutTable from "@/components/pages/Dashboard/Payouts/PayoutTable"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { ErrorCard } from "@/components/ui-custom/ErrorCard"

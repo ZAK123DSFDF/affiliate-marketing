@@ -14,7 +14,7 @@ import {
   updateUserPassword,
   updateUserProfile,
   validateCurrentSellerPassword,
-} from "@/app/seller/[orgId]/dashboard/profile/action"
+} from "@/app/(seller)/seller/[orgId]/dashboard/profile/action"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   affiliateProfileSchema,

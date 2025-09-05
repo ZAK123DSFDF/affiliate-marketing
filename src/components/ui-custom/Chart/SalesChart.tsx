@@ -32,7 +32,7 @@ import { ChartCustomizationOptions } from "@/components/ui-custom/Customization/
 import { AffiliateKpiTimeSeries } from "@/lib/types/affiliateChartStats"
 import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateKpiTimeSeries } from "@/app/affiliate/[orgId]/dashboard/action"
-import { getSellerKpiTimeSeries } from "@/app/seller/[orgId]/dashboard/action"
+import { getSellerKpiTimeSeries } from "@/app/(seller)/seller/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 

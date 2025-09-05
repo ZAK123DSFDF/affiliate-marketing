@@ -1,6 +1,6 @@
 import React from "react"
 import Settings from "@/components/pages/Dashboard/Settings/Settings"
-import { orgInfo } from "@/app/seller/[orgId]/dashboard/settings/action"
+import { orgInfo } from "@/app/(seller)/seller/[orgId]/dashboard/settings/action"
 import { OrgIdProps } from "@/lib/types/orgId"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { ErrorCard } from "@/components/ui-custom/ErrorCard"

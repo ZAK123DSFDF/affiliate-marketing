@@ -11,7 +11,7 @@ import { InputField, CheckboxField } from "@/components/Auth/FormFields"
 import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema"
 import { useMutation } from "@tanstack/react-query"
 import { LoginAffiliateServer } from "@/app/affiliate/[orgId]/login/action"
-import { LoginServer } from "@/app/login/action"
+import { LoginServer } from "@/app/(seller)/login/action"
 import {
   useButtonCustomizationOption,
   useNotesCustomizationOption,

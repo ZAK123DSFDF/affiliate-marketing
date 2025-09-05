@@ -17,7 +17,7 @@ import { useMutation } from "@tanstack/react-query"
 import { Loader2, User } from "lucide-react"
 import { z } from "zod"
 
-import { updateOrgSettings } from "@/app/seller/[orgId]/dashboard/settings/action"
+import { updateOrgSettings } from "@/app/(seller)/seller/[orgId]/dashboard/settings/action"
 import { useToast } from "@/hooks/use-toast"
 import { orgSettingsSchema } from "@/lib/schema/orgSettingSchema"
 import React, { useMemo } from "react"
