@@ -1,20 +1,10 @@
 "use client"
 
 import { atom, PrimitiveAtom } from "jotai"
+import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization"
 
-// Initial values — from your defaultDashboardCustomization
-const defaultSidebarCustomization = {
-  sideBarBackgroundColor: "",
-  sideBarActiveNavigationTextColor: "",
-  sideBarInActiveNavigationTextColor: "",
-  sideBarActiveNavigationBackgroundColor: "",
-  sideBarHoverNavigationBackgroundColor: "",
-  sideBarHoverNavigationTextColor: "",
-  sideBarProfileBackgroundColor: "",
-  sideBarProfileTextPrimaryColor: "",
-  sideBarProfileTextSecondaryColor: "",
-  sideBarNavigationFocusRingColor: "",
-}
+const defaultSidebarCustomization =
+  defaultDashboardCustomization.useSidebarCustomization
 
 type SidebarKeys = keyof typeof defaultSidebarCustomization
 
@@ -22,6 +12,7 @@ export const sidebarAtoms = (
   Object.keys(defaultSidebarCustomization) as SidebarKeys[]
 ).reduce(
   (acc, key) => {
+    // Use the value from defaultDashboardCustomization instead of empty string
     acc[key] = atom(defaultSidebarCustomization[key])
     return acc
   },
