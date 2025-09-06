@@ -1,5 +1,5 @@
 import { VerifyServer } from "@/lib/server/verifyServer"
-import InvalidError from "@/components/pages/Error"
+import InvalidToken from "@/components/pages/InvalidToken"
 
 type Props = {
   searchParams: Promise<{ sellerToken?: string; affiliateToken?: string }>
@@ -13,7 +13,12 @@ export default async function VerifyLoginPage({ searchParams }: Props) {
   } else if (affiliateToken) {
     await VerifyServer({ token: affiliateToken, tokenType: "affiliate" })
   } else {
-    return <InvalidError />
+    return (
+      <InvalidToken
+        affiliate={false}
+        message="The login link is invalid or expired."
+      />
+    )
   }
 
   return null

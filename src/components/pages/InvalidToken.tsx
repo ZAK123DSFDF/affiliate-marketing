@@ -11,8 +11,9 @@ type Props = {
   orgId?: string
   isPreview?: boolean
   affiliate: boolean
+  message?: string
 }
-const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
+const InvalidToken = ({ orgId, isPreview, affiliate, message }: Props) => {
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "auth")
     : { isPending: false, isError: false, refetch: () => {} }
@@ -73,7 +74,7 @@ const InvalidToken = ({ orgId, isPreview, affiliate }: Props) => {
                     (affiliate && InvalidSecondaryCustomization) || undefined,
                 }}
               >
-                The password reset link is invalid or has expired.
+                {message || "The verification link is invalid or has expired."}
               </p>
               {isPreview && (
                 <ThemeCustomizationOptions
