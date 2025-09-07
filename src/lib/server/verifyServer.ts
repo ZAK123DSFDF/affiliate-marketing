@@ -51,11 +51,19 @@ export const VerifyServer = async ({
     })
 
     if (tokenType === "seller") {
-      cookieStore.set("sellerToken", sessionToken, { httpOnly: true })
+      cookieStore.set({
+        name: "sellerToken",
+        value: sessionToken,
+        httpOnly: true,
+      })
     }
 
     if (tokenType === "affiliate") {
-      cookieStore.set("affiliateToken", sessionToken, { httpOnly: true })
+      cookieStore.set({
+        name: "affiliateToken",
+        value: sessionToken,
+        httpOnly: true,
+      })
     }
 
     // Redirect logic
