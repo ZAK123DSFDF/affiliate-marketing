@@ -9,7 +9,11 @@ export default async function VerifySignupPage({ searchParams }: Props) {
   const { sellerToken } = await searchParams
 
   if (sellerToken) {
-    await VerifyServer({ token: sellerToken, tokenType: "seller" })
+    await VerifyServer({
+      token: sellerToken,
+      tokenType: "seller",
+      mode: "signup",
+    })
   } else {
     return (
       <InvalidToken

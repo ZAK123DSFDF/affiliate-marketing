@@ -3,16 +3,20 @@
 import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
 import { redirect } from "next/navigation"
-
+import { affiliate, user } from "@/db/schema"
+import { eq } from "drizzle-orm"
+import { db } from "@/db/drizzle"
 type VerifyServerProps = {
   token: string
   tokenType: "affiliate" | "seller"
+  mode: "login" | "signup"
   redirectUrl?: string
 }
 
 export const VerifyServer = async ({
   token,
   tokenType,
+  mode,
   redirectUrl,
 }: VerifyServerProps) => {
   let sessionPayload: any = null
@@ -28,6 +32,19 @@ export const VerifyServer = async ({
       orgId: decoded.organizationId || decoded.orgId,
     }
 
+    if (mode === "signup") {
+      if (tokenType === "seller") {
+        await db
+          .update(user)
+          .set({ emailVerified: new Date() })
+          .where(eq(user.id, sessionPayload.id))
+      } else if (tokenType === "affiliate") {
+        await db
+          .update(affiliate)
+          .set({ emailVerified: new Date() })
+          .where(eq(affiliate.id, sessionPayload.id))
+      }
+    }
     const cookieStore = await cookies()
     const sessionToken = jwt.sign(sessionPayload, process.env.SECRET_KEY!, {
       expiresIn: "7d",

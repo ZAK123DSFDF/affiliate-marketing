@@ -2,16 +2,18 @@ import { VerifyServer } from "@/lib/server/verifyServer"
 import InvalidToken from "@/components/pages/InvalidToken"
 
 type Props = {
-  searchParams: Promise<{ sellerToken?: string; affiliateToken?: string }>
+  searchParams: Promise<{ sellerToken?: string }>
 }
 
 export default async function VerifyLoginPage({ searchParams }: Props) {
-  const { sellerToken, affiliateToken } = await searchParams
+  const { sellerToken } = await searchParams
 
   if (sellerToken) {
-    await VerifyServer({ token: sellerToken, tokenType: "seller" })
-  } else if (affiliateToken) {
-    await VerifyServer({ token: affiliateToken, tokenType: "affiliate" })
+    await VerifyServer({
+      token: sellerToken,
+      tokenType: "seller",
+      mode: "login",
+    })
   } else {
     return (
       <InvalidToken

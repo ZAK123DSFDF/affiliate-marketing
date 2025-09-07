@@ -225,7 +225,11 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                       isPreview={isPreview}
                       label="Forgot Password"
                       tabName="forgot-password"
-                      href="/forgot-password"
+                      href={
+                        affiliate && orgId
+                          ? `/affiliate/${orgId}/forgot-password`
+                          : "/forgot-password"
+                      }
                       setTab={setTab}
                       linkTextColor={linkTextColor}
                     />
@@ -295,7 +299,9 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                 isPreview={isPreview}
                 label="Sign up"
                 tabName="signup"
-                href="/signup"
+                href={
+                  affiliate && orgId ? `/affiliate/${orgId}/signup` : "/signup"
+                }
                 setTab={setTab}
                 linkTextColor={linkTextColor}
               />

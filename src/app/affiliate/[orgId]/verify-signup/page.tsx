@@ -14,7 +14,11 @@ export default async function VerifySignupPage({
   const { affiliateToken } = await searchParams
   const orgId = await getValidatedOrgFromParams({ params })
   if (affiliateToken) {
-    await VerifyServer({ token: affiliateToken, tokenType: "affiliate" })
+    await VerifyServer({
+      token: affiliateToken,
+      tokenType: "affiliate",
+      mode: "signup",
+    })
   } else {
     return (
       <InvalidToken

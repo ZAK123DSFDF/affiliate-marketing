@@ -287,7 +287,9 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                   isPreview={isPreview}
                   label="Login"
                   tabName="login"
-                  href="/login"
+                  href={
+                    affiliate && orgId ? `/affiliate/${orgId}/login` : "/login"
+                  }
                   setTab={setTab}
                   linkTextColor={linkTextColor}
                 />

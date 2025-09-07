@@ -254,7 +254,9 @@ const ForgotPassword = ({
                   isPreview={isPreview}
                   label="Login"
                   tabName="login"
-                  href="/login"
+                  href={
+                    affiliate && orgId ? `/affiliate/${orgId}/login` : "/login"
+                  }
                   setTab={setTab}
                   linkTextColor={linkTextColor}
                 />
