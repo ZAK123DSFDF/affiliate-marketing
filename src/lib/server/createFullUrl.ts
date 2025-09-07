@@ -3,12 +3,9 @@ import { db } from "@/db/drizzle"
 import { generateAffiliateCode } from "@/util/idGenerators"
 import { affiliateLink } from "@/db/schema"
 
-export const createFullUrl = async (decoded: {
-  id: string
-  organizationId: string
-}) => {
+export const createFullUrl = async (decoded: { id: string; orgId: string }) => {
   const org = await db.query.organization.findFirst({
-    where: (o, { eq }) => eq(o.id, decoded.organizationId),
+    where: (o, { eq }) => eq(o.id, decoded.orgId),
   })
   if (!org) throw new Error("Organization not found")
   const code = generateAffiliateCode() // e.g., "7hjKpQ"
@@ -20,7 +17,7 @@ export const createFullUrl = async (decoded: {
   await db.insert(affiliateLink).values({
     id: code,
     affiliateId: decoded.id,
-    organizationId: decoded.organizationId,
+    organizationId: decoded.orgId,
   })
   return { org, fullUrl }
 }

@@ -65,12 +65,34 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { showCustomToast } = useCustomToast()
   const affiliateMutation = useMutation({
     mutationFn: SignupAffiliateServer,
-    onSuccess: () => router.push(`/affiliate/${orgId}/checkEmail`),
+    onSuccess: (res: any) => {
+      if (res.ok) {
+        router.push(`/affiliate/${orgId}/checkEmail`)
+      } else {
+        showCustomToast({
+          type: "error",
+          title: "Signup Failed",
+          description: res.toast || "Signup failed",
+          affiliate,
+        })
+      }
+    },
   })
 
   const normalMutation = useMutation({
     mutationFn: SignupServer,
-    onSuccess: () => router.push(`/checkEmail`),
+    onSuccess: (res: any) => {
+      if (res.ok) {
+        router.push(`/checkEmail`)
+      } else {
+        showCustomToast({
+          type: "error",
+          title: "Signup Failed",
+          description: res.toast || "Signup failed",
+          affiliate,
+        })
+      }
+    },
   })
   const isLoading = isPreview
     ? previewLoading
@@ -102,14 +124,10 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
 
       return
     }
-    try {
-      if (orgId && affiliate) {
-        affiliateMutation.mutate({ ...data, organizationId: orgId })
-      } else {
-        normalMutation.mutate(data)
-      }
-    } catch (err) {
-      console.error("Signup failed:", err)
+    if (orgId && affiliate) {
+      affiliateMutation.mutate({ ...data, organizationId: orgId })
+    } else {
+      normalMutation.mutate(data)
     }
   }
   if (isPending) {

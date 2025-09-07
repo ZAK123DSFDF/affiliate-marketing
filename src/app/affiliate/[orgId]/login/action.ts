@@ -11,10 +11,12 @@ export const LoginAffiliateServer = async ({
   email,
   password,
   organizationId,
+  rememberMe = false,
 }: {
   email: string
   password: string
   organizationId: string
+  rememberMe?: boolean
 }) => {
   try {
     if (!email || !password || !organizationId) {
@@ -67,6 +69,7 @@ export const LoginAffiliateServer = async ({
         email: existingAffiliate.email,
         type: existingAffiliate.type,
         organizationId: existingAffiliate.organizationId,
+        rememberMe,
       },
       process.env.SECRET_KEY as string,
       { expiresIn: "15m" }

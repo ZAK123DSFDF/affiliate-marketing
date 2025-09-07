@@ -19,12 +19,12 @@ export async function getAffiliateKpiStats(
   try {
     const decoded = await getAffiliateOrganization()
     const [row] = await getAffiliateKpiStatsAction(
-      decoded.organizationId,
+      decoded.orgId,
       decoded.id,
       year,
       month
     )
-    const org = await getOrganization(decoded.organizationId)
+    const org = await getOrganization(decoded.orgId)
     const rate = await ExchangeRate(org.currency)
     const affiliateKpiStats: AffiliateKpiStats = {
       totalLinks: row?.totalLinks ?? 0,

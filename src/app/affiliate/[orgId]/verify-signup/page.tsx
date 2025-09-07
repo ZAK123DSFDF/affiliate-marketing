@@ -1,33 +1,22 @@
-import { VerifyServer } from "@/lib/server/verifyServer"
 import InvalidToken from "@/components/pages/InvalidToken"
-import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
+import VerifyClient from "@/components/pages/VerifyClient"
 
 type Props = {
   searchParams: Promise<{ affiliateToken?: string }>
   params: Promise<{ orgId: string }>
 }
 
-export default async function VerifySignupPage({
-  searchParams,
-  params,
-}: Props) {
+export default async function VerifySignupPage({ searchParams }: Props) {
   const { affiliateToken } = await searchParams
-  const orgId = await getValidatedOrgFromParams({ params })
-  if (affiliateToken) {
-    await VerifyServer({
-      token: affiliateToken,
-      tokenType: "affiliate",
-      mode: "signup",
-    })
-  } else {
+
+  if (!affiliateToken) {
     return (
       <InvalidToken
-        affiliate={false}
+        affiliate={true}
         message="The signup link is invalid or expired."
-        orgId={orgId}
       />
     )
   }
 
-  return null
+  return <VerifyClient token={affiliateToken} mode="signup" />
 }

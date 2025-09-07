@@ -4,13 +4,13 @@ import jwt from "jsonwebtoken"
 
 export async function getAffiliateOrganization() {
   const cookieStore = await cookies()
-  const token = cookieStore.get("token")?.value
+  const token = cookieStore.get("affiliateToken")?.value
 
   if (!token) throw new Error("Unauthorized")
 
   const decoded = jwt.decode(token) as {
     id: string
-    organizationId: string
+    orgId: string
   }
   if (!decoded) throw { status: 400, toast: "Invalid session" }
   return decoded

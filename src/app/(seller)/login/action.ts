@@ -10,9 +10,11 @@ import { sendVerificationEmail } from "@/lib/mail"
 export const LoginServer = async ({
   email,
   password,
+  rememberMe = false,
 }: {
   email: string
   password: string
+  rememberMe: boolean
 }) => {
   try {
     if (!email || !password) {
@@ -59,6 +61,7 @@ export const LoginServer = async ({
       role: Existuser.role,
       type: Existuser.type,
       organizationId: userOrg?.organizationId,
+      rememberMe,
     }
 
     const token = jwt.sign(payload, process.env.SECRET_KEY as string, {

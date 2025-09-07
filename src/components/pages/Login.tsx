@@ -64,14 +64,32 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     : { isPending: false, isError: false, refetch: () => {} }
   const affiliateMutation = useMutation({
     mutationFn: LoginAffiliateServer,
-    onSuccess: () => {
-      router.push(`/affiliate/${orgId}/checkEmail`)
+    onSuccess: (res: any) => {
+      if (res.ok) {
+        router.push(`/affiliate/${orgId}/checkEmail`)
+      } else {
+        showCustomToast({
+          type: "error",
+          title: "Login Failed",
+          description: res.toast || "Login failed",
+          affiliate,
+        })
+      }
     },
   })
   const normalMutation = useMutation({
     mutationFn: LoginServer,
-    onSuccess: () => {
-      router.push(`/checkEmail`)
+    onSuccess: (res: any) => {
+      if (res.ok) {
+        router.push(`/checkEmail`)
+      } else {
+        showCustomToast({
+          type: "error",
+          title: "Login Failed",
+          description: res.toast || "Login failed",
+          affiliate,
+        })
+      }
     },
   })
   const isLoading = isPreview
@@ -107,14 +125,10 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
 
       return
     }
-    try {
-      if (orgId && affiliate) {
-        affiliateMutation.mutate({ ...data, organizationId: orgId })
-      } else {
-        normalMutation.mutate(data)
-      }
-    } catch (error) {
-      console.error("Login failed", error)
+    if (orgId && affiliate) {
+      affiliateMutation.mutate({ ...data, organizationId: orgId })
+    } else {
+      normalMutation.mutate(data)
     }
   }
 

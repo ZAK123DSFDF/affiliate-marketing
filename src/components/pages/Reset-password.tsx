@@ -79,14 +79,32 @@ const ResetPassword = ({
   const authCardStyle = useAuthCard(affiliate)
   const affiliateMutation = useMutation({
     mutationFn: resetAffiliatePasswordServer,
-    onSuccess: () => {
-      router.push(`/affiliate/${orgId}/dashboard/analytics`)
+    onSuccess: (res: any) => {
+      if (res.ok) {
+        router.push(`/affiliate/${orgId}/dashboard/analytics`)
+      } else {
+        showCustomToast({
+          type: "error",
+          title: "Reset Password Failed",
+          description: res.toast || "Something went wrong",
+          affiliate: true,
+        })
+      }
     },
   })
   const normalMutation = useMutation({
     mutationFn: resetSellerPasswordServer,
-    onSuccess: () => {
-      router.push(`/seller/${orgId}/dashboard/analytics`)
+    onSuccess: (res: any) => {
+      if (res.ok) {
+        router.push(`/seller/${orgId}/dashboard/analytics`)
+      } else {
+        showCustomToast({
+          type: "error",
+          title: "reset Password Failed",
+          description: res.toast || "Something went wrong",
+          affiliate: false,
+        })
+      }
     },
   })
   const onSubmit = async (data: ResetPasswordFormValues) => {
@@ -131,6 +149,7 @@ const ResetPassword = ({
       console.error("Password reset failed", error)
     }
   }
+  const isSubmitting = affiliateMutation.isPending || normalMutation.isPending
   if (isPending) {
     return <PendingState />
   }
@@ -236,18 +255,20 @@ const ResetPassword = ({
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={pending}
+                  disabled={pending || isSubmitting}
                   style={{
-                    backgroundColor: pending
-                      ? (affiliate && buttonDisabledBackgroundColor) ||
-                        undefined
-                      : (affiliate && buttonBackgroundColor) || undefined,
-                    color: pending
-                      ? (affiliate && buttonDisabledTextColor) || undefined
-                      : (affiliate && buttonTextColor) || undefined,
+                    backgroundColor:
+                      pending || isSubmitting
+                        ? (affiliate && buttonDisabledBackgroundColor) ||
+                          undefined
+                        : (affiliate && buttonBackgroundColor) || undefined,
+                    color:
+                      pending || isSubmitting
+                        ? (affiliate && buttonDisabledTextColor) || undefined
+                        : (affiliate && buttonTextColor) || undefined,
                   }}
                 >
-                  {pending ? (
+                  {pending || isSubmitting ? (
                     <>
                       <Loader2
                         className="h-4 w-4 animate-spin mr-2"

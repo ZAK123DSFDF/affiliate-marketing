@@ -20,7 +20,7 @@ export const CreateOrganization = async (
 ) => {
   try {
     const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const token = cookieStore.get("sellerToken")?.value
 
     if (!token) {
       throw {

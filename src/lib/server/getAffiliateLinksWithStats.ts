@@ -12,7 +12,7 @@ import { buildWhereWithDate } from "@/util/BuildWhereWithDate"
 export async function getAffiliateLinksWithStatsAction(
   decoded: {
     id: string
-    organizationId: string
+    orgId: string
   },
   year?: number,
   month?: number
@@ -49,7 +49,7 @@ END`.mapWith(Number),
       affiliateLink,
       and(
         eq(affiliateLink.affiliateId, affiliate.id),
-        eq(affiliateLink.organizationId, decoded.organizationId)
+        eq(affiliateLink.organizationId, decoded.orgId)
       )
     )
     .leftJoin(
@@ -73,7 +73,7 @@ END`.mapWith(Number),
     .leftJoin(organization, eq(organization.id, affiliateLink.organizationId))
     .where(
       and(
-        eq(affiliate.organizationId, decoded.organizationId),
+        eq(affiliate.organizationId, decoded.orgId),
         eq(affiliate.id, decoded.id)
       )
     )

@@ -27,13 +27,17 @@ export const resetSellerPasswordServer = async ({
     if (!updatedUser) {
       throw new Error("User not found")
     }
-
+    const link = await db.query.userToOrganization.findFirst({
+      where: (uo, { eq }) => eq(uo.userId, updatedUser.id),
+    })
+    const orgId = link?.organizationId ?? null
     // Create session payload
     const sessionPayload = {
       id: updatedUser.id,
       email: updatedUser.email,
       role: updatedUser.role,
       type: updatedUser.type,
+      orgId,
     }
 
     // Sign JWT & set cookie

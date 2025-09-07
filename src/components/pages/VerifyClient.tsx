@@ -5,17 +5,22 @@ import { useQuery } from "@tanstack/react-query"
 import { VerifyServer } from "@/lib/server/verifyServer"
 import { useRouter } from "next/navigation"
 
-export default function VerifyClient({ token }: { token: string }) {
+export default function VerifyClient({
+  token,
+  mode,
+}: {
+  token: string
+  mode: "login" | "signup"
+}) {
   const router = useRouter()
 
   const { isPending, isError, data } = useQuery({
-    queryKey: ["verify-login", token],
+    queryKey: ["verify", token, mode],
     queryFn: async () => {
       if (!token) throw new Error("No token provided")
       return await VerifyServer({
         token,
-        tokenType: "seller",
-        mode: "login",
+        mode,
       })
     },
     enabled: !!token,
@@ -23,7 +28,7 @@ export default function VerifyClient({ token }: { token: string }) {
     refetchOnWindowFocus: false,
   })
 
-  // ✅ Perform redirect AFTER render
+  // Redirect if VerifyServer gives redirectUrl
   useEffect(() => {
     if (data?.redirectUrl) {
       router.push(data.redirectUrl)
@@ -31,11 +36,11 @@ export default function VerifyClient({ token }: { token: string }) {
   }, [data?.redirectUrl, router])
 
   if (isPending) {
-    return <p>Verifying your login...</p>
+    return <p>Verifying your {mode}...</p>
   }
 
   if (isError || data?.success === false) {
-    return <p>The login link is invalid or expired.</p>
+    return <p>The {mode} link is invalid or expired.</p>
   }
 
   return null

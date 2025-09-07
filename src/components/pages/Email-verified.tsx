@@ -43,8 +43,9 @@ const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
     } else {
       if (affiliate) {
         router.push(`/affiliate/${orgId}/dashboard/analytics`)
+      } else {
+        router.push(`/seller/${orgId}/dashboard/analytics`)
       }
-      router.push(`/seller/${orgId}/dashboard/analytics`)
     }
   }
   if (isPending) {

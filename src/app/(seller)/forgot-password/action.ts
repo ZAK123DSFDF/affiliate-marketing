@@ -27,12 +27,15 @@ export const ForgotPasswordServer = async ({ email }: { email: string }) => {
       }
     }
 
+    const userOrg = await db.query.userToOrganization.findFirst({
+      where: (uo, { eq }) => eq(uo.userId, existingUser.id),
+    })
     const payload = {
       id: existingUser.id,
       email: existingUser.email,
       type: existingUser.type,
       role: existingUser.role,
-      action: "reset-password",
+      orgId: userOrg?.organizationId,
     }
 
     const token = jwt.sign(payload, process.env.SECRET_KEY as string, {

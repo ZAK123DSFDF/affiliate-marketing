@@ -15,7 +15,7 @@ export const getAffiliateCommissionByMonth = async (
     const decoded = await getAffiliateOrganization()
     const targetYear = year ?? new Date().getFullYear()
     const rows = await getAffiliateCommissionByMonthAction(decoded, targetYear)
-    const org = await getOrganization(decoded.organizationId)
+    const org = await getOrganization(decoded.orgId)
     const rate = await ExchangeRate(org.currency)
     const convertedRows: AffiliatePaymentRow[] = rows.map((row) => ({
       ...row,

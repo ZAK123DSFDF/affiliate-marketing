@@ -5,7 +5,7 @@ import { affiliateInvoice, affiliateLink } from "@/db/schema"
 export async function getAffiliateCommissionByMonthAction(
   decoded: {
     id: string
-    organizationId: string
+    orgId: string
   },
   targetYear?: number
 ) {
@@ -30,7 +30,7 @@ export async function getAffiliateCommissionByMonthAction(
     .where(
       and(
         sql`extract(year from ${affiliateInvoice.createdAt}) = ${targetYear}`,
-        eq(affiliateLink.organizationId, decoded.organizationId),
+        eq(affiliateLink.organizationId, decoded.orgId),
         eq(affiliateLink.affiliateId, decoded.id)
       )
     )

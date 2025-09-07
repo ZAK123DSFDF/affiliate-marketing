@@ -73,25 +73,45 @@ const ForgotPassword = ({
   const authCardStyle = useAuthCard(affiliate)
   const sellerMutation = useMutation({
     mutationFn: ForgotPasswordServer,
-    onSuccess: () => {
-      showCustomToast({
-        type: "success",
-        title: "Email Sent",
-        description: "If the email exists, a reset link has been sent.",
-        affiliate: false,
-      })
+    onSuccess: (res: any) => {
+      if (res.ok) {
+        showCustomToast({
+          type: "success",
+          title: "Email Sent",
+          description:
+            res.message || "If the email exists, a reset link has been sent.",
+          affiliate: false,
+        })
+      } else {
+        showCustomToast({
+          type: "error",
+          title: "Forgot Password Failed",
+          description: res.toast || "Something went wrong",
+          affiliate: false,
+        })
+      }
     },
   })
 
   const affiliateMutation = useMutation({
     mutationFn: ForgotPasswordAffiliateServer,
-    onSuccess: () => {
-      showCustomToast({
-        type: "success",
-        title: "Email Sent",
-        description: "If the email exists, a reset link has been sent.",
-        affiliate: true,
-      })
+    onSuccess: (res: any) => {
+      if (res.ok) {
+        showCustomToast({
+          type: "success",
+          title: "Email Sent",
+          description:
+            res.message || "If the email exists, a reset link has been sent.",
+          affiliate: true,
+        })
+      } else {
+        showCustomToast({
+          type: "error",
+          title: "Forgot Password Failed",
+          description: res.toast || "Something went wrong",
+          affiliate: true,
+        })
+      }
     },
   })
   const onSubmit = async (data: ForgotPasswordFormValues) => {
@@ -119,16 +139,13 @@ const ForgotPassword = ({
 
       return
     }
-    try {
-      if (orgId && affiliate) {
-        affiliateMutation.mutate({ email: data.email, organizationId: orgId })
-      } else {
-        sellerMutation.mutate({ email: data.email })
-      }
-    } catch (error) {
-      console.error("Forgot password failed", error)
+    if (orgId && affiliate) {
+      affiliateMutation.mutate({ email: data.email, organizationId: orgId })
+    } else {
+      sellerMutation.mutate({ email: data.email })
     }
   }
+  const isSubmitting = sellerMutation.isPending || affiliateMutation.isPending
   if (isPending) {
     return <PendingState />
   }
@@ -222,18 +239,20 @@ const ForgotPassword = ({
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={pending}
+                  disabled={pending || isSubmitting}
                   style={{
-                    backgroundColor: pending
-                      ? (affiliate && buttonDisabledBackgroundColor) ||
-                        undefined
-                      : (affiliate && buttonBackgroundColor) || undefined,
-                    color: pending
-                      ? (affiliate && buttonDisabledTextColor) || undefined
-                      : (affiliate && buttonTextColor) || undefined,
+                    backgroundColor:
+                      pending || isSubmitting
+                        ? (affiliate && buttonDisabledBackgroundColor) ||
+                          undefined
+                        : (affiliate && buttonBackgroundColor) || undefined,
+                    color:
+                      pending || isSubmitting
+                        ? (affiliate && buttonDisabledTextColor) || undefined
+                        : (affiliate && buttonTextColor) || undefined,
                   }}
                 >
-                  {pending ? (
+                  {pending || isSubmitting ? (
                     <>
                       <Loader2
                         className="h-4 w-4 animate-spin mr-2"

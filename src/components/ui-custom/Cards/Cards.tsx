@@ -336,7 +336,11 @@ const Cards = ({
                           className="font-bold leading-tight truncate"
                           style={{ color: affiliate && primaryTextColor }}
                         >
-                          {value}
+                          {formatValue(
+                            label,
+                            value as number,
+                            (stats as AffiliateKpiStats)?.currency
+                          )}
                         </div>
                       </div>
                     </div>

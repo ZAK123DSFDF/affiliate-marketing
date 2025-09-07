@@ -2,6 +2,7 @@ import React from "react"
 import ResetPassword from "@/components/pages/Reset-password"
 import InvalidToken from "@/components/pages/InvalidToken"
 import { validateResetToken } from "@/lib/server/validateResetToken"
+import jwt from "jsonwebtoken"
 
 type Props = {
   searchParams: Promise<{ sellerToken?: string }>
@@ -33,7 +34,13 @@ const ResetPasswordPage = async ({ searchParams }: Props) => {
     )
   }
 
-  return <ResetPassword affiliate={false} userId={sessionPayload.id} />
+  return (
+    <ResetPassword
+      affiliate={false}
+      userId={sessionPayload.id}
+      orgId={sessionPayload.orgId}
+    />
+  )
 }
 
 export default ResetPasswordPage

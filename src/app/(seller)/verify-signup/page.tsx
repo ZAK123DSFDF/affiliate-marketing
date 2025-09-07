@@ -1,5 +1,6 @@
-import { VerifyServer } from "@/lib/server/verifyServer"
+// app/(seller)/verify-signup/page.tsx
 import InvalidToken from "@/components/pages/InvalidToken"
+import VerifyClient from "@/components/pages/VerifyClient"
 
 type Props = {
   searchParams: Promise<{ sellerToken?: string }>
@@ -8,13 +9,7 @@ type Props = {
 export default async function VerifySignupPage({ searchParams }: Props) {
   const { sellerToken } = await searchParams
 
-  if (sellerToken) {
-    await VerifyServer({
-      token: sellerToken,
-      tokenType: "seller",
-      mode: "signup",
-    })
-  } else {
+  if (!sellerToken) {
     return (
       <InvalidToken
         affiliate={false}
@@ -23,5 +18,5 @@ export default async function VerifySignupPage({ searchParams }: Props) {
     )
   }
 
-  return null
+  return <VerifyClient token={sellerToken} mode="signup" />
 }

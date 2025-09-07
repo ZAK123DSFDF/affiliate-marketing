@@ -4,7 +4,7 @@ import { affiliate, affiliateLink } from "@/db/schema"
 import { and, eq } from "drizzle-orm"
 
 export async function getAffiliateLinks(decoded: {
-  organizationId: string
+  orgId: string
   id: string
 }) {
   const affiliates = await db
@@ -16,7 +16,7 @@ export async function getAffiliateLinks(decoded: {
     .from(affiliate)
     .where(
       and(
-        eq(affiliate.organizationId, decoded.organizationId),
+        eq(affiliate.organizationId, decoded.orgId),
         eq(affiliate.id, decoded.id)
       )
     )
@@ -31,7 +31,7 @@ export async function getAffiliateLinks(decoded: {
     .where(
       and(
         eq(affiliateLink.affiliateId, affiliateId),
-        eq(affiliateLink.organizationId, decoded.organizationId)
+        eq(affiliateLink.organizationId, decoded.orgId)
       )
     )
 
