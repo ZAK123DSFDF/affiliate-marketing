@@ -1,13 +1,39 @@
-import React, { Suspense } from "react"
+import React from "react"
 import ResetPassword from "@/components/pages/Reset-password"
+import InvalidToken from "@/components/pages/InvalidToken"
+import { validateResetToken } from "@/lib/server/validateResetToken"
 
-const resetPasswordPage = async () => {
-  return (
-    <>
-      <Suspense fallback={<div>Loading...</div>}>
-        <ResetPassword affiliate={false} />
-      </Suspense>
-    </>
-  )
+type Props = {
+  searchParams: Promise<{ sellerToken?: string }>
 }
-export default resetPasswordPage
+
+const ResetPasswordPage = async ({ searchParams }: Props) => {
+  const { sellerToken } = await searchParams
+
+  if (!sellerToken) {
+    return (
+      <InvalidToken
+        affiliate={false}
+        message="The reset link is invalid or expired."
+      />
+    )
+  }
+
+  const sessionPayload = await validateResetToken({
+    token: sellerToken,
+    tokenType: "seller",
+  })
+
+  if (!sessionPayload) {
+    return (
+      <InvalidToken
+        affiliate={false}
+        message="The reset link is invalid or expired."
+      />
+    )
+  }
+
+  return <ResetPassword affiliate={false} userId={sessionPayload.id} />
+}
+
+export default ResetPasswordPage

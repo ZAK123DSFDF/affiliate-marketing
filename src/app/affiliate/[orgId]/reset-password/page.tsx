@@ -1,16 +1,44 @@
-import React, { Suspense } from "react"
+import React from "react"
 import ResetPassword from "@/components/pages/Reset-password"
-import { OrgIdProps } from "@/lib/types/orgId"
+import InvalidToken from "@/components/pages/InvalidToken"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
+import { validateResetToken } from "@/lib/server/validateResetToken"
 
-const resetPasswordPage = async ({ params }: OrgIdProps) => {
-  const orgId = await getValidatedOrgFromParams({ params })
-  return (
-    <>
-      <Suspense fallback={<div>Loading...</div>}>
-        <ResetPassword orgId={orgId} affiliate />
-      </Suspense>
-    </>
-  )
+type Props = {
+  searchParams: Promise<{ affiliateToken?: string }>
+  params: Promise<{ orgId: string }>
 }
-export default resetPasswordPage
+
+const ResetPasswordPage = async ({ searchParams, params }: Props) => {
+  const { affiliateToken } = await searchParams
+  const orgId = await getValidatedOrgFromParams({ params })
+
+  if (!affiliateToken) {
+    return (
+      <InvalidToken
+        affiliate
+        message="The reset link is invalid or expired."
+        orgId={orgId}
+      />
+    )
+  }
+
+  const sessionPayload = await validateResetToken({
+    token: affiliateToken,
+    tokenType: "affiliate",
+  })
+
+  if (!sessionPayload) {
+    return (
+      <InvalidToken
+        affiliate
+        message="The reset link is invalid or expired."
+        orgId={orgId}
+      />
+    )
+  }
+
+  return <ResetPassword orgId={orgId} affiliate userId={sessionPayload.id} />
+}
+
+export default ResetPasswordPage

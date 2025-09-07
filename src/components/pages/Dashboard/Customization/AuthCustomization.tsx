@@ -41,7 +41,13 @@ export const AuthCustomization = ({
             <ForgotPassword orgId={orgId} affiliate isPreview setTab={setTab} />
           </TabsContent>
           <TabsContent value="reset-password">
-            <ResetPassword orgId={orgId} affiliate isPreview setTab={setTab} />
+            <ResetPassword
+              orgId={orgId}
+              affiliate
+              isPreview
+              setTab={setTab}
+              userId="1234"
+            />
           </TabsContent>
           <TabsContent value="invalid-token">
             <InvalidToken orgId={orgId} affiliate isPreview />

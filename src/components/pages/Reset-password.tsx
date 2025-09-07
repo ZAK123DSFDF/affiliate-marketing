@@ -15,13 +15,12 @@ import {
 import { Form } from "@/components/ui/form"
 import Link from "next/link"
 
-import { useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { InputField } from "@/components/Auth/FormFields"
 import {
   ResetPasswordFormValues,
   passwordSchema,
 } from "@/lib/schema/passwordSchema"
-import InvalidToken from "@/components/pages/InvalidToken"
 import {
   useButtonCustomizationOption,
   useThemeCustomizationOption,
@@ -36,26 +35,26 @@ import { useCustomizationSync } from "@/hooks/useCustomizationSync"
 import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
 import { useAuthCard } from "@/hooks/useAuthCard"
+import { resetSellerPasswordServer } from "@/app/(seller)/reset-password/action"
+import { resetAffiliatePasswordServer } from "@/app/affiliate/[orgId]/reset-password/action"
+import { useMutation } from "@tanstack/react-query"
 type Props = {
+  userId: string
   orgId?: string
   isPreview?: boolean
   setTab?: (tab: string) => void
   affiliate: boolean
 }
 const ResetPassword = ({
+  userId,
   orgId,
   isPreview = false,
   setTab,
   affiliate,
 }: Props) => {
-  const searchParams = useSearchParams()
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "auth")
     : { isPending: false, isError: false, refetch: () => {} }
-  const token = searchParams.get("token")
-  if (!token && !isPreview) {
-    return <InvalidToken affiliate={affiliate} orgId={orgId} />
-  }
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
@@ -66,6 +65,7 @@ const ResetPassword = ({
 
   const [pending, setPending] = useState(false)
   const { showCustomToast } = useCustomToast()
+  const router = useRouter()
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
     useThemeCustomizationOption()
   const {
@@ -77,6 +77,18 @@ const ResetPassword = ({
   const { primaryCustomization, secondaryCustomization } =
     useThemeCustomizationOption()
   const authCardStyle = useAuthCard(affiliate)
+  const affiliateMutation = useMutation({
+    mutationFn: resetAffiliatePasswordServer,
+    onSuccess: () => {
+      router.push(`/affiliate/${orgId}/dashboard/analytics`)
+    },
+  })
+  const normalMutation = useMutation({
+    mutationFn: resetSellerPasswordServer,
+    onSuccess: () => {
+      router.push(`/seller/${orgId}/dashboard/analytics`)
+    },
+  })
   const onSubmit = async (data: ResetPasswordFormValues) => {
     if (isPreview) {
       setPending(true)
@@ -101,6 +113,22 @@ const ResetPassword = ({
       }
 
       return
+    }
+    try {
+      if (orgId && affiliate) {
+        affiliateMutation.mutate({
+          affiliateId: userId,
+          orgId,
+          password: data.password,
+        })
+      } else {
+        normalMutation.mutate({
+          userId,
+          password: data.password,
+        })
+      }
+    } catch (error) {
+      console.error("Password reset failed", error)
     }
   }
   if (isPending) {

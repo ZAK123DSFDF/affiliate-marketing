@@ -34,6 +34,9 @@ import { useCustomizationSync } from "@/hooks/useCustomizationSync"
 import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
 import { useAuthCard } from "@/hooks/useAuthCard"
+import { ForgotPasswordServer } from "@/app/(seller)/forgot-password/action"
+import { useMutation } from "@tanstack/react-query"
+import { ForgotPasswordAffiliateServer } from "@/app/affiliate/[orgId]/forgot-password/action"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -68,6 +71,29 @@ const ForgotPassword = ({
   const { primaryCustomization, secondaryCustomization } =
     useThemeCustomizationOption()
   const authCardStyle = useAuthCard(affiliate)
+  const sellerMutation = useMutation({
+    mutationFn: ForgotPasswordServer,
+    onSuccess: () => {
+      showCustomToast({
+        type: "success",
+        title: "Email Sent",
+        description: "If the email exists, a reset link has been sent.",
+        affiliate: false,
+      })
+    },
+  })
+
+  const affiliateMutation = useMutation({
+    mutationFn: ForgotPasswordAffiliateServer,
+    onSuccess: () => {
+      showCustomToast({
+        type: "success",
+        title: "Email Sent",
+        description: "If the email exists, a reset link has been sent.",
+        affiliate: true,
+      })
+    },
+  })
   const onSubmit = async (data: ForgotPasswordFormValues) => {
     if (isPreview) {
       setPending(true)
@@ -92,6 +118,15 @@ const ForgotPassword = ({
       }
 
       return
+    }
+    try {
+      if (orgId && affiliate) {
+        affiliateMutation.mutate({ email: data.email, organizationId: orgId })
+      } else {
+        sellerMutation.mutate({ email: data.email })
+      }
+    } catch (error) {
+      console.error("Forgot password failed", error)
     }
   }
   if (isPending) {

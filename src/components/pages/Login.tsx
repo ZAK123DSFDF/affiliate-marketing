@@ -108,7 +108,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
       return
     }
     try {
-      if (orgId) {
+      if (orgId && affiliate) {
         affiliateMutation.mutate({ ...data, organizationId: orgId })
       } else {
         normalMutation.mutate(data)

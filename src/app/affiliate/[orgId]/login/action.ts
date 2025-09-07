@@ -72,7 +72,7 @@ export const LoginAffiliateServer = async ({
       { expiresIn: "15m" }
     )
 
-    const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-login?affiliateToken=${token}`
+    const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/affiliate/${organizationId}/verify-login?affiliateToken=${token}`
     await sendVerificationEmail(existingAffiliate.email, verifyUrl)
 
     return { ok: true, message: "Verification email sent" }
