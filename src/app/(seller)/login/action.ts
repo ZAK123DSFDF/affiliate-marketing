@@ -50,12 +50,15 @@ export const LoginServer = async ({
         fields: { password: "Invalid password" },
       }
     }
-
+    const userOrg = await db.query.userToOrganization.findFirst({
+      where: (uo, { eq }) => eq(uo.userId, Existuser.id),
+    })
     const payload = {
       id: Existuser.id,
       email: Existuser.email,
       role: Existuser.role,
       type: Existuser.type,
+      organizationId: userOrg?.organizationId,
     }
 
     const token = jwt.sign(payload, process.env.SECRET_KEY as string, {

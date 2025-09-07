@@ -8,7 +8,7 @@ import { OrgAuthResult } from "@/lib/types/orgAuth"
 
 export async function getOrgAuth(orgId: string): Promise<OrgAuthResult> {
   const cookieStore = await cookies()
-  const token = cookieStore.get("token")?.value
+  const token = cookieStore.get("sellerToken")?.value
   if (!token) throw { status: 401, toast: "Unauthorized" }
 
   const { id: userId } = jwt.decode(token) as { id: string }

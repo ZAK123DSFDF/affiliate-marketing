@@ -2,10 +2,10 @@
 
 import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
-import { redirect } from "next/navigation"
 import { affiliate, user } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { db } from "@/db/drizzle"
+
 type VerifyServerProps = {
   token: string
   tokenType: "affiliate" | "seller"
@@ -19,12 +19,10 @@ export const VerifyServer = async ({
   mode,
   redirectUrl,
 }: VerifyServerProps) => {
-  let sessionPayload: any = null
-
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY!) as any
 
-    sessionPayload = {
+    const sessionPayload = {
       id: decoded.id,
       email: decoded.email,
       type: decoded.type,
@@ -32,55 +30,49 @@ export const VerifyServer = async ({
       orgId: decoded.organizationId || decoded.orgId,
     }
 
+    // Email verification on signup
     if (mode === "signup") {
       if (tokenType === "seller") {
         await db
           .update(user)
           .set({ emailVerified: new Date() })
           .where(eq(user.id, sessionPayload.id))
-      } else if (tokenType === "affiliate") {
+      } else {
         await db
           .update(affiliate)
           .set({ emailVerified: new Date() })
           .where(eq(affiliate.id, sessionPayload.id))
       }
     }
+
     const cookieStore = await cookies()
     const sessionToken = jwt.sign(sessionPayload, process.env.SECRET_KEY!, {
       expiresIn: "7d",
     })
 
-    if (tokenType === "seller") {
-      cookieStore.set({
-        name: "sellerToken",
-        value: sessionToken,
-        httpOnly: true,
-      })
-    }
+    cookieStore.set({
+      name: tokenType === "seller" ? "sellerToken" : "affiliateToken",
+      value: sessionToken,
+      httpOnly: true,
+    })
 
-    if (tokenType === "affiliate") {
-      cookieStore.set({
-        name: "affiliateToken",
-        value: sessionToken,
-        httpOnly: true,
-      })
-    }
-
-    // Redirect logic
-    if (redirectUrl) {
-      redirect(redirectUrl)
-    } else if (tokenType === "seller") {
-      redirect(`/email-verified`)
-    } else if (tokenType === "affiliate") {
-      redirect(`/affiliate/${sessionPayload.orgId}/email-verified`)
+    // ✅ return instead of redirect
+    return {
+      success: true,
+      redirectUrl:
+        redirectUrl ||
+        (tokenType === "seller"
+          ? "/email-verified"
+          : `/affiliate/${sessionPayload.orgId}/email-verified`),
     }
   } catch (err) {
     console.error("Verify error:", err)
-    if (tokenType === "seller") {
-      redirect(`/invalid-token`)
-    } else if (tokenType === "affiliate") {
-      const orgId = sessionPayload?.orgId ?? "unknown"
-      redirect(`/affiliate/${orgId}/invalid-token`)
+    return {
+      success: false,
+      redirectUrl:
+        tokenType === "seller"
+          ? "/invalid-token"
+          : `/affiliate/${"unknown"}/invalid-token`,
     }
   }
 }
