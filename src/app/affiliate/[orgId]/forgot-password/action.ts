@@ -49,7 +49,7 @@ export const ForgotPasswordAffiliateServer = async ({
       expiresIn: "15m",
     })
 
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/affiliate/${organizationId}/reset-password?affiliateToken=${token}`
+    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/affiliate/${organizationId}/reset-password?affiliateToken=${token}`
 
     await sendVerificationEmail(existingAffiliate.email, resetUrl)
 
