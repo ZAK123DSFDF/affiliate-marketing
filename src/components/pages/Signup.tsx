@@ -31,6 +31,7 @@ import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
 import { useAuthCard } from "@/hooks/useAuthCard"
 import { useRouter } from "next/navigation"
+import { useAuthMutation } from "@/hooks/useAuthMutation"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -63,36 +64,16 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   } = useButtonCustomizationOption()
   const authCardStyle = useAuthCard(affiliate)
   const { showCustomToast } = useCustomToast()
-  const affiliateMutation = useMutation({
-    mutationFn: SignupAffiliateServer,
-    onSuccess: (res: any) => {
-      if (res.ok) {
-        router.push(`/affiliate/${orgId}/checkEmail`)
-      } else {
-        showCustomToast({
-          type: "error",
-          title: "Signup Failed",
-          description: res.toast || "Signup failed",
-          affiliate,
-        })
-      }
-    },
+  const affiliateMutation = useAuthMutation(SignupAffiliateServer, {
+    affiliate,
+    redirectUrl: `/affiliate/${orgId}/checkEmail`,
+    disableSuccessToast: true,
   })
 
-  const normalMutation = useMutation({
-    mutationFn: SignupServer,
-    onSuccess: (res: any) => {
-      if (res.ok) {
-        router.push(`/checkEmail`)
-      } else {
-        showCustomToast({
-          type: "error",
-          title: "Signup Failed",
-          description: res.toast || "Signup failed",
-          affiliate,
-        })
-      }
-    },
+  const normalMutation = useAuthMutation(SignupServer, {
+    affiliate,
+    redirectUrl: "/checkEmail",
+    disableSuccessToast: true,
   })
   const isLoading = isPreview
     ? previewLoading

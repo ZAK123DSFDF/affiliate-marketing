@@ -31,6 +31,7 @@ import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
 import { useAuthCard } from "@/hooks/useAuthCard"
 import { useRouter } from "next/navigation"
+import { useAuthMutation } from "@/hooks/useAuthMutation"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -62,35 +63,15 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "auth")
     : { isPending: false, isError: false, refetch: () => {} }
-  const affiliateMutation = useMutation({
-    mutationFn: LoginAffiliateServer,
-    onSuccess: (res: any) => {
-      if (res.ok) {
-        router.push(`/affiliate/${orgId}/checkEmail`)
-      } else {
-        showCustomToast({
-          type: "error",
-          title: "Login Failed",
-          description: res.toast || "Login failed",
-          affiliate,
-        })
-      }
-    },
+  const affiliateMutation = useAuthMutation(LoginAffiliateServer, {
+    affiliate,
+    redirectUrl: `affiliate/${orgId}/checkEmail`,
+    disableSuccessToast: true,
   })
-  const normalMutation = useMutation({
-    mutationFn: LoginServer,
-    onSuccess: (res: any) => {
-      if (res.ok) {
-        router.push(`/checkEmail`)
-      } else {
-        showCustomToast({
-          type: "error",
-          title: "Login Failed",
-          description: res.toast || "Login failed",
-          affiliate,
-        })
-      }
-    },
+  const normalMutation = useAuthMutation(LoginServer, {
+    affiliate,
+    redirectUrl: "/checkEmail",
+    disableSuccessToast: true,
   })
   const isLoading = isPreview
     ? previewLoading

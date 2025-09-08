@@ -37,6 +37,7 @@ import { useAuthCard } from "@/hooks/useAuthCard"
 import { ForgotPasswordServer } from "@/app/(seller)/forgot-password/action"
 import { useMutation } from "@tanstack/react-query"
 import { ForgotPasswordAffiliateServer } from "@/app/affiliate/[orgId]/forgot-password/action"
+import { useAuthMutation } from "@/hooks/useAuthMutation"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -71,48 +72,10 @@ const ForgotPassword = ({
   const { primaryCustomization, secondaryCustomization } =
     useThemeCustomizationOption()
   const authCardStyle = useAuthCard(affiliate)
-  const sellerMutation = useMutation({
-    mutationFn: ForgotPasswordServer,
-    onSuccess: (res: any) => {
-      if (res.ok) {
-        showCustomToast({
-          type: "success",
-          title: "Email Sent",
-          description:
-            res.message || "If the email exists, a reset link has been sent.",
-          affiliate: false,
-        })
-      } else {
-        showCustomToast({
-          type: "error",
-          title: "Forgot Password Failed",
-          description: res.toast || "Something went wrong",
-          affiliate: false,
-        })
-      }
-    },
-  })
+  const sellerMutation = useAuthMutation(ForgotPasswordServer, { affiliate })
 
-  const affiliateMutation = useMutation({
-    mutationFn: ForgotPasswordAffiliateServer,
-    onSuccess: (res: any) => {
-      if (res.ok) {
-        showCustomToast({
-          type: "success",
-          title: "Email Sent",
-          description:
-            res.message || "If the email exists, a reset link has been sent.",
-          affiliate: true,
-        })
-      } else {
-        showCustomToast({
-          type: "error",
-          title: "Forgot Password Failed",
-          description: res.toast || "Something went wrong",
-          affiliate: true,
-        })
-      }
-    },
+  const affiliateMutation = useAuthMutation(ForgotPasswordAffiliateServer, {
+    affiliate,
   })
   const onSubmit = async (data: ForgotPasswordFormValues) => {
     if (isPreview) {

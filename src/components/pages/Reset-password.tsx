@@ -38,6 +38,7 @@ import { useAuthCard } from "@/hooks/useAuthCard"
 import { resetSellerPasswordServer } from "@/app/(seller)/reset-password/action"
 import { resetAffiliatePasswordServer } from "@/app/affiliate/[orgId]/reset-password/action"
 import { useMutation } from "@tanstack/react-query"
+import { useAuthMutation } from "@/hooks/useAuthMutation"
 type Props = {
   userId: string
   orgId?: string
@@ -77,35 +78,15 @@ const ResetPassword = ({
   const { primaryCustomization, secondaryCustomization } =
     useThemeCustomizationOption()
   const authCardStyle = useAuthCard(affiliate)
-  const affiliateMutation = useMutation({
-    mutationFn: resetAffiliatePasswordServer,
-    onSuccess: (res: any) => {
-      if (res.ok) {
-        router.push(`/affiliate/${orgId}/dashboard/analytics`)
-      } else {
-        showCustomToast({
-          type: "error",
-          title: "Reset Password Failed",
-          description: res.toast || "Something went wrong",
-          affiliate: true,
-        })
-      }
-    },
+  const affiliateMutation = useAuthMutation(resetAffiliatePasswordServer, {
+    affiliate,
+    redirectUrl: `/affiliate/${orgId}/dashboard/analytics`,
+    disableSuccessToast: true,
   })
-  const normalMutation = useMutation({
-    mutationFn: resetSellerPasswordServer,
-    onSuccess: (res: any) => {
-      if (res.ok) {
-        router.push(`/seller/${orgId}/dashboard/analytics`)
-      } else {
-        showCustomToast({
-          type: "error",
-          title: "reset Password Failed",
-          description: res.toast || "Something went wrong",
-          affiliate: false,
-        })
-      }
-    },
+  const normalMutation = useAuthMutation(resetSellerPasswordServer, {
+    affiliate,
+    redirectUrl: `/seller/${orgId}/dashboard/analytics`,
+    disableSuccessToast: true,
   })
   const onSubmit = async (data: ResetPasswordFormValues) => {
     if (isPreview) {
