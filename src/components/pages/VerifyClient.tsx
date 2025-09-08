@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { VerifyServer } from "@/lib/server/verifyServer"
 import { useRouter } from "next/navigation"
+import EmailVerified from "@/components/pages/Email-verified"
 
 export default function VerifyClient({
   token,
@@ -30,10 +31,10 @@ export default function VerifyClient({
 
   // Redirect if VerifyServer gives redirectUrl
   useEffect(() => {
-    if (data?.redirectUrl) {
+    if (data?.redirectUrl && !data?.mode) {
       router.push(data.redirectUrl)
     }
-  }, [data?.redirectUrl, router])
+  }, [data?.redirectUrl, data?.mode, router])
 
   if (isPending) {
     return <p>Verifying your {mode}...</p>
@@ -42,6 +43,14 @@ export default function VerifyClient({
   if (isError || data?.success === false) {
     return <p>The {mode} link is invalid or expired.</p>
   }
-
+  if (data?.mode) {
+    return (
+      <EmailVerified
+        affiliate={data.tokenType === "affiliate"}
+        orgId={data.orgId}
+        mode={data.mode}
+      />
+    )
+  }
   return null
 }

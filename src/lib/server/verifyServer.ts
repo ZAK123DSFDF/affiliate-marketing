@@ -68,6 +68,9 @@ export const VerifyServer = async ({
         (tokenType === "seller"
           ? "/email-verified"
           : `/affiliate/${sessionPayload.orgId}/email-verified`),
+      mode,
+      tokenType,
+      orgId: sessionPayload.orgId || null,
     }
   } catch (err) {
     console.error("Verify error:", err)

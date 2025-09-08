@@ -21,9 +21,16 @@ type Props = {
   isPreview?: boolean
   setMainTab?: (tab: string) => void
   affiliate: boolean
+  mode?: "signup" | "login"
 }
 
-const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
+const EmailVerified = ({
+  orgId,
+  isPreview,
+  setMainTab,
+  affiliate,
+  mode,
+}: Props) => {
   const { backgroundColor } = useThemeCustomizationOption()
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "auth")
@@ -44,7 +51,11 @@ const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
       if (affiliate) {
         router.push(`/affiliate/${orgId}/dashboard/analytics`)
       } else {
-        router.push(`/seller/${orgId}/dashboard/analytics`)
+        if (mode === "signup" && !orgId) {
+          router.push("/seller/create-company")
+        } else {
+          router.push(`/seller/${orgId}/dashboard/analytics`)
+        }
       }
     }
   }
@@ -135,7 +146,9 @@ const EmailVerified = ({ orgId, isPreview, setMainTab, affiliate }: Props) => {
                 color: (affiliate && buttonTextColor) || undefined,
               }}
             >
-              Go to Dashboard
+              {mode === "signup" && !orgId
+                ? "Go to Create Company"
+                : "Go to Dashboard"}
             </Button>
           </CardContent>
         </Card>
