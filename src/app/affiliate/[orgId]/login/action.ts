@@ -32,8 +32,6 @@ export const LoginAffiliateServer = async ({
       }
     }
 
-    const cookieStore = await cookies()
-
     const existingAffiliate = await db.query.affiliate.findFirst({
       where: (a, { and, eq }) =>
         and(eq(a.email, email), eq(a.organizationId, organizationId)),
