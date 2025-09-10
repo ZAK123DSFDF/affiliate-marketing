@@ -4,10 +4,11 @@ import { getAffiliatesWithStats } from "@/app/(seller)/seller/[orgId]/dashboard/
 import { OrgIdProps } from "@/lib/types/orgId"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { ErrorCard } from "@/components/ui-custom/ErrorCard"
+import { requireSellerWithOrg } from "@/lib/server/authGuards"
 
 const affiliatePage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
-
+  await requireSellerWithOrg(orgId)
   const rows = await getAffiliatesWithStats(orgId)
   if (!rows.ok) {
     return <ErrorCard message={rows.error || "Something went wrong"} />

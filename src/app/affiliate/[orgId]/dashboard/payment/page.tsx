@@ -5,9 +5,11 @@ import PaymentTable from "@/components/pages/AffiliateDashboard/Payment/Payment"
 import { MissingPaypalEmailCard } from "@/components/ui-custom/MissingPayoutEmailCard"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { ErrorCard } from "@/components/ui-custom/ErrorCard"
+import { requireAffiliateWithOrg } from "@/lib/server/authGuards"
 
 const paymentPage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
+  await requireAffiliateWithOrg(orgId)
   const res = await getAffiliateCommissionByMonth()
   if (!res.ok) {
     return <ErrorCard message={res.error || "Something went wrong"} />

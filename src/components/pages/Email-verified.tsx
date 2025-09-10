@@ -52,7 +52,7 @@ const EmailVerified = ({
         router.push(`/affiliate/${orgId}/dashboard/analytics`)
       } else {
         if (mode === "signup" && !orgId) {
-          router.push("/seller/create-company")
+          router.push("/create-company")
         } else {
           router.push(`/seller/${orgId}/dashboard/analytics`)
         }

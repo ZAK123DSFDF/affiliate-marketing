@@ -3,6 +3,7 @@ import ResetPassword from "@/components/pages/Reset-password"
 import InvalidToken from "@/components/pages/InvalidToken"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { validateResetToken } from "@/lib/server/validateResetToken"
+import { redirectIfAffiliateAuthed } from "@/lib/server/authGuards"
 
 type Props = {
   searchParams: Promise<{ affiliateToken?: string }>
@@ -12,7 +13,7 @@ type Props = {
 const ResetPasswordPage = async ({ searchParams, params }: Props) => {
   const { affiliateToken } = await searchParams
   const orgId = await getValidatedOrgFromParams({ params })
-
+  await redirectIfAffiliateAuthed(orgId)
   if (!affiliateToken) {
     return (
       <InvalidToken

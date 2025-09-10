@@ -35,6 +35,8 @@ export const CreateOrganization = async (
       email: string
       role: string
       type: string
+      exp: number
+      iat: number
     }
     const sanitizedDomain = data.domainName
       .replace(/^https?:\/\//i, "")
@@ -84,7 +86,21 @@ export const CreateOrganization = async (
         target: organizationDashboardCustomization.id,
         set: { dashboard: defaultDashboardCustomization },
       })
-    return { ok: true, data: newOrg }
+    // 🔑 Re-sign the token with orgId, preserving the original expiration
+    const newPayload = {
+      id: decoded.id,
+      email: decoded.email,
+      role: decoded.role,
+      type: decoded.type,
+      orgId: newOrg.id,
+    }
+
+    const newToken = jwt.sign(newPayload, process.env.SECRET_KEY!, {
+      expiresIn: decoded.exp - Math.floor(Date.now() / 1000),
+    })
+
+    cookieStore.set("sellerToken", newToken, { httpOnly: true })
+    return { ok: true, message: "Company created successfully!", data: newOrg }
   } catch (err) {
     console.error("Organization create error", err)
     return returnError(err)

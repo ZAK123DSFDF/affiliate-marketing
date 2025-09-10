@@ -4,30 +4,17 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { useMutation } from "@tanstack/react-query"
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
+
+import { Form } from "@/components/ui/form"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Loader2 } from "lucide-react"
+import { Loader2, User } from "lucide-react"
 import { CreateOrganization } from "@/app/(seller)/create-company/action"
+import { InputField } from "@/components/Auth/FormFields"
+import { SelectField } from "@/components/ui-custom/SelectFields"
+import { useAuthMutation } from "@/hooks/useAuthMutation"
 
 export const companySchema = z.object({
   name: z.string().min(2),
@@ -68,25 +55,13 @@ export default function CreateCompany() {
       currency: "USD",
     },
   })
-
-  const { toast } = useToast()
   const router = useRouter()
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: CreateOrganization,
-    onSuccess: () => {
-      toast({
-        title: "Company created successfully!",
-        description: "Your organization is ready to use.",
-      })
-      router.push("/dashboard")
-    },
-    onError: (err: any) => {
-      toast({
-        variant: "destructive",
-        title: "Error creating company",
-        description: err.message ?? "Something went wrong.",
-      })
+  const { mutate, isPending } = useAuthMutation(CreateOrganization, {
+    onSuccess: (res: any) => {
+      if (res.ok && res.data?.id) {
+        router.push(`/seller/${res.data.id}/dashboard/analytics`)
+      }
     },
   })
 
@@ -105,272 +80,130 @@ export default function CreateCompany() {
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
+                className="space-y-6"
               >
-                <FormField
-                  name="name"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Acme Inc" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  name="domainName"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Company Domain (e.g., yourcompany.com)
-                      </FormLabel>{" "}
-                      {/* Updated label */}
-                      <FormControl>
-                        <Input {...field} placeholder="yourcompany.com" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  name="logoUrl"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Logo URL (optional)</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="https://cdn.example.com/logo.png"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  name="referralParam"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Referral URL Parameter</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger affiliate={false}>
-                            <SelectValue placeholder="Select referral param" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent affiliate={false}>
-                          <SelectItem affiliate={false} value="ref">
-                            ref
-                          </SelectItem>
-                          <SelectItem affiliate={false} value="via">
-                            via
-                          </SelectItem>
-                          <SelectItem affiliate={false} value="aff">
-                            aff
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <InputField
+                    control={form.control}
+                    name="name"
+                    label="Company Name"
+                    placeholder="Acme Inc"
+                    type="text"
+                    icon={User}
+                    affiliate={false}
+                  />
+                  <InputField
+                    control={form.control}
+                    name="domainName"
+                    label="Company Domain"
+                    placeholder="yourcompany.com"
+                    type="text"
+                    icon={User}
+                    affiliate={false}
+                  />
+                  <InputField
+                    control={form.control}
+                    name="logoUrl"
+                    label="Logo URL (optional)"
+                    placeholder="https://cdn.example.com/logo.png"
+                    type="text"
+                    icon={User}
+                    affiliate={false}
+                  />
+                  <SelectField
+                    control={form.control}
+                    name="referralParam"
+                    label="Referral URL Parameter"
+                    placeholder="Select referral param"
+                    options={[
+                      { value: "ref", label: "ref" },
+                      { value: "via", label: "via" },
+                      { value: "aff", label: "aff" },
+                    ]}
+                    affiliate={false}
+                  />
+                </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <FormField
+                  <InputField
+                    control={form.control}
                     name="cookieLifetimeValue"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Cookie Lifetime</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label="Cookie Lifetime"
+                    type="number"
+                    placeholder="30"
+                    icon={User}
+                    affiliate={false}
                   />
-
-                  <FormField
+                  <SelectField
+                    control={form.control}
                     name="cookieLifetimeUnit"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Unit</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger affiliate={false}>
-                              <SelectValue placeholder="Select unit" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent affiliate={false}>
-                            <SelectItem affiliate={false} value="day">
-                              Day
-                            </SelectItem>
-                            <SelectItem affiliate={false} value="week">
-                              Week
-                            </SelectItem>
-                            <SelectItem affiliate={false} value="month">
-                              Month
-                            </SelectItem>
-                            <SelectItem affiliate={false} value="year">
-                              Year
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label="Unit"
+                    placeholder="Select unit"
+                    options={[
+                      { value: "day", label: "Day" },
+                      { value: "week", label: "Week" },
+                      { value: "month", label: "Month" },
+                      { value: "year", label: "Year" },
+                    ]}
+                    affiliate={false}
                   />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
+                  <SelectField
+                    control={form.control}
                     name="commissionType"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Commission Type</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger affiliate={false}>
-                              <SelectValue placeholder="Select type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent affiliate={false}>
-                            <SelectItem affiliate={false} value="percentage">
-                              Percentage
-                            </SelectItem>
-                            <SelectItem affiliate={false} value="fixed">
-                              Fixed
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label="Commission Type"
+                    placeholder="Select type"
+                    options={[
+                      { value: "percentage", label: "Percentage" },
+                      { value: "fixed", label: "Fixed" },
+                    ]}
+                    affiliate={false}
                   />
-
-                  <FormField
+                  <InputField
+                    control={form.control}
                     name="commissionValue"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Commission Value</FormLabel>
-                        <FormControl>
-                          <Input type="number" step="0.01" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label="Commission Value"
+                    type="number"
+                    placeholder="10"
+                    icon={User}
+                    affiliate={false}
                   />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
+                  <InputField
+                    control={form.control}
                     name="commissionDurationValue"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Commission Duration</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label="Commission Duration"
+                    type="number"
+                    placeholder="30"
+                    icon={User}
+                    affiliate={false}
                   />
-
-                  <FormField
-                    name="commissionDurationUnit"
+                  <SelectField
                     control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Unit</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger affiliate={false}>
-                              <SelectValue placeholder="Select unit" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent affiliate={false}>
-                            <SelectItem affiliate={false} value="day">
-                              Day
-                            </SelectItem>
-                            <SelectItem affiliate={false} value="week">
-                              Week
-                            </SelectItem>
-                            <SelectItem affiliate={false} value="month">
-                              Month
-                            </SelectItem>
-                            <SelectItem affiliate={false} value="year">
-                              Year
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    name="commissionDurationUnit"
+                    label="Duration Unit"
+                    placeholder="Select unit"
+                    options={[
+                      { value: "day", label: "Day" },
+                      { value: "week", label: "Week" },
+                      { value: "month", label: "Month" },
+                      { value: "year", label: "Year" },
+                    ]}
+                    affiliate={false}
+                  />
+                  <SelectField
+                    control={form.control}
+                    name="currency"
+                    label="Currency"
+                    placeholder="Select currency"
+                    options={[
+                      { value: "USD", label: "USD" },
+                      { value: "EUR", label: "EUR" },
+                      { value: "GBP", label: "GBP" },
+                      { value: "CAD", label: "CAD" },
+                      { value: "AUD", label: "AUD" },
+                    ]}
+                    affiliate={false}
                   />
                 </div>
-
-                <FormField
-                  name="currency"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Currency</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger affiliate={false}>
-                            <SelectValue placeholder="Select currency" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent affiliate={false}>
-                          <SelectItem affiliate={false} value="USD">
-                            USD
-                          </SelectItem>
-                          <SelectItem affiliate={false} value="EUR">
-                            EUR
-                          </SelectItem>
-                          <SelectItem affiliate={false} value="GBP">
-                            GBP
-                          </SelectItem>
-                          <SelectItem affiliate={false} value="CAD">
-                            CAD
-                          </SelectItem>
-                          <SelectItem affiliate={false} value="AUD">
-                            AUD
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
                 <Button type="submit" className="w-full" disabled={isPending}>
                   {isPending ? (

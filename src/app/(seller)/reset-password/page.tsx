@@ -2,13 +2,14 @@ import React from "react"
 import ResetPassword from "@/components/pages/Reset-password"
 import InvalidToken from "@/components/pages/InvalidToken"
 import { validateResetToken } from "@/lib/server/validateResetToken"
-import jwt from "jsonwebtoken"
+import { redirectIfAuthed } from "@/lib/server/authGuards"
 
 type Props = {
   searchParams: Promise<{ sellerToken?: string }>
 }
 
 const ResetPasswordPage = async ({ searchParams }: Props) => {
+  await redirectIfAuthed()
   const { sellerToken } = await searchParams
 
   if (!sellerToken) {

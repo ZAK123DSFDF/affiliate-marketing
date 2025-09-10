@@ -4,9 +4,11 @@ import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { ChartDailyMetrics } from "@/components/ui-custom/Chart/SalesChart"
 import { getAffiliateKpiTimeSeries } from "@/app/affiliate/[orgId]/dashboard/action"
 import { ErrorCard } from "@/components/ui-custom/ErrorCard"
+import { requireAffiliateWithOrg } from "@/lib/server/authGuards"
 
 const chartsPage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
+  await requireAffiliateWithOrg(orgId)
   const affiliateChartStats = await getAffiliateKpiTimeSeries()
   if (!affiliateChartStats.ok) {
     return (

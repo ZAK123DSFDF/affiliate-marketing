@@ -4,8 +4,10 @@ import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import SocialTrafficCharts from "@/components/ui-custom/Chart/DataSourceChart"
 import { getAffiliateReferrers } from "@/app/affiliate/[orgId]/dashboard/action"
 import { ErrorCard } from "@/components/ui-custom/ErrorCard"
+import { requireAffiliateWithOrg } from "@/lib/server/authGuards"
 const referrersPage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
+  await requireAffiliateWithOrg(orgId)
   const referrerStats = await getAffiliateReferrers()
   if (!referrerStats.ok) {
     return <ErrorCard message={referrerStats.error || "Something went wrong"} />

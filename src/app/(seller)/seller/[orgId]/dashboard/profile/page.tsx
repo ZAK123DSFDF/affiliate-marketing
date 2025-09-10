@@ -4,9 +4,11 @@ import { OrgIdProps } from "@/lib/types/orgId"
 import { getUserData } from "@/app/(seller)/seller/[orgId]/dashboard/profile/action"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { ErrorCard } from "@/components/ui-custom/ErrorCard"
+import { requireSellerWithOrg } from "@/lib/server/authGuards"
 
 const profilePage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
+  await requireSellerWithOrg(orgId)
   const userResponse = await getUserData()
   if (!userResponse.ok) {
     return <ErrorCard message={userResponse.error || "Something went wrong"} />
