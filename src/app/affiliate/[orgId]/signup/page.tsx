@@ -5,7 +5,7 @@ import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { redirectIfAffiliateAuthed } from "@/lib/server/authGuards"
 const AffiliateSignupPage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
-  await redirectIfAffiliateAuthed(orgId)
+  await redirectIfAffiliateAuthed()
   return (
     <>
       <Signup affiliate orgId={orgId} />

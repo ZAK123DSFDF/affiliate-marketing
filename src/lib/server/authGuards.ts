@@ -58,7 +58,7 @@ export async function requireAffiliateWithOrg(
   return decoded
 }
 
-export async function redirectIfAffiliateAuthed(orgId?: string) {
+export async function redirectIfAffiliateAuthed() {
   const decoded = await getAffiliateAuth()
 
   if (decoded) {
