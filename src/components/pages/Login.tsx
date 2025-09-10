@@ -65,7 +65,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     : { isPending: false, isError: false, refetch: () => {} }
   const affiliateMutation = useAuthMutation(LoginAffiliateServer, {
     affiliate,
-    redirectUrl: `affiliate/${orgId}/checkEmail`,
+    redirectUrl: `/affiliate/${orgId}/checkEmail`,
     disableSuccessToast: true,
   })
   const normalMutation = useAuthMutation(LoginServer, {
