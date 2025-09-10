@@ -28,7 +28,6 @@ export const LoginServer = async ({
         },
       }
     }
-    const cookieStore = await cookies()
     // Find the user by email
     const Existuser = await db.query.user.findFirst({
       where: (u, { eq }) => eq(u.email, email),
