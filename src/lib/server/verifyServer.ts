@@ -31,8 +31,6 @@ export const VerifyServer = async ({
       role: decoded.role,
       orgId,
     }
-
-    // Email verification on signup
     if (mode === "signup") {
       if (tokenType === "seller") {
         await db
@@ -60,10 +58,8 @@ export const VerifyServer = async ({
       sameSite: "lax",
       expires: decoded.rememberMe
         ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        : undefined, // 👈 explicit
+        : undefined,
     })
-
-    // ✅ return instead of redirect
     return {
       success: true,
       redirectUrl:
