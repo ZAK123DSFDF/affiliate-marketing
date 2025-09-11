@@ -18,15 +18,18 @@ export const VerifyServer = async ({
   redirectUrl,
 }: VerifyServerProps) => {
   let tokenType: "seller" | "affiliate" = "seller"
+  let orgId: string | null = null
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY!) as any
+
     tokenType = (decoded.type as string).toLowerCase() as "seller" | "affiliate"
+    orgId = decoded.organizationId || decoded.orgId || null
     const sessionPayload = {
       id: decoded.id,
       email: decoded.email,
       type: decoded.type,
       role: decoded.role,
-      orgId: decoded.organizationId || decoded.orgId,
+      orgId,
     }
 
     // Email verification on signup
@@ -70,7 +73,7 @@ export const VerifyServer = async ({
           : `/affiliate/${sessionPayload.orgId}/email-verified`),
       mode,
       tokenType,
-      orgId: sessionPayload.orgId || null,
+      orgId,
     }
   } catch (err) {
     console.error("Verify error:", err)
@@ -79,7 +82,7 @@ export const VerifyServer = async ({
       redirectUrl:
         tokenType === "seller"
           ? "/invalid-token"
-          : `/affiliate/unknown/invalid-token`,
+          : `/affiliate/${orgId}/invalid-token`,
     }
   }
 }
