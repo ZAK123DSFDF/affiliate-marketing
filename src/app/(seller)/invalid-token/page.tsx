@@ -1,9 +1,11 @@
 import InvalidToken from "@/components/pages/InvalidToken"
 
-export function InvalidTokenPage() {
+const InvalidTokenPage = () => {
   return (
     <>
       <InvalidToken affiliate={false} />
     </>
   )
 }
+
+export default InvalidTokenPage
