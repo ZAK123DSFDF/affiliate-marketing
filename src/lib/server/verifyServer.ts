@@ -78,7 +78,9 @@ export const VerifyServer = async ({
       redirectUrl:
         tokenType === "seller"
           ? "/invalid-token"
-          : `/affiliate/${orgId}/invalid-token`,
+          : orgId
+            ? `/affiliate/${orgId}/invalid-token`
+            : `affiliate/unknown`,
     }
   }
 }
