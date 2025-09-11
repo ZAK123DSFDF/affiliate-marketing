@@ -1,9 +1,7 @@
 import InvalidToken from "@/components/pages/InvalidToken"
 
-export async function InvalidTokenPage() {
-  return (
-    <>
-      <InvalidToken affiliate />
-    </>
-  )
+const UnknownPage = async () => {
+  return <InvalidToken affiliate />
 }
+
+export default UnknownPage
