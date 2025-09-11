@@ -18,7 +18,7 @@ export const VerifyServer = async ({
   redirectUrl,
 }: VerifyServerProps) => {
   let tokenType: "seller" | "affiliate" = "seller"
-  let orgId: string | null = null
+  let orgId: string | undefined = undefined
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY!) as any
 
