@@ -36,14 +36,15 @@ export const payoutProviderEnum = pgEnum("payout_provider", [
   "wise",
   "payoneer",
 ])
-export const planEnum = pgEnum("plan", ["FREE", "PRO", "ULTIMATE"])
-export const subscriptionTypeEnum = pgEnum("subscription_type", [
-  "RECURRING",
-  "ONE_TIME",
-])
+export const planEnum = pgEnum("plan", ["PRO", "ULTIMATE"])
+
 export const billingIntervalEnum = pgEnum("billing_interval", [
   "MONTHLY",
   "YEARLY",
+])
+export const purchaseTierEnum = pgEnum("purchase_tier", [
+  "ONE_TIME_100",
+  "ONE_TIME_200",
 ])
 export const attributionModelEnum = pgEnum("attribution_model", [
   "FIRST_CLICK",
@@ -80,10 +81,7 @@ export const subscription = pgTable("subscription", {
   userId: uuid("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  plan: planEnum("plan").notNull().default("FREE"),
-  subscriptionType: subscriptionTypeEnum("subscription_type")
-    .notNull()
-    .default("RECURRING"),
+  plan: planEnum("plan").notNull().default("PRO"),
   billingInterval: billingIntervalEnum("billing_interval"),
   currency: text("currency").default("USD"),
   price: numeric("price", { precision: 10, scale: 2 }),
@@ -91,6 +89,16 @@ export const subscription = pgTable("subscription", {
   expiresAt: timestamp("expires_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+})
+export const purchase = pgTable("purchase", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  tier: purchaseTierEnum("tier").notNull(),
+  price: numeric("price", { precision: 10, scale: 2 }).notNull(),
+  currency: text("currency").default("USD"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 })
 // ORGANIZATION SCHEMA
 export const organization = pgTable("organization", {
