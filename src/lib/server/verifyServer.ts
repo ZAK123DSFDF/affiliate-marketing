@@ -56,9 +56,7 @@ export const VerifyServer = async ({
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      expires: decoded.rememberMe
-        ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        : undefined,
+      maxAge: decoded.rememberMe ? 30 * 24 * 60 * 60 : undefined,
     })
     return {
       success: true,
