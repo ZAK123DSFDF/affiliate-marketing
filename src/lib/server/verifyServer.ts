@@ -42,9 +42,9 @@ export const VerifyServer = async ({
       email: decoded.email,
       type: decoded.type,
       role: decoded.role,
-      orgIds: [],
-      activeOrgId: "",
-      orgId: undefined,
+      orgIds: decoded.orgIds || [],
+      activeOrgId: decoded.activeOrgId || undefined,
+      orgId: decoded.orgId || decoded.organizationId || undefined,
     }
     if (tokenType === "seller") {
       sessionPayload.orgIds = orgIds

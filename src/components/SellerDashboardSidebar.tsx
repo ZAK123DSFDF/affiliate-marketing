@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useState } from "react"
-import { usePathname } from "next/navigation"
+import React, { useEffect, useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
 import {
   BarChart3,
   Link as LinkIcon,
@@ -27,6 +27,20 @@ import {
 import Link from "next/link"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import CreateCompany from "@/components/pages/Create-Company"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+import {
+  TooltipContent,
+  TooltipTrigger,
+  Tooltip,
+} from "@/components/ui/tooltip"
+import { DropdownInput } from "@/components/ui-custom/DropDownInput"
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 
 // Menu items for the sidebar
 
@@ -37,6 +51,7 @@ type Props = {
 }
 const SellerDashboardSidebar = ({ orgId, plan, orgs }: Props) => {
   const pathname = usePathname()
+  const { showCustomToast } = useCustomToast()
   const items = [
     {
       title: "Dashboard",
@@ -70,9 +85,22 @@ const SellerDashboardSidebar = ({ orgId, plan, orgs }: Props) => {
     },
   ]
   const [open, setOpen] = useState(false)
-  const currentOrg = orgs.find((o) => o.id === orgId)
+  const handleClick = () => {
+    if (!canCreate) {
+      showCustomToast({
+        type: "error",
+        title: "Upgrade Required",
+        description: "you must be on the ultimate plan to add organization",
+        affiliate: false,
+      })
+      return
+    }
+    setOpen(true)
+  }
+  const currentOrg = orgs?.find((o) => o.id === orgId)
   const canCreate =
-    plan.plan === "ULTIMATE" || (orgs.length < 1 && plan.plan !== "ULTIMATE")
+    plan?.plan === "ULTIMATE" || (orgs?.length < 1 && plan?.plan !== "ULTIMATE")
+  const router = useRouter()
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center justify-center py-4">
@@ -82,26 +110,26 @@ const SellerDashboardSidebar = ({ orgId, plan, orgs }: Props) => {
           </div>
           <h1 className="text-xl font-bold">AffiliateX</h1>
         </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="font-semibold">
-              {currentOrg?.name ?? "No Org"}
-            </span>
-            <ChevronDown className="w-4 h-4 text-muted-foreground" />
-          </div>
+        <div className="flex items-center space-x-2">
+          {/* Org dropdown */}
+          <DropdownInput
+            label=""
+            value={currentOrg?.id ?? ""}
+            options={orgs.map((org) => ({
+              label: org.name,
+              value: org.id,
+            }))}
+            placeholder="No Org"
+            width="w-40"
+            onChange={(val) => {
+              router.push(`/seller/${val}/dashboard/analytics`)
+            }}
+            disabled={orgs.length === 0}
+          />
+          <Button size="icon" variant="default" onClick={handleClick}>
+            <Plus className="w-4 h-4" />
+          </Button>
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <button
-                disabled={!canCreate}
-                className={`p-2 rounded-md ${
-                  canCreate
-                    ? "bg-primary text-white hover:bg-primary/90"
-                    : "bg-muted cursor-not-allowed"
-                }`}
-              >
-                <Plus className="w-4 h-4" />
-              </button>
-            </DialogTrigger>
             <DialogContent affiliate={false} className="max-w-3xl">
               <CreateCompany mode="add" />
             </DialogContent>

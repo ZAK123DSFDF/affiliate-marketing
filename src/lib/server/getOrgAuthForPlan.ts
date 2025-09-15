@@ -8,11 +8,14 @@ export async function getOrgAuthForPlan(): Promise<{
 }> {
   const cookieStore = await cookies()
   const token = cookieStore.get("sellerToken")?.value
+  console.log("🔑 Raw sellerToken:", token)
+
   if (!token) throw { status: 401, toast: "Unauthorized" }
 
-  const decoded = jwt.decode(token) as { id: string; orgId: string }
-  if (!decoded?.id || !decoded?.orgId)
+  const decoded = jwt.decode(token) as { id: string; activeOrgId: string }
+  console.log("🔓 Decoded sellerToken:", decoded)
+  if (!decoded?.id || !decoded?.activeOrgId)
     throw { status: 401, toast: "Unauthorized" }
 
-  return { userId: decoded.id, orgId: decoded.orgId }
+  return { userId: decoded.id, orgId: decoded.activeOrgId }
 }

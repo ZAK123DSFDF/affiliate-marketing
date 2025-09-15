@@ -28,7 +28,6 @@ export async function getSellerAuth(): Promise<SellerTokenPayload | null> {
     if (decoded.type !== "SELLER" || !decoded.id || !decoded.email) {
       return null
     }
-
     return decoded
   } catch {
     return null
