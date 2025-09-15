@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import { usePathname } from "next/navigation"
 import {
   BarChart3,
@@ -10,6 +10,8 @@ import {
   CreditCard,
   Layers,
   User,
+  ChevronDown,
+  Plus,
 } from "lucide-react"
 import {
   Sidebar,
@@ -23,13 +25,17 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import CreateCompany from "@/components/pages/Create-Company"
 
 // Menu items for the sidebar
 
 type Props = {
   orgId?: string
+  plan: { plan: string }
+  orgs: { id: string; name: string }[]
 }
-const SellerDashboardSidebar = ({ orgId }: Props) => {
+const SellerDashboardSidebar = ({ orgId, plan, orgs }: Props) => {
   const pathname = usePathname()
   const items = [
     {
@@ -63,6 +69,10 @@ const SellerDashboardSidebar = ({ orgId }: Props) => {
       icon: Settings,
     },
   ]
+  const [open, setOpen] = useState(false)
+  const currentOrg = orgs.find((o) => o.id === orgId)
+  const canCreate =
+    plan.plan === "ULTIMATE" || (orgs.length < 1 && plan.plan !== "ULTIMATE")
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center justify-center py-4">
@@ -71,6 +81,31 @@ const SellerDashboardSidebar = ({ orgId }: Props) => {
             A
           </div>
           <h1 className="text-xl font-bold">AffiliateX</h1>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold">
+              {currentOrg?.name ?? "No Org"}
+            </span>
+            <ChevronDown className="w-4 h-4 text-muted-foreground" />
+          </div>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <button
+                disabled={!canCreate}
+                className={`p-2 rounded-md ${
+                  canCreate
+                    ? "bg-primary text-white hover:bg-primary/90"
+                    : "bg-muted cursor-not-allowed"
+                }`}
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </DialogTrigger>
+            <DialogContent affiliate={false} className="max-w-3xl">
+              <CreateCompany mode="add" />
+            </DialogContent>
+          </Dialog>
         </div>
       </SidebarHeader>
       <SidebarContent>

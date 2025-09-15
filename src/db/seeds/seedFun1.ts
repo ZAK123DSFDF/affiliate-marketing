@@ -6,7 +6,6 @@ import {
   affiliateLink,
   affiliateClick,
   affiliateInvoice,
-  userToOrganization,
   organizationAuthCustomization,
   organizationDashboardCustomization,
 } from "@/db/schema"
@@ -18,14 +17,12 @@ import {
   organization_auth_customization_seed,
   organization_dashboard_customization_seed,
   organization_seed,
-  user_organization_seed,
   user_seed,
 } from "@/db/seeds/databaseSeed"
 
 async function seedFun() {
-  await db.insert(organization).values(organization_seed)
   await db.insert(user).values(user_seed)
-  await db.insert(userToOrganization).values(user_organization_seed)
+  await db.insert(organization).values(organization_seed)
   await db.insert(affiliate).values(affiliate_seed)
   await db.insert(affiliateLink).values(affiliate_link_seed)
   await db.insert(affiliateClick).values(affiliate_click_seed)

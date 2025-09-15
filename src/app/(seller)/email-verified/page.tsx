@@ -8,6 +8,6 @@ export default async function EmailVerifiedPage() {
   if (!decoded) {
     redirect("/login")
   }
-
-  return <EmailVerified orgId={decoded.orgId} affiliate={false} />
+  console.log("this is decoded", decoded)
+  return <EmailVerified orgId={decoded.activeOrgId} affiliate={false} />
 }

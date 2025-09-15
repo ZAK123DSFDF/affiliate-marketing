@@ -1,5 +1,5 @@
 import { db } from "@/db/drizzle"
-import { subscription, userToOrganization } from "@/db/schema"
+import { organization, subscription } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { convertUsdToCurrency } from "@/util/Currency"
 import { getAffiliateTotalEarnings } from "@/lib/server/affiliateInvoice"
@@ -15,14 +15,11 @@ export async function shouldTrackTransaction(
   })
   if (!userSub) {
     console.warn("⚠️ No subscription found, treating user as FREE plan")
-    const userOrg = await db.query.userToOrganization.findFirst({
-      where: eq(userToOrganization.userId, userId),
-      with: {
-        organization: true,
-      },
+    const userOrg = await db.query.organization.findFirst({
+      where: eq(organization.userId, userId),
     })
 
-    const orgCurrency = userOrg?.organization.currency || "USD"
+    const orgCurrency = userOrg?.currency || "USD"
     const limit = await convertUsdToCurrency(FREE_PLAN_LIMIT_USD, orgCurrency)
     const total = await getAffiliateTotalEarnings(affiliateLinkId)
 

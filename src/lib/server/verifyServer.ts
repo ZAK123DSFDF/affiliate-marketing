@@ -12,24 +12,45 @@ type VerifyServerProps = {
   redirectUrl?: string
 }
 
+type SessionPayload = {
+  id: string
+  email: string
+  type: string
+  role: string
+  orgIds?: string[]
+  activeOrgId?: string
+  orgId?: string
+}
 export const VerifyServer = async ({
   token,
   mode,
   redirectUrl,
 }: VerifyServerProps) => {
   let tokenType: "seller" | "affiliate" = "seller"
-  let orgId: string | undefined = undefined
+  let orgIds: string[] = []
+  let activeOrgId: string | undefined
+  let orgId: string | undefined
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY!) as any
 
     tokenType = (decoded.type as string).toLowerCase() as "seller" | "affiliate"
-    orgId = decoded.organizationId || decoded.orgId || null
-    const sessionPayload = {
+    orgIds = decoded.orgIds || []
+    activeOrgId = decoded.activeOrgId
+    orgId = decoded.orgId || decoded.organizationId
+    const sessionPayload: SessionPayload = {
       id: decoded.id,
       email: decoded.email,
       type: decoded.type,
       role: decoded.role,
-      orgId,
+      orgIds: [],
+      activeOrgId: "",
+      orgId: undefined,
+    }
+    if (tokenType === "seller") {
+      sessionPayload.orgIds = orgIds
+      sessionPayload.activeOrgId = activeOrgId
+    } else {
+      sessionPayload.orgId = orgId
     }
     if (mode === "signup") {
       if (tokenType === "seller") {
@@ -67,7 +88,8 @@ export const VerifyServer = async ({
           : `/affiliate/${sessionPayload.orgId}/email-verified`),
       mode,
       tokenType,
-      orgId,
+      orgIds,
+      activeOrgId,
     }
   } catch (err) {
     console.error("Verify error:", err)

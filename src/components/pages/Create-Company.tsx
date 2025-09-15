@@ -37,8 +37,10 @@ export const companySchema = z.object({
 })
 
 type CompanySchema = z.infer<typeof companySchema>
-
-export default function CreateCompany() {
+type CreateCompanyProps = {
+  mode: "create" | "add"
+}
+export default function CreateCompany({ mode }: CreateCompanyProps) {
   const form = useForm<CompanySchema>({
     resolver: zodResolver(companySchema),
     defaultValues: {
@@ -65,7 +67,7 @@ export default function CreateCompany() {
     },
   })
 
-  const onSubmit = (data: CompanySchema) => mutate(data)
+  const onSubmit = (data: CompanySchema) => mutate({ ...data, mode })
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">

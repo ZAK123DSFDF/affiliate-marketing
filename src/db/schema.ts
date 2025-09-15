@@ -108,6 +108,9 @@ export const organization = pgTable("organization", {
   name: text("name").notNull(),
   domainName: text("domain_name").notNull(),
   logoUrl: text("logo_url"),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   referralParam: referralParamEnum("referral_param").default("ref"),
   cookieLifetimeValue: integer("cookie_lifetime_value").default(30),
   cookieLifetimeUnit: text("cookie_lifetime_unit").default("day"),
@@ -276,26 +279,7 @@ export const invitation = pgTable("invitation", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
-export const userToOrganization = pgTable(
-  "user_to_organization",
-  {
-    userId: uuid("user_id")
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
-
-    organizationId: text("organization_id")
-      .notNull()
-      .references(() => organization.id, { onDelete: "cascade" }),
-  },
-  (t) => ({
-    pk: primaryKey({ columns: [t.userId, t.organizationId] }),
-  })
-)
-export const userRelations = relations(user, ({ many }) => ({
-  userToOrganization: many(userToOrganization),
-}))
 export const organizationRelations = relations(organization, ({ many }) => ({
-  userToOrganization: many(userToOrganization),
   affiliateLinks: many(affiliateLink),
 }))
 export const affiliateRelations = relations(affiliate, ({ many }) => ({
@@ -311,19 +295,6 @@ export const affiliateLinkRelations = relations(affiliateLink, ({ one }) => ({
     references: [organization.id],
   }),
 }))
-export const userToOrganizationRelations = relations(
-  userToOrganization,
-  ({ one }) => ({
-    organization: one(organization, {
-      fields: [userToOrganization.organizationId],
-      references: [organization.id],
-    }),
-    user: one(user, {
-      fields: [userToOrganization.userId],
-      references: [user.id],
-    }),
-  })
-)
 export const invitationRelations = relations(invitation, ({ one }) => ({
   organization: one(organization, {
     fields: [invitation.organizationId],

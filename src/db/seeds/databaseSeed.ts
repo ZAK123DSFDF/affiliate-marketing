@@ -149,6 +149,7 @@ export const organization_seed = [
     id: "tp7JLBb5",
     name: "Acme Inc",
     domainName: "better-auth-pi.vercel.app",
+    userId: "29022934-eb52-49af-aca4-b6ed553c89dd",
     logoUrl: null,
     referralParam: "ref" as const,
     cookieLifetimeValue: 30,
@@ -359,11 +360,5 @@ export const user_seed = [
     type: "SELLER" as const,
     createdAt: parseDate("2025-07-16 11:43:21.288497"),
     updatedAt: parseDate("2025-07-16 11:43:21.288497"),
-  },
-]
-export const user_organization_seed = [
-  {
-    userId: "29022934-eb52-49af-aca4-b6ed553c89dd",
-    organizationId: "tp7JLBb5",
   },
 ]

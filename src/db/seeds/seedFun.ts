@@ -19,7 +19,6 @@ import {
   affiliateLink,
   affiliateClick,
   affiliateInvoice,
-  userToOrganization,
   organizationAuthCustomization,
   organizationDashboardCustomization,
 } from "@/db/schema"
@@ -27,7 +26,6 @@ import {
 async function seedFun() {
   await db.insert(organization).values(organization_seed)
   await db.insert(user).values(user_seed)
-  await db.insert(userToOrganization).values(userOrganization_seed)
   await db.insert(affiliate).values(affiliate_seed)
   await db.insert(affiliateLink).values(affiliateLink_seed)
   await db.insert(affiliateClick).values(affiliateClick_seed)

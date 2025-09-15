@@ -12,20 +12,17 @@ export async function getOrgAuth(orgId: string): Promise<OrgAuthResult> {
   if (!token) throw { status: 401, toast: "Unauthorized" }
 
   const { id: userId } = jwt.decode(token) as { id: string }
-  const isMember = await db.query.userToOrganization.findFirst({
-    where: (t, { and, eq }) =>
-      and(eq(t.userId, userId), eq(t.organizationId, orgId)),
-  })
-  if (!isMember) throw { status: 403, toast: "Forbidden" }
   const org = await db
     .select({
       domain: organization.domainName,
       param: organization.referralParam,
       currency: organization.currency,
+      userId: organization.userId,
     })
     .from(organization)
     .where(eq(organization.id, orgId))
     .then((r) => r[0])
   if (!org) throw { status: 404, toast: "Org not found" }
+  if (org.userId !== userId) throw { status: 403, toast: "Forbidden" }
   return org
 }

@@ -11,7 +11,6 @@ import {
   organizationAuthCustomization,
   organizationDashboardCustomization,
   user,
-  userToOrganization,
 } from "@/db/schema"
 
 // ensure safe Date parsing
@@ -59,7 +58,6 @@ async function generateSeeds() {
   const tables = {
     organization: await db.select().from(organization),
     user: await db.select().from(user),
-    userOrganization: await db.select().from(userToOrganization),
     affiliate: await db.select().from(affiliate),
     affiliateLink: await db.select().from(affiliateLink),
     affiliateClick: await db.select().from(affiliateClick),

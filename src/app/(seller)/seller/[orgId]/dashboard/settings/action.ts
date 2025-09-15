@@ -36,20 +36,6 @@ export const orgInfo = async (
       }
     }
 
-    const userId = decoded.id
-    const relation = await db.query.userToOrganization.findFirst({
-      where: (uto, { and, eq }) =>
-        and(eq(uto.userId, userId), eq(uto.organizationId, orgId)),
-    })
-
-    if (!relation) {
-      throw {
-        status: 403,
-        error: "Access denied",
-        toast: "You do not have access to this organization.",
-      }
-    }
-
     // Fetch organization details
     const org = await db.query.organization.findFirst({
       where: (org, { eq }) => eq(org.id, orgId),
