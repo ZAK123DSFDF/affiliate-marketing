@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import {
   BarChart3,
@@ -10,7 +10,6 @@ import {
   CreditCard,
   Layers,
   User,
-  ChevronDown,
   Plus,
 } from "lucide-react"
 import {
@@ -25,22 +24,15 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import CreateCompany from "@/components/pages/Create-Company"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+
 import { Button } from "@/components/ui/button"
-import {
-  TooltipContent,
-  TooltipTrigger,
-  Tooltip,
-} from "@/components/ui/tooltip"
+
 import { DropdownInput } from "@/components/ui-custom/DropDownInput"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import { switchOrganization } from "@/lib/server/switchOrganization"
+import { useSwitchOrg } from "@/hooks/useSwitchOrg"
 
 // Menu items for the sidebar
 
@@ -52,6 +44,7 @@ type Props = {
 const SellerDashboardSidebar = ({ orgId, plan, orgs }: Props) => {
   const pathname = usePathname()
   const { showCustomToast } = useCustomToast()
+  const { mutate: switchOrg, isPending } = useSwitchOrg()
   const items = [
     {
       title: "Dashboard",
@@ -121,17 +114,18 @@ const SellerDashboardSidebar = ({ orgId, plan, orgs }: Props) => {
             }))}
             placeholder="No Org"
             width="w-40"
-            onChange={(val) => {
-              router.push(`/seller/${val}/dashboard/analytics`)
-            }}
-            disabled={orgs.length === 0}
+            onChange={(val) => switchOrg(val)}
+            disabled={orgs.length === 0 || isPending}
           />
           <Button size="icon" variant="default" onClick={handleClick}>
             <Plus className="w-4 h-4" />
           </Button>
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent affiliate={false} className="max-w-3xl">
-              <CreateCompany mode="add" />
+            <DialogTitle></DialogTitle>
+            <DialogContent affiliate={false} className="max-w-3xl ">
+              <div className="h-full overflow-y-auto max-h-[90vh]">
+                <CreateCompany mode="add" embed />
+              </div>
             </DialogContent>
           </Dialog>
         </div>
