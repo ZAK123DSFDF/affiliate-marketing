@@ -6,7 +6,7 @@ import { redirectIfAffiliateAuthed } from "@/lib/server/authGuards"
 
 const CheckEmailPage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
-  await redirectIfAffiliateAuthed()
+  await redirectIfAffiliateAuthed(orgId)
   return (
     <>
       <CheckEmail affiliate orgId={orgId} />

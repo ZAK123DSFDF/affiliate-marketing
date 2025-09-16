@@ -13,7 +13,7 @@ type Props = {
 const ResetPasswordPage = async ({ searchParams, params }: Props) => {
   const { affiliateToken } = await searchParams
   const orgId = await getValidatedOrgFromParams({ params })
-  await redirectIfAffiliateAuthed()
+  await redirectIfAffiliateAuthed(orgId)
   if (!affiliateToken) {
     return (
       <InvalidToken
