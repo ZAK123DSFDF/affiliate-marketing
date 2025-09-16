@@ -1,5 +1,5 @@
 "use client"
-import React from "react"
+import React, { useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   useButtonCustomizationOption,
@@ -31,6 +31,9 @@ const EmailVerified = ({
   affiliate,
   mode,
 }: Props) => {
+  useEffect(() => {
+    console.log("orgId", orgId)
+  }, [orgId])
   const { backgroundColor } = useThemeCustomizationOption()
   const { isPending, isError, refetch } = affiliate
     ? useCustomizationSync(orgId, "auth")

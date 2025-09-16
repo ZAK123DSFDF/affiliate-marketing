@@ -12,24 +12,45 @@ type VerifyServerProps = {
   redirectUrl?: string
 }
 
+type SessionPayload = {
+  id: string
+  email: string
+  type: string
+  role: string
+  orgIds?: string[]
+  activeOrgId?: string
+  orgId?: string
+}
 export const VerifyServer = async ({
   token,
   mode,
   redirectUrl,
 }: VerifyServerProps) => {
   let tokenType: "seller" | "affiliate" = "seller"
-  let orgId: string | undefined = undefined
+  let orgIds: string[] = []
+  let activeOrgId: string | undefined
+  let orgId: string | undefined
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY!) as any
 
     tokenType = (decoded.type as string).toLowerCase() as "seller" | "affiliate"
-    orgId = decoded.organizationId || decoded.orgId || null
-    const sessionPayload = {
+    orgIds = decoded.orgIds || []
+    activeOrgId = decoded.activeOrgId
+    orgId = decoded.orgId || decoded.organizationId
+    const sessionPayload: SessionPayload = {
       id: decoded.id,
       email: decoded.email,
       type: decoded.type,
       role: decoded.role,
-      orgId,
+      orgIds: decoded.orgIds || [],
+      activeOrgId: decoded.activeOrgId || undefined,
+      orgId: decoded.orgId || decoded.organizationId || undefined,
+    }
+    if (tokenType === "seller") {
+      sessionPayload.orgIds = orgIds
+      sessionPayload.activeOrgId = activeOrgId
+    } else {
+      sessionPayload.orgId = orgId
     }
     if (mode === "signup") {
       if (tokenType === "seller") {
@@ -51,14 +72,15 @@ export const VerifyServer = async ({
     })
 
     cookieStore.set({
-      name: tokenType === "seller" ? "sellerToken" : "affiliateToken",
+      name:
+        tokenType === "seller"
+          ? "sellerToken"
+          : `affiliateToken-${sessionPayload.orgId}`,
       value: sessionToken,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      expires: decoded.rememberMe
-        ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        : undefined,
+      maxAge: decoded.rememberMe ? 30 * 24 * 60 * 60 : undefined,
     })
     return {
       success: true,
@@ -69,7 +91,11 @@ export const VerifyServer = async ({
           : `/affiliate/${sessionPayload.orgId}/email-verified`),
       mode,
       tokenType,
-      orgId,
+      orgIds,
+      activeOrgId:
+        tokenType === "seller"
+          ? sessionPayload.activeOrgId
+          : sessionPayload.orgId,
     }
   } catch (err) {
     console.error("Verify error:", err)

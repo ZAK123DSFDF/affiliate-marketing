@@ -4,10 +4,8 @@ import { getSellerAuth } from "@/lib/server/getSellerAuth"
 
 export default async function EmailVerifiedPage() {
   const decoded = await getSellerAuth()
-
   if (!decoded) {
     redirect("/login")
   }
-
-  return <EmailVerified orgId={decoded.orgId} affiliate={false} />
+  return <EmailVerified orgId={decoded.activeOrgId} affiliate={false} />
 }

@@ -12,9 +12,9 @@ export interface AffiliateTokenPayload {
   exp: number
 }
 
-export async function getAffiliateAuth() {
+export async function getAffiliateAuth(orgId: string) {
   const cookieStore = await cookies()
-  const token = cookieStore.get("affiliateToken")?.value
+  const token = cookieStore.get(`affiliateToken-${orgId}`)?.value
   if (!token) return null
 
   try {

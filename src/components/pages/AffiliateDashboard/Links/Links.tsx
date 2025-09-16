@@ -121,7 +121,7 @@ export default function Links({
   const { data: searchData, isPending: searchPending } = useSearch(
     ["affiliate-links", orgId, filters.year, filters.month],
     getAffiliateLinksWithStats,
-    [filters.year, filters.month],
+    [orgId, filters.year, filters.month],
     {
       enabled: !!(orgId && (filters.year || filters.month) && !isPreview),
     }
@@ -159,7 +159,7 @@ export default function Links({
         })
       }, 1500)
     } else {
-      mutation.mutate()
+      mutation.mutate(orgId)
     }
   }
   const columns = LinksColumns(affiliate)

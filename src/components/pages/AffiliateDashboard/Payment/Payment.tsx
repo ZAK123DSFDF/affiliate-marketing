@@ -75,7 +75,7 @@ export default function AffiliateCommissionTable({
   const { data: yearSelectedData, isPending } = useSearch(
     ["affiliate-commissions", orgId, filters.year],
     getAffiliateCommissionByMonth,
-    [filters.year],
+    [orgId, filters.year],
     {
       enabled: !!(orgId && filters.year && !isPreview),
     }

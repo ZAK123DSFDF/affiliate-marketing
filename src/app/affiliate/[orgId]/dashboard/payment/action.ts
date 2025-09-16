@@ -9,10 +9,11 @@ import { getOrganization } from "@/lib/server/getOrganization"
 import { ExchangeRate } from "@/util/ExchangeRate"
 
 export const getAffiliateCommissionByMonth = async (
+  orgId: string,
   year?: number
 ): Promise<ResponseData<AffiliatePaymentRow[]>> => {
   try {
-    const decoded = await getAffiliateOrganization()
+    const decoded = await getAffiliateOrganization(orgId)
     const targetYear = year ?? new Date().getFullYear()
     const rows = await getAffiliateCommissionByMonthAction(decoded, targetYear)
     const org = await getOrganization(decoded.orgId)

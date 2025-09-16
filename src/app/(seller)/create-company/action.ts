@@ -6,7 +6,6 @@ import {
   organization,
   organizationAuthCustomization,
   organizationDashboardCustomization,
-  userToOrganization,
 } from "@/db/schema"
 import { db } from "@/db/drizzle"
 import { companySchema } from "@/components/pages/Create-Company"
@@ -16,19 +15,12 @@ import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustom
 import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization"
 
 export const CreateOrganization = async (
-  data: z.infer<typeof companySchema>
+  input: z.infer<typeof companySchema> & { mode: "create" | "add" }
 ) => {
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get("sellerToken")?.value
-
-    if (!token) {
-      throw {
-        status: 401,
-        error: "Unauthorized",
-        toast: "You must be logged in to create an organization.",
-      }
-    }
+    if (!token) throw { status: 401, error: "Unauthorized" }
 
     const decoded = jwt.decode(token) as {
       id: string
@@ -37,66 +29,63 @@ export const CreateOrganization = async (
       type: string
       exp: number
       iat: number
+      orgIds?: string[]
     }
-    const sanitizedDomain = data.domainName
+
+    const sanitizedDomain = input.domainName
       .replace(/^https?:\/\//i, "")
       .replace(/\/$/, "")
 
-    // Insert the new organization
     const [newOrg] = await db
       .insert(organization)
       .values({
-        ...data,
+        ...input,
         domainName: sanitizedDomain,
-        commissionValue: data.commissionValue.toFixed(2),
+        commissionValue: input.commissionValue.toFixed(2),
+        userId: decoded.id,
       })
       .returning()
 
-    if (!newOrg) {
-      throw {
-        status: 500,
-        error: "Organization creation failed",
-        toast: "Failed to create organization. Please try again.",
-      }
+    if (!newOrg) throw { status: 500, error: "Failed to create org" }
+
+    await Promise.all([
+      db
+        .insert(organizationAuthCustomization)
+        .values({ id: newOrg.id, auth: defaultAuthCustomization })
+        .onConflictDoUpdate({
+          target: organizationAuthCustomization.id,
+          set: { auth: defaultAuthCustomization },
+        }),
+
+      db
+        .insert(organizationDashboardCustomization)
+        .values({ id: newOrg.id, dashboard: defaultDashboardCustomization })
+        .onConflictDoUpdate({
+          target: organizationDashboardCustomization.id,
+          set: { dashboard: defaultDashboardCustomization },
+        }),
+    ])
+    // 🟢 Decide how to build new orgIds array
+    let orgIds: string[]
+    if (input.mode === "create") {
+      orgIds = [newOrg.id]
+    } else {
+      orgIds = [...(decoded.orgIds || []), newOrg.id]
     }
 
-    // Link user to organization
-    await db.insert(userToOrganization).values({
-      userId: decoded.id,
-      organizationId: newOrg.id,
-    })
-    await db
-      .insert(organizationAuthCustomization)
-      .values({
-        id: newOrg.id,
-        auth: defaultAuthCustomization,
-      })
-      .onConflictDoUpdate({
-        target: organizationAuthCustomization.id,
-        set: { auth: defaultAuthCustomization },
-      })
-
-    await db
-      .insert(organizationDashboardCustomization)
-      .values({
-        id: newOrg.id,
-        dashboard: defaultDashboardCustomization,
-      })
-      .onConflictDoUpdate({
-        target: organizationDashboardCustomization.id,
-        set: { dashboard: defaultDashboardCustomization },
-      })
-    // 🔑 Re-sign the token with orgId, preserving the original expiration
+    // Active org is the one just created
     const newPayload = {
       id: decoded.id,
       email: decoded.email,
       role: decoded.role,
       type: decoded.type,
-      orgId: newOrg.id,
+      orgIds,
+      activeOrgId: newOrg.id,
     }
 
+    const expiresIn = decoded.exp - Math.floor(Date.now() / 1000)
     const newToken = jwt.sign(newPayload, process.env.SECRET_KEY!, {
-      expiresIn: decoded.exp - Math.floor(Date.now() / 1000),
+      expiresIn,
     })
 
     cookieStore.set("sellerToken", newToken, { httpOnly: true })

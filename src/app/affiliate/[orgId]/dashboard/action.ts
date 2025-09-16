@@ -13,11 +13,12 @@ import { getOrganization } from "@/lib/server/getOrganization"
 import { ExchangeRate } from "@/util/ExchangeRate"
 
 export async function getAffiliateKpiStats(
+  orgId: string,
   year?: number,
   month?: number
 ): Promise<ResponseData<AffiliateKpiStats[]>> {
   try {
-    const decoded = await getAffiliateOrganization()
+    const decoded = await getAffiliateOrganization(orgId)
     const [row] = await getAffiliateKpiStatsAction(
       decoded.orgId,
       decoded.id,
@@ -43,11 +44,12 @@ export async function getAffiliateKpiStats(
   }
 }
 export async function getAffiliateKpiTimeSeries(
+  orgId: string,
   year?: number,
   month?: number
 ): Promise<ResponseData<AffiliateKpiTimeSeries[]>> {
   try {
-    const decoded = await getAffiliateOrganization()
+    const decoded = await getAffiliateOrganization(orgId)
     const { linkIds } = await getAffiliateLinks(decoded)
     if (!linkIds.length) return { ok: true, data: [] }
 
@@ -64,11 +66,12 @@ export async function getAffiliateKpiTimeSeries(
 }
 
 export async function getAffiliateReferrers(
+  orgId: string,
   year?: number,
   month?: number
 ): Promise<ResponseData<AffiliateReferrerStat[]>> {
   try {
-    const decoded = await getAffiliateOrganization()
+    const decoded = await getAffiliateOrganization(orgId)
 
     const { linkIds } = await getAffiliateLinks(decoded)
     if (!linkIds.length) return { ok: true, data: [] }

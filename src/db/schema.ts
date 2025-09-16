@@ -36,14 +36,15 @@ export const payoutProviderEnum = pgEnum("payout_provider", [
   "wise",
   "payoneer",
 ])
-export const planEnum = pgEnum("plan", ["FREE", "PRO", "ULTIMATE"])
-export const subscriptionTypeEnum = pgEnum("subscription_type", [
-  "RECURRING",
-  "ONE_TIME",
-])
+export const planEnum = pgEnum("plan", ["PRO", "ULTIMATE"])
+
 export const billingIntervalEnum = pgEnum("billing_interval", [
   "MONTHLY",
   "YEARLY",
+])
+export const purchaseTierEnum = pgEnum("purchase_tier", [
+  "ONE_TIME_100",
+  "ONE_TIME_200",
 ])
 export const attributionModelEnum = pgEnum("attribution_model", [
   "FIRST_CLICK",
@@ -80,10 +81,7 @@ export const subscription = pgTable("subscription", {
   userId: uuid("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  plan: planEnum("plan").notNull().default("FREE"),
-  subscriptionType: subscriptionTypeEnum("subscription_type")
-    .notNull()
-    .default("RECURRING"),
+  plan: planEnum("plan").notNull().default("PRO"),
   billingInterval: billingIntervalEnum("billing_interval"),
   currency: text("currency").default("USD"),
   price: numeric("price", { precision: 10, scale: 2 }),
@@ -91,6 +89,16 @@ export const subscription = pgTable("subscription", {
   expiresAt: timestamp("expires_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+})
+export const purchase = pgTable("purchase", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  tier: purchaseTierEnum("tier").notNull(),
+  price: numeric("price", { precision: 10, scale: 2 }).notNull(),
+  currency: text("currency").default("USD"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 })
 // ORGANIZATION SCHEMA
 export const organization = pgTable("organization", {
@@ -100,6 +108,9 @@ export const organization = pgTable("organization", {
   name: text("name").notNull(),
   domainName: text("domain_name").notNull(),
   logoUrl: text("logo_url"),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   referralParam: referralParamEnum("referral_param").default("ref"),
   cookieLifetimeValue: integer("cookie_lifetime_value").default(30),
   cookieLifetimeUnit: text("cookie_lifetime_unit").default("day"),
@@ -268,26 +279,7 @@ export const invitation = pgTable("invitation", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
-export const userToOrganization = pgTable(
-  "user_to_organization",
-  {
-    userId: uuid("user_id")
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
-
-    organizationId: text("organization_id")
-      .notNull()
-      .references(() => organization.id, { onDelete: "cascade" }),
-  },
-  (t) => ({
-    pk: primaryKey({ columns: [t.userId, t.organizationId] }),
-  })
-)
-export const userRelations = relations(user, ({ many }) => ({
-  userToOrganization: many(userToOrganization),
-}))
 export const organizationRelations = relations(organization, ({ many }) => ({
-  userToOrganization: many(userToOrganization),
   affiliateLinks: many(affiliateLink),
 }))
 export const affiliateRelations = relations(affiliate, ({ many }) => ({
@@ -303,19 +295,6 @@ export const affiliateLinkRelations = relations(affiliateLink, ({ one }) => ({
     references: [organization.id],
   }),
 }))
-export const userToOrganizationRelations = relations(
-  userToOrganization,
-  ({ one }) => ({
-    organization: one(organization, {
-      fields: [userToOrganization.organizationId],
-      references: [organization.id],
-    }),
-    user: one(user, {
-      fields: [userToOrganization.userId],
-      references: [user.id],
-    }),
-  })
-)
 export const invitationRelations = relations(invitation, ({ one }) => ({
   organization: one(organization, {
     fields: [invitation.organizationId],

@@ -6,7 +6,7 @@ import { redirectIfAffiliateAuthed } from "@/lib/server/authGuards"
 
 const AffiliateLoginPage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
-  await redirectIfAffiliateAuthed()
+  await redirectIfAffiliateAuthed(orgId)
   return (
     <>
       <Login affiliate orgId={orgId} />

@@ -9,13 +9,16 @@ const createCompanyPage = async () => {
   if (!decoded) {
     redirect("/login")
   }
+  if (decoded.activeOrgId) {
+    redirect(`/seller/${decoded.activeOrgId}/dashboard/analytics`)
+  }
 
-  if (decoded.orgId) {
-    redirect(`/seller/${decoded.orgId}/dashboard/analytics`)
+  if (decoded.orgIds && decoded.orgIds.length > 0) {
+    redirect(`/seller/${decoded.orgIds[0]}/dashboard/analytics`)
   }
   return (
     <>
-      <CreateCompany />
+      <CreateCompany mode="create" />
     </>
   )
 }

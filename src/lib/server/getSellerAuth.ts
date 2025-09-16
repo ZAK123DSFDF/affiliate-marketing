@@ -8,9 +8,10 @@ export interface SellerTokenPayload {
   email: string
   role: "ADMIN" | "OWNER"
   type: "SELLER"
-  orgId?: string
+  orgIds: string[]
   iat: number
   exp: number
+  activeOrgId?: string
 }
 
 export async function getSellerAuth(): Promise<SellerTokenPayload | null> {
@@ -27,7 +28,6 @@ export async function getSellerAuth(): Promise<SellerTokenPayload | null> {
     if (decoded.type !== "SELLER" || !decoded.id || !decoded.email) {
       return null
     }
-
     return decoded
   } catch {
     return null

@@ -1,6 +1,4 @@
 "use server"
-
-import { cookies } from "next/headers"
 import * as bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { db } from "@/db/drizzle"
@@ -51,15 +49,19 @@ export const LoginServer = async ({
         fields: { password: "Invalid password" },
       }
     }
-    const userOrg = await db.query.userToOrganization.findFirst({
-      where: (uo, { eq }) => eq(uo.userId, Existuser.id),
+    const orgs = await db.query.organization.findMany({
+      where: (org, { eq }) => eq(org.userId, Existuser.id),
     })
+
+    const orgIds = orgs.map((o) => o.id)
+    const activeOrgId = orgIds.length > 0 ? orgIds[0] : undefined
     const payload = {
       id: Existuser.id,
       email: Existuser.email,
       role: Existuser.role,
       type: Existuser.type,
-      organizationId: userOrg?.organizationId,
+      orgIds,
+      activeOrgId,
       rememberMe,
     }
 

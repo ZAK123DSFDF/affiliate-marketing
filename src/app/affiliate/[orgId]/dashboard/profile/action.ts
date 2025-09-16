@@ -12,11 +12,11 @@ import { updateAffiliateProfileAction } from "@/lib/server/updateAffiliateProfil
 import { getAffiliateDataAction } from "@/lib/server/getAffiliateData"
 import { getPayoutEmailMethod } from "@/lib/server/getPayoutEmailMethod"
 
-export const getAffiliateData = async (): Promise<
-  ResponseData<SafeAffiliateData>
-> => {
+export const getAffiliateData = async (
+  orgId: string
+): Promise<ResponseData<SafeAffiliateData>> => {
   try {
-    const decoded = await getAffiliateOrganization()
+    const decoded = await getAffiliateOrganization(orgId)
     const affiliateData = await getAffiliateDataAction(decoded)
     return { ok: true, data: affiliateData }
   } catch (err) {
@@ -24,11 +24,11 @@ export const getAffiliateData = async (): Promise<
     return returnError(err) as ResponseData<SafeAffiliateData>
   }
 }
-export const getAffiliatePaymentMethod = async (): Promise<
-  ResponseData<AffiliatePaymentMethod>
-> => {
+export const getAffiliatePaymentMethod = async (
+  orgId: string
+): Promise<ResponseData<AffiliatePaymentMethod>> => {
   try {
-    const decoded = await getAffiliateOrganization()
+    const decoded = await getAffiliateOrganization(orgId)
     const paypalMethod = await getPayoutEmailMethod(decoded)
     return {
       ok: true,
@@ -48,7 +48,7 @@ export async function updateAffiliateProfile(
   }
 ) {
   try {
-    const decoded = await getAffiliateOrganization()
+    const decoded = await getAffiliateOrganization(orgId)
     await updateAffiliateProfileAction(decoded, data)
     revalidatePath(`/affiliate/${orgId}/dashboard/profile`)
     return { ok: true }
@@ -58,9 +58,12 @@ export async function updateAffiliateProfile(
   }
 }
 
-export async function validateCurrentPassword(currentPassword: string) {
+export async function validateCurrentPassword(
+  orgId: string,
+  currentPassword: string
+) {
   try {
-    const decoded = await getAffiliateOrganization()
+    const decoded = await getAffiliateOrganization(orgId)
     await validateAffiliatePasswordAction(decoded, currentPassword)
     return { ok: true }
   } catch (err) {
@@ -68,9 +71,12 @@ export async function validateCurrentPassword(currentPassword: string) {
     return returnError(err)
   }
 }
-export async function updateAffiliatePassword(newPassword: string) {
+export async function updateAffiliatePassword(
+  orgId: string,
+  newPassword: string
+) {
   try {
-    const decoded = await getAffiliateOrganization()
+    const decoded = await getAffiliateOrganization(orgId)
 
     await updateAffiliatePasswordAction(decoded, newPassword)
 

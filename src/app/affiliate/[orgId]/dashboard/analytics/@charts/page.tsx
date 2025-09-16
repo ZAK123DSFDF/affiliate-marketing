@@ -9,7 +9,7 @@ import { requireAffiliateWithOrg } from "@/lib/server/authGuards"
 const chartsPage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
   await requireAffiliateWithOrg(orgId)
-  const affiliateChartStats = await getAffiliateKpiTimeSeries()
+  const affiliateChartStats = await getAffiliateKpiTimeSeries(orgId)
   if (!affiliateChartStats.ok) {
     return (
       <ErrorCard

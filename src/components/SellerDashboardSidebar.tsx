@@ -1,7 +1,7 @@
 "use client"
 
-import React from "react"
-import { usePathname } from "next/navigation"
+import React, { useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
 import {
   BarChart3,
   Link as LinkIcon,
@@ -10,6 +10,7 @@ import {
   CreditCard,
   Layers,
   User,
+  Plus,
 } from "lucide-react"
 import {
   Sidebar,
@@ -23,14 +24,28 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import CreateCompany from "@/components/pages/Create-Company"
+
+import { Button } from "@/components/ui/button"
+
+import { DropdownInput } from "@/components/ui-custom/DropDownInput"
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import { useSwitchOrg } from "@/hooks/useSwitchOrg"
+import { SellerData } from "@/lib/types/profileTypes"
 
 // Menu items for the sidebar
 
 type Props = {
   orgId?: string
+  plan: { plan: string }
+  orgs: { id: string; name: string }[]
+  UserData: SellerData | null
 }
-const SellerDashboardSidebar = ({ orgId }: Props) => {
+const SellerDashboardSidebar = ({ orgId, plan, orgs, UserData }: Props) => {
   const pathname = usePathname()
+  const { showCustomToast } = useCustomToast()
+  const { mutate: switchOrg, isPending } = useSwitchOrg()
   const items = [
     {
       title: "Dashboard",
@@ -63,6 +78,23 @@ const SellerDashboardSidebar = ({ orgId }: Props) => {
       icon: Settings,
     },
   ]
+  const [open, setOpen] = useState(false)
+  const handleClick = () => {
+    if (!canCreate) {
+      showCustomToast({
+        type: "error",
+        title: "Upgrade Required",
+        description: "you must be on the ultimate plan to add organization",
+        affiliate: false,
+      })
+      return
+    }
+    setOpen(true)
+  }
+  const currentOrg = orgs?.find((o) => o.id === orgId)
+  const canCreate =
+    plan?.plan === "ULTIMATE" || (orgs?.length < 1 && plan?.plan !== "ULTIMATE")
+  const router = useRouter()
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center justify-center py-4">
@@ -71,6 +103,32 @@ const SellerDashboardSidebar = ({ orgId }: Props) => {
             A
           </div>
           <h1 className="text-xl font-bold">AffiliateX</h1>
+        </div>
+        <div className="flex items-center space-x-2">
+          {/* Org dropdown */}
+          <DropdownInput
+            label=""
+            value={currentOrg?.id ?? ""}
+            options={orgs.map((org) => ({
+              label: org.name,
+              value: org.id,
+            }))}
+            placeholder="No Org"
+            width="w-40"
+            onChange={(val) => switchOrg(val)}
+            disabled={orgs.length === 0 || isPending}
+          />
+          <Button size="icon" variant="default" onClick={handleClick}>
+            <Plus className="w-4 h-4" />
+          </Button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTitle></DialogTitle>
+            <DialogContent affiliate={false} className="max-w-3xl ">
+              <div className="h-full overflow-y-auto max-h-[90vh]">
+                <CreateCompany mode="add" embed />
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -98,13 +156,10 @@ const SellerDashboardSidebar = ({ orgId }: Props) => {
       <SidebarFooter className="p-4">
         <Link href={`/seller/${orgId}/dashboard/profile`}>
           <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-              JD
-            </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">John Doe</p>
+              <p className="text-sm font-medium truncate">{UserData?.name}</p>
               <p className="text-xs text-muted-foreground truncate">
-                john.doe@example.com
+                {UserData?.email}
               </p>
             </div>
             <User className="w-4 h-4 text-muted-foreground" />

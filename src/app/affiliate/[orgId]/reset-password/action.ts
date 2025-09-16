@@ -46,7 +46,7 @@ export const resetAffiliatePasswordServer = async ({
     })
 
     const cookieStore = await cookies()
-    cookieStore.set("affiliateToken", sessionToken, { httpOnly: true })
+    cookieStore.set(`affiliateToken-${orgId}`, sessionToken, { httpOnly: true })
 
     return { ok: true }
   } catch (err) {

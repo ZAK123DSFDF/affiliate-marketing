@@ -10,7 +10,7 @@ import { requireAffiliateWithOrg } from "@/lib/server/authGuards"
 const paymentPage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
   await requireAffiliateWithOrg(orgId)
-  const res = await getAffiliateCommissionByMonth()
+  const res = await getAffiliateCommissionByMonth(orgId)
   if (!res.ok) {
     return <ErrorCard message={res.error || "Something went wrong"} />
   }

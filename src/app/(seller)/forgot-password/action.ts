@@ -27,15 +27,19 @@ export const ForgotPasswordServer = async ({ email }: { email: string }) => {
       }
     }
 
-    const userOrg = await db.query.userToOrganization.findFirst({
-      where: (uo, { eq }) => eq(uo.userId, existingUser.id),
+    const orgs = await db.query.organization.findMany({
+      where: (org, { eq }) => eq(org.userId, existingUser.id),
     })
+
+    const orgIds = orgs.map((o) => o.id)
+    const activeOrgId = orgIds.length > 0 ? orgIds[0] : undefined
     const payload = {
       id: existingUser.id,
       email: existingUser.email,
       type: existingUser.type,
       role: existingUser.role,
-      orgId: userOrg?.organizationId,
+      orgIds,
+      activeOrgId,
     }
 
     const token = jwt.sign(payload, process.env.SECRET_KEY as string, {
