@@ -5,11 +5,11 @@ interface BaseData {
   image?: string | null
 }
 
-interface AffiliateData extends BaseData {
+export interface AffiliateData extends BaseData {
   paypalEmail: string | null
 }
 
-type SellerData = BaseData
+export type SellerData = BaseData
 
 export interface ProfileProps {
   AffiliateData?: AffiliateData

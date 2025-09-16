@@ -31,8 +31,8 @@ import { Button } from "@/components/ui/button"
 
 import { DropdownInput } from "@/components/ui-custom/DropDownInput"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
-import { switchOrganization } from "@/lib/server/switchOrganization"
 import { useSwitchOrg } from "@/hooks/useSwitchOrg"
+import { SellerData } from "@/lib/types/profileTypes"
 
 // Menu items for the sidebar
 
@@ -40,8 +40,9 @@ type Props = {
   orgId?: string
   plan: { plan: string }
   orgs: { id: string; name: string }[]
+  UserData: SellerData | null
 }
-const SellerDashboardSidebar = ({ orgId, plan, orgs }: Props) => {
+const SellerDashboardSidebar = ({ orgId, plan, orgs, UserData }: Props) => {
   const pathname = usePathname()
   const { showCustomToast } = useCustomToast()
   const { mutate: switchOrg, isPending } = useSwitchOrg()
@@ -155,13 +156,10 @@ const SellerDashboardSidebar = ({ orgId, plan, orgs }: Props) => {
       <SidebarFooter className="p-4">
         <Link href={`/seller/${orgId}/dashboard/profile`}>
           <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-              JD
-            </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">John Doe</p>
+              <p className="text-sm font-medium truncate">{UserData?.name}</p>
               <p className="text-xs text-muted-foreground truncate">
-                john.doe@example.com
+                {UserData?.email}
               </p>
             </div>
             <User className="w-4 h-4 text-muted-foreground" />

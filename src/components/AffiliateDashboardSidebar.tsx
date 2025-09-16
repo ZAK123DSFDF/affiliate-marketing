@@ -18,6 +18,7 @@ import Link from "next/link"
 import { SidebarCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/SidebarCustomizationOptions"
 import { DashboardCustomizationStores } from "@/store/useCustomizationStore"
 import { cn } from "@/lib/utils"
+import { AffiliateData } from "@/lib/types/profileTypes"
 
 type Props = {
   orgId?: string
@@ -25,6 +26,7 @@ type Props = {
   onSelectPage?: (page: string) => void
   currentPage?: string
   affiliate: boolean
+  AffiliateData: AffiliateData | null
 }
 
 const AffiliateDashboardSidebar = ({
@@ -33,6 +35,7 @@ const AffiliateDashboardSidebar = ({
   onSelectPage,
   currentPage,
   affiliate,
+  AffiliateData,
 }: Props) => {
   const pathname = usePathname()
   const items = [
@@ -188,9 +191,6 @@ const AffiliateDashboardSidebar = ({
                 undefined,
             }}
           >
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
-              JD
-            </div>
             <div className="flex-1 min-w-0">
               <p
                 className="text-sm font-medium truncate"
@@ -225,13 +225,12 @@ const AffiliateDashboardSidebar = ({
         ) : (
           <Link href={`/affiliate/${orgId}/dashboard/profile`}>
             <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
-                JD
-              </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">John Doe</p>
+                <p className="text-sm font-medium truncate">
+                  {AffiliateData?.name}
+                </p>
                 <p className="text-xs text-muted-foreground truncate">
-                  john.doe@example.com
+                  {AffiliateData?.email}
                 </p>
               </div>
               <User className="w-4 h-4 text-muted-foreground" />

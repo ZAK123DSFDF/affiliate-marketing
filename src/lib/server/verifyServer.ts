@@ -89,7 +89,10 @@ export const VerifyServer = async ({
       mode,
       tokenType,
       orgIds,
-      activeOrgId,
+      activeOrgId:
+        tokenType === "seller"
+          ? sessionPayload.activeOrgId
+          : sessionPayload.orgId,
     }
   } catch (err) {
     console.error("Verify error:", err)
