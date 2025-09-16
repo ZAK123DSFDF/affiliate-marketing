@@ -5,15 +5,16 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { getAffiliatePaymentMethod } from "@/app/affiliate/[orgId]/dashboard/profile/action"
+import { ResponseData } from "@/lib/types/response"
 type MissingPaypalEmailCardProps = {
   orgId: string
 }
 export function MissingPaypalEmailCard({ orgId }: MissingPaypalEmailCardProps) {
   const router = useRouter()
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["affiliateData"],
-    queryFn: getAffiliatePaymentMethod,
+  const { data, isLoading } = useQuery<ResponseData<AffiliatePaymentMethod>>({
+    queryKey: ["affiliatePaymentMethod", orgId],
+    queryFn: () => getAffiliatePaymentMethod(orgId), // pass orgId here
   })
 
   if (isLoading) return null

@@ -48,9 +48,9 @@ export async function redirectIfAuthed() {
 
 // 🔹 Affiliate Guards
 export async function requireAffiliateWithOrg(
-  paramsOrgId?: string
+  paramsOrgId: string
 ): Promise<AffiliateTokenPayload> {
-  const decoded = await getAffiliateAuth()
+  const decoded = await getAffiliateAuth(paramsOrgId)
 
   if (!decoded) {
     redirect(`/affiliate/${paramsOrgId}/login`)
@@ -64,8 +64,8 @@ export async function requireAffiliateWithOrg(
   return decoded
 }
 
-export async function redirectIfAffiliateAuthed() {
-  const decoded = await getAffiliateAuth()
+export async function redirectIfAffiliateAuthed(orgId: string) {
+  const decoded = await getAffiliateAuth(orgId)
 
   if (decoded) {
     redirect(`/affiliate/${decoded.orgId}/dashboard`)

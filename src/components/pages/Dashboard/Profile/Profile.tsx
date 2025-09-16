@@ -148,7 +148,7 @@ export default function Profile({
       }
 
       return AffiliateData
-        ? validateCurrentPassword(password)
+        ? validateCurrentPassword(orgId, password)
         : validateCurrentSellerPassword(password)
     },
     onSuccess: (res: any) => {
@@ -189,7 +189,7 @@ export default function Profile({
       }
 
       return AffiliateData
-        ? updateAffiliatePassword(newPassword)
+        ? updateAffiliatePassword(orgId, newPassword)
         : updateUserPassword(newPassword)
     },
     onSuccess: (res: any) => {

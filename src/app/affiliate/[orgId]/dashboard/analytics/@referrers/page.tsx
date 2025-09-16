@@ -8,7 +8,7 @@ import { requireAffiliateWithOrg } from "@/lib/server/authGuards"
 const referrersPage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
   await requireAffiliateWithOrg(orgId)
-  const referrerStats = await getAffiliateReferrers()
+  const referrerStats = await getAffiliateReferrers(orgId)
   if (!referrerStats.ok) {
     return <ErrorCard message={referrerStats.error || "Something went wrong"} />
   }

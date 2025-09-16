@@ -72,7 +72,10 @@ export const VerifyServer = async ({
     })
 
     cookieStore.set({
-      name: tokenType === "seller" ? "sellerToken" : "affiliateToken",
+      name:
+        tokenType === "seller"
+          ? "sellerToken"
+          : `affiliateToken-${sessionPayload.orgId}`,
       value: sessionToken,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

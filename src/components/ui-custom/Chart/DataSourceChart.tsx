@@ -60,7 +60,7 @@ export default function SocialTrafficPieChart({
   const { data: affiliateData, isPending: affiliatePending } = useSearch(
     ["affiliate-source", orgId, filters.year, filters.month],
     getAffiliateReferrers,
-    [filters.year, filters.month],
+    [orgId, filters.year, filters.month],
     {
       enabled: !!(
         affiliate &&

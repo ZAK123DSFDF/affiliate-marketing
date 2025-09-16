@@ -26,7 +26,7 @@ type Props = {
   onSelectPage?: (page: string) => void
   currentPage?: string
   affiliate: boolean
-  AffiliateData: AffiliateData | null
+  AffiliateData?: AffiliateData | null
 }
 
 const AffiliateDashboardSidebar = ({

@@ -9,7 +9,7 @@ import { requireAffiliateWithOrg } from "@/lib/server/authGuards"
 const profilePage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
   await requireAffiliateWithOrg(orgId)
-  const affiliateResponse = await getAffiliateData()
+  const affiliateResponse = await getAffiliateData(orgId)
   if (!affiliateResponse.ok) {
     return (
       <ErrorCard message={affiliateResponse.error || "Something went wrong"} />

@@ -2,13 +2,12 @@ import "server-only"
 import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
 
-export async function getAffiliateOrganization() {
+export async function getAffiliateOrganization(orgId: string) {
   const cookieStore = await cookies()
-  const token = cookieStore.get("affiliateToken")?.value
+  const token = cookieStore.get(`affiliateToken-${orgId}`)?.value
+  if (!token) throw { status: 400, toast: "Unauthorized" }
 
-  if (!token) throw new Error("Unauthorized")
-
-  const decoded = jwt.decode(token) as {
+  const decoded = jwt.verify(token, process.env.SECRET_KEY!) as {
     id: string
     orgId: string
   }

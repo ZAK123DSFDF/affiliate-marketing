@@ -58,7 +58,7 @@ export function ChartDailyMetrics({
     useSearch(
       ["affiliate-kpi-time-series", orgId, filters.year, filters.month],
       getAffiliateKpiTimeSeries,
-      [filters.year, filters.month],
+      [orgId, filters.year, filters.month],
       {
         enabled: !!(
           affiliate &&

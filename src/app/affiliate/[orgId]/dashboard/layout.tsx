@@ -14,7 +14,7 @@ export default async function DashboardLayout({
   params,
 }: AffiliateDashboardLayoutProps) {
   const orgId = await getValidatedOrgFromParams({ params })
-  const affiliateResponse = await getAffiliateData()
+  const affiliateResponse = await getAffiliateData(orgId)
   const affiliate = affiliateResponse.ok ? affiliateResponse.data : null
   return (
     <SidebarProvider affiliate orgId={orgId}>

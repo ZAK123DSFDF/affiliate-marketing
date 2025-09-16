@@ -64,7 +64,7 @@ const Cards = ({
     useSearch(
       ["affiliate-card", orgId, filters.year, filters.month],
       getAffiliateKpiStats,
-      [filters.year, filters.month],
+      [orgId, filters.year, filters.month],
       {
         enabled: !!(
           affiliate &&
