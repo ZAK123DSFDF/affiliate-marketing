@@ -9,6 +9,12 @@ import { getUnpaidPayoutAction } from "@/lib/server/getUnpaidPayout"
 import { getAffiliatePayoutAction } from "@/lib/server/getAffiliatePayout"
 import { OrderBy, OrderDir } from "@/lib/types/orderTypes"
 import { convertedCurrency } from "@/util/ConvertedCurrency"
+export type UploadResult = {
+  filename: string
+  url: string
+  status: "pending" | "completed" | "failed"
+  uploadedAt: Date
+}
 export async function getAffiliatePayouts(
   orgId: string,
   year?: number,

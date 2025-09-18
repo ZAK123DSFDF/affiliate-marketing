@@ -31,6 +31,8 @@ import { useSearch } from "@/hooks/useSearch"
 import { TableLoading } from "@/components/ui-custom/TableLoading"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import PaginationControls from "@/components/ui-custom/PaginationControls"
+import { AppDialog } from "@/components/ui-custom/AppDialog"
+import CsvUploadPopover from "@/components/ui-custom/CsvUpload"
 
 interface AffiliatesTablePayoutProps {
   data: AffiliatePayout[]
@@ -51,6 +53,8 @@ export default function PayoutTable({
   const [isUnpaidMode, setIsUnpaidMode] = useState(false)
   const { filters, setFilters } = useQueryFilter()
   const [unpaidOpen, setUnpaidOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogMessage, setDialogMessage] = useState("")
   const { data: unpaidPayouts, isPending: isPendingUnpaid } = useSearch(
     [
       "unpaid-payouts",
@@ -84,7 +88,33 @@ export default function PayoutTable({
       ),
     }
   )
+  const handleExport = () => {
+    if (disableActions) {
+      setDialogMessage(
+        "At least one affiliate must have unpaid commission and a PayPal email."
+      )
+      setDialogOpen(true)
+      return
+    }
+    console.log("Generated CSV:\n", csv)
+    downloadCSV()
+  }
 
+  const handleMassPayout = () => {
+    if (disableActions) {
+      setDialogMessage(
+        "At least one affiliate must have unpaid commission and a PayPal email."
+      )
+      setDialogOpen(true)
+      return
+    }
+    const isDev = process.env.NODE_ENV === "development"
+    const baseUrl = isDev
+      ? "https://www.sandbox.paypal.com/mep/payoutsweb"
+      : "https://www.paypal.com/mep/payoutsweb"
+
+    window.open(baseUrl, "_blank")
+  }
   const { data: regularPayouts, isPending: isPendingRegular } = useSearch(
     [
       "regular-payouts",
@@ -147,33 +177,39 @@ export default function PayoutTable({
     (isUnpaidMode ? unpaidPayouts : regularPayouts) ?? data ?? []
   /* CSV helper */
   const csv = React.useMemo(() => {
-    const header = "Email,Sales,Unpaid,Paid,Commission,Status,Links\n"
+    const header = "PayPal Email,Amount,Currency\n"
     return (
       header +
       tableData
+        .filter((r) => r.unpaid > 0 && r.paypalEmail) // only affiliates with unpaid + paypal email
         .map(
           (r) =>
-            `${r.email},${r.sales},${r.unpaid.toFixed(2)},${r.paid.toFixed(
-              2
-            )},${r.commission.toFixed(2)},${
-              r.unpaid > 0 ? "pending" : "paid"
-            },"${r.links.join(" ")}"`
+            `${r.paypalEmail},${r.unpaid.toFixed(2)},${r.currency || "USD"}`
         )
         .join("\n")
     )
   }, [tableData])
-
+  const noPaypalEmails =
+    tableData.length > 0 &&
+    tableData.every((r) => !r.paypalEmail || r.paypalEmail.trim() === "")
+  const totalUnpaid = tableData.reduce((sum, r) => sum + (r.unpaid ?? 0), 0)
+  const noUnpaidCommission = totalUnpaid <= 0
+  const disableActions = noPaypalEmails || noUnpaidCommission
   const downloadCSV = () => {
     const blob = new Blob([csv], { type: "text/csv" })
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `payouts_${monthYear.year ?? "all"}_${
-      monthYear.month ?? "all"
-    }.csv`
+    const today = new Date()
+    const yyyy = today.getFullYear()
+    const mm = String(today.getMonth() + 1).padStart(2, "0")
+    const dd = String(today.getDate()).padStart(2, "0")
+
+    a.download = `paypal_payouts_${yyyy}-${mm}-${dd}.csv`
     a.click()
     URL.revokeObjectURL(url)
   }
+
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -209,7 +245,6 @@ export default function PayoutTable({
             <p className="text-muted-foreground">Manage your payment records</p>
           </div>
         </div>
-        <Button>Add Payment</Button>
       </div>
       <div className="flex justify-between items-center">
         <div className="flex gap-2 items-center">
@@ -242,19 +277,22 @@ export default function PayoutTable({
           setOpen={setUnpaidOpen}
         />
         <div className="flex gap-2">
-          <Button variant="outline" onClick={downloadCSV}>
+          <CsvUploadPopover />
+          <Button variant="outline" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" />
             Export CSV
           </Button>
-          <Button
-            onClick={() =>
-              window.open("https://www.paypal.com/mep/payoutsweb", "_blank")
-            }
-          >
-            Mass Payout
-          </Button>
+          <Button onClick={handleMassPayout}>Mass Payout</Button>
         </div>
       </div>
+      <AppDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        title="Action not available"
+        description="At least one affiliate must have unpaid commission and a PayPal email."
+        affiliate={false}
+        hideCloseIcon={true}
+      />
       {/* Table Card */}
       <Card>
         <CardHeader>

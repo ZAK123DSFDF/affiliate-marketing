@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import {
   BarChart3,
   Link as LinkIcon,
@@ -24,15 +24,14 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import CreateCompany from "@/components/pages/Create-Company"
 
 import { Button } from "@/components/ui/button"
 
 import { DropdownInput } from "@/components/ui-custom/DropDownInput"
-import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { useSwitchOrg } from "@/hooks/useSwitchOrg"
 import { SellerData } from "@/lib/types/profileTypes"
+import { AppDialog } from "@/components/ui-custom/AppDialog"
 
 // Menu items for the sidebar
 
@@ -44,7 +43,6 @@ type Props = {
 }
 const SellerDashboardSidebar = ({ orgId, plan, orgs, UserData }: Props) => {
   const pathname = usePathname()
-  const { showCustomToast } = useCustomToast()
   const { mutate: switchOrg, isPending } = useSwitchOrg()
   const items = [
     {
@@ -78,23 +76,21 @@ const SellerDashboardSidebar = ({ orgId, plan, orgs, UserData }: Props) => {
       icon: Settings,
     },
   ]
-  const [open, setOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogMode, setDialogMode] = useState<"create" | "upgrade">("create")
+
   const handleClick = () => {
     if (!canCreate) {
-      showCustomToast({
-        type: "error",
-        title: "Upgrade Required",
-        description: "you must be on the ultimate plan to add organization",
-        affiliate: false,
-      })
+      setDialogMode("upgrade")
+      setDialogOpen(true)
       return
     }
-    setOpen(true)
+    setDialogMode("create")
+    setDialogOpen(true)
   }
   const currentOrg = orgs?.find((o) => o.id === orgId)
   const canCreate =
     plan?.plan === "ULTIMATE" || (orgs?.length < 1 && plan?.plan !== "ULTIMATE")
-  const router = useRouter()
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center justify-center py-4">
@@ -121,14 +117,30 @@ const SellerDashboardSidebar = ({ orgId, plan, orgs, UserData }: Props) => {
           <Button size="icon" variant="default" onClick={handleClick}>
             <Plus className="w-4 h-4" />
           </Button>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTitle></DialogTitle>
-            <DialogContent affiliate={false} className="max-w-3xl ">
-              <div className="h-full overflow-y-auto max-h-[90vh]">
+          <AppDialog
+            open={dialogOpen}
+            onOpenChange={setDialogOpen}
+            affiliate={false}
+            title={dialogMode === "upgrade" ? "Upgrade Required" : undefined}
+            description={
+              dialogMode === "upgrade"
+                ? "Your subscription must be Ultimate to create a new company."
+                : undefined
+            }
+            confirmText={dialogMode === "upgrade" ? "Upgrade" : "OK"}
+            onConfirm={
+              dialogMode === "upgrade"
+                ? () => console.log("Redirect to upgrade flow 🚀")
+                : undefined
+            }
+            showFooter={dialogMode === "upgrade"}
+          >
+            {dialogMode === "create" && (
+              <div className="h-full overflow-y-auto max-h-[60vh]">
                 <CreateCompany mode="add" embed />
               </div>
-            </DialogContent>
-          </Dialog>
+            )}
+          </AppDialog>
         </div>
       </SidebarHeader>
       <SidebarContent>

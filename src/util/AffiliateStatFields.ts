@@ -4,6 +4,7 @@ import {
   affiliateClick,
   affiliateInvoice,
   affiliateLink,
+  affiliatePayoutMethod,
   organization,
 } from "@/db/schema"
 
@@ -45,6 +46,12 @@ END`.mapWith(Number),
     ARRAY_AGG(
       DISTINCT ('https://' || ${organization.domainName} || '?' || ${organization.referralParam} || '=' || ${affiliateLink.id})
     )
+  `,
+  paypalEmail: sql<string | null>`
+    MAX(CASE 
+      WHEN ${affiliatePayoutMethod.provider} = 'paypal' 
+      THEN ${affiliatePayoutMethod.accountIdentifier} 
+    END)
   `,
 }
 

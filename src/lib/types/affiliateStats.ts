@@ -11,4 +11,7 @@ export interface AffiliateStats {
   currency: string
 }
 
-export type AffiliatePayout = Omit<AffiliateStats, "conversionRate">
+export interface AffiliatePayout
+  extends Omit<AffiliateStats, "conversionRate"> {
+  paypalEmail?: string
+}
