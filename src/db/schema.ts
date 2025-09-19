@@ -11,6 +11,7 @@ import {
   jsonb,
   numeric,
   varchar,
+  serial,
 } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 import { createId } from "@paralleldrive/cuid2"
@@ -141,6 +142,11 @@ export const payoutReference = pgTable("payout_reference", {
   isUnpaid: boolean("is_unpaid").notNull().default(false),
 
   createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+export const payoutUploads = pgTable("payout_uploads", {
+  id: serial("id").primaryKey(),
+  data: jsonb("data").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
 })
 export const payoutReferencePeriods = pgTable(
   "payout_reference_periods",

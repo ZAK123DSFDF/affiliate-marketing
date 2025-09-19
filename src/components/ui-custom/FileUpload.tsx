@@ -85,7 +85,15 @@ export function FileUpload({
 
   return (
     <Dropzone
-      accept={type === "csv" ? { "text/csv": [] } : { "image/*": [] }}
+      accept={
+        type === "csv"
+          ? {
+              "text/csv": [".csv"],
+              "application/vnd.ms-excel": [".csv"],
+              "application/octet-stream": [".csv"],
+            }
+          : { "image/*": [] }
+      }
       maxFiles={maxFiles}
       maxSize={MAX_SIZE}
       onDrop={handleDrop}

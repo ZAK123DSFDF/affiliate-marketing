@@ -164,6 +164,9 @@ importers:
       nodemailer:
         specifier: ^7.0.3
         version: 7.0.3
+      papaparse:
+        specifier: ^5.5.3
+        version: 5.5.3
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -228,6 +231,9 @@ importers:
       '@types/nodemailer':
         specifier: ^6.4.17
         version: 6.4.17
+      '@types/papaparse':
+        specifier: ^5.3.16
+        version: 5.3.16
       '@types/paypal__checkout-server-sdk':
         specifier: ^1.0.8
         version: 1.0.8
@@ -2393,6 +2399,9 @@ packages:
   '@types/nodemailer@6.4.17':
     resolution: {integrity: sha512-I9CCaIp6DTldEg7vyUTZi8+9Vo0hi1/T8gv3C89yk1rSAAzoKQ8H8ki/jBYJSFoH/BisgLP8tkZMlQ91CIquww==}
 
+  '@types/papaparse@5.3.16':
+    resolution: {integrity: sha512-T3VuKMC2H0lgsjI9buTB3uuKj3EMD2eap1MOuEQuBQ44EnDx/IkGhU6EwiTf9zG3za4SKlmwKAImdDKdNnCsXg==}
+
   '@types/paypal__checkout-server-sdk@1.0.8':
     resolution: {integrity: sha512-PNmNBlcany7Dh42Qb5mkl+KqYfR39aVcalLm3FXHCozKtDyfLE1JAig7C2mANPdC3fmQhdvcs0n3ym6K10CLnw==}
 
@@ -3998,6 +4007,9 @@ packages:
 
   package-json-from-dist@1.0.1:
     resolution: {integrity: sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw==}
+
+  papaparse@5.5.3:
+    resolution: {integrity: sha512-5QvjGxYVjxO59MGU2lHVYpRWBBtKHnlIAcSe1uNFCkkptUh63NFRj0FJQm7nR67puEruUci/ZkjmEFrjCAyP4A==}
 
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
@@ -6771,6 +6783,10 @@ snapshots:
     dependencies:
       '@types/node': 20.17.27
 
+  '@types/papaparse@5.3.16':
+    dependencies:
+      '@types/node': 20.17.27
+
   '@types/paypal__checkout-server-sdk@1.0.8':
     dependencies:
       '@types/paypal__paypalhttp': 1.0.3
@@ -8497,6 +8513,8 @@ snapshots:
       p-limit: 3.1.0
 
   package-json-from-dist@1.0.1: {}
+
+  papaparse@5.5.3: {}
 
   parent-module@1.0.1:
     dependencies:
