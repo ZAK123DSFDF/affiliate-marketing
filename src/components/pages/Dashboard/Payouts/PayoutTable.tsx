@@ -14,16 +14,15 @@ import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import {
+  createAffiliatePayouts,
   getAffiliatePayouts,
   getAffiliatePayoutsBulk,
   getUnpaidMonths,
 } from "@/app/(seller)/seller/[orgId]/dashboard/payout/action"
 import { useEffect, useState } from "react"
 import MonthSelect from "@/components/ui-custom/MonthSelect"
-import { useQuery } from "@tanstack/react-query"
 import { UnpaidMonth } from "@/lib/types/unpaidMonth"
 import UnpaidSelect from "@/components/ui-custom/UnpaidPicker"
-import { AffiliatePayout } from "@/lib/types/affiliateStats"
 import { TableContent } from "@/components/ui-custom/TableContent"
 import { TableTop } from "@/components/ui-custom/TableTop"
 import { PayoutColumns } from "@/components/pages/Dashboard/Payouts/PayoutColumns"
@@ -33,18 +32,17 @@ import { useQueryFilter } from "@/hooks/useQueryFilter"
 import PaginationControls from "@/components/ui-custom/PaginationControls"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
 import CsvUploadPopover from "@/components/ui-custom/CsvUpload"
+import { getNormalizedMonths } from "@/util/Months"
 
 interface AffiliatesTablePayoutProps {
-  data: AffiliatePayout[]
   orgId: string
   affiliate: boolean
 }
 export default function PayoutTable({
-  data,
   orgId,
   affiliate = false,
 }: AffiliatesTablePayoutProps) {
-  const [monthYear, setMonthYear] = useState<{
+  const [, setMonthYear] = useState<{
     month?: number
     year?: number
   }>({})
@@ -54,7 +52,12 @@ export default function PayoutTable({
   const { filters, setFilters } = useQueryFilter()
   const [unpaidOpen, setUnpaidOpen] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [dialogMessage, setDialogMessage] = useState("")
+  const [, setDialogMessage] = useState("")
+  const normalizedMonths = getNormalizedMonths(
+    isUnpaidMode,
+    selectedMonths,
+    filters
+  )
   const { data: unpaidPayouts, isPending: isPendingUnpaid } = useSearch(
     [
       "unpaid-payouts",
@@ -88,7 +91,22 @@ export default function PayoutTable({
       ),
     }
   )
-  const handleExport = () => {
+  function generateCSV(tableData: any[]) {
+    const header = "PayPal Email,Amount,Currency,Note\n"
+    return (
+      header +
+      tableData
+        .filter((r) => r.unpaid > 0 && r.paypalEmail)
+        .map((r) => {
+          const note = r.refId ?? "" // use refId from DB
+          return `${r.paypalEmail},${r.unpaid.toFixed(2)},${
+            r.currency || "USD"
+          },${note}`
+        })
+        .join("\n")
+    )
+  }
+  const handleExport = async () => {
     if (disableActions) {
       setDialogMessage(
         "At least one affiliate must have unpaid commission and a PayPal email."
@@ -96,8 +114,44 @@ export default function PayoutTable({
       setDialogOpen(true)
       return
     }
-    console.log("Generated CSV:\n", csv)
-    downloadCSV()
+    const affiliateIds = tableData
+      .filter((r) => r.unpaid > 0 && r.paypalEmail)
+      .map((r) => r.id)
+
+    if (affiliateIds.length === 0) {
+      setDialogMessage("No affiliates available for payout.")
+      setDialogOpen(true)
+      return
+    }
+
+    try {
+      const months = isUnpaidMode
+        ? normalizedMonths
+        : filters.year && filters.month
+          ? [{ year: filters.year, month: filters.month }]
+          : []
+      const insertedRefs = await createAffiliatePayouts({
+        orgId,
+        affiliateIds,
+        isUnpaid: isUnpaidMode,
+        months,
+      })
+      const refMap = Object.fromEntries(
+        insertedRefs.map((r) => [r.affiliateId, r.refId])
+      )
+
+      const enrichedTable = tableData.map((row) => ({
+        ...row,
+        refId: refMap[row.id] || null,
+      }))
+      const csv = generateCSV(enrichedTable)
+      console.log("Generated CSV:\n", csv)
+      downloadCSV(csv)
+    } catch (err) {
+      console.error("Error creating payouts:", err)
+      setDialogMessage("Something went wrong while creating payouts.")
+      setDialogOpen(true)
+    }
   }
 
   const handleMassPayout = () => {
@@ -137,25 +191,15 @@ export default function PayoutTable({
       filters.email,
     ],
     {
-      enabled:
-        !!(
-          !affiliate &&
-          orgId &&
-          (filters.year ||
-            filters.month ||
-            filters.orderBy ||
-            filters.orderDir ||
-            filters.offset ||
-            filters.email)
-        ) && !isUnpaidMode,
+      enabled: !!(!affiliate && orgId) && !isUnpaidMode,
     }
   )
-  const { data: unpaidMonthData, isPending: pendingMonth } = useQuery({
-    queryKey: ["unpaid-months", orgId],
-    queryFn: () =>
-      getUnpaidMonths(orgId).then((res) => (res.ok ? res.data : [])),
-    enabled: !affiliate && unpaidOpen,
-  })
+  const { data: unpaidMonthData, isPending: pendingMonth } = useSearch(
+    ["unpaid-months", orgId],
+    getUnpaidMonths,
+    [orgId],
+    { enabled: !affiliate && unpaidOpen }
+  )
   const applyUnpaidMonths = () => {
     if (selectedMonths.length > 0) {
       setIsUnpaidMode(true)
@@ -173,29 +217,15 @@ export default function PayoutTable({
       setUnpaidMonths(unpaidMonthData)
     }
   }, [unpaidMonthData])
-  const tableData =
-    (isUnpaidMode ? unpaidPayouts : regularPayouts) ?? data ?? []
-  /* CSV helper */
-  const csv = React.useMemo(() => {
-    const header = "PayPal Email,Amount,Currency\n"
-    return (
-      header +
-      tableData
-        .filter((r) => r.unpaid > 0 && r.paypalEmail) // only affiliates with unpaid + paypal email
-        .map(
-          (r) =>
-            `${r.paypalEmail},${r.unpaid.toFixed(2)},${r.currency || "USD"}`
-        )
-        .join("\n")
-    )
-  }, [tableData])
+  const tableData = (isUnpaidMode ? unpaidPayouts : regularPayouts) ?? []
+
   const noPaypalEmails =
     tableData.length > 0 &&
     tableData.every((r) => !r.paypalEmail || r.paypalEmail.trim() === "")
   const totalUnpaid = tableData.reduce((sum, r) => sum + (r.unpaid ?? 0), 0)
   const noUnpaidCommission = totalUnpaid <= 0
   const disableActions = noPaypalEmails || noUnpaidCommission
-  const downloadCSV = () => {
+  const downloadCSV = (csv: string) => {
     const blob = new Blob([csv], { type: "text/csv" })
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
@@ -322,8 +352,7 @@ export default function PayoutTable({
             ) : (
               <TableContent table={table} affiliate={false} />
             )
-          ) : (filters.year !== undefined || filters.month !== undefined) &&
-            isPending ? (
+          ) : isPending ? (
             <TableLoading columns={columns} />
           ) : table.getRowModel().rows.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">
