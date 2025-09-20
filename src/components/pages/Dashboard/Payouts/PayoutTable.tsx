@@ -33,6 +33,7 @@ import PaginationControls from "@/components/ui-custom/PaginationControls"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
 import CsvUploadPopover from "@/components/ui-custom/CsvUpload"
 import { getNormalizedMonths } from "@/util/Months"
+import { ExchangeRate } from "@/util/ExchangeRate"
 
 interface AffiliatesTablePayoutProps {
   orgId: string
@@ -91,20 +92,20 @@ export default function PayoutTable({
       ),
     }
   )
-  function generateCSV(tableData: any[]) {
+  async function generateCSV(tableData: any[]) {
     const header = "PayPal Email,Amount,Currency,Note\n"
-    return (
-      header +
+
+    const rows = await Promise.all(
       tableData
         .filter((r) => r.unpaid > 0 && r.paypalEmail)
-        .map((r) => {
-          const note = r.refId ?? "" // use refId from DB
-          return `${r.paypalEmail},${r.unpaid.toFixed(2)},${
-            r.currency || "USD"
-          },${note}`
+        .map(async (r) => {
+          const rate = await ExchangeRate(r.currency)
+          const amountUSD = r.unpaid / rate
+          return `${r.paypalEmail},${amountUSD.toFixed(2)},USD,${r.refId ?? ""}`
         })
-        .join("\n")
     )
+
+    return header + rows.join("\n")
   }
   const handleExport = async () => {
     if (disableActions) {
@@ -144,8 +145,7 @@ export default function PayoutTable({
         ...row,
         refId: refMap[row.id] || null,
       }))
-      const csv = generateCSV(enrichedTable)
-      console.log("Generated CSV:\n", csv)
+      const csv = await generateCSV(enrichedTable)
       downloadCSV(csv)
     } catch (err) {
       console.error("Error creating payouts:", err)

@@ -1,5 +1,4 @@
 import { create } from "zustand"
-import { upload } from "@vercel/blob/client"
 export type FileStatus = "pending" | "processing" | "success" | "error"
 
 export interface UploadedFile {
@@ -58,32 +57,19 @@ export const useUploadStore = create<UseUploadStore>((set) => ({
     })
 
     try {
-      // Prepend folder path if provided
-      const uploadPath = path ? `${path}/${file.name}` : file.name
+      const formData = new FormData()
+      if (path) formData.append("path", path)
+      formData.append("file", file)
 
-      await upload(uploadPath, file, {
-        access: "public",
-        handleUploadUrl: "/api/upload",
-        onUploadProgress: ({ percentage }) => {
-          set((state) => {
-            const current = state.uploads[uploadId]
-            if (!current) return state
-            return {
-              uploads: {
-                ...state.uploads,
-                [uploadId]: {
-                  ...current,
-                  files: current.files.map((f) =>
-                    f.id === newFile.id ? { ...f, progress: percentage } : f
-                  ),
-                },
-              },
-            }
-          })
-        },
+      // POST to your new backend API
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
       })
 
-      // Mark as success
+      if (!res.ok) throw new Error("Upload failed")
+
+      // Mark success
       set((state) => {
         const current = state.uploads[uploadId]
         if (!current) return state

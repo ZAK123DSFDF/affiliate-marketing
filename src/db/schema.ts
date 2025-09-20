@@ -143,11 +143,6 @@ export const payoutReference = pgTable("payout_reference", {
 
   createdAt: timestamp("created_at").notNull().defaultNow(),
 })
-export const payoutUploads = pgTable("payout_uploads", {
-  id: serial("id").primaryKey(),
-  data: jsonb("data").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-})
 export const payoutReferencePeriods = pgTable(
   "payout_reference_periods",
   {

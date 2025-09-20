@@ -1,3 +1,4 @@
+"use server"
 import { db } from "@/db/drizzle"
 export const ExchangeRate = async (targetCurrency: string) => {
   let rate = 1

@@ -1,65 +1,51 @@
-import { handleUpload, type HandleUploadBody } from "@vercel/blob/client"
 import { NextResponse } from "next/server"
-import Papa from "papaparse"
-import { payoutUploads } from "@/db/schema"
-import { db } from "@/db/drizzle"
-export async function POST(request: Request): Promise<NextResponse> {
-  const body = (await request.json()) as HandleUploadBody
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
+import { parsePaypalCSV } from "@/lib/server/parsePaypalCSV"
+import util from "util"
+const s3Client = new S3Client({
+  region: "auto",
+  endpoint: process.env.R2_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+  },
+})
 
+export async function POST(request: Request) {
   try {
-    const jsonResponse = await handleUpload({
-      body,
-      request,
-      onBeforeGenerateToken: async (
-        pathname
-        /* clientPayload */
-      ) => {
-        return {
-          allowedContentTypes: [
-            "image/jpeg",
-            "image/png",
-            "image/webp",
-            "text/csv",
-            "application/octet-stream",
-            "application/vnd.ms-excel",
-          ],
-          addRandomSuffix: true,
-          callbackUrl: process.env.VERCEL_BLOB_CALLBACK_URL,
-        }
-      },
-
-      onUploadCompleted: async ({ blob, tokenPayload }) => {
-        console.log("blob upload completed", blob, tokenPayload)
-
-        try {
-          // 1️⃣ Fetch CSV
-          const res = await fetch(blob.url)
-          const csv = await res.text()
-
-          // 2️⃣ Parse CSV
-          const parsed = Papa.parse(csv, { header: true })
-
-          // 3️⃣ Insert parsed data as JSON
-          const inserted = await db
-            .insert(payoutUploads)
-            .values({
-              data: parsed.data,
-            })
-            .returning()
-
-          console.log("✅ CSV saved as JSON:", inserted[0])
-        } catch (err) {
-          console.error("CSV processing failed", err)
-          throw err
-        }
-      },
-    })
-
-    return NextResponse.json(jsonResponse)
-  } catch (error) {
-    return NextResponse.json(
-      { error: (error as Error).message },
-      { status: 400 }
+    const formData = await request.formData()
+    const file = formData.get("file") as File
+    if (!file) {
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 })
+    }
+    const path = formData.get("path") as string | undefined
+    const uploadPath = path ? `${path}/${file.name}` : file.name
+    const csvText = await file.text()
+    let parsed
+    try {
+      parsed = parsePaypalCSV(csvText)
+    } catch (err: any) {
+      return NextResponse.json(
+        { error: err.message || "Invalid CSV format" },
+        { status: 400 }
+      )
+    }
+    console.log("parsed", util.inspect(parsed, { depth: null, colors: true }))
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: process.env.R2_BUCKET_NAME,
+        Key: uploadPath,
+        Body: csvText,
+        ContentType: "text/csv",
+      })
     )
+
+    return NextResponse.json({
+      message: "File uploaded successfully",
+      parsedData: parsed,
+    })
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 })
   }
 }
