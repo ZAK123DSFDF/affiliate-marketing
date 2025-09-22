@@ -7,9 +7,9 @@ import { CustomizationProvider } from "@/app/affiliate/[orgId]/dashboard/analyti
 interface AnalyticsLayoutProps {
   children: React.ReactNode
   params: Promise<{ orgId: string }>
-  cards?: React.ReactNode
-  charts?: React.ReactNode
-  referrers?: React.ReactNode
+  cards: React.ReactNode
+  charts: React.ReactNode
+  referrers: React.ReactNode
 }
 
 export default async function AnalyticsLayout({
