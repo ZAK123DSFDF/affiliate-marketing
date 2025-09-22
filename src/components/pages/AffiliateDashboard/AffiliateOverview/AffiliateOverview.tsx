@@ -14,9 +14,6 @@ const AffiliateOverview = ({
   orgId,
   isPreview = false,
   affiliate = false,
-  kpiCardStats,
-  affiliateChartStats,
-  referrerStats,
 }: {
   orgId: string
   isPreview?: boolean
@@ -36,17 +33,11 @@ const AffiliateOverview = ({
   }
   return (
     <div className="space-y-8">
-      <Cards
-        orgId={orgId}
-        affiliate={affiliate}
-        kpiCardStats={kpiCardStats}
-        isPreview={isPreview}
-      />
+      <Cards orgId={orgId} affiliate={affiliate} isPreview={isPreview} />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="h-full">
           <ChartDailyMetrics
             orgId={orgId}
-            ChartStats={affiliateChartStats}
             affiliate={affiliate}
             isPreview={isPreview}
           />
@@ -54,7 +45,6 @@ const AffiliateOverview = ({
         <div className="h-full">
           <SocialTrafficCharts
             orgId={orgId}
-            referrerStats={referrerStats}
             isPreview={isPreview}
             affiliate={affiliate}
           />

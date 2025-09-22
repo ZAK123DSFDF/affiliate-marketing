@@ -5,11 +5,7 @@ import AffiliateDashboardSidebar from "@/components/AffiliateDashboardSidebar"
 import Profile from "@/components/pages/Dashboard/Profile/Profile"
 import PaymentTable from "@/components/pages/AffiliateDashboard/Payment/Payment"
 import Links from "@/components/pages/AffiliateDashboard/Links/Links"
-import {
-  dummyAffiliateLinksRaw,
-  dummyAffiliatePayments,
-  dummyProfileData,
-} from "@/lib/types/previewData"
+import { dummyProfileData } from "@/lib/types/previewData"
 import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOverview/AffiliateOverview"
 import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
@@ -50,20 +46,10 @@ export function DashboardCustomization({ orgId }: { orgId: string }) {
               />
             )}
             {selectedPage === "links" && (
-              <Links
-                orgId={orgId}
-                affiliate
-                isPreview
-                data={dummyAffiliateLinksRaw}
-              />
+              <Links orgId={orgId} affiliate isPreview />
             )}
             {selectedPage === "payment" && (
-              <PaymentTable
-                orgId={orgId}
-                affiliate
-                isPreview
-                data={dummyAffiliatePayments}
-              />
+              <PaymentTable orgId={orgId} affiliate isPreview />
             )}
             {selectedPage === "profile" && (
               <Profile
