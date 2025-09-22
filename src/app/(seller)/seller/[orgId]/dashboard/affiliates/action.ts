@@ -26,6 +26,7 @@ export async function getAffiliatesWithStats(
       month,
       undefined,
       {
+        exclude: ["paypalEmail"],
         orderBy: ordered,
         orderDir,
         limit: 10,

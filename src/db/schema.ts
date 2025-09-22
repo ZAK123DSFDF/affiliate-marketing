@@ -10,6 +10,8 @@ import {
   integer,
   jsonb,
   numeric,
+  varchar,
+  serial,
 } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 import { createId } from "@paralleldrive/cuid2"
@@ -128,8 +130,32 @@ export const organization = pgTable("organization", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
+export const payoutReference = pgTable("payout_reference", {
+  refId: varchar("ref_id", { length: 12 }).primaryKey(),
+  orgId: text("org_id")
+    .notNull()
+    .references(() => organization.id, { onDelete: "cascade" }),
+  affiliateId: uuid("affiliate_id")
+    .notNull()
+    .references(() => affiliate.id, { onDelete: "cascade" }),
 
-// AFFILIATE SCHEMA (unchanged)
+  isUnpaid: boolean("is_unpaid").notNull().default(false),
+
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+export const payoutReferencePeriods = pgTable(
+  "payout_reference_periods",
+  {
+    refId: varchar("ref_id", { length: 12 })
+      .notNull()
+      .references(() => payoutReference.refId, { onDelete: "cascade" }),
+    month: integer("month").notNull(),
+    year: integer("year").notNull(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.refId, t.month, t.year] }),
+  })
+)
 export const affiliate = pgTable(
   "affiliate",
   {

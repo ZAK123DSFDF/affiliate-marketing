@@ -39,7 +39,6 @@ export default function UnpaidSelect({
         ? prev.filter((x) => !(x.month === m.month && x.year === m.year))
         : [...prev, m]
     )
-    console.log("Toggled month:", m)
   }
 
   const handleApply = () => {

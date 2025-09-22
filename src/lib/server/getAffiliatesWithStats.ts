@@ -6,6 +6,7 @@ import {
   affiliateClick,
   affiliateInvoice,
   organization,
+  affiliatePayoutMethod,
 } from "@/db/schema"
 import { and, desc, eq, ilike, sql } from "drizzle-orm"
 import { buildWhereWithDate } from "@/util/BuildWhereWithDate"
@@ -128,6 +129,14 @@ export async function getAffiliatesWithStatsAction(
       )
     )
     .leftJoin(organization, eq(organization.id, orgId))
+    .leftJoin(
+      affiliatePayoutMethod,
+      and(
+        eq(affiliatePayoutMethod.affiliateId, affiliate.id),
+        eq(affiliatePayoutMethod.provider, "paypal"),
+        eq(affiliatePayoutMethod.isDefault, true)
+      )
+    )
     .where(and(...whereConditions))
     .groupBy(affiliate.id, affiliate.email)
     .orderBy(...(orderExpr ? [orderExpr] : []))

@@ -20,6 +20,13 @@ export const PayoutColumns = (): ColumnDef<AffiliatePayout>[] => {
       ),
     },
     {
+      accessorKey: "paypalEmail",
+      header: "PayPal Email",
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue("paypalEmail") || "-"}</div>
+      ),
+    },
+    {
       id: "links",
       header: "Links",
       cell: ({ row }) => {

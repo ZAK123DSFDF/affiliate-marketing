@@ -14,12 +14,9 @@ export async function devSetUserPlan({
 }) {
   try {
     if (type === "SUBSCRIPTION") {
-      // remove purchases for this user
       await db.delete(purchase).where(eq(purchase.userId, userId))
-      // remove existing subscription
       await db.delete(subscription).where(eq(subscription.userId, userId))
 
-      // insert new subscription
       await db.insert(subscription).values({
         userId,
         plan: plan as "PRO" | "ULTIMATE",
@@ -31,12 +28,9 @@ export async function devSetUserPlan({
     }
 
     if (type === "PURCHASE") {
-      // remove subscriptions for this user
       await db.delete(subscription).where(eq(subscription.userId, userId))
-      // remove existing purchase
       await db.delete(purchase).where(eq(purchase.userId, userId))
 
-      // insert new purchase
       await db.insert(purchase).values({
         userId,
         tier: plan as "ONE_TIME_100" | "ONE_TIME_200",
@@ -58,13 +52,27 @@ export async function devSetUserPlan({
   }
 }
 
-// Run script
+// --- CLI support ---
+const DEV_USER_ID = "29022934-eb52-49af-aca4-b6ed553c89dd"
+
+// args: plan type [userId?]
+const [, , plan, type, userIdArg] = process.argv
+
+if (!plan || !type) {
+  console.error(
+    "Usage: bun run scripts/devSetUserPlan.ts <plan> <type> [userId]"
+  )
+  process.exit(1)
+}
+
+const userId = userIdArg || DEV_USER_ID
+
 const success = await devSetUserPlan({
-  userId: "29022934-eb52-49af-aca4-b6ed553c89dd",
-  plan: "ULTIMATE",
-  type: "SUBSCRIPTION",
+  userId,
+  plan: plan as any,
+  type: type as any,
 })
 
 if (!success) {
-  process.exit(1) // exit with error for CI/CD
+  process.exit(1)
 }
