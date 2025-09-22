@@ -1,5 +1,4 @@
 import { create } from "zustand"
-import { showStandaloneToast } from "@/util/showStandaloneToast"
 export type FileStatus = "pending" | "processing" | "success" | "error"
 
 export interface UploadedFile {
@@ -20,7 +19,6 @@ interface UseUploadStore {
   setErrorMessage: (uploadId: string, msg: string | null) => void
   addFile: (uploadId: string, file: File, path?: string) => Promise<string>
   removeFile: (uploadId: string, id: string) => void
-  retryFile: (uploadId: string, id: string) => void
 }
 
 export const useUploadStore = create<UseUploadStore>((set) => ({
@@ -91,6 +89,7 @@ export const useUploadStore = create<UseUploadStore>((set) => ({
           },
         }
       })
+      return newFile.id
     } catch (err) {
       console.error("Upload Error:", err)
       set((state) => {
@@ -108,8 +107,8 @@ export const useUploadStore = create<UseUploadStore>((set) => ({
           },
         }
       })
+      throw err
     }
-    return newFile.id
   },
   removeFile: (uploadId, id) =>
     set((state) => {
@@ -125,37 +124,4 @@ export const useUploadStore = create<UseUploadStore>((set) => ({
         },
       }
     }),
-  retryFile: (uploadId, id) => {
-    const state = useUploadStore.getState()
-    const current = state.uploads[uploadId]
-    if (!current) return
-
-    const fileToRetry = current.files.find((f) => f.id === id)
-    if (!fileToRetry) return
-
-    // remove old failed entry
-    state.removeFile(uploadId, id)
-
-    // retry upload immediately
-    state
-      .addFile(uploadId, fileToRetry.file)
-      .then((newId) => {
-        showStandaloneToast({
-          type: "success",
-          title: "Retry Successful",
-          description: `${fileToRetry.file.name} uploaded on retry.`,
-        })
-
-        // auto-cleanup after 1.5s
-
-        useUploadStore.getState().removeFile(uploadId, newId)
-      })
-      .catch(() => {
-        showStandaloneToast({
-          type: "error",
-          title: "Retry Failed",
-          description: `${fileToRetry.file.name} could not be uploaded.`,
-        })
-      })
-  },
 }))

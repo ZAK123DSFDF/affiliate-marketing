@@ -5,8 +5,6 @@ import {
   DropzoneEmptyState,
 } from "@/components/ui/shadcn-io/dropzone"
 import { useUploadStore } from "@/store/useUploadStore"
-import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
-import { useQueryClient } from "@tanstack/react-query"
 
 export interface FileUploadProps {
   uploadId: string
@@ -14,7 +12,8 @@ export interface FileUploadProps {
   maxFiles?: number
   maxSizeMB?: number
   path?: string
-  onUploadSuccess?: (file: File, fileId: string) => void
+  onUploadSuccess?: (file: File, fileId: string, uploadId: string) => void
+  onUploadError?: (file: File, err: any, uploadId: string) => void
 }
 
 export function FileUpload({
@@ -24,10 +23,10 @@ export function FileUpload({
   maxSizeMB = 5,
   path,
   onUploadSuccess,
+  onUploadError,
 }: FileUploadProps) {
-  const { addFile, setErrorMessage, removeFile } = useUploadStore()
+  const { addFile, setErrorMessage } = useUploadStore()
   const MAX_SIZE = maxSizeMB * 1024 * 1024
-  const { showCustomToast } = useCustomToast()
   const handleError = (err: any) => {
     console.log(`[${uploadId}] dropzone error:`, err)
     const fallbackMsg = "Something went wrong. Please try again."
@@ -61,32 +60,15 @@ export function FileUpload({
     }
     setErrorMessage(uploadId, fallbackMsg)
   }
-  const handleSuccess = (file: File, fileId: string) => {
-    if (uploadId === "csvUpload") {
-      showCustomToast({
-        type: "success",
-        title: "Upload successful",
-        description: `"${file.name}" was uploaded successfully.`,
-        affiliate: false,
-      })
-      setTimeout(() => removeFile(uploadId, fileId), 1500)
-    } else {
-      console.log("file uploaded")
-    }
+  const handleSuccess = (file: File, fileId: string, uploadId: string) => {
     if (onUploadSuccess) {
-      onUploadSuccess(file, fileId)
+      onUploadSuccess(file, fileId, uploadId)
     }
   }
 
-  const handleFailure = (file: File, err: any) => {
-    if (uploadId === "csvUpload") {
-      console.error(err)
-      showCustomToast({
-        type: "error",
-        title: "Upload failed",
-        description: `"${file.name}" could not be uploaded. Please try again.`,
-        affiliate: false,
-      })
+  const handleFailure = (file: File, err: any, uploadId: string) => {
+    if (onUploadError) {
+      onUploadError(file, err, uploadId)
     } else {
       console.error(err)
     }
@@ -113,11 +95,10 @@ export function FileUpload({
       }
 
       addFile(uploadId, file, path)
-        .then((fileId) => handleSuccess(file, fileId))
-        .catch((err) => handleFailure(file, err))
+        .then((fileId) => handleSuccess(file, fileId, uploadId))
+        .catch((err) => handleFailure(file, err, uploadId))
     })
   }
-
   return (
     <Dropzone
       accept={

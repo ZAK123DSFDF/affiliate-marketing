@@ -2,20 +2,30 @@
 
 import { Progress } from "@/components/ui/progress"
 import { Loader2, Check, X, RotateCcw } from "lucide-react"
-import { useUploadStore } from "@/store/useUploadStore"
-
+export interface UploadFile {
+  id: string
+  name: string
+  status: "pending" | "processing" | "success" | "error"
+  progress: number
+}
 interface UploadProgressListProps {
+  files: UploadFile[]
+  errorMessage?: string | null
   uploadId: string
+  onRetry?: (uploadId: string, fileId: string) => void
 }
 
-export function UploadProgressList({ uploadId }: UploadProgressListProps) {
-  const { uploads, retryFile } = useUploadStore()
-  const upload = uploads[uploadId]
-
-  if (!upload) return null
-
-  const { files, errorMessage } = upload
-
+export function UploadProgressList({
+  files,
+  errorMessage,
+  uploadId,
+  onRetry,
+}: UploadProgressListProps) {
+  const onRetryClick = (uploadId: string, fileId: string) => {
+    if (onRetry) {
+      onRetry(uploadId, fileId)
+    }
+  }
   return (
     <div className="space-y-3">
       {errorMessage && (
@@ -46,7 +56,7 @@ export function UploadProgressList({ uploadId }: UploadProgressListProps) {
                     <X className="h-3 w-3 text-white" />
                   </div>
                   <button
-                    onClick={() => retryFile(uploadId, file.id)}
+                    onClick={() => onRetryClick(uploadId, file.id)}
                     className="h-5 w-5 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300"
                   >
                     <RotateCcw className="h-3 w-3 text-gray-700" />
