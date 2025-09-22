@@ -13,15 +13,15 @@ export interface MonthInput {
 
 export interface NormalizedMonth {
   year: number
-  month?: number
+  month?: number | null
 }
 export function getFilterMonths(filters: FilterInput): NormalizedMonth[] {
   if (!filters.year) return []
   if (filters.month) return [{ year: filters.year, month: filters.month }]
-  return [{ year: filters.year }]
+  return [{ year: filters.year, month: 0 }]
 }
 export function getSelectedMonths(months: MonthInput[]): NormalizedMonth[] {
-  return months.map(({ year, month }) => ({ year, month }))
+  return months.map(({ year, month }) => ({ year, month: month ?? 0 }))
 }
 export function getNormalizedMonths(
   isUnpaidMode: boolean,

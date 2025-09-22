@@ -126,11 +126,23 @@ export default function PayoutTable({
     }
 
     try {
-      const months = isUnpaidMode
-        ? normalizedMonths
-        : filters.year && filters.month
-          ? [{ year: filters.year, month: filters.month }]
-          : []
+      type MonthFilter = { year: number; month: number }
+
+      let months: MonthFilter[] = []
+
+      if (isUnpaidMode) {
+        months = normalizedMonths.map((m) => ({
+          year: m.year,
+          month: m.month ?? 0,
+        }))
+      } else if (filters.year) {
+        months = [
+          {
+            year: filters.year,
+            month: filters.month ?? 0,
+          },
+        ]
+      }
       const insertedRefs = await createAffiliatePayouts({
         orgId,
         affiliateIds,
@@ -230,12 +242,16 @@ export default function PayoutTable({
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
+
     const today = new Date()
     const yyyy = today.getFullYear()
     const mm = String(today.getMonth() + 1).padStart(2, "0")
     const dd = String(today.getDate()).padStart(2, "0")
+    const hh = String(today.getHours()).padStart(2, "0")
+    const min = String(today.getMinutes()).padStart(2, "0")
+    const ss = String(today.getSeconds()).padStart(2, "0")
 
-    a.download = `paypal_payouts_${yyyy}-${mm}-${dd}.csv`
+    a.download = `paypal_payouts_${yyyy}-${mm}-${dd}_${hh}${min}${ss}.csv`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -307,7 +323,7 @@ export default function PayoutTable({
           setOpen={setUnpaidOpen}
         />
         <div className="flex gap-2">
-          <CsvUploadPopover />
+          <CsvUploadPopover orgId={orgId} />
           <Button variant="outline" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" />
             Export CSV

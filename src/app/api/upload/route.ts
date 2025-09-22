@@ -2,6 +2,10 @@ import { NextResponse } from "next/server"
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
 import { parsePaypalCSV } from "@/lib/server/parsePaypalCSV"
 import util from "util"
+import {
+  processTransactions,
+  Transaction,
+} from "@/lib/server/processTransactions"
 const s3Client = new S3Client({
   region: "auto",
   endpoint: process.env.R2_ENDPOINT,
@@ -10,7 +14,6 @@ const s3Client = new S3Client({
     secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
   },
 })
-
 export async function POST(request: Request) {
   try {
     const formData = await request.formData()
@@ -30,6 +33,13 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     }
+    const transactions: Transaction[] = parsed.transactions.map((t) => ({
+      Unique_Identifier: t.Unique_Identifier,
+      Recipient: t.Recipient,
+      Status: t.Status,
+      Amount: t.Amount.amount,
+    }))
+    await processTransactions(transactions)
     console.log("parsed", util.inspect(parsed, { depth: null, colors: true }))
     await s3Client.send(
       new PutObjectCommand({
