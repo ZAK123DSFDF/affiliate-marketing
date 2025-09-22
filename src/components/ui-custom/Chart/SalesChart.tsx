@@ -29,7 +29,6 @@ import { Separator } from "@/components/ui/separator"
 import { useChartCustomizationOption } from "@/hooks/useDashboardCustomization"
 import { DashboardCustomizationStores } from "@/store/useCustomizationStore"
 import { ChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/ChartCustomizationOptions"
-import { AffiliateKpiTimeSeries } from "@/lib/types/affiliateChartStats"
 import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateKpiTimeSeries } from "@/app/affiliate/[orgId]/dashboard/action"
 import { getSellerKpiTimeSeries } from "@/app/(seller)/seller/[orgId]/dashboard/action"
@@ -38,14 +37,12 @@ import { useDashboardCard } from "@/hooks/useDashboardCard"
 
 interface ChartDailyMetricsProps {
   orgId: string
-  ChartStats?: AffiliateKpiTimeSeries[]
   affiliate: boolean
   isPreview?: boolean
 }
 
 export function ChartDailyMetrics({
   orgId,
-  ChartStats,
   affiliate = false,
   isPreview = false,
 }: ChartDailyMetricsProps) {
@@ -60,12 +57,7 @@ export function ChartDailyMetrics({
       getAffiliateKpiTimeSeries,
       [orgId, filters.year, filters.month],
       {
-        enabled: !!(
-          affiliate &&
-          orgId &&
-          (filters.year || filters.month) &&
-          !isPreview
-        ),
+        enabled: !!(affiliate && orgId && !isPreview),
       }
     )
   const { data: sellerSearchData, isPending: sellerSearchPending } = useSearch(
@@ -73,24 +65,19 @@ export function ChartDailyMetrics({
     getSellerKpiTimeSeries,
     [orgId, filters.year, filters.month],
     {
-      enabled: !!(
-        !affiliate &&
-        orgId &&
-        (filters.year || filters.month) &&
-        !isPreview
-      ),
+      enabled: !!(!affiliate && orgId && !isPreview),
     }
   )
   const searchData = affiliate ? affiliateSearchData : sellerSearchData
   const searchPending = affiliate ? affiliateSearchPending : sellerSearchPending
   const data = React.useMemo(() => {
-    const source = searchData ?? ChartStats ?? []
+    const source = searchData ?? []
     return source.map((item) => ({
       ...item,
       date: item.createdAt,
       visits: item.visitors,
     }))
-  }, [ChartStats, searchData])
+  }, [searchData])
   const ChartCustomization = useChartCustomizationOption()
   const ThemeCustomization =
     DashboardCustomizationStores.useDashboardThemeCustomization()
@@ -171,8 +158,7 @@ export function ChartDailyMetrics({
         </div>
       )}
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        {searchPending &&
-        (filters.year !== undefined || filters.month !== undefined) ? (
+        {searchPending ? (
           <div className="flex items-center justify-center h-[300px]">
             <span className="text-sm text-muted-foreground">Loading...</span>
           </div>

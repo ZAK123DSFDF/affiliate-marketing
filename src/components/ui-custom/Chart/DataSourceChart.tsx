@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useEffect } from "react"
-import { Pie, PieChart } from "recharts"
+import React from "react"
+import { Label, Pie, PieChart } from "recharts"
 import {
   Card,
   CardHeader,
@@ -39,12 +39,10 @@ const chartConfig: ChartConfig = {
 
 export default function SocialTrafficPieChart({
   orgId,
-  referrerStats,
   isPreview = false,
   affiliate = false,
 }: {
   orgId: string
-  referrerStats?: AffiliateReferrerStat[]
   isPreview?: boolean
   affiliate: boolean
 }) {
@@ -62,12 +60,7 @@ export default function SocialTrafficPieChart({
     getAffiliateReferrers,
     [orgId, filters.year, filters.month],
     {
-      enabled: !!(
-        affiliate &&
-        orgId &&
-        (filters.year || filters.month) &&
-        !isPreview
-      ),
+      enabled: !!(affiliate && orgId && !isPreview),
     }
   )
   const { data: sellerData, isPending: sellerPending } = useSearch(
@@ -75,29 +68,16 @@ export default function SocialTrafficPieChart({
     getSellerReferrer,
     [orgId, filters.year, filters.month],
     {
-      enabled: !!(
-        !affiliate &&
-        orgId &&
-        (filters.year || filters.month) &&
-        !isPreview
-      ),
+      enabled: !!(!affiliate && orgId && !isPreview),
     }
   )
   const searchData = affiliate ? affiliateData : sellerData
   const searchPending = affiliate ? affiliatePending : sellerPending
-  const effectiveData: AffiliateReferrerStat[] = React.useMemo(() => {
-    if (affiliate && searchData) {
-      return searchData as AffiliateReferrerStat[]
-    }
-    if (!affiliate && searchData) {
-      return searchData as SellerReferrerStat[]
-    }
-
-    return referrerStats || []
-  }, [searchData, referrerStats, affiliate])
-  useEffect(() => {
-    console.log("search data", searchData)
-  }, [searchData])
+  const effectiveData = React.useMemo(() => {
+    if (affiliate && searchData) return searchData as AffiliateReferrerStat[]
+    if (!affiliate && searchData) return searchData as SellerReferrerStat[]
+    return []
+  }, [searchData, affiliate])
   const chartData = React.useMemo(() => {
     if (!effectiveData || effectiveData.length === 0) return []
 
@@ -119,17 +99,24 @@ export default function SocialTrafficPieChart({
       fill: colorPalette[index % colorPalette.length],
     }))
   }, [effectiveData, pieCustomization])
+  const totalVisitors = React.useMemo(() => {
+    return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
+  }, [chartData])
   return (
     <Card
       className={`${isPreview ? "h-[340px]" : "h-[480px]"} flex flex-col relative`}
       style={dashboardCardStyle}
     >
       <CardHeader
-        className={`flex items-center gap-2 space-y-0 ${isPreview ? "py-2" : "py-5"} sm:flex-row`}
+        className={`flex items-center gap-2 space-y-0 ${
+          isPreview ? "py-2" : "py-5"
+        } sm:flex-row`}
       >
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="grid flex-1 gap-1">
-            <div className="flex flex-row gap-1 items-center">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+          {/* Title + Description */}
+          <div className="grid gap-1">
+            {/* Proper spacing for Social Traffic */}
+            <div className="flex flex-row gap-2 items-center">
               <CardTitle
                 className={isPreview ? "text-sm" : "text-lg"}
                 style={{
@@ -148,7 +135,7 @@ export default function SocialTrafficPieChart({
                 />
               )}
             </div>
-            <div className="flex flex-column gap-1 items-center">
+            <div className="flex flex-row gap-2 items-center">
               <CardDescription
                 className={isPreview ? "text-xs" : "text-sm"}
                 style={{
@@ -158,7 +145,7 @@ export default function SocialTrafficPieChart({
                     undefined,
                 }}
               >
-                Pie (Donut) Chart
+                Visitor Source
               </CardDescription>
               {isPreview && (
                 <DashboardThemeCustomizationOptions
@@ -168,12 +155,16 @@ export default function SocialTrafficPieChart({
               )}
             </div>
           </div>
-          <MonthSelect
-            isPreview={isPreview}
-            value={{ year: filters.year, month: filters.month }}
-            onChange={(year, month) => setFilters({ year, month })}
-            affiliate={affiliate}
-          />
+
+          {/* Month + Year select aligned to the right */}
+          <div className="flex flex-row gap-2 items-center">
+            <MonthSelect
+              isPreview={isPreview}
+              value={{ year: filters.year, month: filters.month }}
+              onChange={(year, month) => setFilters({ year, month })}
+              affiliate={affiliate}
+            />
+          </div>
         </div>
       </CardHeader>
       <Separator
@@ -191,8 +182,7 @@ export default function SocialTrafficPieChart({
         </div>
       )}
       <CardContent className="flex-1 flex justify-center items-center">
-        {searchPending &&
-        (filters.year !== undefined || filters.month !== undefined) ? (
+        {searchPending ? (
           <div className="text-sm text-muted-foreground">
             Loading sources...
           </div>
@@ -219,7 +209,37 @@ export default function SocialTrafficPieChart({
                 innerRadius={innerRadius}
                 outerRadius={outerRadius}
                 paddingAngle={3}
-              />
+              >
+                <Label
+                  content={({ viewBox }) => {
+                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                      return (
+                        <text
+                          x={viewBox.cx}
+                          y={viewBox.cy}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                        >
+                          <tspan
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            className="fill-foreground text-2xl font-bold"
+                          >
+                            {totalVisitors.toLocaleString()}
+                          </tspan>
+                          <tspan
+                            x={viewBox.cx}
+                            y={(viewBox.cy || 0) + 20}
+                            className="fill-muted-foreground text-sm"
+                          >
+                            Visitors
+                          </tspan>
+                        </text>
+                      )
+                    }
+                  }}
+                />
+              </Pie>
             </PieChart>
           </ChartContainer>
         )}

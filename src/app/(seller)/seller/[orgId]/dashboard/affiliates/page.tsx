@@ -1,24 +1,17 @@
 import React from "react"
 import AffiliatesTable from "@/components/pages/Dashboard/Affiliates/Affiliates"
-import { getAffiliatesWithStats } from "@/app/(seller)/seller/[orgId]/dashboard/affiliates/action"
 import { OrgIdProps } from "@/lib/types/orgId"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
-import { ErrorCard } from "@/components/ui-custom/ErrorCard"
 import { requireSellerWithOrg } from "@/lib/server/authGuards"
 
 const affiliatePage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
   await requireSellerWithOrg(orgId)
-  const rows = await getAffiliatesWithStats(orgId)
-  if (!rows.ok) {
-    return <ErrorCard message={rows.error || "Something went wrong"} />
-  }
   return (
     <>
       <AffiliatesTable
         affiliate={false}
         orgId={orgId}
-        data={rows.data}
         cardTitle="All Affiliates"
         showHeader
       />

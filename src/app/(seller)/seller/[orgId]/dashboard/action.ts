@@ -69,7 +69,6 @@ export async function getSellerReferrer(
     const org = await getOrgAuth(orgId)
     const { linkIds } = await getOrgAffiliateLinks(org, orgId)
     const referrerStats = await getReferrerStats(linkIds, year, month)
-
     return { ok: true, data: referrerStats }
   } catch (err) {
     console.error("Error fetching seller referrer:", err)

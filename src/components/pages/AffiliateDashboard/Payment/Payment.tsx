@@ -10,8 +10,6 @@ import {
 } from "@tanstack/react-table"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
-import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow"
 import YearSelect from "@/components/ui-custom/YearSelect"
 import { getAffiliateCommissionByMonth } from "@/app/affiliate/[orgId]/dashboard/payment/action"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
@@ -31,14 +29,12 @@ import { useDashboardCard } from "@/hooks/useDashboardCard"
 
 interface AffiliateCommissionTableProps {
   orgId: string
-  data: AffiliatePaymentRow[]
   isPreview?: boolean
   affiliate: boolean
 }
 
 export default function AffiliateCommissionTable({
   orgId,
-  data,
   isPreview,
   affiliate = false,
 }: AffiliateCommissionTableProps) {
@@ -64,29 +60,26 @@ export default function AffiliateCommissionTable({
 
     return () => clearTimeout(timer)
   }, [filters, isPreview])
-  const filteredData = React.useMemo(() => {
-    if (!isPreview) return data
-    if (!filters.year) return data
-
-    return data.filter((row) =>
-      filters.year ? row.month.startsWith(filters.year.toString()) : true
-    )
-  }, [data, filters.year, isPreview])
   const { data: yearSelectedData, isPending } = useSearch(
     ["affiliate-commissions", orgId, filters.year],
     getAffiliateCommissionByMonth,
     [orgId, filters.year],
     {
-      enabled: !!(orgId && filters.year && !isPreview),
+      enabled: !!(orgId && !isPreview),
     }
   )
+  const filteredData = React.useMemo(() => {
+    if (!isPreview) return yearSelectedData
+    if (!filters.year) return yearSelectedData
+    //
+    // return data.filter((row) =>
+    //   filters.year ? row.month.startsWith(filters.year.toString()) : true
+    // )
+  }, [filters.year, isPreview])
+
   const columns = paymentColumns(affiliate)
   const table = useReactTable({
-    data: isPreview
-      ? filteredData
-      : filters.year && yearSelectedData
-        ? yearSelectedData
-        : data,
+    data: isPreview ? (filteredData ?? []) : (yearSelectedData ?? []),
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -186,8 +179,7 @@ export default function AffiliateCommissionTable({
           </div>
         </CardHeader>
         <CardContent>
-          {filters.year !== undefined &&
-          ((isPending && !isPreview) || (isPreview && isFakeLoadingPreview)) ? (
+          {(isPending && !isPreview) || (isPreview && isFakeLoadingPreview) ? (
             <TableLoading columns={columns} />
           ) : table.getRowModel().rows.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">

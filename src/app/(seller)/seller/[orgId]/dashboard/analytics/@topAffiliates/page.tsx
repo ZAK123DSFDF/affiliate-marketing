@@ -9,16 +9,11 @@ import { requireSellerWithOrg } from "@/lib/server/authGuards"
 const topAffiliatesPage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
   await requireSellerWithOrg(orgId)
-  const TopAffiliates = await getTopAffiliates(orgId)
-  if (!TopAffiliates.ok) {
-    return <ErrorCard message={TopAffiliates.error || "Something went wrong"} />
-  }
   return (
     <>
       <AffiliatesTable
         affiliate={false}
         orgId={orgId}
-        data={TopAffiliates.data}
         cardTitle="Top Affiliates"
         mode="top"
       />

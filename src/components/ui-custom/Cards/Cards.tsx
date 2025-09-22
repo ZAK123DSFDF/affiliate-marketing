@@ -29,7 +29,6 @@ interface CardsProps {
   orgId: string
   affiliate: boolean
   isPreview?: boolean
-  kpiCardStats?: AffiliateKpiStats[] | SellerKpiStats[] | [{}]
 }
 
 const affiliateColorPairs = [
@@ -45,16 +44,10 @@ const sellerColorPairs = [
   { iconBg: "bg-yellow-100", iconColor: "text-yellow-600" },
 ]
 
-const Cards = ({
-  orgId,
-  affiliate = false,
-  isPreview = false,
-  kpiCardStats = [{}],
-}: CardsProps) => {
+const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
   const dashboardTheme = useDashboardThemeCustomizationOption()
   const dashboardCardStyle = useDashboardCard(affiliate)
   const kpiCard = useKpiCardCustomizationOption()
-  const stats = kpiCardStats[0]
   const { filters, setFilters } = useQueryFilter({
     yearKey: "kpiYear",
     monthKey: "kpiMonth",
@@ -66,12 +59,7 @@ const Cards = ({
       getAffiliateKpiStats,
       [orgId, filters.year, filters.month],
       {
-        enabled: !!(
-          affiliate &&
-          orgId &&
-          (filters.year || filters.month) &&
-          !isPreview
-        ),
+        enabled: !!(affiliate && orgId && !isPreview),
       }
     )
   const { data: sellerSearchData, isPending: sellerSearchPending } = useSearch(
@@ -79,19 +67,18 @@ const Cards = ({
     getSellerKpiStats,
     [orgId, filters.year, filters.month],
     {
-      enabled: !!(
-        !affiliate &&
-        orgId &&
-        (filters.year || filters.month) &&
-        !isPreview
-      ),
+      enabled: !!(!affiliate && orgId && !isPreview),
     }
   )
   const searchData = affiliate ? affiliateSearchData : sellerSearchData
   const searchPending = affiliate ? affiliateSearchPending : sellerSearchPending
   const filteredData = affiliate
-    ? mapAffiliateStats(stats as AffiliateKpiStats)
-    : mapSellerStats(stats as SellerKpiStats) || initialKpiData
+    ? affiliateSearchData?.[0]
+      ? mapAffiliateStats(affiliateSearchData[0] as AffiliateKpiStats)
+      : initialKpiData
+    : sellerSearchData?.[0]
+      ? mapSellerStats(sellerSearchData[0] as SellerKpiStats)
+      : initialKpiData
   const isFiltering = !!(filters.year || filters.month)
 
   const displayData = React.useMemo(() => {
@@ -174,8 +161,7 @@ const Cards = ({
                   : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
             }`}
           >
-            {(filters.year !== undefined || filters.month !== undefined) &&
-            searchPending
+            {searchPending
               ? Array.from({ length: affiliate ? 3 : 4 }).map((_, i) => (
                   <div
                     key={i}
@@ -217,7 +203,8 @@ const Cards = ({
                             {formatValue(
                               label,
                               value as number,
-                              (stats as SellerKpiStats)?.currency
+                              (sellerSearchData?.[0] as SellerKpiStats)
+                                ?.currency
                             )}
                           </div>
                         </div>
@@ -339,7 +326,8 @@ const Cards = ({
                           {formatValue(
                             label,
                             value as number,
-                            (stats as AffiliateKpiStats)?.currency
+                            (affiliateSearchData?.[0] as AffiliateKpiStats)
+                              ?.currency
                           )}
                         </div>
                       </div>

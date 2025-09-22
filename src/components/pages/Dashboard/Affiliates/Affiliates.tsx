@@ -23,7 +23,6 @@ import PaginationControls from "@/components/ui-custom/PaginationControls"
 
 interface AffiliatesTableProps {
   orgId: string
-  data: AffiliateStats[]
   cardTitle?: string
   showHeader?: boolean
   affiliate: boolean
@@ -31,7 +30,6 @@ interface AffiliatesTableProps {
 }
 export default function AffiliatesTable({
   orgId,
-  data,
   cardTitle = "Overview of all affiliate activities",
   showHeader = false,
   affiliate = false,
@@ -68,19 +66,10 @@ export default function AffiliatesTable({
       filters.email,
     ],
     {
-      enabled: !!(
-        !affiliate &&
-        orgId &&
-        (filters.year ||
-          filters.month ||
-          filters.orderBy ||
-          filters.orderDir ||
-          filters.offset ||
-          filters.email)
-      ),
+      enabled: !!(!affiliate && orgId),
     }
   )
-  const tableData = searchData ?? data
+  const tableData = searchData ?? []
   const table = useReactTable({
     data: tableData,
     columns,
@@ -143,8 +132,7 @@ export default function AffiliatesTable({
             mode={mode}
           />
 
-          {(filters.year !== undefined || filters.month !== undefined) &&
-          searchPending ? (
+          {searchPending ? (
             <TableLoading columns={columns} />
           ) : table.getRowModel().rows.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">
