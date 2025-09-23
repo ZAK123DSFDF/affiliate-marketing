@@ -14,6 +14,9 @@ const AffiliateOverview = ({
   orgId,
   isPreview = false,
   affiliate = false,
+  kpiCardStats,
+  affiliateChartStats,
+  referrerStats,
 }: {
   orgId: string
   isPreview?: boolean

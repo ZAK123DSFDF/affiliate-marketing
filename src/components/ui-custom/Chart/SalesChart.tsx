@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useEffect, useState } from "react"
 import {
   Area,
   AreaChart,
@@ -34,6 +34,7 @@ import { getAffiliateKpiTimeSeries } from "@/app/affiliate/[orgId]/dashboard/act
 import { getSellerKpiTimeSeries } from "@/app/(seller)/seller/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
+import { dummyChartData } from "@/lib/types/dummyChartData"
 
 interface ChartDailyMetricsProps {
   orgId: string
@@ -70,14 +71,22 @@ export function ChartDailyMetrics({
   )
   const searchData = affiliate ? affiliateSearchData : sellerSearchData
   const searchPending = affiliate ? affiliateSearchPending : sellerSearchPending
+  const [previewLoading, setPreviewLoading] = useState(isPreview)
+
+  useEffect(() => {
+    if (isPreview) {
+      const timer = setTimeout(() => setPreviewLoading(false), 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [isPreview])
   const data = React.useMemo(() => {
-    const source = searchData ?? []
+    const source = isPreview ? dummyChartData : (searchData ?? [])
     return source.map((item) => ({
       ...item,
       date: item.createdAt,
       visits: item.visitors,
     }))
-  }, [searchData])
+  }, [isPreview, searchData])
   const ChartCustomization = useChartCustomizationOption()
   const ThemeCustomization =
     DashboardCustomizationStores.useDashboardThemeCustomization()
@@ -158,7 +167,7 @@ export function ChartDailyMetrics({
         </div>
       )}
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        {searchPending ? (
+        {(isPreview && previewLoading) || (!isPreview && searchPending) ? (
           <div className="flex items-center justify-center h-[300px]">
             <span className="text-sm text-muted-foreground">Loading...</span>
           </div>

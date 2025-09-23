@@ -40,7 +40,9 @@ const CheckEmail = ({ orgId, isPreview, affiliate }: Props) => {
     >
       <div className="w-full max-w-md">
         <Card
-          className="relative transition-shadow duration-300"
+          className={`relative transition-shadow duration-300 ${
+            isPreview ? "pb-8" : ""
+          }`}
           style={authCardStyle}
         >
           <CardHeader className="space-y-1">

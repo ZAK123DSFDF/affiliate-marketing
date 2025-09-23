@@ -36,6 +36,7 @@ import { TableContent } from "@/components/ui-custom/TableContent"
 import { LinksColumns } from "@/components/pages/AffiliateDashboard/Links/LinksColumns"
 import { TableLoading } from "@/components/ui-custom/TableLoading"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
+import { dummyAffiliateLinksRaw } from "@/lib/types/previewData"
 
 interface AffiliateLinkProps {
   orgId: string
@@ -80,49 +81,51 @@ export default function Links({
   const filteredPreviewData = React.useMemo(() => {
     if (!isPreview) return searchData as AffiliateLinkWithStats[]
 
-    // return (data as DummyAffiliateLink[]).map((link) => {
-    //   const filteredClicks = link.clicks.filter((c) => {
-    //     const d = new Date(c.createdAt)
-    //     const matchesYear = filters.year
-    //       ? d.getFullYear() === filters.year
-    //       : true
-    //     const matchesMonth =
-    //       filters.year === undefined
-    //         ? true
-    //         : filters.month
-    //           ? d.getMonth() + 1 === filters.month
-    //           : true
-    //     return matchesYear && matchesMonth
-    //   })
-    //
-    //   const filteredSales = link.sales.filter((s) => {
-    //     const d = new Date(s.createdAt)
-    //     const matchesYear = filters.year
-    //       ? d.getFullYear() === filters.year
-    //       : true
-    //     const matchesMonth = filters.month
-    //       ? d.getMonth() + 1 === filters.month
-    //       : true
-    //     return matchesYear && matchesMonth
-    //   })
-    //
-    //   const totalClicks = filteredClicks.reduce((sum, c) => sum + c.count, 0)
-    //   const totalSales = filteredSales.reduce((sum, s) => sum + s.count, 0)
-    //   const conversionRate =
-    //     totalClicks > 0
-    //       ? parseFloat(((totalSales / totalClicks) * 100).toFixed(2))
-    //       : 0
-    //
-    //   return {
-    //     id: link.id,
-    //     fullUrl: link.fullUrl,
-    //     createdAt: link.createdAt,
-    //     clicks: totalClicks,
-    //     sales: totalSales,
-    //     conversionRate,
-    //   } satisfies AffiliateLinkWithStats
-    // })
-  }, [isPreview])
+    if (!dummyAffiliateLinksRaw) return []
+
+    return dummyAffiliateLinksRaw.map((link) => {
+      // filter clicks by year/month
+      const filteredClicks = link.clicks.filter((c) => {
+        const d = new Date(c.createdAt)
+        const matchesYear = filters.year
+          ? d.getFullYear() === filters.year
+          : true
+        const matchesMonth = filters.month
+          ? d.getMonth() + 1 === filters.month
+          : true
+        return matchesYear && matchesMonth
+      })
+
+      // filter sales by year/month
+      const filteredSales = link.sales.filter((s) => {
+        const d = new Date(s.createdAt)
+        const matchesYear = filters.year
+          ? d.getFullYear() === filters.year
+          : true
+        const matchesMonth = filters.month
+          ? d.getMonth() + 1 === filters.month
+          : true
+        return matchesYear && matchesMonth
+      })
+
+      // aggregate totals
+      const totalClicks = filteredClicks.reduce((sum, c) => sum + c.count, 0)
+      const totalSales = filteredSales.reduce((sum, s) => sum + s.count, 0)
+      const conversionRate =
+        totalClicks > 0
+          ? parseFloat(((totalSales / totalClicks) * 100).toFixed(2))
+          : 0
+
+      return {
+        id: link.id,
+        fullUrl: link.fullUrl,
+        createdAt: link.createdAt,
+        clicks: totalClicks,
+        sales: totalSales,
+        conversionRate,
+      } satisfies AffiliateLinkWithStats
+    })
+  }, [isPreview, filters])
 
   const mutation = useMutation({
     mutationFn: createAffiliateLink,

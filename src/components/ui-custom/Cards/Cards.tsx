@@ -2,8 +2,11 @@
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import MonthSelect from "@/components/ui-custom/MonthSelect"
-import { initialKpiData } from "@/lib/types/dummyKpiData"
-import React from "react"
+import {
+  dummyAffiliateKpiCardStats,
+  initialKpiData,
+} from "@/lib/types/dummyKpiData"
+import React, { useEffect, useState } from "react"
 import {
   useDashboardThemeCustomizationOption,
   useKpiCardCustomizationOption,
@@ -79,10 +82,19 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
     : sellerSearchData?.[0]
       ? mapSellerStats(sellerSearchData[0] as SellerKpiStats)
       : initialKpiData
-  const isFiltering = !!(filters.year || filters.month)
 
+  const isFiltering = !!(filters.year || filters.month)
+  const [previewLoading, setPreviewLoading] = useState(isPreview)
+  useEffect(() => {
+    if (isPreview) {
+      const timer = setTimeout(() => setPreviewLoading(false), 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [isPreview])
   const displayData = React.useMemo(() => {
-    if (isPreview) return filteredData
+    if (isPreview) {
+      return mapAffiliateStats(dummyAffiliateKpiCardStats[0]) || initialKpiData
+    }
 
     if (isFiltering) {
       if (searchPending) return []
@@ -161,7 +173,7 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
                   : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
             }`}
           >
-            {searchPending
+            {(isPreview && previewLoading) || (!isPreview && searchPending)
               ? Array.from({ length: affiliate ? 3 : 4 }).map((_, i) => (
                   <div
                     key={i}

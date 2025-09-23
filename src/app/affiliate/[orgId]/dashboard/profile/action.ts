@@ -11,6 +11,7 @@ import { validateAffiliatePasswordAction } from "@/lib/server/validateAffiliateP
 import { updateAffiliateProfileAction } from "@/lib/server/updateAffiliateProfile"
 import { getAffiliateDataAction } from "@/lib/server/getAffiliateData"
 import { getPayoutEmailMethod } from "@/lib/server/getPayoutEmailMethod"
+import { cookies } from "next/headers"
 
 export const getAffiliateData = async (
   orgId: string
@@ -85,4 +86,15 @@ export async function updateAffiliatePassword(
     console.error("updateAffiliatePassword error:", err)
     return returnError(err)
   }
+}
+export async function logoutAction(affiliate: boolean, orgId?: string) {
+  const cookieStore = await cookies()
+
+  if (affiliate && orgId) {
+    cookieStore.set(`affiliateToken-${orgId}`, "", { maxAge: -1 })
+  } else {
+    cookieStore.set("sellerToken", "", { maxAge: -1 })
+  }
+
+  return { ok: true }
 }

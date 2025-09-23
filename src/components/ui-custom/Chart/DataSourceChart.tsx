@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Label, Pie, PieChart } from "recharts"
 import {
   Card,
@@ -32,6 +32,7 @@ import { getAffiliateReferrers } from "@/app/affiliate/[orgId]/dashboard/action"
 import { getSellerReferrer } from "@/app/(seller)/seller/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
+import { dummySourceData } from "@/lib/types/dummySourceData"
 
 const chartConfig: ChartConfig = {
   visitors: { label: "Visitors" },
@@ -71,13 +72,25 @@ export default function SocialTrafficPieChart({
       enabled: !!(!affiliate && orgId && !isPreview),
     }
   )
+  const [previewLoading, setPreviewLoading] = useState(isPreview)
+
+  useEffect(() => {
+    if (isPreview) {
+      const timer = setTimeout(() => setPreviewLoading(false), 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [isPreview])
   const searchData = affiliate ? affiliateData : sellerData
   const searchPending = affiliate ? affiliatePending : sellerPending
   const effectiveData = React.useMemo(() => {
+    if (isPreview) {
+      return dummySourceData
+    }
+
     if (affiliate && searchData) return searchData as AffiliateReferrerStat[]
     if (!affiliate && searchData) return searchData as SellerReferrerStat[]
     return []
-  }, [searchData, affiliate])
+  }, [isPreview, searchData, affiliate])
   const chartData = React.useMemo(() => {
     if (!effectiveData || effectiveData.length === 0) return []
 
@@ -182,7 +195,7 @@ export default function SocialTrafficPieChart({
         </div>
       )}
       <CardContent className="flex-1 flex justify-center items-center">
-        {searchPending ? (
+        {(searchPending && !isPreview) || (isPreview && previewLoading) ? (
           <div className="text-sm text-muted-foreground">
             Loading sources...
           </div>
@@ -223,14 +236,14 @@ export default function SocialTrafficPieChart({
                           <tspan
                             x={viewBox.cx}
                             y={viewBox.cy}
-                            className="fill-foreground text-2xl font-bold"
+                            className="fill-blue-600 dark:fill-blue-400 text-3xl font-extrabold"
                           >
                             {totalVisitors.toLocaleString()}
                           </tspan>
                           <tspan
                             x={viewBox.cx}
                             y={(viewBox.cy || 0) + 20}
-                            className="fill-muted-foreground text-sm"
+                            className="fill-gray-500 dark:fill-gray-400 text-base font-medium"
                           >
                             Visitors
                           </tspan>

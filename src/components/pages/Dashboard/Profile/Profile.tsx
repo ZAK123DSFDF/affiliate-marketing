@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
 
 import {
+  logoutAction,
   updateAffiliatePassword,
   updateAffiliateProfile,
   validateCurrentPassword,
@@ -37,6 +38,8 @@ import ProfileDialog from "@/components/pages/Dashboard/Profile/ProfileDialog"
 import { ProfileProps } from "@/lib/types/profileTypes"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import deepEqual from "fast-deep-equal"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
 
 export default function Profile({
   AffiliateData,
@@ -104,6 +107,7 @@ export default function Profile({
   }, [currentValues, safeDefaults])
   const dashboardCardStyle = useDashboardCard(affiliate)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const router = useRouter()
   const [step, setStep] = useState<"current" | "new">("current")
   const { showCustomToast } = useCustomToast()
   const updateProfile = useMutation({
@@ -219,7 +223,31 @@ export default function Profile({
       })
     },
   })
-
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      if (isPreview) {
+        return new Promise((resolve) =>
+          setTimeout(() => resolve({ ok: true }), 1000)
+        )
+      }
+      return logoutAction(affiliate, orgId)
+    },
+    onSuccess: () => {
+      if (affiliate) {
+        router.push(`/affiliate/${orgId}/login`)
+      } else {
+        router.push("/login")
+      }
+    },
+    onError: (err: any) => {
+      showCustomToast({
+        type: "error",
+        title: "Logout failed",
+        description: err.message ?? "Could not log you out.",
+        affiliate,
+      })
+    },
+  })
   const onSubmit = (data: typeof safeDefaults) => {
     const changed = (Object.keys(data) as (keyof typeof data)[]).reduce(
       (acc, key) => {
@@ -279,13 +307,20 @@ export default function Profile({
             isPreview={isPreview}
           />
         </CardContent>
-        <CardFooter className="flex justify-end pt-6">
+        <CardFooter className="flex justify-end pt-6 space-x-3">
           <ProfileCardFooter
             updateProfile={updateProfile}
             isFormUnchanged={isFormUnchanged}
             affiliate={affiliate}
             isPreview={isPreview}
           />
+          <Button
+            variant="destructive"
+            onClick={() => logoutMutation.mutate()}
+            disabled={logoutMutation.isPending}
+          >
+            {logoutMutation.isPending ? "Logging out..." : "Logout"}
+          </Button>
         </CardFooter>
       </Card>
 

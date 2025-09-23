@@ -10,6 +10,7 @@ import ForgotPassword from "@/components/pages/Forgot-password"
 import ResetPassword from "@/components/pages/Reset-password"
 import InvalidToken from "@/components/pages/InvalidToken"
 import EmailVerified from "@/components/pages/Email-verified"
+import CheckEmail from "@/components/pages/CheckEmail"
 interface AuthCustomizationProps {
   setMainTab?: (tab: string) => void
   orgId: string
@@ -30,6 +31,7 @@ export const AuthCustomization = ({
             <TabsTrigger value="reset-password">Reset Password</TabsTrigger>
             <TabsTrigger value="invalid-token">Invalid Token</TabsTrigger>
             <TabsTrigger value="email-verified">Email Verified</TabsTrigger>
+            <TabsTrigger value="check-email">Check Email</TabsTrigger>
           </TabsList>
           <TabsContent value="login">
             <Login orgId={orgId} affiliate isPreview setTab={setTab} />
@@ -59,6 +61,9 @@ export const AuthCustomization = ({
               isPreview
               setMainTab={setMainTab}
             />
+          </TabsContent>
+          <TabsContent value="check-email">
+            <CheckEmail affiliate isPreview orgId={orgId} />
           </TabsContent>
         </Tabs>
       </div>

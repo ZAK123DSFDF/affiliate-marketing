@@ -26,6 +26,7 @@ import { paymentColumns } from "@/components/pages/AffiliateDashboard/Payment/Pa
 import { useSearch } from "@/hooks/useSearch"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
+import { dummyAffiliatePayments } from "@/lib/types/previewData"
 
 interface AffiliateCommissionTableProps {
   orgId: string
@@ -70,11 +71,13 @@ export default function AffiliateCommissionTable({
   )
   const filteredData = React.useMemo(() => {
     if (!isPreview) return yearSelectedData
-    if (!filters.year) return yearSelectedData
-    //
-    // return data.filter((row) =>
-    //   filters.year ? row.month.startsWith(filters.year.toString()) : true
-    // )
+
+    if (!filters.year) return dummyAffiliatePayments
+
+    return dummyAffiliatePayments.filter((row) => {
+      const rowYear = new Date(row.month).getFullYear()
+      return rowYear === filters.year
+    })
   }, [filters.year, isPreview])
 
   const columns = paymentColumns(affiliate)
