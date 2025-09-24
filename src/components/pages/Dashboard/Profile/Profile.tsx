@@ -232,11 +232,9 @@ export default function Profile({
       }
       return logoutAction(affiliate, orgId)
     },
-    onSuccess: () => {
-      if (affiliate) {
-        router.push(`/affiliate/${orgId}/login`)
-      } else {
-        router.push("/login")
+    onSuccess: (res: any) => {
+      if (res.redirectTo) {
+        window.location.href = res.redirectTo
       }
     },
     onError: (err: any) => {
@@ -323,7 +321,6 @@ export default function Profile({
           </Button>
         </CardFooter>
       </Card>
-
       <ProfileDialog
         showPasswordModal={showPasswordModal}
         resetPasswordModal={resetPasswordModal}

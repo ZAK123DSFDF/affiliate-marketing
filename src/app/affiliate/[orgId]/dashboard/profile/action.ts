@@ -12,6 +12,7 @@ import { updateAffiliateProfileAction } from "@/lib/server/updateAffiliateProfil
 import { getAffiliateDataAction } from "@/lib/server/getAffiliateData"
 import { getPayoutEmailMethod } from "@/lib/server/getPayoutEmailMethod"
 import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
 
 export const getAffiliateData = async (
   orgId: string
@@ -21,7 +22,7 @@ export const getAffiliateData = async (
     const affiliateData = await getAffiliateDataAction(decoded)
     return { ok: true, data: affiliateData }
   } catch (err) {
-    console.error("getUserData error:", err)
+    console.error("getAffiliate error:", err)
     return returnError(err) as ResponseData<SafeAffiliateData>
   }
 }
@@ -36,7 +37,7 @@ export const getAffiliatePaymentMethod = async (
       data: { paypalEmail: paypalMethod?.accountIdentifier ?? null },
     }
   } catch (err) {
-    console.error("getUserData error:", err)
+    console.error("getAffiliatePayout error:", err)
     return returnError(err) as ResponseData<AffiliatePaymentMethod>
   }
 }
@@ -92,9 +93,9 @@ export async function logoutAction(affiliate: boolean, orgId?: string) {
 
   if (affiliate && orgId) {
     cookieStore.set(`affiliateToken-${orgId}`, "", { maxAge: -1 })
+    return { ok: true, redirectTo: `/affiliate/${orgId}/login` }
   } else {
     cookieStore.set("sellerToken", "", { maxAge: -1 })
+    return { ok: true, redirectTo: "/login" }
   }
-
-  return { ok: true }
 }
