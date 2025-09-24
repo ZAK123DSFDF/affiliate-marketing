@@ -11,6 +11,7 @@ import ResetPassword from "@/components/pages/Reset-password"
 import InvalidToken from "@/components/pages/InvalidToken"
 import EmailVerified from "@/components/pages/Email-verified"
 import CheckEmail from "@/components/pages/CheckEmail"
+import { AuthCustomizationProvider } from "@/app/affiliate/[orgId]/(auth)/authCustomizationProvider"
 interface AuthCustomizationProps {
   setMainTab?: (tab: string) => void
   orgId: string
@@ -21,7 +22,7 @@ export const AuthCustomization = ({
 }: AuthCustomizationProps) => {
   const [tab, setTab] = useState("login")
   return (
-    <>
+    <AuthCustomizationProvider orgId={orgId}>
       <div className="border rounded-lg p-4 transition-all duration-300 mt-6 shadow-md">
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="flex flex-wrap gap-2 mb-4 overflow-x-auto whitespace-nowrap">
@@ -67,6 +68,6 @@ export const AuthCustomization = ({
           </TabsContent>
         </Tabs>
       </div>
-    </>
+    </AuthCustomizationProvider>
   )
 }

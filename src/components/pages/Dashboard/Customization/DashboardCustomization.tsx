@@ -10,6 +10,7 @@ import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOv
 import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
 import { dummyAffiliateKpiCardStats } from "@/lib/types/dummyKpiData"
+import { CustomizationProvider } from "@/app/affiliate/[orgId]/dashboard/customizationProvider"
 
 export function DashboardCustomization({ orgId }: { orgId: string }) {
   const [selectedPage, setSelectedPage] = useState("dashboard")
@@ -20,48 +21,45 @@ export function DashboardCustomization({ orgId }: { orgId: string }) {
     return <div className="text-red-500">Invalid organization ID</div>
   }
   return (
-    <div className="space-y-6">
-      <div className="border rounded-xl overflow-hidden shadow-lg ring ring-muted bg-background max-w-5xl h-[500px] mx-auto relative">
-        <div className="flex h-full">
-          <AffiliateDashboardSidebar
-            affiliate
-            orgId={orgId}
-            isPreview
-            currentPage={selectedPage}
-            onSelectPage={(page: any) => setSelectedPage(page)}
-          />
-          <div
-            className="flex-1 p-6 overflow-y-auto"
-            style={{
-              backgroundColor: mainBackgroundColor || undefined,
-            }}
-          >
-            <DashboardThemeCustomizationOptions name="mainBackgroundColor" />
-            {selectedPage === "dashboard" && (
-              <AffiliateOverview
-                kpiCardStats={dummyAffiliateKpiCardStats}
-                orgId={orgId}
-                affiliate
-                isPreview
-              />
-            )}
-            {selectedPage === "links" && (
-              <Links orgId={orgId} affiliate isPreview />
-            )}
-            {selectedPage === "payment" && (
-              <PaymentTable orgId={orgId} affiliate isPreview />
-            )}
-            {selectedPage === "profile" && (
-              <Profile
-                orgId={orgId}
-                affiliate
-                AffiliateData={dummyProfileData}
-                isPreview
-              />
-            )}
+    <CustomizationProvider orgId={orgId}>
+      <div className="space-y-6">
+        <div className="border rounded-xl overflow-hidden shadow-lg ring ring-muted bg-background max-w-5xl h-[500px] mx-auto relative">
+          <div className="flex h-full">
+            <AffiliateDashboardSidebar
+              affiliate
+              orgId={orgId}
+              isPreview
+              currentPage={selectedPage}
+              onSelectPage={(page: any) => setSelectedPage(page)}
+            />
+            <div
+              className="flex-1 p-6 overflow-y-auto"
+              style={{
+                backgroundColor: mainBackgroundColor || undefined,
+              }}
+            >
+              <DashboardThemeCustomizationOptions name="mainBackgroundColor" />
+              {selectedPage === "dashboard" && (
+                <AffiliateOverview orgId={orgId} affiliate isPreview />
+              )}
+              {selectedPage === "links" && (
+                <Links orgId={orgId} affiliate isPreview />
+              )}
+              {selectedPage === "payment" && (
+                <PaymentTable orgId={orgId} affiliate isPreview />
+              )}
+              {selectedPage === "profile" && (
+                <Profile
+                  orgId={orgId}
+                  affiliate
+                  AffiliateData={dummyProfileData}
+                  isPreview
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </CustomizationProvider>
   )
 }

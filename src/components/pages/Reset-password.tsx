@@ -14,8 +14,6 @@ import {
 } from "@/components/ui/card"
 import { Form } from "@/components/ui/form"
 import Link from "next/link"
-
-import { useRouter } from "next/navigation"
 import { InputField } from "@/components/Auth/FormFields"
 import {
   ResetPasswordFormValues,
@@ -31,13 +29,9 @@ import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { LinkButton } from "@/components/ui-custom/LinkButton"
-import { useCustomizationSync } from "@/hooks/useCustomizationSync"
-import PendingState from "@/components/ui-custom/PendingState"
-import ErrorState from "@/components/ui-custom/ErrorState"
 import { useAuthCard } from "@/hooks/useAuthCard"
 import { resetSellerPasswordServer } from "@/app/(seller)/reset-password/action"
 import { resetAffiliatePasswordServer } from "@/app/affiliate/[orgId]/(auth)/reset-password/action"
-import { useMutation } from "@tanstack/react-query"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
 type Props = {
   userId: string
@@ -53,9 +47,6 @@ const ResetPassword = ({
   setTab,
   affiliate,
 }: Props) => {
-  const { isPending, isError, refetch } = affiliate
-    ? useCustomizationSync(orgId, "auth")
-    : { isPending: false, isError: false, refetch: () => {} }
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
@@ -66,7 +57,6 @@ const ResetPassword = ({
 
   const [pending, setPending] = useState(false)
   const { showCustomToast } = useCustomToast()
-  const router = useRouter()
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
     useThemeCustomizationOption()
   const {
@@ -131,12 +121,6 @@ const ResetPassword = ({
     }
   }
   const isSubmitting = affiliateMutation.isPending || normalMutation.isPending
-  if (isPending) {
-    return <PendingState />
-  }
-  if (isError) {
-    return <ErrorState onRetry={refetch} />
-  }
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${

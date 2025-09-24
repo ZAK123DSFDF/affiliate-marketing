@@ -4,9 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useThemeCustomizationOption } from "@/hooks/useAuthCustomization"
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
-import { useCustomizationSync } from "@/hooks/useCustomizationSync"
-import PendingState from "@/components/ui-custom/PendingState"
-import ErrorState from "@/components/ui-custom/ErrorState"
 import { useAuthCard } from "@/hooks/useAuthCard"
 type Props = {
   orgId?: string
@@ -14,22 +11,13 @@ type Props = {
   affiliate: boolean
   message?: string
 }
-const InvalidToken = ({ orgId, isPreview, affiliate, message }: Props) => {
-  const { isPending, isError, refetch } = affiliate
-    ? useCustomizationSync(orgId, "auth")
-    : { isPending: false, isError: false, refetch: () => {} }
+const InvalidToken = ({ isPreview, affiliate, message }: Props) => {
   const {
     backgroundColor,
     InvalidPrimaryCustomization,
     InvalidSecondaryCustomization,
   } = useThemeCustomizationOption()
   const authCardStyle = useAuthCard(affiliate)
-  if (isPending) {
-    return <PendingState />
-  }
-  if (isError) {
-    return <ErrorState onRetry={refetch} />
-  }
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${

@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form"
 import Link from "next/link"
 import { InputField, CheckboxField } from "@/components/Auth/FormFields"
 import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema"
-import { useMutation } from "@tanstack/react-query"
 import { LoginAffiliateServer } from "@/app/affiliate/[orgId]/(auth)/login/action"
 import { LoginServer } from "@/app/(seller)/login/action"
 import {
@@ -26,11 +25,7 @@ import { InlineNotesEditor } from "@/components/ui-custom/InlineEditor"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { LinkButton } from "@/components/ui-custom/LinkButton"
 import { IsRichTextEmpty } from "@/util/IsRichTextEmpty"
-import { useCustomizationSync } from "@/hooks/useCustomizationSync"
-import PendingState from "@/components/ui-custom/PendingState"
-import ErrorState from "@/components/ui-custom/ErrorState"
 import { useAuthCard } from "@/hooks/useAuthCard"
-import { useRouter } from "next/navigation"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
 type Props = {
   orgId?: string
@@ -40,7 +35,6 @@ type Props = {
 }
 const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { showCustomToast } = useCustomToast()
-  const router = useRouter()
   const [previewLoading, setPreviewLoading] = useState(false)
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -60,9 +54,6 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   } = useButtonCustomizationOption()
   const authCardStyle = useAuthCard(affiliate)
   const { customNotesLogin } = useNotesCustomizationOption()
-  const { isPending, isError, refetch } = affiliate
-    ? useCustomizationSync(orgId, "auth")
-    : { isPending: false, isError: false, refetch: () => {} }
   const affiliateMutation = useAuthMutation(LoginAffiliateServer, {
     affiliate,
     redirectUrl: `/affiliate/${orgId}/checkEmail`,
@@ -111,13 +102,6 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     } else {
       normalMutation.mutate(data)
     }
-  }
-
-  if (isPending) {
-    return <PendingState />
-  }
-  if (isError) {
-    return <ErrorState onRetry={refetch} />
   }
   return (
     <div

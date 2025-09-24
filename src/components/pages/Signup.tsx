@@ -9,7 +9,6 @@ import { Form } from "@/components/ui/form"
 import Link from "next/link"
 import { InputField } from "@/components/Auth/FormFields"
 import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema"
-import { useMutation } from "@tanstack/react-query"
 import { SignupAffiliateServer } from "@/app/affiliate/[orgId]/(auth)/signup/action"
 import { SignupServer } from "@/app/(seller)/signup/action"
 import {
@@ -26,11 +25,7 @@ import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { LinkButton } from "@/components/ui-custom/LinkButton"
 import { IsRichTextEmpty } from "@/util/IsRichTextEmpty"
-import { useCustomizationSync } from "@/hooks/useCustomizationSync"
-import PendingState from "@/components/ui-custom/PendingState"
-import ErrorState from "@/components/ui-custom/ErrorState"
 import { useAuthCard } from "@/hooks/useAuthCard"
-import { useRouter } from "next/navigation"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
 type Props = {
   orgId?: string
@@ -40,11 +35,7 @@ type Props = {
 }
 const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false)
-  const router = useRouter()
   const { customNotesSignup } = useNotesCustomizationOption()
-  const { isPending, isError, refetch } = affiliate
-    ? useCustomizationSync(orgId, "auth")
-    : { isPending: false, isError: false, refetch: () => {} }
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -110,12 +101,6 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     } else {
       normalMutation.mutate(data)
     }
-  }
-  if (isPending) {
-    return <PendingState />
-  }
-  if (isError) {
-    return <ErrorState onRetry={refetch} />
   }
   return (
     <div

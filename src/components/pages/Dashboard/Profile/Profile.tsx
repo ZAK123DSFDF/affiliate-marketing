@@ -27,9 +27,6 @@ import {
 } from "@/lib/schema/passwordSchema"
 import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
-import { useCustomizationSync } from "@/hooks/useCustomizationSync"
-import PendingState from "@/components/ui-custom/PendingState"
-import ErrorState from "@/components/ui-custom/ErrorState"
 import ProfileHeader from "@/components/pages/Dashboard/Profile/ProfileHeader"
 import ProfileCardHeader from "@/components/pages/Dashboard/Profile/ProfileCardHeader"
 import ProfileCardContent from "@/components/pages/Dashboard/Profile/ProfileCardContent"
@@ -38,7 +35,6 @@ import ProfileDialog from "@/components/pages/Dashboard/Profile/ProfileDialog"
 import { ProfileProps } from "@/lib/types/profileTypes"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import deepEqual from "fast-deep-equal"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 
 export default function Profile({
@@ -55,9 +51,6 @@ export default function Profile({
     ? AffiliateData.email
     : (UserData?.email ?? "")
   const initialPaypalEmail = AffiliateData?.paypalEmail ?? ""
-  const { isPending, isError, refetch } = affiliate
-    ? useCustomizationSync(orgId, "dashboard")
-    : { isPending: false, isError: false, refetch: () => {} }
   const profileForm = useForm({
     resolver: zodResolver(
       affiliate ? affiliateProfileSchema : userProfileSchema
@@ -107,7 +100,6 @@ export default function Profile({
   }, [currentValues, safeDefaults])
   const dashboardCardStyle = useDashboardCard(affiliate)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
-  const router = useRouter()
   const [step, setStep] = useState<"current" | "new">("current")
   const { showCustomToast } = useCustomToast()
   const updateProfile = useMutation({
@@ -273,12 +265,6 @@ export default function Profile({
     setStep("current")
     currentPasswordForm.reset()
     newPasswordForm.reset()
-  }
-  if (isPending) {
-    return <PendingState withoutBackground />
-  }
-  if (isError) {
-    return <ErrorState onRetry={refetch} />
   }
   return (
     <div className="flex flex-col gap-6">

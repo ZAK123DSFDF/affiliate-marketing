@@ -17,9 +17,6 @@ import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Custom
 import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions"
 import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions"
 import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization"
-import { useCustomizationSync } from "@/hooks/useCustomizationSync"
-import PendingState from "@/components/ui-custom/PendingState"
-import ErrorState from "@/components/ui-custom/ErrorState"
 import { TableContent } from "@/components/ui-custom/TableContent"
 import { TableLoading } from "@/components/ui-custom/TableLoading"
 import { paymentColumns } from "@/components/pages/AffiliateDashboard/Payment/PaymentColumns"
@@ -42,13 +39,6 @@ export default function AffiliateCommissionTable({
   const dashboardTheme = useDashboardThemeCustomizationOption()
   const dashboardCardStyle = useDashboardCard(affiliate)
   const { filters, setFilters } = useQueryFilter()
-  const {
-    isPending: globalPending,
-    isError,
-    refetch,
-  } = affiliate
-    ? useCustomizationSync(orgId, "dashboard")
-    : { isPending: false, isError: false, refetch: () => {} }
   const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false)
   useEffect(() => {
     if (!isPreview) return
@@ -89,12 +79,6 @@ export default function AffiliateCommissionTable({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
-  if (globalPending) {
-    return <PendingState withoutBackground />
-  }
-  if (isError) {
-    return <ErrorState onRetry={refetch} />
-  }
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">

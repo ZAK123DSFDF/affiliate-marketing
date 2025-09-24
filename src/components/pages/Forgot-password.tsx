@@ -30,12 +30,8 @@ import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { LinkButton } from "@/components/ui-custom/LinkButton"
-import { useCustomizationSync } from "@/hooks/useCustomizationSync"
-import PendingState from "@/components/ui-custom/PendingState"
-import ErrorState from "@/components/ui-custom/ErrorState"
 import { useAuthCard } from "@/hooks/useAuthCard"
 import { ForgotPasswordServer } from "@/app/(seller)/forgot-password/action"
-import { useMutation } from "@tanstack/react-query"
 import { ForgotPasswordAffiliateServer } from "@/app/affiliate/[orgId]/(auth)/forgot-password/action"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
 type Props = {
@@ -57,9 +53,6 @@ const ForgotPassword = ({
     },
   })
   const [pending, setPending] = useState(false)
-  const { isPending, isError, refetch } = affiliate
-    ? useCustomizationSync(orgId, "auth")
-    : { isPending: false, isError: false, refetch: () => {} }
   const { showCustomToast } = useCustomToast()
   const { backgroundColor, linkTextColor, tertiaryTextColor } =
     useThemeCustomizationOption()
@@ -109,12 +102,6 @@ const ForgotPassword = ({
     }
   }
   const isSubmitting = sellerMutation.isPending || affiliateMutation.isPending
-  if (isPending) {
-    return <PendingState />
-  }
-  if (isError) {
-    return <ErrorState onRetry={refetch} />
-  }
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${

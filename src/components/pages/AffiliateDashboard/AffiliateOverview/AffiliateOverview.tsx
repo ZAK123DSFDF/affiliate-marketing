@@ -14,26 +14,11 @@ const AffiliateOverview = ({
   orgId,
   isPreview = false,
   affiliate = false,
-  kpiCardStats,
-  affiliateChartStats,
-  referrerStats,
 }: {
   orgId: string
   isPreview?: boolean
   affiliate: boolean
-  kpiCardStats: AffiliateKpiStats[]
-  affiliateChartStats?: AffiliateKpiTimeSeries[]
-  referrerStats?: AffiliateReferrerStat[]
 }) => {
-  const { isPending, isError, refetch } = affiliate
-    ? useCustomizationSync(orgId, "dashboard")
-    : { isPending: false, isError: false, refetch: () => {} }
-  if (isPending) {
-    return <PendingState withoutBackground />
-  }
-  if (isError) {
-    return <ErrorState onRetry={refetch} />
-  }
   return (
     <div className="space-y-8">
       <Cards orgId={orgId} affiliate={affiliate} isPreview={isPreview} />

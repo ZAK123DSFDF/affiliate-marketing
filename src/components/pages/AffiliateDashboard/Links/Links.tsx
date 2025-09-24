@@ -27,9 +27,6 @@ import {
   useDashboardThemeCustomizationOption,
 } from "@/hooks/useDashboardCustomization"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
-import { useCustomizationSync } from "@/hooks/useCustomizationSync"
-import PendingState from "@/components/ui-custom/PendingState"
-import ErrorState from "@/components/ui-custom/ErrorState"
 import { useSearch } from "@/hooks/useSearch"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { TableContent } from "@/components/ui-custom/TableContent"
@@ -52,10 +49,6 @@ export default function Links({
   const dashboardButton = useDashboardButtonCustomizationOption()
   const dashboardCardStyle = useDashboardCard(affiliate)
   const { showCustomToast } = useCustomToast()
-  const { isPending, isError, refetch } = affiliate
-    ? useCustomizationSync(orgId, "dashboard")
-    : { isPending: false, isError: false, refetch: () => {} }
-
   const [isFakeLoading, setIsFakeLoading] = useState(false)
   const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false)
   const { filters, setFilters } = useQueryFilter()
@@ -172,12 +165,6 @@ export default function Links({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
-  if (isPending) {
-    return <PendingState withoutBackground />
-  }
-  if (isError) {
-    return <ErrorState onRetry={refetch} />
-  }
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">

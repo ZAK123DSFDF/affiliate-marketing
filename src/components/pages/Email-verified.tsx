@@ -11,9 +11,6 @@ import { CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions"
 import { useRouter } from "next/navigation"
-import { useCustomizationSync } from "@/hooks/useCustomizationSync"
-import PendingState from "@/components/ui-custom/PendingState"
-import ErrorState from "@/components/ui-custom/ErrorState"
 import { useAuthCard } from "@/hooks/useAuthCard"
 
 type Props = {
@@ -35,9 +32,6 @@ const EmailVerified = ({
     console.log("orgId", orgId)
   }, [orgId])
   const { backgroundColor } = useThemeCustomizationOption()
-  const { isPending, isError, refetch } = affiliate
-    ? useCustomizationSync(orgId, "auth")
-    : { isPending: false, isError: false, refetch: () => {} }
   const {
     emailVerifiedPrimaryColor,
     emailVerifiedSecondaryColor,
@@ -61,12 +55,6 @@ const EmailVerified = ({
         }
       }
     }
-  }
-  if (isPending) {
-    return <PendingState />
-  }
-  if (isError) {
-    return <ErrorState onRetry={refetch} />
   }
   return (
     <div
