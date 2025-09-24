@@ -10,7 +10,7 @@ import Link from "next/link"
 import { InputField } from "@/components/Auth/FormFields"
 import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema"
 import { useMutation } from "@tanstack/react-query"
-import { SignupAffiliateServer } from "@/app/affiliate/[orgId]/signup/action"
+import { SignupAffiliateServer } from "@/app/affiliate/[orgId]/(auth)/signup/action"
 import { SignupServer } from "@/app/(seller)/signup/action"
 import {
   useButtonCustomizationOption,

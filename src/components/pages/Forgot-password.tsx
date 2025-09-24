@@ -36,7 +36,7 @@ import ErrorState from "@/components/ui-custom/ErrorState"
 import { useAuthCard } from "@/hooks/useAuthCard"
 import { ForgotPasswordServer } from "@/app/(seller)/forgot-password/action"
 import { useMutation } from "@tanstack/react-query"
-import { ForgotPasswordAffiliateServer } from "@/app/affiliate/[orgId]/forgot-password/action"
+import { ForgotPasswordAffiliateServer } from "@/app/affiliate/[orgId]/(auth)/forgot-password/action"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
 type Props = {
   orgId?: string

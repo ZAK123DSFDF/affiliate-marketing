@@ -3,6 +3,7 @@
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput"
 import { useThemeCustomizationOption } from "@/hooks/useAuthCustomization"
 import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
+import { useEffect } from "react"
 
 // These are the valid keys
 type ThemeKeys =
@@ -40,7 +41,12 @@ export const ThemeCustomizationOptions = ({
     emailVerifiedSecondaryColor,
     emailVerifiedIconColor,
   } = useThemeCustomizationOption()
-
+  useEffect(() => {
+    console.log(
+      "ThemeCustomizationOptions rendered with name:",
+      backgroundColor
+    )
+  }, [backgroundColor])
   const valueMap: Record<ThemeKeys, string> = {
     backgroundColor,
     linkTextColor,

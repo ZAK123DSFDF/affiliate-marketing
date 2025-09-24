@@ -36,7 +36,7 @@ import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
 import { useAuthCard } from "@/hooks/useAuthCard"
 import { resetSellerPasswordServer } from "@/app/(seller)/reset-password/action"
-import { resetAffiliatePasswordServer } from "@/app/affiliate/[orgId]/reset-password/action"
+import { resetAffiliatePasswordServer } from "@/app/affiliate/[orgId]/(auth)/reset-password/action"
 import { useMutation } from "@tanstack/react-query"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
 type Props = {

@@ -12,7 +12,7 @@ export function updateAuthCustomization<
   if (!store) return
 
   type StoreState = ReturnType<typeof store.getState>
-
+  console.log("Updating auth customization:", { storeKey, key, value })
   store.setState(
     () =>
       ({
