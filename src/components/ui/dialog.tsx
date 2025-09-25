@@ -5,7 +5,8 @@ import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { useDialogCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { useAtomValue } from "jotai"
+import { dialogCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 const Dialog = DialogPrimitive.Root
 
@@ -43,7 +44,7 @@ const DialogContent = React.forwardRef<
     { className, children, affiliate = false, hideCloseIcon = false, ...props },
     ref
   ) => {
-    const dashboardDialog = useDialogCustomizationOption()
+    const dashboardDialog = useAtomValue(dialogCustomizationAtom)
     return (
       <DialogPortal>
         <DialogOverlay />

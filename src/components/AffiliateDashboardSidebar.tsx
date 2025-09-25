@@ -16,9 +16,10 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { SidebarCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/SidebarCustomizationOptions"
-import { DashboardCustomizationStores } from "@/store/useCustomizationStore"
 import { cn } from "@/lib/utils"
 import { AffiliateData } from "@/lib/types/profileTypes"
+import { useAtomValue } from "jotai"
+import { sidebarCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 type Props = {
   orgId?: string
@@ -61,7 +62,18 @@ const AffiliateDashboardSidebar = ({
     { title: "Payment", key: "payment", icon: Users },
   ]
   const [hoveredKey, setHoveredKey] = useState<string | null>(null)
-  const sidebar = DashboardCustomizationStores.useSidebarCustomization()
+  const {
+    sideBarHoverNavigationTextColor,
+    sideBarHoverNavigationBackgroundColor,
+    sideBarActiveNavigationBackgroundColor,
+    sideBarProfileTextSecondaryColor,
+    sideBarInActiveNavigationTextColor,
+    sideBarNavigationFocusRingColor,
+    sideBarProfileTextPrimaryColor,
+    sideBarBackgroundColor,
+    sideBarProfileBackgroundColor,
+    sideBarActiveNavigationTextColor,
+  } = useAtomValue(sidebarCustomizationAtom)
   const baseSidebarClass = isPreview ? "relative h-full" : "" // you can add full-screen layout styles here
   const setProfile = () => {
     onSelectPage && onSelectPage("profile")
@@ -72,7 +84,7 @@ const AffiliateDashboardSidebar = ({
         className="flex items-center justify-center py-4"
         style={{
           backgroundColor:
-            (affiliate && sidebar.sideBarBackgroundColor) ||
+            (affiliate && sideBarBackgroundColor) ||
             "hsl(var(--sidebar-background))",
         }}
       >
@@ -90,7 +102,7 @@ const AffiliateDashboardSidebar = ({
       <SidebarContent
         style={{
           backgroundColor:
-            (affiliate && sidebar.sideBarBackgroundColor) ||
+            (affiliate && sideBarBackgroundColor) ||
             "hsl(var(--sidebar-background))",
         }}
       >
@@ -102,23 +114,19 @@ const AffiliateDashboardSidebar = ({
                 const isHovered = hoveredKey === item.key
 
                 const backgroundColor = isActive
-                  ? (affiliate &&
-                      sidebar.sideBarActiveNavigationBackgroundColor) ||
+                  ? (affiliate && sideBarActiveNavigationBackgroundColor) ||
                     "hsl(var(--sidebar-accent))"
                   : isHovered
-                    ? (affiliate &&
-                        sidebar.sideBarHoverNavigationBackgroundColor) ||
+                    ? (affiliate && sideBarHoverNavigationBackgroundColor) ||
                       undefined
                     : undefined
 
                 const textColor = isActive
-                  ? (affiliate && sidebar.sideBarActiveNavigationTextColor) ||
-                    undefined
+                  ? (affiliate && sideBarActiveNavigationTextColor) || undefined
                   : isHovered
-                    ? (affiliate && sidebar.sideBarHoverNavigationTextColor) ||
+                    ? (affiliate && sideBarHoverNavigationTextColor) ||
                       undefined
-                    : (affiliate &&
-                        sidebar.sideBarInActiveNavigationTextColor) ||
+                    : (affiliate && sideBarInActiveNavigationTextColor) ||
                       undefined
 
                 return (
@@ -143,8 +151,7 @@ const AffiliateDashboardSidebar = ({
                             backgroundColor: backgroundColor || undefined,
                             color: textColor || undefined,
                             ["--tw-ring-color" as any]:
-                              (affiliate &&
-                                sidebar.sideBarNavigationFocusRingColor) ||
+                              (affiliate && sideBarNavigationFocusRingColor) ||
                               "hsl(var(--sidebar-ring))",
                           }}
                         >
@@ -177,7 +184,7 @@ const AffiliateDashboardSidebar = ({
         className="p-4"
         style={{
           backgroundColor:
-            (affiliate && sidebar.sideBarBackgroundColor) ||
+            (affiliate && sideBarBackgroundColor) ||
             "hsl(var(--sidebar-background))",
         }}
       >
@@ -187,8 +194,7 @@ const AffiliateDashboardSidebar = ({
             onClick={setProfile}
             style={{
               backgroundColor:
-                (affiliate && sidebar.sideBarProfileBackgroundColor) ||
-                undefined,
+                (affiliate && sideBarProfileBackgroundColor) || undefined,
             }}
           >
             <div className="flex-1 min-w-0">
@@ -196,8 +202,7 @@ const AffiliateDashboardSidebar = ({
                 className="text-sm font-medium truncate"
                 style={{
                   color:
-                    (affiliate && sidebar.sideBarProfileTextPrimaryColor) ||
-                    undefined,
+                    (affiliate && sideBarProfileTextPrimaryColor) || undefined,
                 }}
               >
                 John Doe
@@ -206,7 +211,7 @@ const AffiliateDashboardSidebar = ({
                 className="text-xs text-muted-foreground truncate"
                 style={{
                   color:
-                    (affiliate && sidebar.sideBarProfileTextSecondaryColor) ||
+                    (affiliate && sideBarProfileTextSecondaryColor) ||
                     undefined,
                 }}
               >
@@ -217,8 +222,7 @@ const AffiliateDashboardSidebar = ({
               className="w-4 h-4 text-muted-foreground"
               style={{
                 color:
-                  (affiliate && sidebar.sideBarProfileTextSecondaryColor) ||
-                  undefined,
+                  (affiliate && sideBarProfileTextSecondaryColor) || undefined,
               }}
             />
           </div>

@@ -1,20 +1,25 @@
-import { useInputCustomizationOption } from "@/hooks/useAuthCustomization"
+"use client"
+
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
-import React from "react"
-import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
+import { useAtom } from "jotai"
+import { inputCustomizationAtom } from "@/store/AuthCustomizationAtom"
 
 export const InputCustomizationOptions = ({ size }: { size?: string }) => {
-  const {
-    inputPlaceholderTextColor,
-    inputLabelColor,
-    inputIconColor,
-    inputTextColor,
-    inputErrorTextColor,
-    inputBorderColor,
-    inputErrorBorderColor,
-    inputBorderFocusColor,
-    inputLabelErrorColor,
-  } = useInputCustomizationOption()
+  const [
+    {
+      inputPlaceholderTextColor,
+      inputLabelColor,
+      inputIconColor,
+      inputTextColor,
+      inputErrorTextColor,
+      inputBorderColor,
+      inputErrorBorderColor,
+      inputBorderFocusColor,
+      inputLabelErrorColor,
+    },
+    setInputCustomization,
+  ] = useAtom(inputCustomizationAtom)
+
   return (
     <OptionWithSwitch
       triggerSize={size}
@@ -22,92 +27,83 @@ export const InputCustomizationOptions = ({ size }: { size?: string }) => {
         inputLabelColor: {
           label: "Input Label Color",
           value: inputLabelColor,
-          onChange: (val) =>
-            updateAuthCustomization(
-              "useInputCustomization",
-              "inputLabelColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setInputCustomization((prev) => ({
+              ...prev,
+              inputLabelColor: val,
+            })),
         },
         inputIconColor: {
           label: "Input Icon Color",
           value: inputIconColor,
-          onChange: (val) =>
-            updateAuthCustomization(
-              "useInputCustomization",
-              "inputIconColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setInputCustomization((prev) => ({
+              ...prev,
+              inputIconColor: val,
+            })),
         },
         inputTextColor: {
           label: "Input Text Color",
           value: inputTextColor,
-          onChange: (val) =>
-            updateAuthCustomization(
-              "useInputCustomization",
-              "inputTextColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setInputCustomization((prev) => ({
+              ...prev,
+              inputTextColor: val,
+            })),
         },
         inputErrorTextColor: {
           label: "Input Error Text Color",
           value: inputErrorTextColor,
-          onChange: (val) =>
-            updateAuthCustomization(
-              "useInputCustomization",
-              "inputErrorTextColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setInputCustomization((prev) => ({
+              ...prev,
+              inputErrorTextColor: val,
+            })),
         },
         inputBorderColor: {
           label: "Input Border Color",
           value: inputBorderColor,
-          onChange: (val) =>
-            updateAuthCustomization(
-              "useInputCustomization",
-              "inputBorderColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setInputCustomization((prev) => ({
+              ...prev,
+              inputBorderColor: val,
+            })),
         },
         inputPlaceholderTextColor: {
           label: "Input Placeholder Color",
           value: inputPlaceholderTextColor,
-          onChange: (val) =>
-            updateAuthCustomization(
-              "useInputCustomization",
-              "inputPlaceholderTextColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setInputCustomization((prev) => ({
+              ...prev,
+              inputPlaceholderTextColor: val,
+            })),
         },
         inputErrorBorderColor: {
           label: "Input Error Border Color",
           value: inputErrorBorderColor,
-          onChange: (val) =>
-            updateAuthCustomization(
-              "useInputCustomization",
-              "inputErrorBorderColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setInputCustomization((prev) => ({
+              ...prev,
+              inputErrorBorderColor: val,
+            })),
         },
         inputBorderFocusColor: {
           label: "Input Border Focus Color",
           value: inputBorderFocusColor,
-          onChange: (val) =>
-            updateAuthCustomization(
-              "useInputCustomization",
-              "inputBorderFocusColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setInputCustomization((prev) => ({
+              ...prev,
+              inputBorderFocusColor: val,
+            })),
         },
         inputLabelErrorColor: {
           label: "Input Label Error Color",
           value: inputLabelErrorColor,
-          onChange: (val) =>
-            updateAuthCustomization(
-              "useInputCustomization",
-              "inputLabelErrorColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setInputCustomization((prev) => ({
+              ...prev,
+              inputLabelErrorColor: val,
+            })),
         },
       }}
     />

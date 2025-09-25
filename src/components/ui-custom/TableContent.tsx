@@ -9,7 +9,8 @@ import {
 } from "@/components/ui/table"
 import { flexRender, Table as ReactTable } from "@tanstack/react-table"
 import React, { useState } from "react"
-import { useTableCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { useAtomValue } from "jotai"
+import { tableCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 type TableProps<TData> = {
   table: ReactTable<TData>
@@ -21,7 +22,7 @@ export const TableContent = <TData,>({
   affiliate,
   isPreview,
 }: TableProps<TData>) => {
-  const dashboardTable = useTableCustomizationOption()
+  const dashboardTable = useAtomValue(tableCustomizationAtom)
   const [isHeaderHovered, setIsHeaderHovered] = useState(false)
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null)
   return (

@@ -5,7 +5,8 @@ import * as SelectPrimitive from "@radix-ui/react-select"
 import { Check, ChevronDown, ChevronUp } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { useYearSelectCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { useAtomValue } from "jotai"
+import { yearSelectCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 const Select = SelectPrimitive.Root
 
@@ -19,7 +20,7 @@ const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   SelectTriggerProps
 >(({ className, children, affiliate, ...props }, ref) => {
-  const yearSelect = useYearSelectCustomizationOption()
+  const yearSelect = useAtomValue(yearSelectCustomizationAtom)
   const style: React.CSSProperties = {
     backgroundColor: affiliate
       ? yearSelect.yearSelectBackgroundColor
@@ -61,7 +62,7 @@ const SelectScrollUpButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollUpButton>,
   SelectScrollUpButtonProps
 >(({ className, affiliate, ...props }, ref) => {
-  const yearSelect = useYearSelectCustomizationOption()
+  const yearSelect = useAtomValue(yearSelectCustomizationAtom)
   return (
     <SelectPrimitive.ScrollUpButton
       ref={ref}
@@ -89,7 +90,7 @@ const SelectScrollDownButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollDownButton>,
   SelectScrollDownButtonProps
 >(({ className, affiliate, ...props }, ref) => {
-  const yearSelect = useYearSelectCustomizationOption()
+  const yearSelect = useAtomValue(yearSelectCustomizationAtom)
   return (
     <SelectPrimitive.ScrollDownButton
       ref={ref}
@@ -118,7 +119,7 @@ const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
   SelectContentProps
 >(({ className, children, position = "popper", affiliate, ...props }, ref) => {
-  const yearSelect = useYearSelectCustomizationOption()
+  const yearSelect = useAtomValue(yearSelectCustomizationAtom)
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
@@ -178,7 +179,7 @@ const SelectItem = React.forwardRef<
   SelectItemProps
 >(({ className, children, selectedValue, value, affiliate, ...props }, ref) => {
   const [hovered, setHovered] = React.useState(false)
-  const yearSelect = useYearSelectCustomizationOption()
+  const yearSelect = useAtomValue(yearSelectCustomizationAtom)
   const isSelected = selectedValue === value
   const style: React.CSSProperties = {
     "--active-text-color":

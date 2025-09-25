@@ -11,11 +11,6 @@ import { InputField } from "@/components/Auth/FormFields"
 import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema"
 import { SignupAffiliateServer } from "@/app/affiliate/[orgId]/(auth)/signup/action"
 import { SignupServer } from "@/app/(seller)/signup/action"
-import {
-  useButtonCustomizationOption,
-  useNotesCustomizationOption,
-  useThemeCustomizationOption,
-} from "@/hooks/useAuthCustomization"
 
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
 import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions"
@@ -27,6 +22,12 @@ import { LinkButton } from "@/components/ui-custom/LinkButton"
 import { IsRichTextEmpty } from "@/util/IsRichTextEmpty"
 import { useAuthCard } from "@/hooks/useAuthCard"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
+import { useAtomValue } from "jotai"
+import {
+  buttonCustomizationAtom,
+  notesCustomizationAtom,
+  themeCustomizationAtom,
+} from "@/store/AuthCustomizationAtom"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -35,7 +36,7 @@ type Props = {
 }
 const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false)
-  const { customNotesSignup } = useNotesCustomizationOption()
+  const { customNotesSignup } = useAtomValue(notesCustomizationAtom)
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -45,14 +46,15 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
       confirmPassword: "",
     },
   })
-  const { backgroundColor, linkTextColor, tertiaryTextColor } =
-    useThemeCustomizationOption()
+  const { backgroundColor, linkTextColor, tertiaryTextColor } = useAtomValue(
+    themeCustomizationAtom
+  )
   const {
     buttonDisabledTextColor,
     buttonBackgroundColor,
     buttonDisabledBackgroundColor,
     buttonTextColor,
-  } = useButtonCustomizationOption()
+  } = useAtomValue(buttonCustomizationAtom)
   const authCardStyle = useAuthCard(affiliate)
   const { showCustomToast } = useCustomToast()
   const affiliateMutation = useAuthMutation(SignupAffiliateServer, {

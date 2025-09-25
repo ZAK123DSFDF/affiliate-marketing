@@ -2,12 +2,13 @@ import { ColumnDef } from "@tanstack/react-table"
 import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow"
 import { Badge } from "@/components/ui/badge"
 import React from "react"
-import { useTableCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { useAtomValue } from "jotai"
+import { tableCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 export const paymentColumns = (
   affiliate: boolean
 ): ColumnDef<AffiliatePaymentRow>[] => {
-  const dashboardTable = useTableCustomizationOption()
+  const dashboardTable = useAtomValue(tableCustomizationAtom)
   return [
     {
       accessorKey: "month",

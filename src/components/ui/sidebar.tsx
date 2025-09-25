@@ -24,10 +24,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization"
-import { useCustomizationSync } from "@/hooks/useCustomizationSync"
-import PendingState from "@/components/ui-custom/PendingState"
-import ErrorState from "@/components/ui-custom/ErrorState"
+import { useAtomValue } from "jotai"
+import { dashboardThemeCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -334,7 +332,9 @@ type SidebarInsetProps = React.ComponentProps<"main"> & {
 }
 const SidebarInset = React.forwardRef<HTMLDivElement, SidebarInsetProps>(
   ({ className, affiliate, ...props }, ref) => {
-    const { mainBackgroundColor } = useDashboardThemeCustomizationOption()
+    const { mainBackgroundColor } = useAtomValue(
+      dashboardThemeCustomizationAtom
+    )
     return (
       <main
         ref={ref}

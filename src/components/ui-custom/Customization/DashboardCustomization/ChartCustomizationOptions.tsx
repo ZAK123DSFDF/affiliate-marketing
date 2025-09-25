@@ -1,9 +1,8 @@
 "use client"
 
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
-import React from "react"
-import { useChartCustomizationOption } from "@/hooks/useDashboardCustomization"
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
+import { useAtom } from "jotai"
+import { chartCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 export const ChartCustomizationOptions = ({
   triggerSize,
@@ -12,18 +11,21 @@ export const ChartCustomizationOptions = ({
   triggerSize?: string
   dropdownSize?: string
 }) => {
-  const {
-    chartHorizontalLineColor,
-    chartDateColor,
-    chartPrimaryColor,
-    chartSecondaryColor,
-    chartTertiaryColor,
-    chartLegendTextColor,
-    toolTipChartDateColor,
-    toolTipBackgroundColor,
-    toolTipTextColor,
-    toolTipNumberColor,
-  } = useChartCustomizationOption()
+  const [
+    {
+      chartHorizontalLineColor,
+      chartDateColor,
+      chartPrimaryColor,
+      chartSecondaryColor,
+      chartTertiaryColor,
+      chartLegendTextColor,
+      toolTipChartDateColor,
+      toolTipBackgroundColor,
+      toolTipTextColor,
+      toolTipNumberColor,
+    },
+    setChartCustomization,
+  ] = useAtom(chartCustomizationAtom)
 
   return (
     <OptionWithSwitch
@@ -33,102 +35,92 @@ export const ChartCustomizationOptions = ({
         horizontalLineColor: {
           label: "Horizontal Line Color",
           value: chartHorizontalLineColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useChartCustomization",
-              "chartHorizontalLineColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setChartCustomization((prev) => ({
+              ...prev,
+              chartHorizontalLineColor: val,
+            })),
         },
         dateColor: {
           label: "Date Color",
           value: chartDateColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useChartCustomization",
-              "chartDateColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setChartCustomization((prev) => ({
+              ...prev,
+              chartDateColor: val,
+            })),
         },
         primaryColor: {
           label: "Primary Chart Color",
           value: chartPrimaryColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useChartCustomization",
-              "chartPrimaryColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setChartCustomization((prev) => ({
+              ...prev,
+              chartPrimaryColor: val,
+            })),
         },
         secondaryColor: {
           label: "Secondary Chart Color",
           value: chartSecondaryColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useChartCustomization",
-              "chartSecondaryColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setChartCustomization((prev) => ({
+              ...prev,
+              chartSecondaryColor: val,
+            })),
         },
         tertiaryColor: {
           label: "Tertiary Chart Color",
           value: chartTertiaryColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useChartCustomization",
-              "chartTertiaryColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setChartCustomization((prev) => ({
+              ...prev,
+              chartTertiaryColor: val,
+            })),
         },
         legendTextColor: {
           label: "Legend Text Color",
           value: chartLegendTextColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useChartCustomization",
-              "chartLegendTextColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setChartCustomization((prev) => ({
+              ...prev,
+              chartLegendTextColor: val,
+            })),
         },
         toolTipChartDateColor: {
           label: "Tooltip Date Color",
           value: toolTipChartDateColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useChartCustomization",
-              "toolTipChartDateColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setChartCustomization((prev) => ({
+              ...prev,
+              toolTipChartDateColor: val,
+            })),
         },
         toolTipBackgroundColor: {
           label: "Tooltip Background Color",
           value: toolTipBackgroundColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useChartCustomization",
-              "toolTipBackgroundColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setChartCustomization((prev) => ({
+              ...prev,
+              toolTipBackgroundColor: val,
+            })),
         },
         toolTipTextColor: {
           label: "Tooltip Text Color",
           value: toolTipTextColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useChartCustomization",
-              "toolTipTextColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setChartCustomization((prev) => ({
+              ...prev,
+              toolTipTextColor: val,
+            })),
         },
         toolTipNumberColor: {
           label: "Tooltip Number Color",
           value: toolTipNumberColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useChartCustomization",
-              "toolTipNumberColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setChartCustomization((prev) => ({
+              ...prev,
+              toolTipNumberColor: val,
+            })),
         },
       }}
     />

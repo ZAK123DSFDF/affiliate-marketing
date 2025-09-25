@@ -1,7 +1,8 @@
 "use client"
 import React from "react"
 import { cn } from "@/lib/utils"
-import { useToastCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { useAtomValue } from "jotai"
+import { toastCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 type Props = {
   type: "success" | "error"
@@ -17,7 +18,7 @@ export const ToastPreview = ({ type, title, description }: Props) => {
     toastErrorBackgroundColor,
     toastErrorTitleColor,
     toastErrorDescriptionColor,
-  } = useToastCustomizationOption()
+  } = useAtomValue(toastCustomizationAtom)
 
   const isError = type === "error"
   const bgColor = isError ? toastErrorBackgroundColor : toastBackgroundColor

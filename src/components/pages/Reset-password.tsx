@@ -19,10 +19,6 @@ import {
   ResetPasswordFormValues,
   passwordSchema,
 } from "@/lib/schema/passwordSchema"
-import {
-  useButtonCustomizationOption,
-  useThemeCustomizationOption,
-} from "@/hooks/useAuthCustomization"
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
 import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions"
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
@@ -33,6 +29,11 @@ import { useAuthCard } from "@/hooks/useAuthCard"
 import { resetSellerPasswordServer } from "@/app/(seller)/reset-password/action"
 import { resetAffiliatePasswordServer } from "@/app/affiliate/[orgId]/(auth)/reset-password/action"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
+import { useAtomValue } from "jotai/index"
+import {
+  buttonCustomizationAtom,
+  themeCustomizationAtom,
+} from "@/store/AuthCustomizationAtom"
 type Props = {
   userId: string
   orgId?: string
@@ -57,16 +58,19 @@ const ResetPassword = ({
 
   const [pending, setPending] = useState(false)
   const { showCustomToast } = useCustomToast()
-  const { backgroundColor, linkTextColor, tertiaryTextColor } =
-    useThemeCustomizationOption()
+  const {
+    backgroundColor,
+    linkTextColor,
+    tertiaryTextColor,
+    primaryCustomization,
+    secondaryCustomization,
+  } = useAtomValue(themeCustomizationAtom)
   const {
     buttonDisabledTextColor,
     buttonBackgroundColor,
     buttonDisabledBackgroundColor,
     buttonTextColor,
-  } = useButtonCustomizationOption()
-  const { primaryCustomization, secondaryCustomization } =
-    useThemeCustomizationOption()
+  } = useAtomValue(buttonCustomizationAtom)
   const authCardStyle = useAuthCard(affiliate)
   const affiliateMutation = useAuthMutation(resetAffiliatePasswordServer, {
     affiliate,

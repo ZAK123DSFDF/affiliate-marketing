@@ -1,10 +1,6 @@
 "use client"
-import React, { useEffect } from "react"
+import React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  useButtonCustomizationOption,
-  useThemeCustomizationOption,
-} from "@/hooks/useAuthCustomization"
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
 import { CheckCircle2 } from "lucide-react"
@@ -12,6 +8,11 @@ import { Button } from "@/components/ui/button"
 import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ButtonCustomizationOptions"
 import { useRouter } from "next/navigation"
 import { useAuthCard } from "@/hooks/useAuthCard"
+import { useAtomValue } from "jotai"
+import {
+  buttonCustomizationAtom,
+  themeCustomizationAtom,
+} from "@/store/AuthCustomizationAtom"
 
 type Props = {
   orgId?: string
@@ -28,17 +29,15 @@ const EmailVerified = ({
   affiliate,
   mode,
 }: Props) => {
-  useEffect(() => {
-    console.log("orgId", orgId)
-  }, [orgId])
-  const { backgroundColor } = useThemeCustomizationOption()
   const {
+    backgroundColor,
     emailVerifiedPrimaryColor,
     emailVerifiedSecondaryColor,
     emailVerifiedIconColor,
-  } = useThemeCustomizationOption()
-  const { buttonBackgroundColor, buttonTextColor } =
-    useButtonCustomizationOption()
+  } = useAtomValue(themeCustomizationAtom)
+  const { buttonBackgroundColor, buttonTextColor } = useAtomValue(
+    buttonCustomizationAtom
+  )
   const authCardStyle = useAuthCard(affiliate)
   const router = useRouter()
   const handleClick = () => {

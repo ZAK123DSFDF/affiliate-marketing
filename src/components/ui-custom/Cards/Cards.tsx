@@ -7,10 +7,6 @@ import {
   initialKpiData,
 } from "@/lib/types/dummyKpiData"
 import React, { useEffect, useState } from "react"
-import {
-  useDashboardThemeCustomizationOption,
-  useKpiCardCustomizationOption,
-} from "@/hooks/useDashboardCustomization"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
 import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions"
 import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions"
@@ -27,6 +23,11 @@ import { getSellerKpiStats } from "@/app/(seller)/seller/[orgId]/dashboard/actio
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import { formatValue } from "@/util/FormatValue"
+import { useAtomValue } from "jotai"
+import {
+  dashboardThemeCustomizationAtom,
+  kpiCardCustomizationAtom,
+} from "@/store/DashboardCustomizationAtom"
 
 interface CardsProps {
   orgId: string
@@ -48,9 +49,11 @@ const sellerColorPairs = [
 ]
 
 const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
-  const dashboardTheme = useDashboardThemeCustomizationOption()
+  const { cardHeaderPrimaryTextColor } = useAtomValue(
+    dashboardThemeCustomizationAtom
+  )
   const dashboardCardStyle = useDashboardCard(affiliate)
-  const kpiCard = useKpiCardCustomizationOption()
+  const kpiCard = useAtomValue(kpiCardCustomizationAtom)
   const { filters, setFilters } = useQueryFilter({
     yearKey: "kpiYear",
     monthKey: "kpiMonth",
@@ -136,9 +139,7 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <CardTitle
               style={{
-                color:
-                  (affiliate && dashboardTheme.cardHeaderPrimaryTextColor) ||
-                  undefined,
+                color: (affiliate && cardHeaderPrimaryTextColor) || undefined,
               }}
               className="text-lg"
             >

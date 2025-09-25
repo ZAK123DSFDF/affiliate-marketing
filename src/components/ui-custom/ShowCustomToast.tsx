@@ -1,6 +1,7 @@
 // utils/showCustomToast.ts
 import { useToast } from "@/hooks/use-toast"
-import { useToastCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { useAtomValue } from "jotai"
+import { toastCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 type ToastType = "success" | "error"
 
@@ -12,7 +13,7 @@ export const useCustomToast = () => {
     toastErrorBackgroundColor,
     toastErrorTitleColor,
     toastErrorDescriptionColor,
-  } = useToastCustomizationOption()
+  } = useAtomValue(toastCustomizationAtom)
   const { toast } = useToast()
   const showCustomToast = ({
     type,

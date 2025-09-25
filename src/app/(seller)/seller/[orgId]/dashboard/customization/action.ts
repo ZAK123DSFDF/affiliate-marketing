@@ -11,8 +11,8 @@ import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustom
 import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization"
 import { deepMerge } from "@/util/DeepMerge"
 
-type AuthCustomization = typeof defaultAuthCustomization
-type DashboardCustomization = typeof defaultDashboardCustomization
+export type AuthCustomization = typeof defaultAuthCustomization
+export type DashboardCustomization = typeof defaultDashboardCustomization
 
 export async function saveCustomizationsAction(
   orgId: string,

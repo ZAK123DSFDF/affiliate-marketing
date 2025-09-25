@@ -26,8 +26,6 @@ import {
 import MonthSelect from "@/components/ui-custom/MonthSelect"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
 import { Separator } from "@/components/ui/separator"
-import { useChartCustomizationOption } from "@/hooks/useDashboardCustomization"
-import { DashboardCustomizationStores } from "@/store/useCustomizationStore"
 import { ChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/ChartCustomizationOptions"
 import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateKpiTimeSeries } from "@/app/affiliate/[orgId]/dashboard/action"
@@ -35,6 +33,11 @@ import { getSellerKpiTimeSeries } from "@/app/(seller)/seller/[orgId]/dashboard/
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import { dummyChartData } from "@/lib/types/dummyChartData"
+import { useAtomValue } from "jotai"
+import {
+  chartCustomizationAtom,
+  dashboardThemeCustomizationAtom,
+} from "@/store/DashboardCustomizationAtom"
 
 interface ChartDailyMetricsProps {
   orgId: string
@@ -87,14 +90,22 @@ export function ChartDailyMetrics({
       visits: item.visitors,
     }))
   }, [isPreview, searchData])
-  const ChartCustomization = useChartCustomizationOption()
-  const ThemeCustomization =
-    DashboardCustomizationStores.useDashboardThemeCustomization()
+  const {
+    chartSecondaryColor,
+    chartPrimaryColor,
+    chartTertiaryColor,
+    chartHorizontalLineColor,
+    chartDateColor,
+  } = useAtomValue(chartCustomizationAtom)
+  const {
+    separatorColor,
+    cardHeaderDescriptionTextColor,
+    cardHeaderPrimaryTextColor,
+  } = useAtomValue(dashboardThemeCustomizationAtom)
   const baseColors: any = {
-    visits: (affiliate && ChartCustomization.chartPrimaryColor) || "#60A5FA",
-    sales: (affiliate && ChartCustomization.chartSecondaryColor) || "#A78BFA",
-    conversionRate:
-      (affiliate && ChartCustomization.chartTertiaryColor) || "#5EEAD4",
+    visits: (affiliate && chartPrimaryColor) || "#60A5FA",
+    sales: (affiliate && chartSecondaryColor) || "#A78BFA",
+    conversionRate: (affiliate && chartTertiaryColor) || "#5EEAD4",
   }
   const chartConfig: ChartConfig = {
     visits: { label: "Visits", color: "var(--chart-1)" },
@@ -120,10 +131,7 @@ export function ChartDailyMetrics({
             <CardTitle
               className={isPreview ? "text-sm" : "text-lg"}
               style={{
-                color:
-                  (affiliate &&
-                    ThemeCustomization.cardHeaderPrimaryTextColor) ||
-                  undefined,
+                color: (affiliate && cardHeaderPrimaryTextColor) || undefined,
               }}
             >
               Daily Metrics
@@ -134,9 +142,7 @@ export function ChartDailyMetrics({
               className={isPreview ? "text-xs" : "text-sm"}
               style={{
                 color:
-                  (affiliate &&
-                    ThemeCustomization.cardHeaderDescriptionTextColor) ||
-                  undefined,
+                  (affiliate && cardHeaderDescriptionTextColor) || undefined,
               }}
             >
               Visits, Sales, Conversion Rate, and{" "}
@@ -154,8 +160,7 @@ export function ChartDailyMetrics({
 
       <Separator
         style={{
-          backgroundColor:
-            (affiliate && ThemeCustomization.separatorColor) || undefined,
+          backgroundColor: (affiliate && separatorColor) || undefined,
         }}
       />
       {isPreview && (
@@ -207,9 +212,7 @@ export function ChartDailyMetrics({
                   <CartesianGrid
                     vertical={false}
                     stroke={
-                      (affiliate &&
-                        ChartCustomization.chartHorizontalLineColor) ||
-                      "#E5E7EB"
+                      (affiliate && chartHorizontalLineColor) || "#E5E7EB"
                     }
                   />
                   <XAxis
@@ -220,9 +223,7 @@ export function ChartDailyMetrics({
                     minTickGap={32}
                     tick={{
                       style: {
-                        fill:
-                          (affiliate && ChartCustomization.chartDateColor) ||
-                          "#6B7280",
+                        fill: (affiliate && chartDateColor) || "#6B7280",
                       },
                     }}
                     tickFormatter={(value) =>

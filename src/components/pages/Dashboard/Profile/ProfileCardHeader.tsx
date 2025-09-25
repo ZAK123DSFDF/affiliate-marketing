@@ -1,7 +1,8 @@
 import { CardTitle } from "@/components/ui/card"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
 import React from "react"
-import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { useAtomValue } from "jotai"
+import { dashboardThemeCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 interface profileCardHeaderProps {
   affiliate: boolean
   isPreview?: boolean
@@ -10,14 +11,14 @@ export default function ProfileCardHeader({
   affiliate = false,
   isPreview = false,
 }: profileCardHeaderProps) {
-  const dashboardTheme = useDashboardThemeCustomizationOption()
+  const { cardHeaderPrimaryTextColor } = useAtomValue(
+    dashboardThemeCustomizationAtom
+  )
   return (
     <div className="flex flex-row gap-2 items-center">
       <CardTitle
         style={{
-          color:
-            (affiliate && dashboardTheme.cardHeaderPrimaryTextColor) ||
-            undefined,
+          color: (affiliate && cardHeaderPrimaryTextColor) || undefined,
         }}
       >
         Account Information

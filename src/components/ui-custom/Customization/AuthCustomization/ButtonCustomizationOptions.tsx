@@ -1,8 +1,9 @@
 "use client"
 
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
-import { useButtonCustomizationOption } from "@/hooks/useAuthCustomization"
 import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
+import { useAtom } from "jotai"
+import { buttonCustomizationAtom } from "@/store/AuthCustomizationAtom"
 
 export const ButtonCustomizationOptions = ({
   size,
@@ -11,33 +12,33 @@ export const ButtonCustomizationOptions = ({
   size?: string
   onlyShowEnabled?: boolean
 }) => {
-  const {
-    buttonTextColor,
-    buttonBackgroundColor,
-    buttonDisabledTextColor,
-    buttonDisabledBackgroundColor,
-  } = useButtonCustomizationOption()
-  // Base properties
+  const [
+    {
+      buttonTextColor,
+      buttonBackgroundColor,
+      buttonDisabledBackgroundColor,
+      buttonDisabledTextColor,
+    },
+    setButtonCustomization,
+  ] = useAtom(buttonCustomizationAtom)
   const enabledProps = {
     buttonTextColor: {
       label: "Button Text Color",
       value: buttonTextColor,
       onChange: (val: string) =>
-        updateAuthCustomization(
-          "useButtonCustomization",
-          "buttonTextColor",
-          val
-        ),
+        setButtonCustomization((prev) => ({
+          ...prev,
+          buttonTextColor: val,
+        })),
     },
     buttonBackgroundColor: {
       label: "Button Background Color",
       value: buttonBackgroundColor,
       onChange: (val: string) =>
-        updateAuthCustomization(
-          "useButtonCustomization",
-          "buttonBackgroundColor",
-          val
-        ),
+        setButtonCustomization((prev) => ({
+          ...prev,
+          buttonBackgroundColor: val,
+        })),
     },
   }
 
@@ -47,21 +48,19 @@ export const ButtonCustomizationOptions = ({
       label: "Disabled Text Color",
       value: buttonDisabledTextColor,
       onChange: (val: string) =>
-        updateAuthCustomization(
-          "useButtonCustomization",
-          "buttonDisabledTextColor",
-          val
-        ),
+        setButtonCustomization((prev) => ({
+          ...prev,
+          buttonDisabledTextColor: val,
+        })),
     },
     buttonDisabledBackgroundColor: {
       label: "Disabled Background Color",
       value: buttonDisabledBackgroundColor,
       onChange: (val: string) =>
-        updateAuthCustomization(
-          "useButtonCustomization",
-          "buttonDisabledBackgroundColor",
-          val
-        ),
+        setButtonCustomization((prev) => ({
+          ...prev,
+          buttonDisabledBackgroundColor: val,
+        })),
     },
   }
 

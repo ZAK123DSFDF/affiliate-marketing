@@ -20,10 +20,11 @@ import {
   newPasswordSchema,
 } from "@/lib/schema/passwordSchema"
 import { z } from "zod"
+import { useAtomValue } from "jotai"
 import {
-  useDashboardButtonCustomizationOption,
-  useDashboardThemeCustomizationOption,
-} from "@/hooks/useDashboardCustomization"
+  dashboardButtonCustomizationAtom,
+  dashboardThemeCustomizationAtom,
+} from "@/store/DashboardCustomizationAtom"
 type currentPasswordFormValues = z.infer<typeof currentPasswordSchema>
 type newPasswordFormValues = z.infer<typeof newPasswordSchema>
 interface ProfileDialogProps {
@@ -57,8 +58,8 @@ export default function ProfileDialog({
   affiliate,
   isPreview = false,
 }: ProfileDialogProps) {
-  const dashboardTheme = useDashboardThemeCustomizationOption()
-  const dashboardButton = useDashboardButtonCustomizationOption()
+  const dashboardTheme = useAtomValue(dashboardThemeCustomizationAtom)
+  const dashboardButton = useAtomValue(dashboardButtonCustomizationAtom)
   return (
     <Dialog open={showPasswordModal} onOpenChange={resetPasswordModal}>
       <DialogContent affiliate={affiliate}>

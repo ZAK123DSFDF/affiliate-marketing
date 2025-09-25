@@ -11,11 +11,6 @@ import { InputField, CheckboxField } from "@/components/Auth/FormFields"
 import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema"
 import { LoginAffiliateServer } from "@/app/affiliate/[orgId]/(auth)/login/action"
 import { LoginServer } from "@/app/(seller)/login/action"
-import {
-  useButtonCustomizationOption,
-  useNotesCustomizationOption,
-  useThemeCustomizationOption,
-} from "@/hooks/useAuthCustomization"
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
 import { CheckboxCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CheckboxCustomizationOptions"
 import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions"
@@ -27,6 +22,12 @@ import { LinkButton } from "@/components/ui-custom/LinkButton"
 import { IsRichTextEmpty } from "@/util/IsRichTextEmpty"
 import { useAuthCard } from "@/hooks/useAuthCard"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
+import { useAtomValue } from "jotai"
+import {
+  buttonCustomizationAtom,
+  notesCustomizationAtom,
+  themeCustomizationAtom,
+} from "@/store/AuthCustomizationAtom"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -44,16 +45,17 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
       rememberMe: false,
     },
   })
-  const { backgroundColor, linkTextColor, tertiaryTextColor } =
-    useThemeCustomizationOption()
+  const { backgroundColor, linkTextColor, tertiaryTextColor } = useAtomValue(
+    themeCustomizationAtom
+  )
   const {
     buttonDisabledTextColor,
     buttonBackgroundColor,
     buttonDisabledBackgroundColor,
     buttonTextColor,
-  } = useButtonCustomizationOption()
+  } = useAtomValue(buttonCustomizationAtom)
   const authCardStyle = useAuthCard(affiliate)
-  const { customNotesLogin } = useNotesCustomizationOption()
+  const { customNotesLogin } = useAtomValue(notesCustomizationAtom)
   const affiliateMutation = useAuthMutation(LoginAffiliateServer, {
     affiliate,
     redirectUrl: `/affiliate/${orgId}/checkEmail`,

@@ -2,7 +2,8 @@ import { DashboardButtonCustomizationOptions } from "@/components/ui-custom/Cust
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import React from "react"
-import { useDashboardButtonCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { useAtomValue } from "jotai"
+import { dashboardButtonCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 interface ProfileCardFooterProps {
   updateProfile: {
     isPending: boolean
@@ -17,7 +18,7 @@ export default function ProfileCardFooter({
   affiliate = false,
   isPreview = false,
 }: ProfileCardFooterProps) {
-  const dashboardButton = useDashboardButtonCustomizationOption()
+  const dashboardButton = useAtomValue(dashboardButtonCustomizationAtom)
   return (
     <div className="flex flex-row gap-2 items-center">
       {isPreview && (

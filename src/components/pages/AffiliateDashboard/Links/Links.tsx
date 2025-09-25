@@ -22,10 +22,6 @@ import { DashboardButtonCustomizationOptions } from "@/components/ui-custom/Cust
 import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions"
 import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions"
 import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions"
-import {
-  useDashboardButtonCustomizationOption,
-  useDashboardThemeCustomizationOption,
-} from "@/hooks/useDashboardCustomization"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { useSearch } from "@/hooks/useSearch"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
@@ -34,6 +30,11 @@ import { LinksColumns } from "@/components/pages/AffiliateDashboard/Links/LinksC
 import { TableLoading } from "@/components/ui-custom/TableLoading"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import { dummyAffiliateLinksRaw } from "@/lib/types/previewData"
+import { useAtomValue } from "jotai"
+import {
+  dashboardButtonCustomizationAtom,
+  dashboardThemeCustomizationAtom,
+} from "@/store/DashboardCustomizationAtom"
 
 interface AffiliateLinkProps {
   orgId: string
@@ -45,8 +46,17 @@ export default function Links({
   isPreview,
   affiliate,
 }: AffiliateLinkProps) {
-  const dashboardTheme = useDashboardThemeCustomizationOption()
-  const dashboardButton = useDashboardButtonCustomizationOption()
+  const {
+    dashboardHeaderDescColor,
+    dashboardHeaderNameColor,
+    cardHeaderPrimaryTextColor,
+  } = useAtomValue(dashboardThemeCustomizationAtom)
+  const {
+    dashboardButtonDisabledTextColor,
+    dashboardButtonTextColor,
+    dashboardButtonDisabledBackgroundColor,
+    dashboardButtonBackgroundColor,
+  } = useAtomValue(dashboardButtonCustomizationAtom)
   const dashboardCardStyle = useDashboardCard(affiliate)
   const { showCustomToast } = useCustomToast()
   const [isFakeLoading, setIsFakeLoading] = useState(false)
@@ -173,9 +183,7 @@ export default function Links({
             <h1
               className="text-3xl font-bold"
               style={{
-                color:
-                  (affiliate && dashboardTheme.dashboardHeaderNameColor) ||
-                  undefined,
+                color: (affiliate && dashboardHeaderNameColor) || undefined,
               }}
             >
               Affiliate Links
@@ -191,9 +199,7 @@ export default function Links({
             <p
               className="text-muted-foreground"
               style={{
-                color:
-                  (affiliate && dashboardTheme.dashboardHeaderDescColor) ||
-                  undefined,
+                color: (affiliate && dashboardHeaderDescColor) || undefined,
               }}
             >
               Track your referral links and their performance
@@ -216,19 +222,13 @@ export default function Links({
             style={{
               backgroundColor:
                 mutation.isPending || isFakeLoading
-                  ? (affiliate &&
-                      dashboardButton.dashboardButtonDisabledBackgroundColor) ||
+                  ? (affiliate && dashboardButtonDisabledBackgroundColor) ||
                     undefined
-                  : (affiliate &&
-                      dashboardButton.dashboardButtonBackgroundColor) ||
-                    undefined,
+                  : (affiliate && dashboardButtonBackgroundColor) || undefined,
               color:
                 mutation.isPending || isFakeLoading
-                  ? (affiliate &&
-                      dashboardButton.dashboardButtonDisabledTextColor) ||
-                    undefined
-                  : (affiliate && dashboardButton.dashboardButtonTextColor) ||
-                    undefined,
+                  ? (affiliate && dashboardButtonDisabledTextColor) || undefined
+                  : (affiliate && dashboardButtonTextColor) || undefined,
             }}
           >
             {mutation.isPending || isFakeLoading
@@ -255,9 +255,7 @@ export default function Links({
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle
             style={{
-              color:
-                (affiliate && dashboardTheme.cardHeaderPrimaryTextColor) ||
-                undefined,
+              color: (affiliate && cardHeaderPrimaryTextColor) || undefined,
             }}
             className="text-lg"
           >

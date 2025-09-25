@@ -16,7 +16,6 @@ import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Custo
 import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions"
 import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions"
 import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions"
-import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization"
 import { TableContent } from "@/components/ui-custom/TableContent"
 import { TableLoading } from "@/components/ui-custom/TableLoading"
 import { paymentColumns } from "@/components/pages/AffiliateDashboard/Payment/PaymentColumns"
@@ -24,6 +23,8 @@ import { useSearch } from "@/hooks/useSearch"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import { dummyAffiliatePayments } from "@/lib/types/previewData"
+import { useAtomValue } from "jotai"
+import { dashboardThemeCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 interface AffiliateCommissionTableProps {
   orgId: string
@@ -36,7 +37,11 @@ export default function AffiliateCommissionTable({
   isPreview,
   affiliate = false,
 }: AffiliateCommissionTableProps) {
-  const dashboardTheme = useDashboardThemeCustomizationOption()
+  const {
+    dashboardHeaderDescColor,
+    cardHeaderPrimaryTextColor,
+    dashboardHeaderNameColor,
+  } = useAtomValue(dashboardThemeCustomizationAtom)
   const dashboardCardStyle = useDashboardCard(affiliate)
   const { filters, setFilters } = useQueryFilter()
   const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false)
@@ -87,9 +92,7 @@ export default function AffiliateCommissionTable({
             <h1
               className="text-3xl font-bold"
               style={{
-                color:
-                  (affiliate && dashboardTheme.dashboardHeaderNameColor) ||
-                  undefined,
+                color: (affiliate && dashboardHeaderNameColor) || undefined,
               }}
             >
               Affiliate Earnings
@@ -105,9 +108,7 @@ export default function AffiliateCommissionTable({
             <p
               className="text-muted-foreground"
               style={{
-                color:
-                  (affiliate && dashboardTheme.dashboardHeaderDescColor) ||
-                  undefined,
+                color: (affiliate && dashboardHeaderDescColor) || undefined,
               }}
             >
               Monthly breakdown of your affiliate commissions
@@ -138,9 +139,7 @@ export default function AffiliateCommissionTable({
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle
             style={{
-              color:
-                (affiliate && dashboardTheme.cardHeaderPrimaryTextColor) ||
-                undefined,
+              color: (affiliate && cardHeaderPrimaryTextColor) || undefined,
             }}
           >
             <div className="flex flex-row gap-2 items-center">

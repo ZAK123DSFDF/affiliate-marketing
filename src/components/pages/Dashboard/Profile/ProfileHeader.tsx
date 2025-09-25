@@ -1,7 +1,8 @@
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
 import React from "react"
-import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { useAtomValue } from "jotai"
+import { dashboardThemeCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 interface HeaderProps {
   affiliate: boolean
   isPreview?: boolean
@@ -10,7 +11,7 @@ export default function ProfileHeader({
   affiliate = false,
   isPreview = false,
 }: HeaderProps) {
-  const dashboardTheme = useDashboardThemeCustomizationOption()
+  const dashboardTheme = useAtomValue(dashboardThemeCustomizationAtom)
   return (
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-2">

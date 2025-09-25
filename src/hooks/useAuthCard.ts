@@ -1,6 +1,7 @@
-import { useCardCustomizationOption } from "@/hooks/useAuthCustomization"
 import { getShadowWithColor } from "@/util/GetShadowWithColor"
 import { toValidShadowSize } from "@/util/ValidateShadowColor"
+import { useAtomValue } from "jotai"
+import { cardCustomizationAtom } from "@/store/AuthCustomizationAtom"
 
 export function useAuthCard(affiliate: boolean) {
   const {
@@ -10,7 +11,7 @@ export function useAuthCard(affiliate: boolean) {
     cardBorderColor,
     cardBackgroundColor,
     cardShadowThickness,
-  } = useCardCustomizationOption()
+  } = useAtomValue(cardCustomizationAtom)
   return {
     backgroundColor: (affiliate && cardBackgroundColor) || undefined,
     boxShadow:

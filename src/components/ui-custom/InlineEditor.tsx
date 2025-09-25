@@ -1,9 +1,9 @@
 import { RichTextEditor } from "@/components/ui-custom/RichTextEditor"
-import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
-import { useNotesCustomizationOption } from "@/hooks/useAuthCustomization"
 import { useState } from "react"
 import { Pencil } from "lucide-react"
 import { IsRichTextEmpty } from "@/util/IsRichTextEmpty"
+import { useAtom } from "jotai"
+import { notesCustomizationAtom } from "@/store/AuthCustomizationAtom"
 
 type NotesKey = "customNotesLogin" | "customNotesSignup"
 
@@ -33,10 +33,12 @@ const DefaultAuthHeader = ({ name }: { name: NotesKey }) => {
 }
 
 export const InlineNotesEditor = ({ name }: { name: NotesKey }) => {
-  const { customNotesLogin, customNotesSignup } = useNotesCustomizationOption()
+  const [notes, setNotes] = useAtom(notesCustomizationAtom)
 
   const currentContent =
-    name === "customNotesLogin" ? customNotesLogin : customNotesSignup
+    name === "customNotesLogin"
+      ? notes.customNotesLogin
+      : notes.customNotesSignup
 
   const [isEditing, setIsEditing] = useState(false)
   const [tempContent, setTempContent] = useState<string>(currentContent || "")
@@ -49,11 +51,10 @@ export const InlineNotesEditor = ({ name }: { name: NotesKey }) => {
           <button
             className="bg-primary text-white px-4 py-1 rounded"
             onClick={() => {
-              updateAuthCustomization(
-                "useNotesCustomization",
-                name,
-                tempContent
-              )
+              setNotes({
+                ...notes,
+                [name]: tempContent,
+              })
               setIsEditing(false)
             }}
           >

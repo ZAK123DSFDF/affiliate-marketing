@@ -18,11 +18,7 @@ import {
 import MonthSelect from "@/components/ui-custom/MonthSelect"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
 import { Separator } from "@/components/ui/separator"
-import {
-  useDashboardThemeCustomizationOption,
-  usePieChartCustomizationOption,
-} from "@/hooks/useDashboardCustomization"
-import { PieChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/PieChartCustomization"
+import { PieChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/PieChartCustomizationOptions"
 import {
   AffiliateReferrerStat,
   SellerReferrerStat,
@@ -33,6 +29,11 @@ import { getSellerReferrer } from "@/app/(seller)/seller/[orgId]/dashboard/actio
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import { dummySourceData } from "@/lib/types/dummySourceData"
+import { useAtomValue } from "jotai"
+import {
+  dashboardThemeCustomizationAtom,
+  pieChartColorCustomizationAtom,
+} from "@/store/DashboardCustomizationAtom"
 
 const chartConfig: ChartConfig = {
   visitors: { label: "Visitors" },
@@ -49,9 +50,23 @@ export default function SocialTrafficPieChart({
 }) {
   const innerRadius = isPreview ? 60 : 100
   const outerRadius = isPreview ? 90 : 140
-  const ThemeCustomization = useDashboardThemeCustomizationOption()
+  const {
+    cardHeaderDescriptionTextColor,
+    cardHeaderPrimaryTextColor,
+    separatorColor,
+  } = useAtomValue(dashboardThemeCustomizationAtom)
   const dashboardCardStyle = useDashboardCard(affiliate)
-  const pieCustomization = usePieChartCustomizationOption()
+  const {
+    pieFallbackColor,
+    pieColor2,
+    pieColor3,
+    pieColor4,
+    pieColor5,
+    pieColor6,
+    pieColor7,
+    pieColor8,
+    pieColor1,
+  } = useAtomValue(pieChartColorCustomizationAtom)
   const { filters, setFilters } = useQueryFilter({
     yearKey: "sourceYear",
     monthKey: "sourceMonth",
@@ -95,15 +110,15 @@ export default function SocialTrafficPieChart({
     if (!effectiveData || effectiveData.length === 0) return []
 
     const colorPalette = [
-      pieCustomization.pieColor1 || "#ef4444",
-      pieCustomization.pieColor2 || "#f97316",
-      pieCustomization.pieColor3 || "#8b5cf6",
-      pieCustomization.pieColor4 || "#10b981",
-      pieCustomization.pieColor5 || "#facc15",
-      pieCustomization.pieColor6 || "#ec4899",
-      pieCustomization.pieColor7 || "#3b82f6",
-      pieCustomization.pieColor8 || "#0ea5e9",
-      pieCustomization.pieFallbackColor || "#a855f7",
+      pieColor1 || "#ef4444",
+      pieColor2 || "#f97316",
+      pieColor3 || "#8b5cf6",
+      pieColor4 || "#10b981",
+      pieColor5 || "#facc15",
+      pieColor6 || "#ec4899",
+      pieColor7 || "#3b82f6",
+      pieColor8 || "#0ea5e9",
+      pieFallbackColor || "#a855f7",
     ]
 
     return effectiveData.map((stat, index) => ({
@@ -111,7 +126,7 @@ export default function SocialTrafficPieChart({
       visitors: stat.clicks,
       fill: colorPalette[index % colorPalette.length],
     }))
-  }, [effectiveData, pieCustomization])
+  }, [effectiveData])
   const totalVisitors = React.useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
   }, [chartData])
@@ -133,10 +148,7 @@ export default function SocialTrafficPieChart({
               <CardTitle
                 className={isPreview ? "text-sm" : "text-lg"}
                 style={{
-                  color:
-                    (affiliate &&
-                      ThemeCustomization.cardHeaderPrimaryTextColor) ||
-                    undefined,
+                  color: (affiliate && cardHeaderPrimaryTextColor) || undefined,
                 }}
               >
                 Social Traffic
@@ -153,9 +165,7 @@ export default function SocialTrafficPieChart({
                 className={isPreview ? "text-xs" : "text-sm"}
                 style={{
                   color:
-                    (affiliate &&
-                      ThemeCustomization.cardHeaderDescriptionTextColor) ||
-                    undefined,
+                    (affiliate && cardHeaderDescriptionTextColor) || undefined,
                 }}
               >
                 Visitor Source
@@ -182,8 +192,7 @@ export default function SocialTrafficPieChart({
       </CardHeader>
       <Separator
         style={{
-          backgroundColor:
-            (affiliate && ThemeCustomization.separatorColor) || undefined,
+          backgroundColor: (affiliate && separatorColor) || undefined,
         }}
       />
       {isPreview && (

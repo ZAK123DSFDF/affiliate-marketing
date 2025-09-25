@@ -1,11 +1,15 @@
-import { useCheckboxCustomizationOption } from "@/hooks/useAuthCustomization"
+"use client"
+
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
-import React from "react"
-import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
+import { useAtom } from "jotai"
+import { checkboxCustomizationAtom } from "@/store/AuthCustomizationAtom"
 
 export const CheckboxCustomizationOptions = ({ size }: { size?: string }) => {
-  const { checkboxLabelColor, checkboxActiveColor, checkboxInactiveColor } =
-    useCheckboxCustomizationOption()
+  const [
+    { checkboxLabelColor, checkboxActiveColor, checkboxInactiveColor },
+    setCheckboxCustomization,
+  ] = useAtom(checkboxCustomizationAtom)
+
   return (
     <OptionWithSwitch
       triggerSize={size}
@@ -14,31 +18,28 @@ export const CheckboxCustomizationOptions = ({ size }: { size?: string }) => {
           label: "Checkbox Label Color",
           value: checkboxLabelColor,
           onChange: (val: string) =>
-            updateAuthCustomization(
-              "useCheckboxCustomization",
-              "checkboxLabelColor",
-              val
-            ),
+            setCheckboxCustomization((prev) => ({
+              ...prev,
+              checkboxLabelColor: val,
+            })),
         },
         checkboxActiveColor: {
           label: "Checkbox Active Color",
           value: checkboxActiveColor,
           onChange: (val: string) =>
-            updateAuthCustomization(
-              "useCheckboxCustomization",
-              "checkboxActiveColor",
-              val
-            ),
+            setCheckboxCustomization((prev) => ({
+              ...prev,
+              checkboxActiveColor: val,
+            })),
         },
         checkboxInactiveColor: {
           label: "Checkbox Inactive Color",
           value: checkboxInactiveColor,
           onChange: (val: string) =>
-            updateAuthCustomization(
-              "useCheckboxCustomization",
-              "checkboxInactiveColor",
-              val
-            ),
+            setCheckboxCustomization((prev) => ({
+              ...prev,
+              checkboxInactiveColor: val,
+            })),
         },
       }}
     />

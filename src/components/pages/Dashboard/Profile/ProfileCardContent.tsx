@@ -7,15 +7,16 @@ import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Custo
 import { Button } from "@/components/ui/button"
 import React from "react"
 import { UseFormReturn } from "react-hook-form"
-import {
-  useDashboardButtonCustomizationOption,
-  useDashboardThemeCustomizationOption,
-} from "@/hooks/useDashboardCustomization"
 import { z } from "zod"
 import {
   affiliateProfileSchema,
   userProfileSchema,
 } from "@/lib/schema/profileSchema"
+import { useAtomValue } from "jotai"
+import {
+  dashboardButtonCustomizationAtom,
+  dashboardThemeCustomizationAtom,
+} from "@/store/DashboardCustomizationAtom"
 type UserProfileFormValues = z.infer<typeof userProfileSchema>
 type AffiliateProfileFormValues = z.infer<typeof affiliateProfileSchema>
 
@@ -35,8 +36,11 @@ export default function ProfileCardContent({
   affiliate,
   isPreview,
 }: ProfileContentProps) {
-  const dashboardTheme = useDashboardThemeCustomizationOption()
-  const dashboardButton = useDashboardButtonCustomizationOption()
+  const { cardHeaderSecondaryTextColor, separatorColor } = useAtomValue(
+    dashboardThemeCustomizationAtom
+  )
+  const { dashboardButtonBackgroundColor, dashboardButtonTextColor } =
+    useAtomValue(dashboardButtonCustomizationAtom)
   return (
     <Form {...profileForm}>
       <form
@@ -87,8 +91,7 @@ export default function ProfileCardContent({
             <Separator
               className="flex-1"
               style={{
-                backgroundColor:
-                  (affiliate && dashboardTheme.separatorColor) || "#e5e7eb",
+                backgroundColor: (affiliate && separatorColor) || "#e5e7eb",
               }}
             />
             {isPreview && (
@@ -103,9 +106,7 @@ export default function ProfileCardContent({
             <h3
               className="font-medium mb-4"
               style={{
-                color:
-                  (affiliate && dashboardTheme.cardHeaderSecondaryTextColor) ||
-                  undefined,
+                color: (affiliate && cardHeaderSecondaryTextColor) || undefined,
               }}
             >
               Password
@@ -123,11 +124,8 @@ export default function ProfileCardContent({
             onClick={() => setShowPasswordModal(true)}
             style={{
               backgroundColor:
-                (affiliate && dashboardButton.dashboardButtonBackgroundColor) ||
-                undefined,
-              color:
-                (affiliate && dashboardButton.dashboardButtonTextColor) ||
-                undefined,
+                (affiliate && dashboardButtonBackgroundColor) || undefined,
+              color: (affiliate && dashboardButtonTextColor) || undefined,
             }}
           >
             Change Password
@@ -136,8 +134,7 @@ export default function ProfileCardContent({
           <Separator
             className="flex-1 mt-4"
             style={{
-              backgroundColor:
-                (affiliate && dashboardTheme.separatorColor) || "#e5e7eb",
+              backgroundColor: (affiliate && separatorColor) || "#e5e7eb",
             }}
           />
         </div>

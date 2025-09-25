@@ -9,11 +9,12 @@ import {
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useState } from "react"
+import { useAtomValue } from "jotai"
 import {
-  useCardCustomizationOption,
-  useCheckboxCustomizationOption,
-  useInputCustomizationOption,
-} from "@/hooks/useAuthCustomization"
+  cardCustomizationAtom,
+  checkboxCustomizationAtom,
+  inputCustomizationAtom,
+} from "@/store/AuthCustomizationAtom"
 
 type InputFieldProps = {
   control: any
@@ -50,8 +51,8 @@ export const InputField = ({
     inputBorderFocusColor,
     inputLabelErrorColor,
     inputTextColor,
-  } = useInputCustomizationOption()
-  const { cardBackgroundColor } = useCardCustomizationOption()
+  } = useAtomValue(inputCustomizationAtom)
+  const { cardBackgroundColor } = useAtomValue(cardCustomizationAtom)
   return (
     <FormField
       control={control}
@@ -163,7 +164,7 @@ export const CheckboxField = ({
   affiliate,
 }: CheckboxFieldProps) => {
   const { checkboxActiveColor, checkboxInactiveColor, checkboxLabelColor } =
-    useCheckboxCustomizationOption()
+    useAtomValue(checkboxCustomizationAtom)
   return (
     <FormField
       control={control}

@@ -3,12 +3,13 @@ import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats"
 import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Check, Copy } from "lucide-react"
-import { useTableCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { useAtomValue } from "jotai"
+import { tableCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 export const LinksColumns = (
   affiliate: boolean
 ): ColumnDef<AffiliateLinkWithStats>[] => {
-  const dashboardTable = useTableCustomizationOption()
+  const dashboardTable = useAtomValue(tableCustomizationAtom)
   return [
     {
       accessorKey: "fullUrl",

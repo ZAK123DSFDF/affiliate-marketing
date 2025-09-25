@@ -1,25 +1,29 @@
 import { getShadowWithColor } from "@/util/GetShadowWithColor"
 import { toValidShadowSize } from "@/util/ValidateShadowColor"
-import { useDashboardCardCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { useAtomValue } from "jotai"
+import { dashboardCardCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 export function useDashboardCard(affiliate: boolean) {
-  const dashboardCard = useDashboardCardCustomizationOption()
+  const {
+    dashboardCardBackgroundColor,
+    dashboardCardShadow,
+    dashboardCardBorder,
+    dashboardCardBorderColor,
+    dashboardCardShadowThickness,
+    dashboardCardShadowColor,
+  } = useAtomValue(dashboardCardCustomizationAtom)
   return {
-    backgroundColor:
-      (affiliate && dashboardCard.dashboardCardBackgroundColor) || undefined,
+    backgroundColor: (affiliate && dashboardCardBackgroundColor) || undefined,
     boxShadow:
-      affiliate &&
-      dashboardCard.dashboardCardShadow &&
-      dashboardCard.dashboardCardShadow !== "none"
-        ? affiliate &&
-          getShadowWithColor(
-            toValidShadowSize(dashboardCard.dashboardCardShadowThickness),
-            dashboardCard.dashboardCardShadowColor
+      affiliate && dashboardCardShadow
+        ? getShadowWithColor(
+            toValidShadowSize(dashboardCardShadowThickness),
+            dashboardCardShadowColor
           )
         : "",
     border:
-      affiliate && dashboardCard.dashboardCardBorder
-        ? `1px solid ${affiliate && dashboardCard.dashboardCardBorderColor}`
+      affiliate && dashboardCardBorder
+        ? `1px solid ${affiliate && dashboardCardBorderColor}`
         : "none",
   }
 }

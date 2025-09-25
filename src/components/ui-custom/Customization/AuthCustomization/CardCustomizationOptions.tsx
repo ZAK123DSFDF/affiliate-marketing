@@ -1,7 +1,8 @@
+"use client"
+
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
-import React from "react"
-import { useCardCustomizationOption } from "@/hooks/useAuthCustomization"
-import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
+import { useAtom } from "jotai"
+import { cardCustomizationAtom } from "@/store/AuthCustomizationAtom"
 
 export const CardCustomizationOptions = ({
   triggerSize,
@@ -10,14 +11,18 @@ export const CardCustomizationOptions = ({
   triggerSize?: string
   dropdownSize?: string
 }) => {
-  const {
-    cardShadow,
-    cardShadowColor,
-    cardBorder,
-    cardBorderColor,
-    cardBackgroundColor,
-    cardShadowThickness,
-  } = useCardCustomizationOption()
+  const [
+    {
+      cardShadow,
+      cardShadowColor,
+      cardBorder,
+      cardBorderColor,
+      cardBackgroundColor,
+      cardShadowThickness,
+    },
+    setCardCustomization,
+  ] = useAtom(cardCustomizationAtom)
+
   return (
     <OptionWithSwitch
       triggerSize={triggerSize}
@@ -27,17 +32,19 @@ export const CardCustomizationOptions = ({
           label: "Enable Card Shadow",
           enabled: cardShadow,
           onToggle: (val) =>
-            updateAuthCustomization("useCardCustomization", "cardShadow", val),
+            setCardCustomization((prev) => ({
+              ...prev,
+              cardShadow: val,
+            })),
           children: {
             shadowColor: {
               label: "Shadow Color",
               value: cardShadowColor,
               onChange: (val) =>
-                updateAuthCustomization(
-                  "useCardCustomization",
-                  "cardShadowColor",
-                  val
-                ),
+                setCardCustomization((prev) => ({
+                  ...prev,
+                  cardShadowColor: val,
+                })),
             },
             shadowThickness: {
               label: "Shadow Thickness",
@@ -49,11 +56,10 @@ export const CardCustomizationOptions = ({
                 { label: "Extra Large", value: "xl" },
               ],
               onChange: (val) =>
-                updateAuthCustomization(
-                  "useCardCustomization",
-                  "cardShadowThickness",
-                  val
-                ),
+                setCardCustomization((prev) => ({
+                  ...prev,
+                  cardShadowThickness: val,
+                })),
             },
           },
         },
@@ -61,17 +67,19 @@ export const CardCustomizationOptions = ({
           label: "Enable Card Border",
           enabled: cardBorder,
           onToggle: (val) =>
-            updateAuthCustomization("useCardCustomization", "cardBorder", val),
+            setCardCustomization((prev) => ({
+              ...prev,
+              cardBorder: val,
+            })),
           children: {
             borderColor: {
               label: "Border Color",
               value: cardBorderColor,
               onChange: (val) =>
-                updateAuthCustomization(
-                  "useCardCustomization",
-                  "cardBorderColor",
-                  val
-                ),
+                setCardCustomization((prev) => ({
+                  ...prev,
+                  cardBorderColor: val,
+                })),
             },
           },
         },
@@ -79,11 +87,10 @@ export const CardCustomizationOptions = ({
           label: "Card Background Color",
           value: cardBackgroundColor,
           onChange: (val) =>
-            updateAuthCustomization(
-              "useCardCustomization",
-              "cardBackgroundColor",
-              val
-            ),
+            setCardCustomization((prev) => ({
+              ...prev,
+              cardBackgroundColor: val,
+            })),
         },
       }}
     />

@@ -1,9 +1,8 @@
 "use client"
 
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
-import React from "react"
-import { useDialogCustomizationOption } from "@/hooks/useDashboardCustomization"
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
+import { useAtom } from "jotai"
+import { dialogCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 export const DialogCustomizationOptions = ({
   triggerSize,
@@ -12,11 +11,10 @@ export const DialogCustomizationOptions = ({
   triggerSize?: string
   dropdownSize?: string
 }) => {
-  const {
-    dialogBackgroundColor,
-    dialogCloseIconColor,
-    dialogCloseIconBorderColor,
-  } = useDialogCustomizationOption()
+  const [
+    { dialogBackgroundColor, dialogCloseIconColor, dialogCloseIconBorderColor },
+    setDialogCustomization,
+  ] = useAtom(dialogCustomizationAtom)
 
   return (
     <OptionWithSwitch
@@ -26,32 +24,29 @@ export const DialogCustomizationOptions = ({
         dialogBackgroundColor: {
           label: "Dialog Background Color",
           value: dialogBackgroundColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useDialogCustomization",
-              "dialogBackgroundColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setDialogCustomization((prev) => ({
+              ...prev,
+              dialogBackgroundColor: val,
+            })),
         },
         dialogCloseIconColor: {
           label: "Close Icon Color",
           value: dialogCloseIconColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useDialogCustomization",
-              "dialogCloseIconColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setDialogCustomization((prev) => ({
+              ...prev,
+              dialogCloseIconColor: val,
+            })),
         },
         dialogCloseIconBorderColor: {
           label: "Close Icon Border Color",
           value: dialogCloseIconBorderColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useDialogCustomization",
-              "dialogCloseIconBorderColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setDialogCustomization((prev) => ({
+              ...prev,
+              dialogCloseIconBorderColor: val,
+            })),
         },
       }}
     />

@@ -20,10 +20,6 @@ import {
   ForgotPasswordFormValues,
   forgotPasswordSchema,
 } from "@/lib/schema/forgotPasswordSchema"
-import {
-  useButtonCustomizationOption,
-  useThemeCustomizationOption,
-} from "@/hooks/useAuthCustomization"
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
 import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions"
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
@@ -34,6 +30,11 @@ import { useAuthCard } from "@/hooks/useAuthCard"
 import { ForgotPasswordServer } from "@/app/(seller)/forgot-password/action"
 import { ForgotPasswordAffiliateServer } from "@/app/affiliate/[orgId]/(auth)/forgot-password/action"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
+import { useAtomValue } from "jotai"
+import {
+  buttonCustomizationAtom,
+  themeCustomizationAtom,
+} from "@/store/AuthCustomizationAtom"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -54,16 +55,19 @@ const ForgotPassword = ({
   })
   const [pending, setPending] = useState(false)
   const { showCustomToast } = useCustomToast()
-  const { backgroundColor, linkTextColor, tertiaryTextColor } =
-    useThemeCustomizationOption()
+  const {
+    backgroundColor,
+    linkTextColor,
+    tertiaryTextColor,
+    primaryCustomization,
+    secondaryCustomization,
+  } = useAtomValue(themeCustomizationAtom)
   const {
     buttonDisabledTextColor,
     buttonBackgroundColor,
     buttonDisabledBackgroundColor,
     buttonTextColor,
-  } = useButtonCustomizationOption()
-  const { primaryCustomization, secondaryCustomization } =
-    useThemeCustomizationOption()
+  } = useAtomValue(buttonCustomizationAtom)
   const authCardStyle = useAuthCard(affiliate)
   const sellerMutation = useAuthMutation(ForgotPasswordServer, { affiliate })
 

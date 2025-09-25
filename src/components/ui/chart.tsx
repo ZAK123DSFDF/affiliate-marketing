@@ -4,7 +4,8 @@ import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@/lib/utils"
-import { useChartCustomizationOption } from "@/hooks/useDashboardCustomization"
+import { useAtomValue } from "jotai"
+import { chartCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const
@@ -135,7 +136,7 @@ const ChartTooltipContent = React.forwardRef<
     ref
   ) => {
     const { config } = useChart()
-    const customization = useChartCustomizationOption()
+    const customization = useAtomValue(chartCustomizationAtom)
     const tooltipLabel = React.useMemo(() => {
       if (hideLabel || !payload?.length) {
         return null
@@ -315,7 +316,7 @@ const ChartLegendContent = React.forwardRef<
     ref
   ) => {
     const { config } = useChart()
-    const customization = useChartCustomizationOption()
+    const customization = useAtomValue(chartCustomizationAtom)
     if (!payload?.length) {
       return null
     }

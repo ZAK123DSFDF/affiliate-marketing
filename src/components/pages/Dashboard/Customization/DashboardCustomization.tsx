@@ -7,15 +7,15 @@ import PaymentTable from "@/components/pages/AffiliateDashboard/Payment/Payment"
 import Links from "@/components/pages/AffiliateDashboard/Links/Links"
 import { dummyProfileData } from "@/lib/types/previewData"
 import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOverview/AffiliateOverview"
-import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
-import { dummyAffiliateKpiCardStats } from "@/lib/types/dummyKpiData"
 import { CustomizationProvider } from "@/app/affiliate/[orgId]/dashboard/customizationProvider"
+import { useAtomValue } from "jotai"
+import { dashboardThemeCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 export function DashboardCustomization({ orgId }: { orgId: string }) {
   const [selectedPage, setSelectedPage] = useState("dashboard")
 
-  const { mainBackgroundColor } = useDashboardThemeCustomizationOption()
+  const { mainBackgroundColor } = useAtomValue(dashboardThemeCustomizationAtom)
 
   if (!orgId) {
     return <div className="text-red-500">Invalid organization ID</div>

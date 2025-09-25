@@ -1,9 +1,8 @@
 "use client"
 
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
-import React from "react"
-import { useKpiCardCustomizationOption } from "@/hooks/useDashboardCustomization"
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
+import { useAtom } from "jotai"
+import { kpiCardCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 export const KpiCardCustomizationOptions = ({
   triggerSize,
@@ -12,22 +11,25 @@ export const KpiCardCustomizationOptions = ({
   triggerSize?: string
   dropdownSize?: string
 }) => {
-  const {
-    cardShadow,
-    cardShadowColor,
-    cardShadowThickness,
-    cardBorder,
-    cardBorderColor,
-    cardPrimaryTextColor,
-    cardSecondaryTextColor,
-    cardIconPrimaryColor,
-    cardIconSecondaryColor,
-    cardIconTertiaryColor,
-    cardIconPrimaryBackgroundColor,
-    cardIconSecondaryBackgroundColor,
-    cardIconTertiaryBackgroundColor,
-    cardBackgroundColor,
-  } = useKpiCardCustomizationOption()
+  const [
+    {
+      cardShadow,
+      cardShadowColor,
+      cardShadowThickness,
+      cardBorder,
+      cardBorderColor,
+      cardPrimaryTextColor,
+      cardSecondaryTextColor,
+      cardIconPrimaryColor,
+      cardIconSecondaryColor,
+      cardIconTertiaryColor,
+      cardIconPrimaryBackgroundColor,
+      cardIconSecondaryBackgroundColor,
+      cardIconTertiaryBackgroundColor,
+      cardBackgroundColor,
+    },
+    setKpiCardCustomization,
+  ] = useAtom(kpiCardCustomizationAtom)
 
   return (
     <OptionWithSwitch
@@ -37,22 +39,20 @@ export const KpiCardCustomizationOptions = ({
         shadow: {
           label: "Enable Card Shadow",
           enabled: cardShadow,
-          onToggle: (val) =>
-            updateDashboardCustomization(
-              "useKpiCardCustomization",
-              "cardShadow",
-              val
-            ),
+          onToggle: (val: boolean) =>
+            setKpiCardCustomization((prev) => ({
+              ...prev,
+              cardShadow: val,
+            })),
           children: {
             shadowColor: {
               label: "Shadow Color",
               value: cardShadowColor,
-              onChange: (val) =>
-                updateDashboardCustomization(
-                  "useKpiCardCustomization",
-                  "cardShadowColor",
-                  val
-                ),
+              onChange: (val: string) =>
+                setKpiCardCustomization((prev) => ({
+                  ...prev,
+                  cardShadowColor: val,
+                })),
             },
             shadowThickness: {
               label: "Shadow Thickness",
@@ -63,126 +63,114 @@ export const KpiCardCustomizationOptions = ({
                 { label: "Large", value: "lg" },
                 { label: "Extra Large", value: "xl" },
               ],
-              onChange: (val) =>
-                updateDashboardCustomization(
-                  "useKpiCardCustomization",
-                  "cardShadowThickness",
-                  val
-                ),
+              onChange: (val: string) =>
+                setKpiCardCustomization((prev) => ({
+                  ...prev,
+                  cardShadowThickness: val,
+                })),
             },
           },
         },
         border: {
           label: "Enable Card Border",
           enabled: cardBorder,
-          onToggle: (val) =>
-            updateDashboardCustomization(
-              "useKpiCardCustomization",
-              "cardBorder",
-              val
-            ),
+          onToggle: (val: boolean) =>
+            setKpiCardCustomization((prev) => ({
+              ...prev,
+              cardBorder: val,
+            })),
           children: {
             borderColor: {
               label: "Border Color",
               value: cardBorderColor,
-              onChange: (val) =>
-                updateDashboardCustomization(
-                  "useKpiCardCustomization",
-                  "cardBorderColor",
-                  val
-                ),
+              onChange: (val: string) =>
+                setKpiCardCustomization((prev) => ({
+                  ...prev,
+                  cardBorderColor: val,
+                })),
             },
           },
         },
         backgroundColor: {
           label: "Card Background Color",
           value: cardBackgroundColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useKpiCardCustomization",
-              "cardBackgroundColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setKpiCardCustomization((prev) => ({
+              ...prev,
+              cardBackgroundColor: val,
+            })),
         },
         primaryTextColor: {
           label: "Primary Text Color",
           value: cardPrimaryTextColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useKpiCardCustomization",
-              "cardPrimaryTextColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setKpiCardCustomization((prev) => ({
+              ...prev,
+              cardPrimaryTextColor: val,
+            })),
         },
         secondaryTextColor: {
           label: "Secondary Text Color",
           value: cardSecondaryTextColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useKpiCardCustomization",
-              "cardSecondaryTextColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setKpiCardCustomization((prev) => ({
+              ...prev,
+              cardSecondaryTextColor: val,
+            })),
         },
         iconPrimaryColor: {
           label: "Icon Primary Color",
           value: cardIconPrimaryColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useKpiCardCustomization",
-              "cardIconPrimaryColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setKpiCardCustomization((prev) => ({
+              ...prev,
+              cardIconPrimaryColor: val,
+            })),
         },
         iconSecondaryColor: {
           label: "Icon Secondary Color",
           value: cardIconSecondaryColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useKpiCardCustomization",
-              "cardIconSecondaryColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setKpiCardCustomization((prev) => ({
+              ...prev,
+              cardIconSecondaryColor: val,
+            })),
         },
         iconTertiaryColor: {
           label: "Icon Tertiary Color",
           value: cardIconTertiaryColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useKpiCardCustomization",
-              "cardIconTertiaryColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setKpiCardCustomization((prev) => ({
+              ...prev,
+              cardIconTertiaryColor: val,
+            })),
         },
         iconPrimaryBackgroundColor: {
           label: "Icon Primary Background",
           value: cardIconPrimaryBackgroundColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useKpiCardCustomization",
-              "cardIconPrimaryBackgroundColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setKpiCardCustomization((prev) => ({
+              ...prev,
+              cardIconPrimaryBackgroundColor: val,
+            })),
         },
         iconSecondaryBackgroundColor: {
           label: "Icon Secondary Background",
           value: cardIconSecondaryBackgroundColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useKpiCardCustomization",
-              "cardIconSecondaryBackgroundColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setKpiCardCustomization((prev) => ({
+              ...prev,
+              cardIconSecondaryBackgroundColor: val,
+            })),
         },
         iconTertiaryBackgroundColor: {
           label: "Icon Tertiary Background",
           value: cardIconTertiaryBackgroundColor,
-          onChange: (val) =>
-            updateDashboardCustomization(
-              "useKpiCardCustomization",
-              "cardIconTertiaryBackgroundColor",
-              val
-            ),
+          onChange: (val: string) =>
+            setKpiCardCustomization((prev) => ({
+              ...prev,
+              cardIconTertiaryBackgroundColor: val,
+            })),
         },
       }}
     />

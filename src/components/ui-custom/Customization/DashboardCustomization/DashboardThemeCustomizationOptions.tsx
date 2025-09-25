@@ -1,8 +1,8 @@
 "use client"
 
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput"
-import { useDashboardThemeCustomizationOption } from "@/hooks/useDashboardCustomization"
-import { updateDashboardCustomization } from "@/customization/Dashboard/DashboardCustomizationChanges"
+import { useAtom } from "jotai"
+import { dashboardThemeCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 
 // Valid keys for dashboard theme customization
 type DashboardThemeKeys =
@@ -26,27 +26,10 @@ export const DashboardThemeCustomizationOptions = ({
   showLabel = false,
   buttonSize = "w-8 h-8",
 }: Props) => {
-  const {
-    mainBackgroundColor,
-    dashboardHeaderNameColor,
-    dashboardHeaderDescColor,
-    separatorColor,
-    cardHeaderPrimaryTextColor,
-    cardHeaderSecondaryTextColor,
-    cardHeaderDescriptionTextColor,
-    dialogHeaderColor,
-  } = useDashboardThemeCustomizationOption()
-
-  const valueMap: Record<DashboardThemeKeys, string> = {
-    mainBackgroundColor,
-    dashboardHeaderNameColor,
-    dashboardHeaderDescColor,
-    separatorColor,
-    cardHeaderPrimaryTextColor,
-    cardHeaderSecondaryTextColor,
-    cardHeaderDescriptionTextColor,
-    dialogHeaderColor,
-  }
+  // read & write the dashboard theme customization atom
+  const [themeCustomization, setThemeCustomization] = useAtom(
+    dashboardThemeCustomizationAtom
+  )
 
   const labelMap: Record<DashboardThemeKeys, string> = {
     mainBackgroundColor: "Main Background",
@@ -62,13 +45,12 @@ export const DashboardThemeCustomizationOptions = ({
   return (
     <ResettableColorInput
       label={labelMap[name]}
-      value={valueMap[name]}
+      value={themeCustomization[name]}
       onChange={(val) =>
-        updateDashboardCustomization(
-          "useDashboardThemeCustomization",
-          name,
-          val
-        )
+        setThemeCustomization({
+          ...themeCustomization,
+          [name]: val,
+        })
       }
       showLabel={showLabel}
       buttonSize={buttonSize}

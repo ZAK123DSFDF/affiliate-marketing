@@ -1,22 +1,13 @@
 "use client"
 
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput"
-import { useThemeCustomizationOption } from "@/hooks/useAuthCustomization"
-import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
-import { useEffect } from "react"
+import { useAtom } from "jotai"
+import {
+  ThemeCustomization,
+  themeCustomizationAtom,
+} from "@/store/AuthCustomizationAtom"
 
-// These are the valid keys
-type ThemeKeys =
-  | "backgroundColor"
-  | "linkTextColor"
-  | "tertiaryTextColor"
-  | "primaryCustomization"
-  | "secondaryCustomization"
-  | "InvalidPrimaryCustomization"
-  | "InvalidSecondaryCustomization"
-  | "emailVerifiedPrimaryColor"
-  | "emailVerifiedSecondaryColor"
-  | "emailVerifiedIconColor"
+type ThemeKeys = keyof ThemeCustomization
 
 type Props = {
   name: ThemeKeys
@@ -29,36 +20,7 @@ export const ThemeCustomizationOptions = ({
   showLabel = false,
   buttonSize = "w-8 h-8",
 }: Props) => {
-  const {
-    backgroundColor,
-    linkTextColor,
-    tertiaryTextColor,
-    primaryCustomization,
-    secondaryCustomization,
-    InvalidPrimaryCustomization,
-    InvalidSecondaryCustomization,
-    emailVerifiedPrimaryColor,
-    emailVerifiedSecondaryColor,
-    emailVerifiedIconColor,
-  } = useThemeCustomizationOption()
-  useEffect(() => {
-    console.log(
-      "ThemeCustomizationOptions rendered with name:",
-      backgroundColor
-    )
-  }, [backgroundColor])
-  const valueMap: Record<ThemeKeys, string> = {
-    backgroundColor,
-    linkTextColor,
-    tertiaryTextColor,
-    primaryCustomization,
-    secondaryCustomization,
-    InvalidPrimaryCustomization,
-    InvalidSecondaryCustomization,
-    emailVerifiedPrimaryColor,
-    emailVerifiedSecondaryColor,
-    emailVerifiedIconColor,
-  }
+  const [theme, setTheme] = useAtom(themeCustomizationAtom)
 
   const labelMap: Record<ThemeKeys, string> = {
     backgroundColor: "Background",
@@ -76,10 +38,8 @@ export const ThemeCustomizationOptions = ({
   return (
     <ResettableColorInput
       label={labelMap[name]}
-      value={valueMap[name]}
-      onChange={(val) =>
-        updateAuthCustomization("useThemeCustomization", name, val)
-      }
+      value={theme[name]}
+      onChange={(val) => setTheme((prev) => ({ ...prev, [name]: val }))}
       showLabel={showLabel}
       buttonSize={buttonSize}
     />

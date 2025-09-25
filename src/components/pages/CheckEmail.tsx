@@ -2,10 +2,11 @@
 
 import React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useThemeCustomizationOption } from "@/hooks/useAuthCustomization"
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
 import { useAuthCard } from "@/hooks/useAuthCard"
+import { useAtomValue } from "jotai"
+import { themeCustomizationAtom } from "@/store/AuthCustomizationAtom"
 
 type Props = {
   orgId?: string
@@ -15,7 +16,7 @@ type Props = {
 
 const CheckEmail = ({ isPreview, affiliate }: Props) => {
   const { backgroundColor, primaryCustomization, secondaryCustomization } =
-    useThemeCustomizationOption()
+    useAtomValue(themeCustomizationAtom)
 
   const authCardStyle = useAuthCard(affiliate)
   return (
