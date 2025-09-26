@@ -7,43 +7,118 @@ import {
   getDashboardCustomization,
   getCustomizations,
   AuthCustomization,
+  DashboardCustomization,
 } from "@/app/(seller)/seller/[orgId]/dashboard/customization/action"
-import { DashboardCustomizationStores } from "@/store/useCustomizationStore"
-import {
-  buttonCustomizationAtom,
-  cardCustomizationAtom,
-  checkboxCustomizationAtom,
-  inputCustomizationAtom,
-  notesCustomizationAtom,
-  themeCustomizationAtom,
-} from "@/store/AuthCustomizationAtom"
 import { useSetAtom } from "jotai"
+import {
+  cardCustomizationAtom,
+  inputCustomizationAtom,
+  checkboxCustomizationAtom,
+  buttonCustomizationAtom,
+  themeCustomizationAtom,
+  notesCustomizationAtom,
+} from "@/store/AuthCustomizationAtom"
+import {
+  initialCardCustomizationAtom,
+  initialInputCustomizationAtom,
+  initialCheckboxCustomizationAtom,
+  initialButtonCustomizationAtom,
+  initialThemeCustomizationAtom,
+  initialNotesCustomizationAtom,
+} from "@/store/AuthChangesAtom"
+import {
+  sidebarCustomizationAtom,
+  dashboardCardCustomizationAtom,
+  dashboardThemeCustomizationAtom,
+  dashboardButtonCustomizationAtom,
+  tableCustomizationAtom,
+  dialogCustomizationAtom,
+  yearSelectCustomizationAtom,
+  toastCustomizationAtom,
+  kpiCardCustomizationAtom,
+  chartCustomizationAtom,
+  pieChartColorCustomizationAtom,
+} from "@/store/DashboardCustomizationAtom"
+import {
+  initialSidebarCustomizationAtom,
+  initialDashboardCardCustomizationAtom,
+  initialDashboardThemeCustomizationAtom,
+  initialDashboardButtonCustomizationAtom,
+  initialTableCustomizationAtom,
+  initialDialogCustomizationAtom,
+  initialYearSelectCustomizationAtom,
+  initialToastCustomizationAtom,
+  initialKpiCardCustomizationAtom,
+  initialChartCustomizationAtom,
+  initialPieChartColorCustomizationAtom,
+} from "@/store/DashboardChangesAtom"
 
 type CustomizationType = "auth" | "dashboard" | "both"
+
 export function useCustomizationSync(
   orgId?: string,
   type: CustomizationType = "both"
 ) {
-  const setCardCustomization = useSetAtom(cardCustomizationAtom)
-  const setInputCustomization = useSetAtom(inputCustomizationAtom)
-  const setCheckboxCustomization = useSetAtom(checkboxCustomizationAtom)
-  const setButtonCustomization = useSetAtom(buttonCustomizationAtom)
-  const setThemeCustomization = useSetAtom(themeCustomizationAtom)
-  const setNotesCustomization = useSetAtom(notesCustomizationAtom)
+  // Auth
+  const setCard = useSetAtom(cardCustomizationAtom)
+  const setInput = useSetAtom(inputCustomizationAtom)
+  const setCheckbox = useSetAtom(checkboxCustomizationAtom)
+  const setButton = useSetAtom(buttonCustomizationAtom)
+  const setTheme = useSetAtom(themeCustomizationAtom)
+  const setNotes = useSetAtom(notesCustomizationAtom)
+
+  const setInitialCard = useSetAtom(initialCardCustomizationAtom)
+  const setInitialInput = useSetAtom(initialInputCustomizationAtom)
+  const setInitialCheckbox = useSetAtom(initialCheckboxCustomizationAtom)
+  const setInitialButton = useSetAtom(initialButtonCustomizationAtom)
+  const setInitialTheme = useSetAtom(initialThemeCustomizationAtom)
+  const setInitialNotes = useSetAtom(initialNotesCustomizationAtom)
+
+  // Dashboard
+  const setSidebar = useSetAtom(sidebarCustomizationAtom)
+  const setDashboardCard = useSetAtom(dashboardCardCustomizationAtom)
+  const setDashboardTheme = useSetAtom(dashboardThemeCustomizationAtom)
+  const setDashboardButton = useSetAtom(dashboardButtonCustomizationAtom)
+  const setTable = useSetAtom(tableCustomizationAtom)
+  const setDialog = useSetAtom(dialogCustomizationAtom)
+  const setYearSelect = useSetAtom(yearSelectCustomizationAtom)
+  const setToast = useSetAtom(toastCustomizationAtom)
+  const setKpiCard = useSetAtom(kpiCardCustomizationAtom)
+  const setChart = useSetAtom(chartCustomizationAtom)
+  const setPieChartColor = useSetAtom(pieChartColorCustomizationAtom)
+
+  const setInitialSidebar = useSetAtom(initialSidebarCustomizationAtom)
+  const setInitialDashboardCard = useSetAtom(
+    initialDashboardCardCustomizationAtom
+  )
+  const setInitialDashboardTheme = useSetAtom(
+    initialDashboardThemeCustomizationAtom
+  )
+  const setInitialDashboardButton = useSetAtom(
+    initialDashboardButtonCustomizationAtom
+  )
+  const setInitialTable = useSetAtom(initialTableCustomizationAtom)
+  const setInitialDialog = useSetAtom(initialDialogCustomizationAtom)
+  const setInitialYearSelect = useSetAtom(initialYearSelectCustomizationAtom)
+  const setInitialToast = useSetAtom(initialToastCustomizationAtom)
+  const setInitialKpiCard = useSetAtom(initialKpiCardCustomizationAtom)
+  const setInitialChart = useSetAtom(initialChartCustomizationAtom)
+  const setInitialPieChartColor = useSetAtom(
+    initialPieChartColorCustomizationAtom
+  )
+
   const query = useQuery({
     queryKey: ["customizations", type, orgId],
     queryFn: async () => {
       if (!orgId) return { auth: {}, dashboard: {} }
       if (type === "auth") {
         const auth = await getAuthCustomization(orgId)
-        console.log("Fetched AUTH customization:", auth)
         return { auth, dashboard: {} }
       }
       if (type === "dashboard") {
         const dashboard = await getDashboardCustomization(orgId)
         return { auth: {}, dashboard }
       }
-      // type === "both"
       return await getCustomizations(orgId)
     },
     enabled: !!orgId,
@@ -54,46 +129,84 @@ export function useCustomizationSync(
 
     const { auth, dashboard } = query.data
 
-    // Sync auth customizations if present
+    // Sync Auth
     if (auth && Object.keys(auth).length > 0) {
       const typedAuth = auth as Partial<AuthCustomization>
-
       if (typedAuth.useCardCustomization) {
-        setCardCustomization(typedAuth.useCardCustomization)
+        setCard(typedAuth.useCardCustomization)
+        setInitialCard(typedAuth.useCardCustomization)
       }
       if (typedAuth.useInputCustomization) {
-        setInputCustomization(typedAuth.useInputCustomization)
+        setInput(typedAuth.useInputCustomization)
+        setInitialInput(typedAuth.useInputCustomization)
       }
       if (typedAuth.useCheckboxCustomization) {
-        setCheckboxCustomization(typedAuth.useCheckboxCustomization)
+        setCheckbox(typedAuth.useCheckboxCustomization)
+        setInitialCheckbox(typedAuth.useCheckboxCustomization)
       }
       if (typedAuth.useButtonCustomization) {
-        setButtonCustomization(typedAuth.useButtonCustomization)
+        setButton(typedAuth.useButtonCustomization)
+        setInitialButton(typedAuth.useButtonCustomization)
       }
       if (typedAuth.useThemeCustomization) {
-        setThemeCustomization(typedAuth.useThemeCustomization)
+        setTheme(typedAuth.useThemeCustomization)
+        setInitialTheme(typedAuth.useThemeCustomization)
       }
       if (typedAuth.useNotesCustomization) {
-        setNotesCustomization(typedAuth.useNotesCustomization)
+        setNotes(typedAuth.useNotesCustomization)
+        setInitialNotes(typedAuth.useNotesCustomization)
       }
     }
 
-    // Sync dashboard customizations if present
+    // Sync Dashboard
     if (dashboard && Object.keys(dashboard).length > 0) {
-      Object.entries(dashboard).forEach(([storeName, storeValues]) => {
-        const typedStoreName =
-          storeName as keyof typeof DashboardCustomizationStores
-        const store = DashboardCustomizationStores[typedStoreName]
-        if (store) {
-          Object.entries(storeValues).forEach(([key, value]) => {
-            if (typeof value === "string") {
-              store.getState().setColor(key, value)
-            } else {
-              store.getState().setSwitch(key, value)
-            }
-          })
-        }
-      })
+      const typedDashboard = dashboard as Partial<DashboardCustomization>
+      if (typedDashboard.useSidebarCustomization) {
+        setSidebar(typedDashboard.useSidebarCustomization)
+        setInitialSidebar(typedDashboard.useSidebarCustomization)
+      }
+      if (typedDashboard.useDashboardCardCustomization) {
+        setDashboardCard(typedDashboard.useDashboardCardCustomization)
+        setInitialDashboardCard(typedDashboard.useDashboardCardCustomization)
+      }
+      if (typedDashboard.useDashboardThemeCustomization) {
+        setDashboardTheme(typedDashboard.useDashboardThemeCustomization)
+        setInitialDashboardTheme(typedDashboard.useDashboardThemeCustomization)
+      }
+      if (typedDashboard.useDashboardButtonCustomization) {
+        setDashboardButton(typedDashboard.useDashboardButtonCustomization)
+        setInitialDashboardButton(
+          typedDashboard.useDashboardButtonCustomization
+        )
+      }
+      if (typedDashboard.useTableCustomization) {
+        setTable(typedDashboard.useTableCustomization)
+        setInitialTable(typedDashboard.useTableCustomization)
+      }
+      if (typedDashboard.useDialogCustomization) {
+        setDialog(typedDashboard.useDialogCustomization)
+        setInitialDialog(typedDashboard.useDialogCustomization)
+      }
+      if (typedDashboard.useYearSelectCustomization) {
+        setYearSelect(typedDashboard.useYearSelectCustomization)
+        setInitialYearSelect(typedDashboard.useYearSelectCustomization)
+      }
+      if (typedDashboard.useToastCustomization) {
+        setToast(typedDashboard.useToastCustomization)
+        setInitialToast(typedDashboard.useToastCustomization)
+      }
+      if (typedDashboard.useKpiCardCustomization) {
+        setKpiCard(typedDashboard.useKpiCardCustomization)
+        setInitialKpiCard(typedDashboard.useKpiCardCustomization)
+      }
+      if (typedDashboard.useChartCustomization) {
+        setChart(typedDashboard.useChartCustomization)
+        setInitialChart(typedDashboard.useChartCustomization)
+      }
+      if (typedDashboard.usePieChartColorCustomization) {
+        setPieChartColor(typedDashboard.usePieChartColorCustomization)
+        setInitialPieChartColor(typedDashboard.usePieChartColorCustomization)
+      }
     }
   }, [query.data])
 

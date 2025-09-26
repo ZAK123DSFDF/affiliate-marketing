@@ -21,45 +21,43 @@ export function DashboardCustomization({ orgId }: { orgId: string }) {
     return <div className="text-red-500">Invalid organization ID</div>
   }
   return (
-    <CustomizationProvider orgId={orgId}>
-      <div className="space-y-6">
-        <div className="border rounded-xl overflow-hidden shadow-lg ring ring-muted bg-background max-w-5xl h-[500px] mx-auto relative">
-          <div className="flex h-full">
-            <AffiliateDashboardSidebar
-              affiliate
-              orgId={orgId}
-              isPreview
-              currentPage={selectedPage}
-              onSelectPage={(page: any) => setSelectedPage(page)}
-            />
-            <div
-              className="flex-1 p-6 overflow-y-auto"
-              style={{
-                backgroundColor: mainBackgroundColor || undefined,
-              }}
-            >
-              <DashboardThemeCustomizationOptions name="mainBackgroundColor" />
-              {selectedPage === "dashboard" && (
-                <AffiliateOverview orgId={orgId} affiliate isPreview />
-              )}
-              {selectedPage === "links" && (
-                <Links orgId={orgId} affiliate isPreview />
-              )}
-              {selectedPage === "payment" && (
-                <PaymentTable orgId={orgId} affiliate isPreview />
-              )}
-              {selectedPage === "profile" && (
-                <Profile
-                  orgId={orgId}
-                  affiliate
-                  AffiliateData={dummyProfileData}
-                  isPreview
-                />
-              )}
-            </div>
+    <div className="space-y-6">
+      <div className="border rounded-xl overflow-hidden shadow-lg ring ring-muted bg-background max-w-5xl h-[500px] mx-auto relative">
+        <div className="flex h-full">
+          <AffiliateDashboardSidebar
+            affiliate
+            orgId={orgId}
+            isPreview
+            currentPage={selectedPage}
+            onSelectPage={(page: any) => setSelectedPage(page)}
+          />
+          <div
+            className="flex-1 p-6 overflow-y-auto"
+            style={{
+              backgroundColor: mainBackgroundColor || undefined,
+            }}
+          >
+            <DashboardThemeCustomizationOptions name="mainBackgroundColor" />
+            {selectedPage === "dashboard" && (
+              <AffiliateOverview orgId={orgId} affiliate isPreview />
+            )}
+            {selectedPage === "links" && (
+              <Links orgId={orgId} affiliate isPreview />
+            )}
+            {selectedPage === "payment" && (
+              <PaymentTable orgId={orgId} affiliate isPreview />
+            )}
+            {selectedPage === "profile" && (
+              <Profile
+                orgId={orgId}
+                affiliate
+                AffiliateData={dummyProfileData}
+                isPreview
+              />
+            )}
           </div>
         </div>
       </div>
-    </CustomizationProvider>
+    </div>
   )
 }
