@@ -1,7 +1,6 @@
 "use client"
 
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
-import { updateAuthCustomization } from "@/customization/Auth/AuthCustomizationChanges"
 import { useAtom } from "jotai"
 import { buttonCustomizationAtom } from "@/store/AuthCustomizationAtom"
 

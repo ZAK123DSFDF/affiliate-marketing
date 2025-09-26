@@ -8,14 +8,17 @@ import { Upload } from "lucide-react"
 import { FileUpload } from "@/components/ui-custom/FileUpload"
 import { UploadProgressList } from "@/components/ui-custom/UploadProgressList"
 import { useQueryClient } from "@tanstack/react-query"
-import { useUploadStore } from "@/store/useUploadStore"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import { addFileAtom, removeFileAtom, uploadsAtom } from "@/store/UploadAtom"
+import { useAtomValue, useSetAtom } from "jotai"
 interface CsvUploadPopoverProps {
   orgId?: string
 }
 export default function CsvUploadPopover({ orgId }: CsvUploadPopoverProps) {
   const queryClient = useQueryClient()
-  const { removeFile, uploads, addFile } = useUploadStore()
+  const uploads = useAtomValue(uploadsAtom)
+  const removeFile = useSetAtom(removeFileAtom)
+  const addFile = useSetAtom(addFileAtom)
   const { showCustomToast } = useCustomToast()
   const handleUploadSuccess = (
     file: File,

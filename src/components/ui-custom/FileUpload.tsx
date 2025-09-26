@@ -4,7 +4,8 @@ import {
   DropzoneContent,
   DropzoneEmptyState,
 } from "@/components/ui/shadcn-io/dropzone"
-import { useUploadStore } from "@/store/useUploadStore"
+import { useSetAtom } from "jotai"
+import { addFileAtom, setErrorMessageAtom } from "@/store/UploadAtom"
 
 export interface FileUploadProps {
   uploadId: string
@@ -25,8 +26,12 @@ export function FileUpload({
   onUploadSuccess,
   onUploadError,
 }: FileUploadProps) {
-  const { addFile, setErrorMessage } = useUploadStore()
+  // Jotai mutations
+  const addFile = useSetAtom(addFileAtom)
+  const setErrorMessage = useSetAtom(setErrorMessageAtom)
+
   const MAX_SIZE = maxSizeMB * 1024 * 1024
+
   const handleError = (err: any) => {
     console.log(`[${uploadId}] dropzone error:`, err)
     const fallbackMsg = "Something went wrong. Please try again."
@@ -60,6 +65,7 @@ export function FileUpload({
     }
     setErrorMessage(uploadId, fallbackMsg)
   }
+
   const handleSuccess = (file: File, fileId: string, uploadId: string) => {
     if (onUploadSuccess) {
       onUploadSuccess(file, fileId, uploadId)
@@ -73,6 +79,7 @@ export function FileUpload({
       console.error(err)
     }
   }
+
   const handleDrop = (accepted: File[]) => {
     setErrorMessage(uploadId, null)
     if (accepted.length === 0) return
@@ -99,6 +106,7 @@ export function FileUpload({
         .catch((err) => handleFailure(file, err, uploadId))
     })
   }
+
   return (
     <Dropzone
       accept={
