@@ -66,15 +66,25 @@ export const affiliateInvoiceReasonEnum = pgEnum("affiliate_invoice_reason", [
   "refund",
   "manual_adjustment",
 ])
+export const providerEnum = pgEnum("provider", ["credentials", "google"])
 export const user = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  password: text("password").notNull(),
-  emailVerified: timestamp("email_verified"),
   role: roleEnum("role").default("OWNER").notNull(),
-  image: text("image"),
   type: accountTypeEnum("type").default("SELLER").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+export const account = pgTable("account", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  provider: providerEnum("provider").notNull(),
+  providerAccountId: text("provider_account_id").notNull(),
+  emailVerified: timestamp("email_verified"),
+  password: text("password"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
@@ -162,9 +172,6 @@ export const affiliate = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     name: text("name").notNull(),
     email: text("email").notNull(),
-    password: text("password").notNull(),
-    emailVerified: timestamp("email_verified"),
-    image: text("image"),
     type: accountTypeEnum("type").default("AFFILIATE").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -179,6 +186,18 @@ export const affiliate = pgTable(
     ),
   })
 )
+export const affiliateAccount = pgTable("affiliate_account", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  affiliateId: uuid("affiliate_id")
+    .notNull()
+    .references(() => affiliate.id, { onDelete: "cascade" }),
+  provider: providerEnum("provider").notNull(),
+  providerAccountId: text("provider_account_id").notNull(),
+  emailVerified: timestamp("email_verified"),
+  password: text("password"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
 export const affiliatePayoutMethod = pgTable("affiliate_payout_method", {
   id: uuid("id").primaryKey().defaultRandom(),
   affiliateId: uuid("affiliate_id")

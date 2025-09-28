@@ -2,9 +2,9 @@
 "use server"
 
 import { db } from "@/db/drizzle"
-import { user } from "@/db/schema"
+import { account, user } from "@/db/schema"
 import * as bcrypt from "bcrypt"
-import { eq } from "drizzle-orm"
+import { eq, and } from "drizzle-orm"
 import jwt from "jsonwebtoken"
 import { cookies } from "next/headers"
 
@@ -18,27 +18,41 @@ export const resetSellerPasswordServer = async ({
   try {
     const hashed = await bcrypt.hash(password, 10)
 
-    const [updatedUser] = await db
-      .update(user)
+    // 🔑 Update the seller's credentials account password
+    const [updatedAccount] = await db
+      .update(account)
       .set({ password: hashed })
-      .where(eq(user.id, userId))
+      .where(
+        and(eq(account.userId, userId), eq(account.provider, "credentials"))
+      )
       .returning()
 
-    if (!updatedUser) {
-      throw new Error("User not found")
+    if (!updatedAccount) {
+      throw new Error("Seller credentials account not found")
     }
+
+    // 🔑 Fetch seller to normalize email & session payload
+    const existingUser = await db.query.user.findFirst({
+      where: (u, { eq }) => eq(u.id, userId),
+    })
+
+    if (!existingUser) {
+      throw new Error("Seller not found")
+    }
+
+    // Find organizations owned by this seller
     const orgs = await db.query.organization.findMany({
-      where: (org, { eq }) => eq(org.userId, updatedUser.id),
+      where: (org, { eq }) => eq(org.userId, existingUser.id),
     })
 
     const orgIds = orgs.map((o) => o.id)
     const activeOrgId = orgIds.length > 0 ? orgIds[0] : undefined
 
     const sessionPayload = {
-      id: updatedUser.id,
-      email: updatedUser.email,
-      role: updatedUser.role,
-      type: updatedUser.type,
+      id: existingUser.id,
+      email: existingUser.email,
+      role: existingUser.role,
+      type: existingUser.type,
       orgIds,
       activeOrgId,
     }
@@ -49,7 +63,11 @@ export const resetSellerPasswordServer = async ({
     })
 
     const cookieStore = await cookies()
-    cookieStore.set("sellerToken", sessionToken, { httpOnly: true })
+    cookieStore.set("sellerToken", sessionToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    })
 
     return { ok: true }
   } catch (err) {

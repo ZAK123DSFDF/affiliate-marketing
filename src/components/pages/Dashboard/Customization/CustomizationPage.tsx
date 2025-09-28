@@ -52,10 +52,7 @@ export default function CustomizationPage({ orgId }: { orgId: string }) {
     }
   }, [])
   return (
-    <GlobalCustomizationProvider
-      orgId={orgId}
-      isDashboard={mainTab === "sidebar"}
-    >
+    <GlobalCustomizationProvider orgId={orgId}>
       <div className="p-6 space-y-6">
         <div>
           <h2 className="text-2xl font-semibold">

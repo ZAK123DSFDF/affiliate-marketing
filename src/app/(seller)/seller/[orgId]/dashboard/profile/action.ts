@@ -4,7 +4,7 @@
 import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
 import { db } from "@/db/drizzle"
-import { user } from "@/db/schema"
+import { account, user } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { returnError } from "@/lib/errorHandler"
 import * as bcrypt from "bcrypt"
@@ -36,9 +36,6 @@ export const getUserData = async (): Promise<ResponseData<SafeUserData>> => {
 
     const userData = await db.query.user.findFirst({
       where: eq(user.id, decoded.id),
-      columns: {
-        password: false, // Explicitly exclude password
-      },
     })
 
     if (!userData) {
@@ -85,20 +82,25 @@ export async function validateCurrentSellerPassword(currentPassword: string) {
     const token = cookieStore.get("token")?.value
     if (!token) throw { status: 401, toast: "Unauthorized" }
 
-    const { id } = jwt.decode(token) as { id: string }
+    const { id } = jwt.decode(token) as { id?: string }
     if (!id) throw { status: 400, toast: "Invalid session" }
 
-    const record = await db.query.user.findFirst({
-      where: eq(user.id, id),
+    // Get account by userId
+    const record = await db.query.account.findFirst({
+      where: eq(account.userId, id),
     })
-    if (!record) throw { status: 404, toast: "User not found" }
+    if (!record || !record.password) {
+      throw { status: 404, toast: "Account not found" }
+    }
 
     const isMatch = await bcrypt.compare(currentPassword, record.password)
-    if (!isMatch) throw { status: 403, toast: "Incorrect current password" }
+    if (!isMatch) {
+      throw { status: 403, toast: "Incorrect current password" }
+    }
 
     return { ok: true }
   } catch (err) {
-    console.error("validateCurrentPassword error:", err)
+    console.error("validateCurrentSellerPassword error:", err)
     return returnError(err)
   }
 }
@@ -108,14 +110,24 @@ export async function updateUserPassword(newPassword: string) {
     const token = cookieStore.get("token")?.value
     if (!token) throw { status: 401, toast: "Unauthorized" }
 
-    const { id } = jwt.decode(token) as { id: string }
+    const { id } = jwt.decode(token) as { id?: string }
     if (!id) throw { status: 400, toast: "Invalid session" }
 
     const hashed = await bcrypt.hash(newPassword, 10)
-    await db.update(user).set({ password: hashed }).where(eq(user.id, id))
+
+    const result = await db
+      .update(account)
+      .set({ password: hashed })
+      .where(eq(account.userId, id))
+      .returning()
+
+    if (!result.length) {
+      throw { status: 404, toast: "Account not found" }
+    }
+
     return { ok: true }
   } catch (err) {
-    console.error("updateAffiliatePassword error:", err)
+    console.error("updateUserPassword error:", err)
     return returnError(err)
   }
 }

@@ -2,7 +2,7 @@
 "use server"
 
 import { db } from "@/db/drizzle"
-import { affiliate } from "@/db/schema"
+import { affiliateAccount } from "@/db/schema"
 import * as bcrypt from "bcrypt"
 import { eq, and } from "drizzle-orm"
 import jwt from "jsonwebtoken"
@@ -20,24 +20,37 @@ export const resetAffiliatePasswordServer = async ({
   try {
     const hashed = await bcrypt.hash(password, 10)
 
-    const [updatedAffiliate] = await db
-      .update(affiliate)
+    // 🔑 Update the credentials account password (not affiliate directly)
+    const [updatedAccount] = await db
+      .update(affiliateAccount)
       .set({ password: hashed })
       .where(
-        and(eq(affiliate.id, affiliateId), eq(affiliate.organizationId, orgId))
+        and(
+          eq(affiliateAccount.affiliateId, affiliateId),
+          eq(affiliateAccount.provider, "credentials")
+        )
       )
       .returning()
 
-    if (!updatedAffiliate) {
+    if (!updatedAccount) {
+      throw new Error("Affiliate credentials account not found")
+    }
+
+    // 🔑 Fetch affiliate to normalize email & session payload
+    const existingAffiliate = await db.query.affiliate.findFirst({
+      where: (a, { and, eq }) =>
+        and(eq(a.id, affiliateId), eq(a.organizationId, orgId)),
+    })
+
+    if (!existingAffiliate) {
       throw new Error("Affiliate not found")
     }
 
-    // Create session payload
     const sessionPayload = {
-      id: updatedAffiliate.id,
-      email: updatedAffiliate.email,
-      type: updatedAffiliate.type,
-      orgId: updatedAffiliate.organizationId,
+      id: existingAffiliate.id,
+      email: existingAffiliate.email,
+      type: existingAffiliate.type,
+      orgId: existingAffiliate.organizationId,
     }
 
     // Sign JWT & set cookie
@@ -46,7 +59,11 @@ export const resetAffiliatePasswordServer = async ({
     })
 
     const cookieStore = await cookies()
-    cookieStore.set(`affiliateToken-${orgId}`, sessionToken, { httpOnly: true })
+    cookieStore.set(`affiliateToken-${orgId}`, sessionToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    })
 
     return { ok: true }
   } catch (err) {

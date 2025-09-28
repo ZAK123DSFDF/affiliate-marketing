@@ -7,15 +7,13 @@ import ErrorState from "@/components/ui-custom/ErrorState"
 export function GlobalCustomizationProvider({
   orgId,
   children,
-  isDashboard = false,
 }: {
   orgId: string
   children: React.ReactNode
-  isDashboard?: boolean
 }) {
   const { isPending, isError, refetch } = useCustomizationSync(orgId, "both")
 
-  if (isPending) return <PendingState withoutBackground={isDashboard} />
+  if (isPending) return <PendingState withoutBackground />
   if (isError) return <ErrorState onRetry={refetch} />
 
   return <>{children}</>

@@ -7,9 +7,6 @@ export const affiliate_seed = [
     id: "dd01db57-233b-4dd2-9230-d132c9462c03",
     name: "zak",
     email: "zak@gmail.com",
-    password: "$2b$10$PnbuKyGgf4XRYCHUr.EDtu6yTaVgGdihZM/u5q54Jryix9xYRG0q2",
-    emailVerified: parseDate("2025-07-16 11:51:09.338106"),
-    image: null,
     type: "AFFILIATE" as const,
     createdAt: parseDate("2025-07-16 11:51:09.338106"),
     updatedAt: parseDate("2025-07-16 11:51:09.338106"),
@@ -353,12 +350,34 @@ export const user_seed = [
     id: "29022934-eb52-49af-aca4-b6ed553c89dd",
     name: "zak",
     email: "zak@gmail.com",
-    password: "$2b$10$StHXjJi6UvIye0GVPmDp4uRXnjAuBAuqNZhnzTLb24U0.l98LjH3C",
-    emailVerified: parseDate("2025-07-16 11:43:21.288497"),
     role: "OWNER" as const,
-    image: null,
     type: "SELLER" as const,
     createdAt: parseDate("2025-07-16 11:43:21.288497"),
     updatedAt: parseDate("2025-07-16 11:43:21.288497"),
+  },
+]
+export const account_seed = [
+  {
+    id: "f1a2b3c4-d5e6-7f89-0123-456789abcdef", // constant UUID
+    userId: "29022934-eb52-49af-aca4-b6ed553c89dd",
+    provider: "credentials" as const,
+    providerAccountId: "zak@gmail.com",
+    password: "$2b$10$StHXjJi6UvIye0GVPmDp4uRXnjAuBAuqNZhnzTLb24U0.l98LjH3C",
+    emailVerified: parseDate("2025-07-16 11:43:21.288497"),
+    createdAt: parseDate("2025-07-16 11:43:21.288497"),
+    updatedAt: parseDate("2025-07-16 11:43:21.288497"),
+  },
+]
+
+export const affiliate_account_seed = [
+  {
+    id: "a1b2c3d4-e5f6-7890-1234-56789abcdef0", // constant UUID
+    affiliateId: "dd01db57-233b-4dd2-9230-d132c9462c03",
+    provider: "credentials" as const,
+    providerAccountId: "zak@gmail.com",
+    password: "$2b$10$PnbuKyGgf4XRYCHUr.EDtu6yTaVgGdihZM/u5q54Jryix9xYRG0q2",
+    emailVerified: parseDate("2025-07-16 11:51:09.338106"),
+    createdAt: parseDate("2025-07-16 11:51:09.338106"),
+    updatedAt: parseDate("2025-07-16 11:51:09.338106"),
   },
 ]

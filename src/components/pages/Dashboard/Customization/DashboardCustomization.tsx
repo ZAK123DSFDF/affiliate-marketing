@@ -8,7 +8,6 @@ import Links from "@/components/pages/AffiliateDashboard/Links/Links"
 import { dummyProfileData } from "@/lib/types/previewData"
 import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOverview/AffiliateOverview"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
-import { CustomizationProvider } from "@/app/affiliate/[orgId]/dashboard/customizationProvider"
 import { useAtomValue } from "jotai"
 import { dashboardThemeCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 

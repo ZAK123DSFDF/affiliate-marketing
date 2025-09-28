@@ -11,7 +11,6 @@ import ResetPassword from "@/components/pages/Reset-password"
 import InvalidToken from "@/components/pages/InvalidToken"
 import EmailVerified from "@/components/pages/Email-verified"
 import CheckEmail from "@/components/pages/CheckEmail"
-import { AuthCustomizationProvider } from "@/app/affiliate/[orgId]/(auth)/authCustomizationProvider"
 interface AuthCustomizationProps {
   setMainTab?: (tab: string) => void
   orgId: string

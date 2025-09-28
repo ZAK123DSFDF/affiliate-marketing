@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
-import { affiliate, user } from "@/db/schema"
+import { account, affiliateAccount } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { db } from "@/db/drizzle"
 
@@ -54,15 +54,30 @@ export const VerifyServer = async ({
     }
     if (mode === "signup") {
       if (tokenType === "seller") {
-        await db
-          .update(user)
-          .set({ emailVerified: new Date() })
-          .where(eq(user.id, sessionPayload.id))
+        const userAccount = await db.query.account.findFirst({
+          where: (a, { and, eq }) =>
+            and(eq(a.userId, sessionPayload.id), eq(a.provider, "credentials")),
+        })
+        if (userAccount) {
+          await db
+            .update(account)
+            .set({ emailVerified: new Date() })
+            .where(eq(account.id, userAccount.id))
+        }
       } else {
-        await db
-          .update(affiliate)
-          .set({ emailVerified: new Date() })
-          .where(eq(affiliate.id, sessionPayload.id))
+        const affiliateAcc = await db.query.affiliateAccount.findFirst({
+          where: (aa, { and, eq }) =>
+            and(
+              eq(aa.affiliateId, sessionPayload.id),
+              eq(aa.provider, "credentials")
+            ),
+        })
+        if (affiliateAcc) {
+          await db
+            .update(affiliateAccount)
+            .set({ emailVerified: new Date() })
+            .where(eq(affiliateAccount.id, affiliateAcc.id))
+        }
       }
     }
 

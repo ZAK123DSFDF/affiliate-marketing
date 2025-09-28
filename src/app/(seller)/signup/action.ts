@@ -1,28 +1,32 @@
 "use server"
-import { user } from "@/db/schema" // Renamed 'user' to 'users' for clarity and to avoid conflict
-import { eq } from "drizzle-orm"
+
+import { user, account } from "@/db/schema"
 import { db } from "@/db/drizzle"
 import * as bcrypt from "bcrypt"
-import jwt from "jsonwebtoken" // <--- Add this import!
-import { InferInsertModel } from "drizzle-orm"
-import { cookies } from "next/headers"
+import jwt from "jsonwebtoken"
 import { returnError } from "@/lib/errorHandler"
-import { sendVerificationEmail } from "@/lib/mail" // Recommended for type safety
+import { sendVerificationEmail } from "@/lib/mail"
+import { customAlphabet } from "nanoid"
 
-// Define the type for user creation using Drizzle's InferInsertModel
-type CreateUserPayload = InferInsertModel<typeof user>
+type CreateUserPayload = {
+  name: string
+  email: string
+  password: string
+}
+
+// Generate 6-digit numeric ID for providerAccountId
+const generateCredentialsAccountId = customAlphabet("0123456789", 6)
 
 export const SignupServer = async ({
   name,
   email,
   password,
 }: CreateUserPayload) => {
-  // Use the defined type
   try {
     if (!email || !password || !name) {
       throw {
         status: 400,
-        error: "Email, password, and name are required",
+        error: "Missing required fields.",
         toast: "Please fill in all required fields.",
         fields: {
           email: !email ? "Email is required" : "",
@@ -31,45 +35,81 @@ export const SignupServer = async ({
         },
       }
     }
-    const cookieStore = await cookies()
-    // Check if user already exists
-    const existingUser = await db
-      .select()
-      .from(user) // Use 'users' from schema
-      .where(eq(user.email, email))
 
-    if (existingUser.length > 0) {
-      throw {
-        status: 409, // Conflict
-        error: "Email already exists",
-        toast: "This email is already registered. Please try logging in.",
-        fields: { email: "This email is already in use" },
-      }
-    }
+    const normalizedEmail = email.trim().toLowerCase()
+    const existingUser = await db.query.user.findFirst({
+      where: (u, { eq }) => eq(u.email, normalizedEmail),
+    })
 
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // Insert new user
+    if (existingUser) {
+      // Check if credentials account already exists
+      const existingAcc = await db.query.account.findFirst({
+        where: (a, { and, eq }) =>
+          and(eq(a.userId, existingUser.id), eq(a.provider, "credentials")),
+      })
+
+      if (existingAcc) {
+        throw {
+          status: 409,
+          error: "User already exists.",
+          toast: "This email is already registered with credentials.",
+          fields: { email: "Email already in use" },
+        }
+      }
+
+      // Create new credentials account for existing user
+      await db.insert(account).values({
+        userId: existingUser.id,
+        provider: "credentials",
+        providerAccountId: generateCredentialsAccountId(),
+        password: hashedPassword,
+      })
+
+      const token = jwt.sign(
+        {
+          id: existingUser.id,
+          email: existingUser.email,
+          role: existingUser.role,
+          type: existingUser.type,
+        },
+        process.env.SECRET_KEY as string,
+        { expiresIn: "15m" }
+      )
+
+      const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-signup?sellerToken=${token}`
+      await sendVerificationEmail(existingUser.email, verifyUrl)
+
+      return { ok: true, message: "Verification email sent" }
+    }
+
+    // Create new user + credentials account
     const [newUser] = await db
-      .insert(user) // Use 'users' from schema
+      .insert(user)
       .values({
         name,
-        email,
-        password: hashedPassword,
+        email: normalizedEmail,
         type: "SELLER",
+        role: "OWNER",
       })
       .returning()
 
-    // Ensure a user was actually created and returned
     if (!newUser) {
       throw {
         status: 500,
-        error: "Failed to create user.",
-        toast: "Something went wrong during user creation. Please try again.",
+        error: "User creation failed.",
+        toast: "Something went wrong while creating user.",
       }
     }
 
-    // Create JWT token
+    await db.insert(account).values({
+      userId: newUser.id,
+      provider: "credentials",
+      providerAccountId: generateCredentialsAccountId(),
+      password: hashedPassword,
+    })
+
     const token = jwt.sign(
       {
         id: newUser.id,
@@ -86,7 +126,7 @@ export const SignupServer = async ({
 
     return { ok: true, message: "Verification email sent" }
   } catch (error: any) {
-    console.error("Signup error:", error) // Log the full error for debugging
+    console.error("User Signup Error:", error)
     return returnError(error)
   }
 }

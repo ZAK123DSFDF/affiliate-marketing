@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken"
 import { cookies } from "next/headers"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
+import { affiliateAccount, affiliate } from "@/db/schema"
 
 export const LoginAffiliateServer = async ({
   email,
@@ -32,6 +33,7 @@ export const LoginAffiliateServer = async ({
       }
     }
 
+    // Find the affiliate by organization and email
     const existingAffiliate = await db.query.affiliate.findFirst({
       where: (a, { and, eq }) =>
         and(eq(a.email, email), eq(a.organizationId, organizationId)),
@@ -47,16 +49,30 @@ export const LoginAffiliateServer = async ({
       }
     }
 
-    const validPassword = await bcrypt.compare(
-      password,
-      existingAffiliate.password
-    )
+    // Find the affiliate account with provider = 'credentials'
+    const affiliateAcc = await db.query.affiliateAccount.findFirst({
+      where: (aa, { and, eq }) =>
+        and(
+          eq(aa.affiliateId, existingAffiliate.id),
+          eq(aa.provider, "credentials")
+        ),
+    })
+
+    if (!affiliateAcc || !affiliateAcc.password) {
+      throw {
+        status: 401,
+        error: "Affiliate account not found.",
+        toast: "Invalid credentials. No password found for this affiliate.",
+      }
+    }
+
+    const validPassword = await bcrypt.compare(password, affiliateAcc.password)
 
     if (!validPassword) {
       throw {
         status: 401,
         error: "Invalid password.",
-        toast: "Invalid credentials. Please check your email and password.",
+        toast: "Invalid credentials. Please check your password.",
         fields: { password: "Invalid password" },
       }
     }

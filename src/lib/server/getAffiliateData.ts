@@ -8,9 +8,6 @@ import { getPayoutEmailMethod } from "@/lib/server/getPayoutEmailMethod"
 export const getAffiliateDataAction = async (decoded: decodedType) => {
   const affiliateData = await db.query.affiliate.findFirst({
     where: eq(affiliate.id, decoded.id),
-    columns: {
-      password: false, // exclude sensitive
-    },
   })
 
   if (!affiliateData) {
