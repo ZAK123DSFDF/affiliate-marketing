@@ -6,15 +6,12 @@ import { decodedType } from "@/lib/types/decodedType"
 
 export const updateAffiliateProfileAction = async (
   decoded: decodedType,
-  data: { name?: string; email?: string; paypalEmail?: string }
+  data: { name?: string; paypalEmail?: string }
 ) => {
-  if (data.name || data.email) {
+  if (data.name) {
     await db
       .update(affiliate)
-      .set({
-        ...(data.name && { name: data.name }),
-        ...(data.email && { email: data.email }),
-      })
+      .set({ name: data.name })
       .where(eq(affiliate.id, decoded.id))
   }
 

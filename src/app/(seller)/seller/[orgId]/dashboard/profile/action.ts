@@ -54,10 +54,7 @@ export const getUserData = async (): Promise<ResponseData<SafeUserData>> => {
 }
 export async function updateUserProfile(
   orgId: string,
-  data: {
-    name?: string
-    email?: string
-  }
+  data: { name?: string }
 ) {
   try {
     const cookieStore = await cookies()
@@ -66,16 +63,17 @@ export async function updateUserProfile(
 
     const { id } = jwt.decode(token) as { id: string }
     if (!id) throw { status: 400, toast: "Invalid session" }
-    if (Object.keys(data).length === 0) return { ok: true }
+    if (!data.name) return { ok: true }
 
-    await db.update(user).set(data).where(eq(user.id, id))
+    await db.update(user).set({ name: data.name }).where(eq(user.id, id))
     revalidatePath(`/seller/${orgId}/dashboard/profile`)
     return { ok: true }
   } catch (err) {
-    console.error("updateAffiliateProfile error:", err)
+    console.error("updateUserProfile error:", err)
     return returnError(err)
   }
 }
+
 export async function validateCurrentSellerPassword(currentPassword: string) {
   try {
     const cookieStore = await cookies()

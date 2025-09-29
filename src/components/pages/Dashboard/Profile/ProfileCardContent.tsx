@@ -26,6 +26,7 @@ interface ProfileContentProps {
   profileForm: UseFormReturn<ProfileFormValues>
   onSubmit: (data: ProfileFormValues) => void
   setShowPasswordModal: React.Dispatch<React.SetStateAction<boolean>>
+  setShowEmailDialog: React.Dispatch<React.SetStateAction<boolean>>
   affiliate: boolean
   isPreview?: boolean
 }
@@ -33,6 +34,7 @@ export default function ProfileCardContent({
   profileForm,
   onSubmit,
   setShowPasswordModal,
+  setShowEmailDialog,
   affiliate,
   isPreview,
 }: ProfileContentProps) {
@@ -73,7 +75,19 @@ export default function ProfileCardContent({
           icon={Mail}
           profile
           affiliate={affiliate}
+          disabled
         />
+        <Button
+          type="button"
+          onClick={() => setShowEmailDialog(true)}
+          style={{
+            backgroundColor:
+              (affiliate && dashboardButtonBackgroundColor) || undefined,
+            color: (affiliate && dashboardButtonTextColor) || undefined,
+          }}
+        >
+          Change Email
+        </Button>
         {affiliate && (
           <InputField
             control={profileForm.control}

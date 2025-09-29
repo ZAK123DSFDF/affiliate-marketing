@@ -19,7 +19,7 @@ type Props = {
   isPreview?: boolean
   setMainTab?: (tab: string) => void
   affiliate: boolean
-  mode?: "signup" | "login"
+  mode?: "signup" | "login" | "changeEmail"
 }
 
 const EmailVerified = ({

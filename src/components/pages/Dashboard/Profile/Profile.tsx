@@ -36,6 +36,11 @@ import { ProfileProps } from "@/lib/types/profileTypes"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import deepEqual from "fast-deep-equal"
 import { Button } from "@/components/ui/button"
+import ProfileEmailDialog from "@/components/ui-custom/ProfileEmailDialog"
+import {
+  requestAffiliateEmailChange,
+  requestSellerEmailChange,
+} from "@/lib/server/requestEmailChange"
 
 export default function Profile({
   AffiliateData,
@@ -100,6 +105,7 @@ export default function Profile({
   }, [currentValues, safeDefaults])
   const dashboardCardStyle = useDashboardCard(affiliate)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [showEmailDialog, setShowEmailDialog] = useState(false)
   const [step, setStep] = useState<"current" | "new">("current")
   const { showCustomToast } = useCustomToast()
   const updateProfile = useMutation({
@@ -238,6 +244,55 @@ export default function Profile({
       })
     },
   })
+  const emailChangeMutation = useMutation({
+    mutationFn: async (values: { newEmail: string }) => {
+      if (isPreview) {
+        return new Promise((resolve) =>
+          setTimeout(() => resolve({ ok: true }), 1000)
+        )
+      }
+
+      if (affiliate) {
+        return requestAffiliateEmailChange({
+          affiliateId: AffiliateData?.id!,
+          newEmail: values.newEmail,
+          orgId,
+        })
+      } else {
+        return requestSellerEmailChange({
+          userId: UserData?.id!,
+          newEmail: values.newEmail,
+        })
+      }
+    },
+    onSuccess: (res: any) => {
+      if (res?.ok) {
+        showCustomToast({
+          type: "success",
+          title: "Email change requested",
+          description: "Check your new email inbox for verification link",
+          affiliate,
+        })
+      } else {
+        showCustomToast({
+          type: "error",
+          title: "Email change failed",
+          description: res.error ?? "Something went wrong.",
+          affiliate,
+        })
+      }
+      setShowEmailDialog(false)
+    },
+    onError: (err: any) => {
+      showCustomToast({
+        type: "error",
+        title: "Email change failed",
+        description: err.message ?? "Unexpected error.",
+        affiliate,
+      })
+      setShowEmailDialog(false)
+    },
+  })
   const onSubmit = (data: typeof safeDefaults) => {
     const changed = (Object.keys(data) as (keyof typeof data)[]).reduce(
       (acc, key) => {
@@ -287,6 +342,7 @@ export default function Profile({
             profileForm={profileForm}
             onSubmit={onSubmit}
             setShowPasswordModal={setShowPasswordModal}
+            setShowEmailDialog={setShowEmailDialog}
             affiliate={affiliate}
             isPreview={isPreview}
           />
@@ -319,6 +375,14 @@ export default function Profile({
         step={step}
         affiliate={affiliate}
         isPreview={isPreview}
+      />
+      <ProfileEmailDialog
+        open={showEmailDialog}
+        onClose={() => setShowEmailDialog(false)}
+        affiliate={affiliate}
+        onSubmit={(values) => {
+          emailChangeMutation.mutate(values)
+        }}
       />
     </div>
   )

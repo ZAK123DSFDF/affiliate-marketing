@@ -89,7 +89,7 @@ export const LoginServer = async ({
       { expiresIn: "15m" }
     )
 
-    const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-login?userToken=${token}`
+    const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-login?sellerToken=${token}`
     await sendVerificationEmail(existingUser.email, verifyUrl)
 
     return { ok: true, message: "Verification email sent" }

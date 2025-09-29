@@ -45,7 +45,6 @@ export async function updateAffiliateProfile(
   orgId: string,
   data: {
     name?: string
-    email?: string
     paypalEmail?: string
   }
 ) {

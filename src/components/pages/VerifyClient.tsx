@@ -11,7 +11,7 @@ export default function VerifyClient({
   mode,
 }: {
   token: string
-  mode: "login" | "signup"
+  mode: "login" | "signup" | "changeEmail"
 }) {
   const router = useRouter()
 

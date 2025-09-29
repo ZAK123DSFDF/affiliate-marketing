@@ -26,6 +26,7 @@ type InputFieldProps = {
   showPasswordToggle?: boolean
   profile?: boolean
   affiliate: boolean
+  disabled?: boolean
 }
 
 export const InputField = ({
@@ -38,6 +39,7 @@ export const InputField = ({
   showPasswordToggle = false,
   profile = false,
   affiliate,
+  disabled = false,
 }: InputFieldProps) => {
   const [showPassword, setShowPassword] = useState(false)
   const Icon = icon
@@ -73,15 +75,20 @@ export const InputField = ({
             <div className="relative">
               {Icon && (
                 <Icon
-                  className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground"
+                  className={`absolute left-3 top-2.5 h-5 w-5 text-muted-foreground ${
+                    disabled ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                   style={{
-                    color: (affiliate && inputIconColor) || undefined,
+                    color: disabled
+                      ? "#9ca3af"
+                      : (affiliate && inputIconColor) || undefined,
                   }}
                 />
               )}
               <Input
                 type={showPasswordToggle && showPassword ? "text" : type}
                 placeholder={placeholder}
+                disabled={disabled}
                 className={`auth-input-placeholder border ${
                   icon ? "pl-10" : ""
                 } ${profile ? "w-[280px]" : "w-full"} ${

@@ -2,13 +2,13 @@
 
 import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
-import { account, affiliateAccount } from "@/db/schema"
+import { account, affiliate, affiliateAccount, user } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { db } from "@/db/drizzle"
 
 type VerifyServerProps = {
   token: string
-  mode: "login" | "signup"
+  mode: "login" | "signup" | "changeEmail"
   redirectUrl?: string
 }
 
@@ -79,6 +79,26 @@ export const VerifyServer = async ({
             .where(eq(affiliateAccount.id, affiliateAcc.id))
         }
       }
+    }
+
+    if (mode === "changeEmail") {
+      const newEmail = decoded.newEmail
+      if (!newEmail) throw new Error("Missing new email in token")
+
+      if (tokenType === "seller") {
+        await db
+          .update(user)
+          .set({ email: newEmail })
+          .where(eq(user.id, decoded.id))
+      } else {
+        await db
+          .update(affiliate)
+          .set({ email: newEmail })
+          .where(eq(affiliate.id, decoded.id))
+      }
+
+      // overwrite payload with new email
+      sessionPayload.email = newEmail
     }
 
     const cookieStore = await cookies()
