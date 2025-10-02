@@ -6,3 +6,7 @@ export type SafeAffiliateData = Omit<
 > & {
   paypalEmail: string | null
 }
+export type SafeAffiliateWithCapabilities = SafeAffiliateData & {
+  canChangeEmail: boolean
+  canChangePassword: boolean
+}

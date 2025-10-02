@@ -28,6 +28,7 @@ import {
   notesCustomizationAtom,
   themeCustomizationAtom,
 } from "@/store/AuthCustomizationAtom"
+import { GoogleButton } from "@/components/ui-custom/GoogleButton"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -255,6 +256,23 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                   )}
                 </Button>
                 {isPreview && <ButtonCustomizationOptions size="w-6 h-6" />}
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+
+                {/* Google login button */}
+                <GoogleButton
+                  affiliate={affiliate}
+                  orgId={orgId ?? ""}
+                  rememberMe
+                />
               </form>
             </Form>
           </CardContent>

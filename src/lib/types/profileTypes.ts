@@ -3,6 +3,8 @@ interface BaseData {
   name: string
   email: string
   image?: string | null
+  canChangeEmail?: boolean
+  canChangePassword?: boolean
 }
 
 export interface AffiliateData extends BaseData {

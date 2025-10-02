@@ -28,6 +28,7 @@ import {
   notesCustomizationAtom,
   themeCustomizationAtom,
 } from "@/store/AuthCustomizationAtom"
+import { GoogleButton } from "@/components/ui-custom/GoogleButton"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -151,6 +152,14 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
             )}
           </CardHeader>
           <CardContent>
+            <div className="mb-4">
+              <GoogleButton affiliate={affiliate} orgId={orgId || ""} />
+            </div>
+            <div className="flex items-center my-4">
+              <div className="flex-grow border-t border-gray-300"></div>
+              <span className="px-2 text-sm text-muted-foreground">or</span>
+              <div className="flex-grow border-t border-gray-300"></div>
+            </div>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}

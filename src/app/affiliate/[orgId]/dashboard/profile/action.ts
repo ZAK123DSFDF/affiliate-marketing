@@ -3,7 +3,10 @@
 
 import { returnError } from "@/lib/errorHandler"
 import { ResponseData } from "@/lib/types/response"
-import { SafeAffiliateData } from "@/lib/types/authAffiliate"
+import {
+  SafeAffiliateData,
+  SafeAffiliateWithCapabilities,
+} from "@/lib/types/authAffiliate"
 import { revalidatePath } from "next/cache"
 import { getAffiliateOrganization } from "@/lib/server/GetAffiliateOrganization"
 import { updateAffiliatePasswordAction } from "@/lib/server/updateAffiliatePassword"
@@ -13,17 +16,23 @@ import { getAffiliateDataAction } from "@/lib/server/getAffiliateData"
 import { getPayoutEmailMethod } from "@/lib/server/getPayoutEmailMethod"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { getAffiliateAuthCapabilities } from "@/lib/server/getAffiliateAuthCapabilities"
 
 export const getAffiliateData = async (
   orgId: string
-): Promise<ResponseData<SafeAffiliateData>> => {
+): Promise<ResponseData<SafeAffiliateWithCapabilities>> => {
   try {
     const decoded = await getAffiliateOrganization(orgId)
+    const { canChangeEmail, canChangePassword } =
+      await getAffiliateAuthCapabilities(orgId)
     const affiliateData = await getAffiliateDataAction(decoded)
-    return { ok: true, data: affiliateData }
+    return {
+      ok: true,
+      data: { ...affiliateData, canChangeEmail, canChangePassword },
+    }
   } catch (err) {
     console.error("getAffiliate error:", err)
-    return returnError(err) as ResponseData<SafeAffiliateData>
+    return returnError(err) as ResponseData<SafeAffiliateWithCapabilities>
   }
 }
 export const getAffiliatePaymentMethod = async (
@@ -78,7 +87,10 @@ export async function updateAffiliatePassword(
 ) {
   try {
     const decoded = await getAffiliateOrganization(orgId)
-
+    const { canChangePassword } = await getAffiliateAuthCapabilities(orgId)
+    if (!canChangePassword) {
+      throw { status: 403, toast: "This account cannot change password" }
+    }
     await updateAffiliatePasswordAction(decoded, newPassword)
 
     return { ok: true }

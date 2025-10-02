@@ -345,6 +345,14 @@ export default function Profile({
             setShowEmailDialog={setShowEmailDialog}
             affiliate={affiliate}
             isPreview={isPreview}
+            data={{
+              canChangeEmail: affiliate
+                ? AffiliateData?.canChangeEmail
+                : UserData?.canChangeEmail,
+              canChangePassword: affiliate
+                ? AffiliateData?.canChangePassword
+                : UserData?.canChangePassword,
+            }}
           />
         </CardContent>
         <CardFooter className="flex justify-end pt-6 space-x-3">

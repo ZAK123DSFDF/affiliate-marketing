@@ -9,33 +9,20 @@ import { eq } from "drizzle-orm"
 import { returnError } from "@/lib/errorHandler"
 import * as bcrypt from "bcrypt"
 import { ResponseData } from "@/lib/types/response"
-import { SafeUserData } from "@/lib/types/authUser"
+import { SafeUserData, SafeUserWithCapabilities } from "@/lib/types/authUser"
 import { revalidatePath } from "next/cache"
+import { getUserAuthCapabilities } from "@/lib/server/getUserAuthCapabilities"
+import { getCurrentUser } from "@/lib/server/getCurrentUser"
 
-export const getUserData = async (): Promise<ResponseData<SafeUserData>> => {
+export const getUserData = async (): Promise<
+  ResponseData<SafeUserWithCapabilities>
+> => {
   try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("sellerToken")?.value
-
-    if (!token) {
-      throw {
-        status: 401,
-        error: "Unauthorized",
-        toast: "You must be logged in.",
-      }
-    }
-
-    const decoded = jwt.decode(token) as { id: string }
-    if (!decoded?.id) {
-      throw {
-        status: 400,
-        error: "Invalid token",
-        toast: "Session invalid or expired.",
-      }
-    }
+    const { userId, canChangePassword, canChangeEmail } =
+      await getUserAuthCapabilities()
 
     const userData = await db.query.user.findFirst({
-      where: eq(user.id, decoded.id),
+      where: eq(user.id, userId),
     })
 
     if (!userData) {
@@ -46,10 +33,17 @@ export const getUserData = async (): Promise<ResponseData<SafeUserData>> => {
       }
     }
 
-    return { ok: true, data: userData }
+    return {
+      ok: true,
+      data: {
+        ...userData,
+        canChangeEmail,
+        canChangePassword,
+      },
+    }
   } catch (err) {
     console.error("getUserData error:", err)
-    return returnError(err) as ResponseData<SafeUserData>
+    return returnError(err) as ResponseData<SafeUserWithCapabilities>
   }
 }
 export async function updateUserProfile(
@@ -57,12 +51,8 @@ export async function updateUserProfile(
   data: { name?: string }
 ) {
   try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
-    if (!token) throw { status: 401, toast: "Unauthorized" }
-
-    const { id } = jwt.decode(token) as { id: string }
-    if (!id) throw { status: 400, toast: "Invalid session" }
+    const { id } = await getCurrentUser()
+    if (!id) throw { status: 401, toast: "Unauthorized" }
     if (!data.name) return { ok: true }
 
     await db.update(user).set({ name: data.name }).where(eq(user.id, id))
@@ -76,12 +66,8 @@ export async function updateUserProfile(
 
 export async function validateCurrentSellerPassword(currentPassword: string) {
   try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
-    if (!token) throw { status: 401, toast: "Unauthorized" }
-
-    const { id } = jwt.decode(token) as { id?: string }
-    if (!id) throw { status: 400, toast: "Invalid session" }
+    const { id } = await getCurrentUser()
+    if (!id) throw { status: 401, toast: "Unauthorized" }
 
     // Get account by userId
     const record = await db.query.account.findFirst({
@@ -104,19 +90,18 @@ export async function validateCurrentSellerPassword(currentPassword: string) {
 }
 export async function updateUserPassword(newPassword: string) {
   try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
-    if (!token) throw { status: 401, toast: "Unauthorized" }
+    const { userId, canChangePassword } = await getUserAuthCapabilities()
 
-    const { id } = jwt.decode(token) as { id?: string }
-    if (!id) throw { status: 400, toast: "Invalid session" }
+    if (!canChangePassword) {
+      throw { status: 403, toast: "This account cannot change password" }
+    }
 
     const hashed = await bcrypt.hash(newPassword, 10)
 
     const result = await db
       .update(account)
       .set({ password: hashed })
-      .where(eq(account.userId, id))
+      .where(eq(account.userId, userId))
       .returning()
 
     if (!result.length) {

@@ -29,6 +29,10 @@ interface ProfileContentProps {
   setShowEmailDialog: React.Dispatch<React.SetStateAction<boolean>>
   affiliate: boolean
   isPreview?: boolean
+  data: {
+    canChangeEmail?: boolean
+    canChangePassword?: boolean
+  }
 }
 export default function ProfileCardContent({
   profileForm,
@@ -37,6 +41,7 @@ export default function ProfileCardContent({
   setShowEmailDialog,
   affiliate,
   isPreview,
+  data,
 }: ProfileContentProps) {
   const { cardHeaderSecondaryTextColor, separatorColor } = useAtomValue(
     dashboardThemeCustomizationAtom
@@ -77,17 +82,19 @@ export default function ProfileCardContent({
           affiliate={affiliate}
           disabled
         />
-        <Button
-          type="button"
-          onClick={() => setShowEmailDialog(true)}
-          style={{
-            backgroundColor:
-              (affiliate && dashboardButtonBackgroundColor) || undefined,
-            color: (affiliate && dashboardButtonTextColor) || undefined,
-          }}
-        >
-          Change Email
-        </Button>
+        {(isPreview || data.canChangeEmail) && (
+          <Button
+            type="button"
+            onClick={() => setShowEmailDialog(true)}
+            style={{
+              backgroundColor:
+                (affiliate && dashboardButtonBackgroundColor) || undefined,
+              color: (affiliate && dashboardButtonTextColor) || undefined,
+            }}
+          >
+            Change Email
+          </Button>
+        )}
         {affiliate && (
           <InputField
             control={profileForm.control}
@@ -99,59 +106,61 @@ export default function ProfileCardContent({
             affiliate={affiliate}
           />
         )}
+        {(isPreview || data.canChangePassword) && (
+          <div>
+            <div className="flex flex-row items-center justify-between mb-4 gap-1">
+              <Separator
+                className="flex-1"
+                style={{
+                  backgroundColor: (affiliate && separatorColor) || "#e5e7eb",
+                }}
+              />
+              {isPreview && (
+                <DashboardThemeCustomizationOptions
+                  name="separatorColor"
+                  buttonSize="w-4 h-4"
+                />
+              )}
+            </div>
 
-        <div>
-          <div className="flex flex-row items-center justify-between mb-4 gap-1">
+            <div className="flex flex-row gap-2 mt-4 ">
+              <h3
+                className="font-medium mb-4"
+                style={{
+                  color:
+                    (affiliate && cardHeaderSecondaryTextColor) || undefined,
+                }}
+              >
+                Password
+              </h3>
+              {isPreview && (
+                <DashboardThemeCustomizationOptions
+                  name="cardHeaderSecondaryTextColor"
+                  buttonSize="w-4 h-4"
+                />
+              )}
+            </div>
+
+            <Button
+              type="button"
+              onClick={() => setShowPasswordModal(true)}
+              style={{
+                backgroundColor:
+                  (affiliate && dashboardButtonBackgroundColor) || undefined,
+                color: (affiliate && dashboardButtonTextColor) || undefined,
+              }}
+            >
+              Change Password
+            </Button>
+
             <Separator
-              className="flex-1"
+              className="flex-1 mt-4"
               style={{
                 backgroundColor: (affiliate && separatorColor) || "#e5e7eb",
               }}
             />
-            {isPreview && (
-              <DashboardThemeCustomizationOptions
-                name="separatorColor"
-                buttonSize="w-4 h-4"
-              />
-            )}
           </div>
-
-          <div className="flex flex-row gap-2 mt-4 ">
-            <h3
-              className="font-medium mb-4"
-              style={{
-                color: (affiliate && cardHeaderSecondaryTextColor) || undefined,
-              }}
-            >
-              Password
-            </h3>
-            {isPreview && (
-              <DashboardThemeCustomizationOptions
-                name="cardHeaderSecondaryTextColor"
-                buttonSize="w-4 h-4"
-              />
-            )}
-          </div>
-
-          <Button
-            type="button"
-            onClick={() => setShowPasswordModal(true)}
-            style={{
-              backgroundColor:
-                (affiliate && dashboardButtonBackgroundColor) || undefined,
-              color: (affiliate && dashboardButtonTextColor) || undefined,
-            }}
-          >
-            Change Password
-          </Button>
-
-          <Separator
-            className="flex-1 mt-4"
-            style={{
-              backgroundColor: (affiliate && separatorColor) || "#e5e7eb",
-            }}
-          />
-        </div>
+        )}
       </form>
     </Form>
   )

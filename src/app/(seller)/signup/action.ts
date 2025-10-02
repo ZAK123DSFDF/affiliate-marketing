@@ -67,12 +67,18 @@ export const SignupServer = async ({
         password: hashedPassword,
       })
 
+      const existingOrgs = await db.query.organization.findMany({
+        where: (o, { eq }) => eq(o.userId, existingUser.id),
+      })
+      const orgIds = existingOrgs.map((o) => o.id)
       const token = jwt.sign(
         {
           id: existingUser.id,
           email: existingUser.email,
           role: existingUser.role,
           type: existingUser.type,
+          orgIds,
+          activeOrgId: orgIds[0] || null,
         },
         process.env.SECRET_KEY as string,
         { expiresIn: "15m" }

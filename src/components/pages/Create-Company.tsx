@@ -213,19 +213,19 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
         {formContent}
       </div>
     )
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="w-full max-w-2xl">
-          <Card className="border-none shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center">
-                Create Your Company
-              </CardTitle>
-            </CardHeader>
-            <CardContent>{formContent}</CardContent>
-          </Card>
-        </div>
-      </div>
-    )
   }
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl">
+        <Card className="border-none shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">
+              Create Your Company
+            </CardTitle>
+          </CardHeader>
+          <CardContent>{formContent}</CardContent>
+        </Card>
+      </div>
+    </div>
+  )
 }
