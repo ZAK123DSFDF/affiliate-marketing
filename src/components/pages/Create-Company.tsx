@@ -15,6 +15,8 @@ import { CreateOrganization } from "@/app/(seller)/create-company/action"
 import { InputField } from "@/components/Auth/FormFields"
 import { SelectField } from "@/components/ui-custom/SelectFields"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
+import { FileUpload } from "@/components/ui-custom/FileUpload"
+import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 
 export const companySchema = z.object({
   name: z.string().min(2),
@@ -91,15 +93,14 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
             icon={User}
             affiliate={false}
           />
-          <InputField
-            control={form.control}
-            name="logoUrl"
-            label="Logo URL (optional)"
-            placeholder="https://cdn.example.com/logo.png"
-            type="text"
-            icon={User}
+          <LogoUpload
+            value={form.watch("logoUrl") || null}
+            onChange={(url) => {
+              form.setValue("logoUrl", url || "")
+            }}
             affiliate={false}
           />
+
           <SelectField
             control={form.control}
             name="referralParam"

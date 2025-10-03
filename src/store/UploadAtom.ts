@@ -68,7 +68,14 @@ export const removeFileAtom = atom(
 // add & upload file (async)
 export const addFileAtom = atom(
   null,
-  async (get, set, uploadId: string, file: File, path?: string) => {
+  async (
+    get,
+    set,
+    uploadId: string,
+    file: File,
+    path?: string,
+    endpoint: string = "/api/upload"
+  ) => {
     const newFile: UploadedFile = {
       id: crypto.randomUUID(),
       name: file.name,
@@ -91,9 +98,9 @@ export const addFileAtom = atom(
       if (path) formData.append("path", path)
       formData.append("file", file)
 
-      const res = await fetch("/api/upload", { method: "POST", body: formData })
+      const res = await fetch(endpoint, { method: "POST", body: formData })
       if (!res.ok) throw new Error("Upload failed")
-
+      const { url } = await res.json()
       // success
       updateUploads(get, set, (uploads) => {
         const latest = uploads[uploadId]
@@ -111,7 +118,7 @@ export const addFileAtom = atom(
         }
       })
 
-      return newFile.id
+      return { id: newFile.id, url }
     } catch (err) {
       console.error("Upload Error:", err)
       updateUploads(get, set, (uploads) => {

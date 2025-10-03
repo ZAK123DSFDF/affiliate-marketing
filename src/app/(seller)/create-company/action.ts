@@ -13,6 +13,17 @@ import { z } from "zod"
 import jwt from "jsonwebtoken"
 import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization"
 import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization"
+import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
+import { eq } from "drizzle-orm"
+
+const s3Client = new S3Client({
+  region: "auto",
+  endpoint: process.env.R2_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+  },
+})
 
 export const CreateOrganization = async (
   input: z.infer<typeof companySchema> & { mode: "create" | "add" }
@@ -94,4 +105,31 @@ export const CreateOrganization = async (
     console.error("Organization create error", err)
     return returnError(err)
   }
+}
+export async function deleteOrganizationLogo(logoUrl: string) {
+  console.log("Deleting logo:", logoUrl)
+  if (!logoUrl) throw new Error("Missing logoUrl")
+
+  // 1. Extract the object key from R2 public URL
+  const uploadPath = logoUrl.replace(`${process.env.R2_ACCESS_URL}/`, "")
+
+  // 2. Delete from R2
+  await s3Client.send(
+    new DeleteObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: uploadPath,
+    })
+  )
+
+  return { success: true }
+}
+export async function updateOrganizationLogo(orgId: string, logoUrl: string) {
+  if (!orgId || !logoUrl) throw new Error("Missing orgId or logoUrl")
+
+  await db
+    .update(organization)
+    .set({ logoUrl })
+    .where(eq(organization.id, orgId))
+
+  return { success: true, url: logoUrl }
 }

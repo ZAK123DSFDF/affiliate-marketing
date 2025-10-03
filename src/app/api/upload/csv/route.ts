@@ -6,6 +6,7 @@ import {
   processTransactions,
   Transaction,
 } from "@/lib/server/processTransactions"
+import { getUploadFile } from "@/lib/server/getUploadFile"
 const s3Client = new S3Client({
   region: "auto",
   endpoint: process.env.R2_ENDPOINT,
@@ -16,13 +17,9 @@ const s3Client = new S3Client({
 })
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData()
-    const file = formData.get("file") as File
-    if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 })
-    }
-    const path = formData.get("path") as string | undefined
-    const uploadPath = path ? `${path}/${file.name}` : file.name
+    const result = await getUploadFile(request)
+    if (result instanceof NextResponse) return result
+    const { file, uploadPath } = result
     const csvText = await file.text()
     let parsed
     try {

@@ -70,7 +70,7 @@ export default function CsvUploadPopover({ orgId }: CsvUploadPopoverProps) {
         description: `${failedFile.file.name} uploaded on retry.`,
         affiliate: false,
       })
-      setTimeout(() => removeFile(uploadId, newId), 1500)
+      setTimeout(() => removeFile(uploadId, newId.id), 1500)
     } catch {
       showCustomToast({
         type: "error",
@@ -93,6 +93,8 @@ export default function CsvUploadPopover({ orgId }: CsvUploadPopoverProps) {
           <FileUpload
             uploadId="csvUpload"
             type="csv"
+            endpoint="/api/upload/csv"
+            path="csvUpload"
             maxFiles={100}
             onUploadSuccess={handleUploadSuccess}
             onUploadError={handleUploadError}
