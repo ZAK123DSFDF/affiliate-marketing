@@ -54,6 +54,7 @@ export const CreateOrganization = async (
         domainName: sanitizedDomain,
         commissionValue: input.commissionValue.toFixed(2),
         userId: decoded.id,
+        logoUrl: input.logoUrl || null,
       })
       .returning()
 
@@ -123,8 +124,14 @@ export async function deleteOrganizationLogo(logoUrl: string) {
 
   return { success: true }
 }
-export async function updateOrganizationLogo(orgId: string, logoUrl: string) {
-  if (!orgId || !logoUrl) throw new Error("Missing orgId or logoUrl")
+export async function updateOrganizationLogo({
+  orgId,
+  logoUrl,
+}: {
+  orgId: string
+  logoUrl: string | null
+}) {
+  if (!orgId) throw new Error("Missing orgId")
 
   await db
     .update(organization)

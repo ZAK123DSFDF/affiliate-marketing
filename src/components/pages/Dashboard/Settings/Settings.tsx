@@ -23,6 +23,7 @@ import { orgSettingsSchema } from "@/lib/schema/orgSettingSchema"
 import React, { useMemo } from "react"
 import { InputField } from "@/components/Auth/FormFields"
 import { SelectField } from "@/components/ui-custom/SelectFields"
+import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 
 type OrgData = z.infer<typeof orgSettingsSchema>
 type Props = { orgData: OrgData }
@@ -156,6 +157,14 @@ export default function Settings({ orgData }: Props) {
                   ]}
                   affiliate={false}
                 />
+                <div className="flex justify-start">
+                  <LogoUpload
+                    value={form.watch("logoUrl") || null}
+                    onChange={(url) => form.setValue("logoUrl", url || "")}
+                    affiliate={false}
+                    orgId={orgData.id}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>

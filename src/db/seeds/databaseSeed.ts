@@ -191,6 +191,7 @@ export const organization_auth_customization_seed = [
           '<p style="text-align: center;"><span style="color: rgb(61, 22, 202);">This is the Signup Page</span></p><p style="text-align: center;"><span style="color: rgb(61, 22, 202);">flakjflakjflajdfalkfja</span></p><p style="text-align: center;"><span style="color: rgb(61, 22, 202);">falkjfalfjalf</span></p>',
       },
       useThemeCustomization: {
+        headerColor: "",
         linkTextColor: "",
         backgroundColor: "#7dc04b",
         tertiaryTextColor: "",

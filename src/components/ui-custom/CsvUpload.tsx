@@ -93,6 +93,7 @@ export default function CsvUploadPopover({ orgId }: CsvUploadPopoverProps) {
           <FileUpload
             uploadId="csvUpload"
             type="csv"
+            affiliate={false}
             endpoint="/api/upload/csv"
             path="csvUpload"
             maxFiles={100}

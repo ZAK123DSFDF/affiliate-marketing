@@ -1,22 +1,15 @@
 "use client"
-
-import React, { useMemo, forwardRef, useImperativeHandle } from "react"
-import { useDropzone } from "react-dropzone"
 import {
   Dropzone,
-  DropzoneEmptyState,
   DropzoneContent,
+  DropzoneEmptyState,
 } from "@/components/ui/shadcn-io/dropzone"
 import { useSetAtom } from "jotai"
 import { addFileAtom, setErrorMessageAtom } from "@/store/UploadAtom"
+import { useState } from "react"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import { validateAndUploadFile } from "@/util/FileUpload"
 
-export interface FileUploadRef {
-  openFilePicker: () => void
-}
-type Accept = {
-  [mimeType: string]: string[]
-}
 export interface FileUploadProps {
   uploadId: string
   type: "csv" | "image"
@@ -35,132 +28,129 @@ export interface FileUploadProps {
   onUploadError?: (file: File, err: any, uploadId: string) => void
 }
 
-export const FileUpload = forwardRef<FileUploadRef, FileUploadProps>(
-  (
-    {
-      uploadId,
-      type,
-      endpoint,
-      maxFiles = 100,
-      maxSizeMB = 5,
-      path,
-      affiliate = false,
-      onUploadSuccess,
-      onUploadError,
-    },
-    ref
-  ) => {
-    const addFile = useSetAtom(addFileAtom)
-    const setErrorMessage = useSetAtom(setErrorMessageAtom)
-    const { showCustomToast } = useCustomToast()
-    const MAX_SIZE = maxSizeMB * 1024 * 1024
-
-    const triggerError = (msg: string) => {
-      setErrorMessage(uploadId, msg)
-      showCustomToast({
-        type: "error",
-        title: "Upload Failed",
-        description: msg,
-        affiliate,
-      })
-    }
-
-    const handleSuccess = (
-      file: File,
-      fileId: string,
-      uploadId: string,
-      url: string
-    ) => {
-      onUploadSuccess?.(file, fileId, uploadId, url)
-    }
-
-    const handleFailure = (file: File, err: any, uploadId: string) => {
-      if (onUploadError) onUploadError(file, err, uploadId)
-      else console.error(err)
-    }
-
-    const handleDrop = (accepted: File[], fileRejections: any[]) => {
-      setErrorMessage(uploadId, null)
-
-      // Handle rejected files first
-      if (fileRejections.length > 0) {
-        fileRejections.forEach((rej: any) => {
-          rej.errors.forEach((e: any) => {
-            const msg = e.message.toLowerCase()
-            if (msg.includes("too many files"))
-              return triggerError(
-                `You can only upload up to ${maxFiles} files.`
-              )
-            if (msg.includes("file too large") || msg.includes("size"))
-              return triggerError(`Each file must be under ${maxSizeMB}MB.`)
-            if (msg.includes("invalid") || msg.includes("type"))
-              return triggerError(
-                type === "csv"
-                  ? "Invalid file type. Please upload CSV files."
-                  : "Invalid file type. Please upload image files."
-              )
-          })
-        })
-        return
-      }
-
-      // If no rejections, handle accepted files
-      if (accepted.length === 0) return
-
-      accepted.forEach((file) => {
-        if (file.size > MAX_SIZE) {
-          return triggerError(
-            `"${file.name}" is too large (max ${maxSizeMB}MB).`
-          )
-        }
-        if (type === "csv" && !file.name.toLowerCase().endsWith(".csv")) {
-          return triggerError(`"${file.name}" is not a CSV file.`)
-        }
-        if (type === "image" && !file.type.startsWith("image/")) {
-          return triggerError(`"${file.name}" is not an image file.`)
-        }
-
-        addFile(uploadId, file, path, endpoint || `/api/upload/${type}`)
-          .then(({ id, url }) => handleSuccess(file, id, uploadId, url))
-          .catch((err) => handleFailure(file, err, uploadId))
-      })
-    }
-
-    const accept = useMemo((): Accept => {
-      if (type === "csv") {
-        return {
-          "text/csv": [".csv"],
-          "application/vnd.ms-excel": [".csv"],
-          "application/octet-stream": [".csv"],
-        }
-      }
-      return {
-        "image/*": [".jpg", ".jpeg", ".png", ".gif"],
-      }
-    }, [type])
-
-    const { open, getInputProps, getRootProps } = useDropzone({
-      noClick: true,
-      noKeyboard: true,
-      accept,
-      maxFiles,
-      maxSize: MAX_SIZE,
-      onDrop: handleDrop,
+export function FileUpload({
+  uploadId,
+  type,
+  endpoint,
+  maxFiles = 100,
+  maxSizeMB = 5,
+  path,
+  preview = false,
+  affiliate = false,
+  onUploadSuccess,
+  onUploadError,
+}: FileUploadProps) {
+  // Jotai mutations
+  const addFile = useSetAtom(addFileAtom)
+  const setErrorMessage = useSetAtom(setErrorMessageAtom)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const MAX_SIZE = maxSizeMB * 1024 * 1024
+  const { showCustomToast } = useCustomToast()
+  const triggerError = (msg: string) => {
+    setErrorMessage(uploadId, msg)
+    showCustomToast({
+      type: "error",
+      title: "Upload Failed",
+      description: msg,
+      affiliate,
     })
-
-    useImperativeHandle(ref, () => ({
-      openFilePicker: open,
-    }))
-
-    return (
-      <div className="space-y-2" {...getRootProps()}>
-        <input {...getInputProps()} />
-        {/* Keep drag-and-drop UI hidden if you don’t want it */}
-        <Dropzone accept={accept} maxFiles={maxFiles} maxSize={MAX_SIZE}>
-          <DropzoneEmptyState />
-          <DropzoneContent />
-        </Dropzone>
-      </div>
-    )
   }
-)
+  const handleError = (err: unknown) => {
+    console.log(`[${uploadId}] dropzone error:`, err)
+
+    if (err instanceof Error) {
+      const msg = err.message.toLowerCase()
+
+      if (msg.includes("too many files") || msg.includes("maxfiles")) {
+        return triggerError(`You can only upload up to ${maxFiles} files.`)
+      }
+
+      if (msg.includes("file too large") || msg.includes("size")) {
+        return triggerError(`Each file must be under ${maxSizeMB}MB.`)
+      }
+
+      if (msg.includes("invalid") || msg.includes("type")) {
+        return triggerError(
+          type === "csv"
+            ? "Invalid file type. Please upload CSV files."
+            : "Invalid file type. Please upload image files."
+        )
+      }
+    }
+
+    // fallback for anything unexpected
+    triggerError("Something went wrong. Please try again.")
+  }
+
+  const handleSuccess = (
+    file: File,
+    fileId: string,
+    uploadId: string,
+    url: string
+  ) => {
+    if (preview && type === "image") {
+      setPreviewUrl(URL.createObjectURL(file))
+    }
+    onUploadSuccess?.(file, fileId, uploadId, url)
+  }
+
+  const handleFailure = (file: File, err: any, uploadId: string) => {
+    if (onUploadError) {
+      onUploadError(file, err, uploadId)
+    } else {
+      console.error(err)
+    }
+  }
+
+  const handleDrop = (accepted: File[]) => {
+    setErrorMessage(uploadId, null)
+    if (accepted.length === 0) return
+
+    accepted.forEach((file) => {
+      validateAndUploadFile({
+        file,
+        type,
+        maxSizeMB,
+        uploadId,
+        path,
+        endpoint,
+        addFile,
+        triggerError,
+        handleSuccess,
+        handleFailure,
+      }).then(() => console.log("File processed"))
+    })
+  }
+
+  return (
+    <div className="space-y-2">
+      <Dropzone
+        accept={
+          type === "csv"
+            ? {
+                "text/csv": [".csv"],
+                "application/vnd.ms-excel": [".csv"],
+                "application/octet-stream": [".csv"],
+              }
+            : { "image/*": [] }
+        }
+        maxFiles={maxFiles}
+        maxSize={MAX_SIZE}
+        onDrop={handleDrop}
+        onError={handleError}
+      >
+        <DropzoneEmptyState />
+        <DropzoneContent />
+      </Dropzone>
+      {preview && previewUrl && (
+        <div className="mt-2">
+          <img
+            src={previewUrl}
+            alt="Preview"
+            className="h-16 w-16 rounded border object-cover"
+          />
+        </div>
+      )}
+    </div>
+  )
+}

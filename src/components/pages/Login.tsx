@@ -29,15 +29,19 @@ import {
   themeCustomizationAtom,
 } from "@/store/AuthCustomizationAtom"
 import { GoogleButton } from "@/components/ui-custom/GoogleButton"
+import { LogoUpload } from "@/components/ui-custom/LogoUpload"
+import { Organization } from "@/lib/types/orgAuth"
 type Props = {
   orgId?: string
   isPreview?: boolean
   setTab?: (tab: string) => void
   affiliate: boolean
+  org?: Organization
 }
-const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
+const Login = ({ orgId, isPreview = false, setTab, affiliate, org }: Props) => {
   const { showCustomToast } = useCustomToast()
   const [previewLoading, setPreviewLoading] = useState(false)
+  const [logoUrl, setLogoUrl] = useState(org?.logoUrl || null)
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -46,9 +50,8 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
       rememberMe: false,
     },
   })
-  const { backgroundColor, linkTextColor, tertiaryTextColor } = useAtomValue(
-    themeCustomizationAtom
-  )
+  const { backgroundColor, linkTextColor, tertiaryTextColor, headerColor } =
+    useAtomValue(themeCustomizationAtom)
   const {
     buttonDisabledTextColor,
     buttonBackgroundColor,
@@ -119,14 +122,30 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     >
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block">
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-8 h-8 rounded-md bg-primary/90 flex items-center justify-center text-white font-bold">
-                A
-              </div>
-              <h1 className="text-2xl font-bold">AffiliateX</h1>
-            </div>
-          </Link>
+          <div className="flex items-center justify-center space-x-2 cursor-pointer">
+            <LogoUpload
+              value={logoUrl}
+              onChange={setLogoUrl}
+              affiliate={true}
+              orgId={orgId}
+              orgName={org?.name}
+              mode="avatar"
+            />
+
+            <h1
+              className="text-4xl font-bold"
+              style={{ color: (affiliate && headerColor) || undefined }}
+            >
+              {org?.name || "AffiliateX"}
+            </h1>
+            {isPreview && (
+              <ThemeCustomizationOptions
+                name="headerColor"
+                showLabel={false}
+                buttonSize="w-4 h-4"
+              />
+            )}
+          </div>
         </div>
 
         <Card

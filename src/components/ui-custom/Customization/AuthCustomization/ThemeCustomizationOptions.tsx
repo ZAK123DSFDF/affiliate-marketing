@@ -23,6 +23,7 @@ export const ThemeCustomizationOptions = ({
   const [theme, setTheme] = useAtom(themeCustomizationAtom)
 
   const labelMap: Record<ThemeKeys, string> = {
+    headerColor: "Header",
     backgroundColor: "Background",
     linkTextColor: "Link Text",
     tertiaryTextColor: "Tertiary Text",

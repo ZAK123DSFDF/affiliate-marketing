@@ -512,6 +512,7 @@ export const organizationAuthCustomization = pgTable(
         buttonDisabledBackgroundColor: string
       }
       useThemeCustomization: {
+        headerColor: string
         backgroundColor: string
         linkTextColor: string
         tertiaryTextColor: string

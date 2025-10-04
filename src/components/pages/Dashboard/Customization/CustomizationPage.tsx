@@ -13,8 +13,15 @@ import { authHasChangesAtom } from "@/store/AuthChangesAtom"
 import { dashboardHasChangesAtom } from "@/store/DashboardChangesAtom"
 import { useLiveCustomizations } from "@/store/LiveCustomizationAtom"
 import { GlobalCustomizationProvider } from "@/components/pages/Dashboard/Customization/GlobalCustomizationProvider"
+import { Organization } from "@/lib/types/orgAuth"
 
-export default function CustomizationPage({ orgId }: { orgId: string }) {
+export default function CustomizationPage({
+  orgId,
+  org,
+}: {
+  orgId: string
+  org?: Organization
+}) {
   const [mainTab, setMainTab] = useState("sidebar")
 
   const authHasChanges = useAtomValue(authHasChangesAtom)
@@ -78,7 +85,11 @@ export default function CustomizationPage({ orgId }: { orgId: string }) {
             <DashboardCustomization orgId={orgId} />
           </TabsContent>
           <TabsContent value="auth">
-            <AuthCustomization orgId={orgId} setMainTab={setMainTab} />
+            <AuthCustomization
+              orgId={orgId}
+              org={org}
+              setMainTab={setMainTab}
+            />
           </TabsContent>
         </Tabs>
 

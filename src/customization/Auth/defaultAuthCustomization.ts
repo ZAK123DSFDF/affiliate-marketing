@@ -30,6 +30,7 @@ export const defaultAuthCustomization = {
     buttonDisabledBackgroundColor: "",
   },
   useThemeCustomization: {
+    headerColor: "",
     backgroundColor: "",
     linkTextColor: "",
     tertiaryTextColor: "",
