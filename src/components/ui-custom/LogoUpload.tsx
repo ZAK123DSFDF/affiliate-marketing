@@ -14,6 +14,7 @@ import { FileUploadRef } from "@/components/ui-custom/FileUploadRef"
 import { uploadsAtom } from "@/store/UploadAtom"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
 import { SingleUploadProgress } from "@/components/ui-custom/SingleUploadProgress"
+
 type LogoUploadProps = {
   value: string | null
   onChange: (url: string | null) => void
@@ -22,6 +23,7 @@ type LogoUploadProps = {
   orgName?: string
   mode?: "default" | "avatar" // 👈 new
 }
+
 export function LogoUpload({
   value,
   onChange,
@@ -47,7 +49,6 @@ export function LogoUpload({
   })
 
   const handleButtonClick = () => {
-    // 👇 don’t open dialog yet, only open if user actually selects a file
     fileUploadRef.current?.openFilePicker()
   }
 
@@ -55,9 +56,9 @@ export function LogoUpload({
     const oldUrl = value
     onChange(newUrl)
     if (oldUrl) {
-      deleteOrganizationLogo(oldUrl)
-        .then(() => console.log("Old logo cleaned up successfully"))
-        .catch((err) => console.error("Failed to clean up old logo:", err))
+      deleteOrganizationLogo(oldUrl).catch((err) =>
+        console.error("Failed to clean up old logo:", err)
+      )
     }
 
     if (orgId) {
@@ -67,35 +68,33 @@ export function LogoUpload({
         console.error("Failed to save logo to DB:", err)
       }
     }
-    // ✅ Auto-close dialog after success
     setTimeout(() => setDialogOpen(false), 600)
   }
 
-  // Get latest file (only show one)
   const files = uploads["company-logo"]?.files ?? []
   const latestFile = files.length > 0 ? files[files.length - 1] : null
   const errorMessage = uploads["company-logo"]?.errorMessage ?? null
 
   return (
     <div className="flex flex-col items-center space-y-2">
-      <div
-        className="relative group cursor-pointer"
-        onClick={mode === "avatar" ? handleButtonClick : undefined}
-      >
+      <div className="relative">
         {value ? (
           <img
             src={value}
             alt="Company Logo"
-            className="h-16 w-16 rounded-full object-contain bg-muted"
+            className={`h-12 w-12 rounded-full object-contain bg-muted ${
+              mode === "avatar" ? "cursor-default" : "cursor-pointer"
+            }`}
+            onClick={mode === "default" ? handleButtonClick : undefined}
           />
         ) : (
-          <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center text-xl font-semibold text-muted-foreground">
+          <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center text-2xl font-bold text-white">
             {orgName?.charAt(0).toUpperCase() ?? "?"}
           </div>
         )}
 
-        {/* ❌ delete button stays */}
-        {value && (
+        {/* ❌ only show delete button in default mode */}
+        {mode === "default" && value && (
           <button
             type="button"
             onClick={(e) => {
@@ -114,12 +113,13 @@ export function LogoUpload({
         )}
       </div>
 
-      {/* 👇 Only show button in default mode */}
+      {/* Upload/Change button only in default mode */}
       {mode === "default" && (
         <Button type="button" variant="outline" onClick={handleButtonClick}>
           {value ? "Change Logo" : "Upload Logo"}
         </Button>
       )}
+
       {/* Hidden uploader */}
       <div className="absolute w-0 h-0 overflow-hidden opacity-0 pointer-events-none">
         <FileUploadRef
@@ -128,7 +128,7 @@ export function LogoUpload({
           type="image"
           affiliate={affiliate}
           maxFiles={1}
-          onFileSelected={() => setDialogOpen(true)} // 👈 open only if user selects a file
+          onFileSelected={() => setDialogOpen(true)}
           onUploadSuccess={(_, __, ___, url) => {
             handleNewLogo(url).then(() =>
               console.log("Logo updated successfully")
@@ -137,7 +137,6 @@ export function LogoUpload({
         />
       </div>
 
-      {/* Progress dialog */}
       <AppDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}

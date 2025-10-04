@@ -20,6 +20,11 @@ import { cn } from "@/lib/utils"
 import { AffiliateData } from "@/lib/types/profileTypes"
 import { useAtomValue } from "jotai"
 import { sidebarCustomizationAtom } from "@/store/DashboardCustomizationAtom"
+import { Organization } from "@/lib/types/orgAuth"
+import { LogoUpload } from "@/components/ui-custom/LogoUpload"
+import { useOrgLogo } from "@/hooks/useOrgLogo"
+import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
+import { themeCustomizationAtom } from "@/store/AuthCustomizationAtom"
 
 type Props = {
   orgId?: string
@@ -28,6 +33,7 @@ type Props = {
   currentPage?: string
   affiliate: boolean
   AffiliateData?: AffiliateData | null
+  org?: Organization
 }
 
 const AffiliateDashboardSidebar = ({
@@ -37,6 +43,7 @@ const AffiliateDashboardSidebar = ({
   currentPage,
   affiliate,
   AffiliateData,
+  org,
 }: Props) => {
   const pathname = usePathname()
   const items = [
@@ -62,6 +69,8 @@ const AffiliateDashboardSidebar = ({
     { title: "Payment", key: "payment", icon: Users },
   ]
   const [hoveredKey, setHoveredKey] = useState<string | null>(null)
+  const { headerColor } = useAtomValue(themeCustomizationAtom)
+  const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
   const {
     sideBarHoverNavigationTextColor,
     sideBarHoverNavigationBackgroundColor,
@@ -88,15 +97,40 @@ const AffiliateDashboardSidebar = ({
             "hsl(var(--sidebar-background))",
         }}
       >
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-md bg-primary/90 flex items-center justify-center text-white font-bold text-xs">
-            A
+        {affiliate || isPreview ? (
+          <div className="flex items-center space-x-2">
+            <LogoUpload
+              value={logoUrl}
+              onChange={setLogoUrl} // read-only in sidebar
+              affiliate={affiliate}
+              orgId={orgId}
+              orgName={org?.name}
+              mode="avatar"
+            />
+
+            <h1
+              className={`font-bold ${isPreview ? "text-lg" : "text-xl"}`}
+              style={{ color: (affiliate && headerColor) || undefined }}
+            >
+              {org?.name || "AffiliateX"}
+            </h1>
+            {isPreview && (
+              <ThemeCustomizationOptions
+                name="headerColor"
+                showLabel={false}
+                buttonSize="w-4 h-4"
+              />
+            )}
+            {isPreview && <SidebarCustomizationOptions triggerSize="w-6 h-6" />}
           </div>
-          <h1 className={`font-bold ${isPreview ? "text-lg" : "text-xl"}`}>
-            AffiliateX
-          </h1>
-          {isPreview && <SidebarCustomizationOptions triggerSize="w-6 h-6" />}
-        </div>
+        ) : (
+          <Link href="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 rounded-md bg-primary/90 flex items-center justify-center text-white font-bold text-xs">
+              A
+            </div>
+            <h1 className="font-bold text-xl">AffiliateX</h1>
+          </Link>
+        )}
       </SidebarHeader>
 
       <SidebarContent

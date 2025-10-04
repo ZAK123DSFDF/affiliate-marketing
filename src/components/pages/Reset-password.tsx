@@ -34,12 +34,16 @@ import {
   buttonCustomizationAtom,
   themeCustomizationAtom,
 } from "@/store/AuthCustomizationAtom"
+import { LogoUpload } from "@/components/ui-custom/LogoUpload"
+import { useOrgLogo } from "@/hooks/useOrgLogo"
+import { Organization } from "@/lib/types/orgAuth"
 type Props = {
   userId: string
   orgId?: string
   isPreview?: boolean
   setTab?: (tab: string) => void
   affiliate: boolean
+  org?: Organization
 }
 const ResetPassword = ({
   userId,
@@ -47,6 +51,7 @@ const ResetPassword = ({
   isPreview = false,
   setTab,
   affiliate,
+  org,
 }: Props) => {
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(passwordSchema),
@@ -57,6 +62,7 @@ const ResetPassword = ({
   })
 
   const [pending, setPending] = useState(false)
+  const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
   const { showCustomToast } = useCustomToast()
   const {
     backgroundColor,
@@ -64,6 +70,7 @@ const ResetPassword = ({
     tertiaryTextColor,
     primaryCustomization,
     secondaryCustomization,
+    headerColor,
   } = useAtomValue(themeCustomizationAtom)
   const {
     buttonDisabledTextColor,
@@ -138,14 +145,41 @@ const ResetPassword = ({
     >
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block">
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-8 h-8 rounded-md bg-primary/90 flex items-center justify-center text-white font-bold">
-                A
-              </div>
-              <h1 className="text-2xl font-bold">AffiliateX</h1>
+          {affiliate || isPreview ? (
+            <div className="flex items-center justify-center space-x-2 cursor-pointer">
+              <LogoUpload
+                value={logoUrl}
+                onChange={setLogoUrl}
+                affiliate={affiliate}
+                orgId={orgId}
+                orgName={org?.name}
+                mode="avatar"
+              />
+
+              <h1
+                className="text-4xl font-bold"
+                style={{ color: (affiliate && headerColor) || undefined }}
+              >
+                {org?.name || "AffiliateX"}
+              </h1>
+              {isPreview && (
+                <ThemeCustomizationOptions
+                  name="headerColor"
+                  showLabel={false}
+                  buttonSize="w-4 h-4"
+                />
+              )}
             </div>
-          </Link>
+          ) : (
+            <Link href="/" className="inline-block">
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-8 h-8 rounded-md bg-primary/90 flex items-center justify-center text-white font-bold">
+                  A
+                </div>
+                <h1 className="text-2xl font-bold">AffiliateX</h1>
+              </div>
+            </Link>
+          )}
         </div>
 
         <Card

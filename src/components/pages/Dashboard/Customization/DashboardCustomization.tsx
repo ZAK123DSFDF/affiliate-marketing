@@ -10,8 +10,15 @@ import AffiliateOverview from "@/components/pages/AffiliateDashboard/AffiliateOv
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
 import { useAtomValue } from "jotai"
 import { dashboardThemeCustomizationAtom } from "@/store/DashboardCustomizationAtom"
+import { Organization } from "@/lib/types/orgAuth"
 
-export function DashboardCustomization({ orgId }: { orgId: string }) {
+export function DashboardCustomization({
+  orgId,
+  org,
+}: {
+  orgId: string
+  org?: Organization
+}) {
   const [selectedPage, setSelectedPage] = useState("dashboard")
 
   const { mainBackgroundColor } = useAtomValue(dashboardThemeCustomizationAtom)
@@ -27,6 +34,7 @@ export function DashboardCustomization({ orgId }: { orgId: string }) {
             affiliate
             orgId={orgId}
             isPreview
+            org={org}
             currentPage={selectedPage}
             onSelectPage={(page: any) => setSelectedPage(page)}
           />

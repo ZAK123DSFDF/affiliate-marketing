@@ -3,13 +3,15 @@ import ForgotPassword from "@/components/pages/Forgot-password"
 import { OrgIdProps } from "@/lib/types/orgId"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { redirectIfAffiliateAuthed } from "@/lib/server/authGuards"
+import { getOrg } from "@/lib/server/getOrg"
 
 const forgetPasswordPage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
   await redirectIfAffiliateAuthed(orgId)
+  const org = await getOrg(orgId)
   return (
     <>
-      <ForgotPassword orgId={orgId} affiliate />
+      <ForgotPassword orgId={orgId} affiliate org={org} />
     </>
   )
 }

@@ -82,7 +82,7 @@ export default function CustomizationPage({
           </TabsList>
 
           <TabsContent value="sidebar">
-            <DashboardCustomization orgId={orgId} />
+            <DashboardCustomization org={org} orgId={orgId} />
           </TabsContent>
           <TabsContent value="auth">
             <AuthCustomization

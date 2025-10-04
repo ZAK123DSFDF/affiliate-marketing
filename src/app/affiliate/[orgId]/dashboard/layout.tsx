@@ -5,6 +5,7 @@ import AffiliateDashboardSidebar from "@/components/AffiliateDashboardSidebar"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { getAffiliateData } from "@/app/affiliate/[orgId]/dashboard/profile/action"
 import { CustomizationProvider } from "@/app/affiliate/[orgId]/dashboard/customizationProvider"
+import { getOrg } from "@/lib/server/getOrg"
 
 interface AffiliateDashboardLayoutProps extends OrgIdProps {
   children: React.ReactNode
@@ -16,6 +17,7 @@ export default async function DashboardLayout({
 }: AffiliateDashboardLayoutProps) {
   const orgId = await getValidatedOrgFromParams({ params })
   const affiliateResponse = await getAffiliateData(orgId)
+  const org = await getOrg(orgId)
   const affiliate = affiliateResponse.ok ? affiliateResponse.data : null
   return (
     <CustomizationProvider orgId={orgId}>
@@ -23,6 +25,7 @@ export default async function DashboardLayout({
         <AffiliateDashboardSidebar
           affiliate
           orgId={orgId}
+          org={org}
           AffiliateData={affiliate}
         />
         <SidebarInset affiliate className="bg-background">

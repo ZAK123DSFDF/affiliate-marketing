@@ -39,15 +39,22 @@ export const AuthCustomization = ({
           <Login orgId={orgId} org={org} affiliate isPreview setTab={setTab} />
         </TabsContent>
         <TabsContent value="signup">
-          <Signup orgId={orgId} affiliate isPreview setTab={setTab} />
+          <Signup orgId={orgId} affiliate isPreview setTab={setTab} org={org} />
         </TabsContent>
         <TabsContent value="forgot-password">
-          <ForgotPassword orgId={orgId} affiliate isPreview setTab={setTab} />
+          <ForgotPassword
+            orgId={orgId}
+            affiliate
+            isPreview
+            setTab={setTab}
+            org={org}
+          />
         </TabsContent>
         <TabsContent value="reset-password">
           <ResetPassword
             orgId={orgId}
             affiliate
+            org={org}
             isPreview
             setTab={setTab}
             userId="1234"

@@ -163,6 +163,7 @@ export default function Settings({ orgData }: Props) {
                     onChange={(url) => form.setValue("logoUrl", url || "")}
                     affiliate={false}
                     orgId={orgData.id}
+                    orgName={orgData.name}
                   />
                 </div>
               </div>
