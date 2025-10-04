@@ -4,7 +4,6 @@ import InvalidToken from "@/components/pages/InvalidToken"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { validateResetToken } from "@/lib/server/validateResetToken"
 import { redirectIfAffiliateAuthed } from "@/lib/server/authGuards"
-import { getOrg } from "@/lib/server/getOrg"
 
 type Props = {
   searchParams: Promise<{ affiliateToken?: string }>
