@@ -20,11 +20,11 @@ import { cn } from "@/lib/utils"
 import { AffiliateData } from "@/lib/types/profileTypes"
 import { useAtomValue } from "jotai"
 import { sidebarCustomizationAtom } from "@/store/DashboardCustomizationAtom"
-import { Organization } from "@/lib/types/orgAuth"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 import { useOrgLogo } from "@/hooks/useOrgLogo"
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
 import { themeCustomizationAtom } from "@/store/AuthCustomizationAtom"
+import { useOrganization } from "@/components/layout/OrganizationProvider"
 
 type Props = {
   orgId?: string
@@ -33,7 +33,6 @@ type Props = {
   currentPage?: string
   affiliate: boolean
   AffiliateData?: AffiliateData | null
-  org?: Organization
 }
 
 const AffiliateDashboardSidebar = ({
@@ -43,7 +42,6 @@ const AffiliateDashboardSidebar = ({
   currentPage,
   affiliate,
   AffiliateData,
-  org,
 }: Props) => {
   const pathname = usePathname()
   const items = [
@@ -70,6 +68,7 @@ const AffiliateDashboardSidebar = ({
   ]
   const [hoveredKey, setHoveredKey] = useState<string | null>(null)
   const { headerColor } = useAtomValue(themeCustomizationAtom)
+  const { org } = useOrganization()
   const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
   const {
     sideBarHoverNavigationTextColor,

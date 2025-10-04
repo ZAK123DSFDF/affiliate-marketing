@@ -37,20 +37,18 @@ import {
 } from "@/store/AuthCustomizationAtom"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 import { useOrgLogo } from "@/hooks/useOrgLogo"
-import { Organization } from "@/lib/types/orgAuth"
+import { useOrganization } from "@/components/layout/OrganizationProvider"
 type Props = {
   orgId?: string
   isPreview?: boolean
   setTab?: (tab: string) => void
   affiliate: boolean
-  org?: Organization
 }
 const ForgotPassword = ({
   orgId,
   isPreview = false,
   setTab,
   affiliate,
-  org,
 }: Props) => {
   const form = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -59,6 +57,7 @@ const ForgotPassword = ({
     },
   })
   const [pending, setPending] = useState(false)
+  const { org } = useOrganization()
   const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
   const { showCustomToast } = useCustomToast()
   const {

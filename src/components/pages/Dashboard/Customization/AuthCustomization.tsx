@@ -11,16 +11,13 @@ import ResetPassword from "@/components/pages/Reset-password"
 import InvalidToken from "@/components/pages/InvalidToken"
 import EmailVerified from "@/components/pages/Email-verified"
 import CheckEmail from "@/components/pages/CheckEmail"
-import { Organization } from "@/lib/types/orgAuth"
 interface AuthCustomizationProps {
   setMainTab?: (tab: string) => void
   orgId: string
-  org?: Organization
 }
 export const AuthCustomization = ({
   setMainTab,
   orgId,
-  org,
 }: AuthCustomizationProps) => {
   const [tab, setTab] = useState("login")
   return (
@@ -36,25 +33,18 @@ export const AuthCustomization = ({
           <TabsTrigger value="check-email">Check Email</TabsTrigger>
         </TabsList>
         <TabsContent value="login">
-          <Login orgId={orgId} org={org} affiliate isPreview setTab={setTab} />
+          <Login orgId={orgId} affiliate isPreview setTab={setTab} />
         </TabsContent>
         <TabsContent value="signup">
-          <Signup orgId={orgId} affiliate isPreview setTab={setTab} org={org} />
+          <Signup orgId={orgId} affiliate isPreview setTab={setTab} />
         </TabsContent>
         <TabsContent value="forgot-password">
-          <ForgotPassword
-            orgId={orgId}
-            affiliate
-            isPreview
-            setTab={setTab}
-            org={org}
-          />
+          <ForgotPassword orgId={orgId} affiliate isPreview setTab={setTab} />
         </TabsContent>
         <TabsContent value="reset-password">
           <ResetPassword
             orgId={orgId}
             affiliate
-            org={org}
             isPreview
             setTab={setTab}
             userId="1234"

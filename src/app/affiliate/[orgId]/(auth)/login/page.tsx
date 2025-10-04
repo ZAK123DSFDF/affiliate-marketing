@@ -8,10 +8,10 @@ import { getOrg } from "@/lib/server/getOrg"
 const AffiliateLoginPage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
   await redirectIfAffiliateAuthed(orgId)
-  const org = await getOrg(orgId)
+
   return (
     <>
-      <Login affiliate orgId={orgId} org={org} />
+      <Login affiliate orgId={orgId} />
     </>
   )
 }

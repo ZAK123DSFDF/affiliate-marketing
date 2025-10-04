@@ -31,23 +31,17 @@ import {
 import { GoogleButton } from "@/components/ui-custom/GoogleButton"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 import { useOrgLogo } from "@/hooks/useOrgLogo"
-import { Organization } from "@/lib/types/orgAuth"
+import { useOrganization } from "@/components/layout/OrganizationProvider"
 type Props = {
   orgId?: string
   isPreview?: boolean
   setTab?: (tab: string) => void
   affiliate: boolean
-  org?: Organization
 }
-const Signup = ({
-  orgId,
-  isPreview = false,
-  setTab,
-  affiliate,
-  org,
-}: Props) => {
+const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false)
   const { customNotesSignup } = useAtomValue(notesCustomizationAtom)
+  const { org } = useOrganization()
   const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),

@@ -30,18 +30,18 @@ import {
 } from "@/store/AuthCustomizationAtom"
 import { GoogleButton } from "@/components/ui-custom/GoogleButton"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
-import { Organization } from "@/lib/types/orgAuth"
 import { useOrgLogo } from "@/hooks/useOrgLogo"
+import { useOrganization } from "@/components/layout/OrganizationProvider"
 type Props = {
   orgId?: string
   isPreview?: boolean
   setTab?: (tab: string) => void
   affiliate: boolean
-  org?: Organization
 }
-const Login = ({ orgId, isPreview = false, setTab, affiliate, org }: Props) => {
+const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { showCustomToast } = useCustomToast()
   const [previewLoading, setPreviewLoading] = useState(false)
+  const { org } = useOrganization()
   const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),

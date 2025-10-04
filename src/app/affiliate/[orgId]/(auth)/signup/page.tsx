@@ -7,10 +7,9 @@ import { getOrg } from "@/lib/server/getOrg"
 const AffiliateSignupPage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
   await redirectIfAffiliateAuthed(orgId)
-  const org = await getOrg(orgId)
   return (
     <>
-      <Signup affiliate orgId={orgId} org={org} />
+      <Signup affiliate orgId={orgId} />
     </>
   )
 }

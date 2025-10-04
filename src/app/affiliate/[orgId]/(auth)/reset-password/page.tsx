@@ -15,7 +15,6 @@ const ResetPasswordPage = async ({ searchParams, params }: Props) => {
   const { affiliateToken } = await searchParams
   const orgId = await getValidatedOrgFromParams({ params })
   await redirectIfAffiliateAuthed(orgId)
-  const org = await getOrg(orgId)
   if (!affiliateToken) {
     return (
       <InvalidToken
@@ -41,14 +40,7 @@ const ResetPasswordPage = async ({ searchParams, params }: Props) => {
     )
   }
 
-  return (
-    <ResetPassword
-      orgId={orgId}
-      affiliate
-      userId={sessionPayload.id}
-      org={org}
-    />
-  )
+  return <ResetPassword orgId={orgId} affiliate userId={sessionPayload.id} />
 }
 
 export default ResetPasswordPage
