@@ -6,9 +6,11 @@ import ErrorState from "@/components/ui-custom/ErrorState"
 export function CustomizationProvider({
   orgId,
   children,
+  affiliate,
 }: {
   orgId: string
   children: React.ReactNode
+  affiliate: boolean
 }) {
   const { isPending, isError, refetch } = useCustomizationSync(
     orgId,
@@ -16,10 +18,10 @@ export function CustomizationProvider({
   )
 
   if (isPending) {
-    return <PendingState withoutBackground />
+    return <PendingState affiliate={affiliate} withoutBackground />
   }
   if (isError) {
-    return <ErrorState onRetry={refetch} />
+    return <ErrorState affiliate={affiliate} onRetry={refetch} />
   }
 
   return <>{children}</>

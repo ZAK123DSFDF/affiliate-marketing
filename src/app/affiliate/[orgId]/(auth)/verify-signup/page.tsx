@@ -18,5 +18,5 @@ export default async function VerifySignupPage({ searchParams }: Props) {
     )
   }
 
-  return <VerifyClient token={affiliateToken} mode="signup" />
+  return <VerifyClient affiliate token={affiliateToken} mode="signup" />
 }

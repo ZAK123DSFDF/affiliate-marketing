@@ -9,7 +9,7 @@ import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/
 type PendingStateProps = {
   withoutBackground?: boolean
   message?: string
-  affiliate?: boolean
+  affiliate: boolean
   isPreview?: boolean
 }
 

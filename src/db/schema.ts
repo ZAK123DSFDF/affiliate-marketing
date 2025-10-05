@@ -533,6 +533,8 @@ export const organizationAuthCustomization = pgTable(
         splashLoadingTextColor: string
         splashErrorIconColor: string
         splashErrorTextColor: string
+        checkEmailPrimaryColor: string
+        checkEmailSecondaryColor: string
       }
     }>(),
     createdAt: timestamp("created_at").defaultNow().notNull(),

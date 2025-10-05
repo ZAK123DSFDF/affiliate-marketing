@@ -15,7 +15,7 @@ type Props = {
 }
 
 const CheckEmail = ({ isPreview, affiliate }: Props) => {
-  const { backgroundColor, primaryCustomization, secondaryCustomization } =
+  const { backgroundColor, checkEmailPrimaryColor, checkEmailSecondaryColor } =
     useAtomValue(themeCustomizationAtom)
 
   const authCardStyle = useAuthCard(affiliate)
@@ -40,14 +40,14 @@ const CheckEmail = ({ isPreview, affiliate }: Props) => {
               <CardTitle
                 className="text-2xl font-bold text-center"
                 style={{
-                  color: (affiliate && primaryCustomization) || undefined,
+                  color: (affiliate && checkEmailPrimaryColor) || undefined,
                 }}
               >
                 Check Your Email
               </CardTitle>
               {isPreview && (
                 <ThemeCustomizationOptions
-                  name="primaryCustomization"
+                  name="checkEmailPrimaryColor"
                   showLabel={false}
                   buttonSize="w-4 h-4"
                 />
@@ -60,7 +60,7 @@ const CheckEmail = ({ isPreview, affiliate }: Props) => {
               <p
                 className="text-muted-foreground"
                 style={{
-                  color: (affiliate && secondaryCustomization) || undefined,
+                  color: (affiliate && checkEmailSecondaryColor) || undefined,
                 }}
               >
                 We’ve sent a verification email to your inbox. Please check your
@@ -69,14 +69,14 @@ const CheckEmail = ({ isPreview, affiliate }: Props) => {
               <p
                 className="text-muted-foreground mt-2"
                 style={{
-                  color: (affiliate && secondaryCustomization) || undefined,
+                  color: (affiliate && checkEmailSecondaryColor) || undefined,
                 }}
               >
                 If you don’t see it, check your spam folder or try again.
               </p>
               {isPreview && (
                 <ThemeCustomizationOptions
-                  name="secondaryCustomization"
+                  name="checkEmailSecondaryColor"
                   showLabel={false}
                   buttonSize="w-4 h-4"
                 />

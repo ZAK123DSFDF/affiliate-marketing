@@ -16,6 +16,7 @@ interface ErrorStateProps {
   onRetry?: () => void
   affiliate?: boolean
   isPreview?: boolean
+  withoutBackground?: boolean
 }
 
 const ErrorState: React.FC<ErrorStateProps> = ({
@@ -23,6 +24,7 @@ const ErrorState: React.FC<ErrorStateProps> = ({
   onRetry,
   affiliate = false,
   isPreview = false,
+  withoutBackground = false,
 }) => {
   const { buttonBackgroundColor, buttonTextColor } = useAtomValue(
     buttonCustomizationAtom
@@ -31,9 +33,17 @@ const ErrorState: React.FC<ErrorStateProps> = ({
 
   const iconColor = affiliate ? theme.splashErrorIconColor : undefined
   const textColor = affiliate ? theme.splashErrorTextColor : undefined
+  const backgroundColor = affiliate ? theme.backgroundColor : undefined
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-white space-y-6">
+    <div
+      className="relative flex flex-col items-center justify-center h-screen space-y-6"
+      style={{
+        backgroundColor: withoutBackground
+          ? undefined
+          : backgroundColor || "white",
+      }}
+    >
       {/* Icon + customization */}
       <div className="flex items-center space-x-2">
         <AlertTriangle
@@ -82,6 +92,13 @@ const ErrorState: React.FC<ErrorStateProps> = ({
           {isPreview && (
             <ButtonCustomizationOptions onlyShowEnabled size="w-6 h-6" />
           )}
+        </div>
+      )}
+
+      {/* Background customization (preview) */}
+      {isPreview && !withoutBackground && (
+        <div className="absolute bottom-0 left-0 z-50 p-2">
+          <ThemeCustomizationOptions name="backgroundColor" showLabel={false} />
         </div>
       )}
     </div>

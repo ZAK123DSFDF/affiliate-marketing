@@ -18,7 +18,7 @@ export default async function DashboardLayout({
   const affiliateResponse = await getAffiliateData(orgId)
   const affiliate = affiliateResponse.ok ? affiliateResponse.data : null
   return (
-    <CustomizationProvider orgId={orgId}>
+    <CustomizationProvider affiliate orgId={orgId}>
       <SidebarProvider affiliate orgId={orgId}>
         <AffiliateDashboardSidebar
           affiliate

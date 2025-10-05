@@ -206,6 +206,8 @@ export const organization_auth_customization_seed = [
         splashLoadingTextColor: "",
         splashErrorIconColor: "",
         splashErrorTextColor: "",
+        checkEmailPrimaryColor: "",
+        checkEmailSecondaryColor: "",
       },
       useButtonCustomization: {
         buttonTextColor: "",

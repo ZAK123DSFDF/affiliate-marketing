@@ -38,6 +38,7 @@ import {
   kpiCardCustomizationAtom,
   chartCustomizationAtom,
   pieChartColorCustomizationAtom,
+  logoutButtonCustomizationAtom,
 } from "@/store/DashboardCustomizationAtom"
 import {
   initialSidebarCustomizationAtom,
@@ -51,6 +52,7 @@ import {
   initialKpiCardCustomizationAtom,
   initialChartCustomizationAtom,
   initialPieChartColorCustomizationAtom,
+  initialLogoutButtonCustomizationAtom,
 } from "@/store/DashboardChangesAtom"
 
 type CustomizationType = "auth" | "dashboard" | "both"
@@ -86,6 +88,7 @@ export function useCustomizationSync(
   const setKpiCard = useSetAtom(kpiCardCustomizationAtom)
   const setChart = useSetAtom(chartCustomizationAtom)
   const setPieChartColor = useSetAtom(pieChartColorCustomizationAtom)
+  const setLogoutButton = useSetAtom(logoutButtonCustomizationAtom)
 
   const setInitialSidebar = useSetAtom(initialSidebarCustomizationAtom)
   const setInitialDashboardCard = useSetAtom(
@@ -105,6 +108,9 @@ export function useCustomizationSync(
   const setInitialChart = useSetAtom(initialChartCustomizationAtom)
   const setInitialPieChartColor = useSetAtom(
     initialPieChartColorCustomizationAtom
+  )
+  const setInitialLogoutButton = useSetAtom(
+    initialLogoutButtonCustomizationAtom
   )
 
   const query = useQuery({
@@ -206,6 +212,10 @@ export function useCustomizationSync(
       if (typedDashboard.usePieChartColorCustomization) {
         setPieChartColor(typedDashboard.usePieChartColorCustomization)
         setInitialPieChartColor(typedDashboard.usePieChartColorCustomization)
+      }
+      if (typedDashboard.useLogoutButtonCustomization) {
+        setLogoutButton(typedDashboard.useLogoutButtonCustomization)
+        setInitialLogoutButton(typedDashboard.useLogoutButtonCustomization)
       }
     }
   }, [query.data])

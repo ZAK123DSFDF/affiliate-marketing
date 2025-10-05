@@ -11,7 +11,7 @@ export default async function AuthLayout({
 }: authLayoutProps) {
   const orgId = await getValidatedOrgFromParams({ params })
   return (
-    <AuthCustomizationProvider orgId={orgId}>
+    <AuthCustomizationProvider affiliate orgId={orgId}>
       {children}
     </AuthCustomizationProvider>
   )

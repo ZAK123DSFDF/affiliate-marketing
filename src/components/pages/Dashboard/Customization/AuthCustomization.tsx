@@ -79,7 +79,7 @@ export const AuthCustomization = ({
         </TabsContent>
         <TabsContent value="splash-error">
           {errorCycle === "loading" ? (
-            <PendingState message="Retrying..." />
+            <PendingState affiliate message="Retrying..." />
           ) : (
             <ErrorState affiliate isPreview onRetry={handleRetry} />
           )}

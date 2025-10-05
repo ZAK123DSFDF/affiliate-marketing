@@ -45,6 +45,8 @@ export const defaultAuthCustomization = {
     splashLoadingTextColor: "",
     splashErrorIconColor: "",
     splashErrorTextColor: "",
+    checkEmailPrimaryColor: "",
+    checkEmailSecondaryColor: "",
   },
   useNotesCustomization: {
     customNotesLogin: "",

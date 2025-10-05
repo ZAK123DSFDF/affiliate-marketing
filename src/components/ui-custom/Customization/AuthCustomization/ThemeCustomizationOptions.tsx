@@ -38,6 +38,8 @@ export const ThemeCustomizationOptions = ({
     splashLoadingTextColor: "Splash Loading Text",
     splashErrorIconColor: "Splash Error Icon",
     splashErrorTextColor: "Splash Error Text",
+    checkEmailPrimaryColor: "Check Email Primary",
+    checkEmailSecondaryColor: "Check Email Secondary",
   }
 
   return (

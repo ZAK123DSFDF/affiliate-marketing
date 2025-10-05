@@ -18,5 +18,5 @@ export default async function VerifyLoginPage({ searchParams }: Props) {
     )
   }
 
-  return <VerifyClient token={affiliateToken} mode="login" />
+  return <VerifyClient affiliate token={affiliateToken} mode="login" />
 }

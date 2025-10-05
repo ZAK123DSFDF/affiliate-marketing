@@ -15,6 +15,8 @@ import {
   dialogCustomizationAtom,
   KpiCardCustomization,
   kpiCardCustomizationAtom,
+  LogoutButtonCustomization,
+  logoutButtonCustomizationAtom,
   PieChartColorCustomization,
   pieChartColorCustomizationAtom,
   SidebarCustomization,
@@ -54,6 +56,8 @@ export const initialChartCustomizationAtom = atom<ChartCustomization | null>(
 )
 export const initialPieChartColorCustomizationAtom =
   atom<PieChartColorCustomization | null>(null)
+export const initialLogoutButtonCustomizationAtom =
+  atom<LogoutButtonCustomization | null>(null)
 
 // Derived atom: true if *any* dashboard customization differs
 export const dashboardHasChangesAtom = atom((get) => {
@@ -80,6 +84,10 @@ export const dashboardHasChangesAtom = atom((get) => {
     [
       get(pieChartColorCustomizationAtom),
       get(initialPieChartColorCustomizationAtom),
+    ],
+    [
+      get(logoutButtonCustomizationAtom),
+      get(initialLogoutButtonCustomizationAtom),
     ],
   ]
 

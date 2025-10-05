@@ -5,13 +5,17 @@ import { useQuery } from "@tanstack/react-query"
 import { VerifyServer } from "@/lib/server/verifyServer"
 import { useRouter } from "next/navigation"
 import EmailVerified from "@/components/pages/Email-verified"
+import PendingState from "@/components/ui-custom/PendingState"
+import ErrorState from "@/components/ui-custom/ErrorState"
 
 export default function VerifyClient({
   token,
   mode,
+  affiliate,
 }: {
   token: string
   mode: "login" | "signup" | "changeEmail"
+  affiliate: boolean
 }) {
   const router = useRouter()
 
@@ -37,11 +41,21 @@ export default function VerifyClient({
   }, [data?.redirectUrl, data?.mode, router])
 
   if (isPending) {
-    return <p>Verifying your {mode}...</p>
+    return (
+      <PendingState
+        affiliate={affiliate}
+        message={`Verifying your ${mode}...`}
+      />
+    )
   }
 
   if (isError || data?.success === false) {
-    return <p>The {mode} link is invalid or expired.</p>
+    return (
+      <ErrorState
+        affiliate={affiliate}
+        message={`The ${mode} link is invalid or expired.`}
+      />
+    )
   }
   if (data?.mode) {
     return (
