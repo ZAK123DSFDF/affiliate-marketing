@@ -34,6 +34,10 @@ export const ThemeCustomizationOptions = ({
     emailVerifiedPrimaryColor: "Email Verified Primary",
     emailVerifiedSecondaryColor: "Email Verified Secondary",
     emailVerifiedIconColor: "Email Verified Icon",
+    splashLoadingColor: "Splash Loading",
+    splashLoadingTextColor: "Splash Loading Text",
+    splashErrorIconColor: "Splash Error Icon",
+    splashErrorTextColor: "Splash Error Text",
   }
 
   return (

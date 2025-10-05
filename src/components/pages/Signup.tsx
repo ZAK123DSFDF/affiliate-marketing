@@ -10,7 +10,7 @@ import Link from "next/link"
 import { InputField } from "@/components/Auth/FormFields"
 import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema"
 import { SignupAffiliateServer } from "@/app/affiliate/[orgId]/(auth)/signup/action"
-import { SignupServer } from "@/app/(seller)/signup/action"
+import { SignupServer } from "@/app/(seller)/(auth)/signup/action"
 
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
 import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions"
@@ -31,7 +31,7 @@ import {
 import { GoogleButton } from "@/components/ui-custom/GoogleButton"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 import { useOrgLogo } from "@/hooks/useOrgLogo"
-import { useOrganization } from "@/components/layout/OrganizationProvider"
+import { useOrg } from "@/hooks/useOrg"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -41,7 +41,7 @@ type Props = {
 const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false)
   const { customNotesSignup } = useAtomValue(notesCustomizationAtom)
-  const { org } = useOrganization()
+  const { org } = useOrg(orgId, affiliate)
   const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),

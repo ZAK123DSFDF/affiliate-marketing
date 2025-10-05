@@ -10,7 +10,7 @@ import Link from "next/link"
 import { InputField, CheckboxField } from "@/components/Auth/FormFields"
 import { LoginFormValues, loginSchema } from "@/lib/schema/loginSchema"
 import { LoginAffiliateServer } from "@/app/affiliate/[orgId]/(auth)/login/action"
-import { LoginServer } from "@/app/(seller)/login/action"
+import { LoginServer } from "@/app/(seller)/(auth)/login/action"
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
 import { CheckboxCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CheckboxCustomizationOptions"
 import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions"
@@ -31,7 +31,7 @@ import {
 import { GoogleButton } from "@/components/ui-custom/GoogleButton"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 import { useOrgLogo } from "@/hooks/useOrgLogo"
-import { useOrganization } from "@/components/layout/OrganizationProvider"
+import { useOrg } from "@/hooks/useOrg"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -41,7 +41,7 @@ type Props = {
 const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { showCustomToast } = useCustomToast()
   const [previewLoading, setPreviewLoading] = useState(false)
-  const { org } = useOrganization()
+  const { org } = useOrg(orgId, affiliate)
   const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),

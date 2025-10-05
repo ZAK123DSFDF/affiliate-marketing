@@ -24,7 +24,7 @@ import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 import { useOrgLogo } from "@/hooks/useOrgLogo"
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
 import { themeCustomizationAtom } from "@/store/AuthCustomizationAtom"
-import { useOrganization } from "@/components/layout/OrganizationProvider"
+import { useOrg } from "@/hooks/useOrg"
 
 type Props = {
   orgId?: string
@@ -68,7 +68,7 @@ const AffiliateDashboardSidebar = ({
   ]
   const [hoveredKey, setHoveredKey] = useState<string | null>(null)
   const { headerColor } = useAtomValue(themeCustomizationAtom)
-  const { org } = useOrganization()
+  const { org } = useOrg(orgId, affiliate)
   const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
   const {
     sideBarHoverNavigationTextColor,

@@ -202,6 +202,10 @@ export const organization_auth_customization_seed = [
         InvalidPrimaryCustomization: "",
         emailVerifiedSecondaryColor: "",
         InvalidSecondaryCustomization: "",
+        splashLoadingColor: "",
+        splashLoadingTextColor: "",
+        splashErrorIconColor: "",
+        splashErrorTextColor: "",
       },
       useButtonCustomization: {
         buttonTextColor: "",

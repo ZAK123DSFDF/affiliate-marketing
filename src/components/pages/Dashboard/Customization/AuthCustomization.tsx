@@ -11,6 +11,8 @@ import ResetPassword from "@/components/pages/Reset-password"
 import InvalidToken from "@/components/pages/InvalidToken"
 import EmailVerified from "@/components/pages/Email-verified"
 import CheckEmail from "@/components/pages/CheckEmail"
+import PendingState from "@/components/ui-custom/PendingState"
+import ErrorState from "@/components/ui-custom/ErrorState"
 interface AuthCustomizationProps {
   setMainTab?: (tab: string) => void
   orgId: string
@@ -20,6 +22,12 @@ export const AuthCustomization = ({
   orgId,
 }: AuthCustomizationProps) => {
   const [tab, setTab] = useState("login")
+  const [errorCycle, setErrorCycle] = useState<"loading" | "error">("error")
+
+  const handleRetry = () => {
+    setErrorCycle("loading")
+    setTimeout(() => setErrorCycle("error"), 1500)
+  }
   return (
     <div className="border rounded-lg p-4 transition-all duration-300 mt-6 shadow-md">
       <Tabs value={tab} onValueChange={setTab}>
@@ -31,6 +39,8 @@ export const AuthCustomization = ({
           <TabsTrigger value="invalid-token">Invalid Token</TabsTrigger>
           <TabsTrigger value="email-verified">Email Verified</TabsTrigger>
           <TabsTrigger value="check-email">Check Email</TabsTrigger>
+          <TabsTrigger value="splash-loading">Splash Loading</TabsTrigger>
+          <TabsTrigger value="splash-error">Splash Error</TabsTrigger>
         </TabsList>
         <TabsContent value="login">
           <Login orgId={orgId} affiliate isPreview setTab={setTab} />
@@ -63,6 +73,16 @@ export const AuthCustomization = ({
         </TabsContent>
         <TabsContent value="check-email">
           <CheckEmail affiliate isPreview orgId={orgId} />
+        </TabsContent>
+        <TabsContent value="splash-loading">
+          <PendingState affiliate isPreview />
+        </TabsContent>
+        <TabsContent value="splash-error">
+          {errorCycle === "loading" ? (
+            <PendingState message="Retrying..." />
+          ) : (
+            <ErrorState affiliate isPreview onRetry={handleRetry} />
+          )}
         </TabsContent>
       </Tabs>
     </div>

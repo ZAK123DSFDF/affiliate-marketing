@@ -26,7 +26,7 @@ import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { LinkButton } from "@/components/ui-custom/LinkButton"
 import { useAuthCard } from "@/hooks/useAuthCard"
-import { resetSellerPasswordServer } from "@/app/(seller)/reset-password/action"
+import { resetSellerPasswordServer } from "@/app/(seller)/(auth)/reset-password/action"
 import { resetAffiliatePasswordServer } from "@/app/affiliate/[orgId]/(auth)/reset-password/action"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
 import { useAtomValue } from "jotai/index"
@@ -36,7 +36,7 @@ import {
 } from "@/store/AuthCustomizationAtom"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 import { useOrgLogo } from "@/hooks/useOrgLogo"
-import { useOrganization } from "@/components/layout/OrganizationProvider"
+import { useOrg } from "@/hooks/useOrg"
 type Props = {
   userId: string
   orgId?: string
@@ -60,7 +60,7 @@ const ResetPassword = ({
   })
 
   const [pending, setPending] = useState(false)
-  const { org } = useOrganization()
+  const { org } = useOrg(orgId, affiliate)
   const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
   const { showCustomToast } = useCustomToast()
   const {

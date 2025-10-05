@@ -13,16 +13,8 @@ import { authHasChangesAtom } from "@/store/AuthChangesAtom"
 import { dashboardHasChangesAtom } from "@/store/DashboardChangesAtom"
 import { useLiveCustomizations } from "@/store/LiveCustomizationAtom"
 import { GlobalCustomizationProvider } from "@/components/pages/Dashboard/Customization/GlobalCustomizationProvider"
-import { Organization } from "@/lib/types/orgAuth"
-import { OrganizationProvider } from "@/components/layout/OrganizationProvider"
 
-export default function CustomizationPage({
-  orgId,
-  org,
-}: {
-  orgId: string
-  org?: Organization
-}) {
+export default function CustomizationPage({ orgId }: { orgId: string }) {
   const [mainTab, setMainTab] = useState("sidebar")
 
   const authHasChanges = useAtomValue(authHasChangesAtom)
@@ -61,50 +53,44 @@ export default function CustomizationPage({
   }, [])
   return (
     <GlobalCustomizationProvider orgId={orgId}>
-      <OrganizationProvider org={org}>
-        <div className="p-6 space-y-6">
-          <div>
-            <h2 className="text-2xl font-semibold">
-              Customize Your Affiliate Page
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Adjust colors and layout settings to match your brand.
-            </p>
-          </div>
-
-          {/* Toast Inputs */}
-          <div className="space-y-2">
-            <ToastCustomization />
-          </div>
-
-          <Tabs
-            value={mainTab}
-            onValueChange={setMainTab}
-            className="space-y-4"
-          >
-            <TabsList>
-              <TabsTrigger value="sidebar">Sidebar</TabsTrigger>
-              <TabsTrigger value="auth">Auth Pages</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="sidebar">
-              <DashboardCustomization orgId={orgId} />
-            </TabsContent>
-            <TabsContent value="auth">
-              <AuthCustomization orgId={orgId} setMainTab={setMainTab} />
-            </TabsContent>
-          </Tabs>
-
-          <div className="pt-4">
-            <Button
-              onClick={() => mutation.mutate()}
-              disabled={!hasChanges || mutation.isPending}
-            >
-              {mutation.isPending ? "Saving..." : "Save Customizations"}
-            </Button>
-          </div>
+      <div className="p-6 space-y-6">
+        <div>
+          <h2 className="text-2xl font-semibold">
+            Customize Your Affiliate Page
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Adjust colors and layout settings to match your brand.
+          </p>
         </div>
-      </OrganizationProvider>
+
+        {/* Toast Inputs */}
+        <div className="space-y-2">
+          <ToastCustomization />
+        </div>
+
+        <Tabs value={mainTab} onValueChange={setMainTab} className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="sidebar">Sidebar</TabsTrigger>
+            <TabsTrigger value="auth">Auth Pages</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="sidebar">
+            <DashboardCustomization orgId={orgId} />
+          </TabsContent>
+          <TabsContent value="auth">
+            <AuthCustomization orgId={orgId} setMainTab={setMainTab} />
+          </TabsContent>
+        </Tabs>
+
+        <div className="pt-4">
+          <Button
+            onClick={() => mutation.mutate()}
+            disabled={!hasChanges || mutation.isPending}
+          >
+            {mutation.isPending ? "Saving..." : "Save Customizations"}
+          </Button>
+        </div>
+      </div>
     </GlobalCustomizationProvider>
   )
 }
