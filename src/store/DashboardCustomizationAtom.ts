@@ -26,7 +26,8 @@ export type ChartCustomization =
   typeof defaultDashboardCustomization.useChartCustomization
 export type PieChartColorCustomization =
   typeof defaultDashboardCustomization.usePieChartColorCustomization
-
+export type LogoutButtonCustomization =
+  typeof defaultDashboardCustomization.useLogoutButtonCustomization
 // atoms for each slice, fully typed
 export const sidebarCustomizationAtom = atom<SidebarCustomization>(
   defaultDashboardCustomization.useSidebarCustomization
@@ -72,4 +73,8 @@ export const chartCustomizationAtom = atom<ChartCustomization>(
 
 export const pieChartColorCustomizationAtom = atom<PieChartColorCustomization>(
   defaultDashboardCustomization.usePieChartColorCustomization
+)
+
+export const logoutButtonCustomizationAtom = atom<LogoutButtonCustomization>(
+  defaultDashboardCustomization.useLogoutButtonCustomization
 )

@@ -35,12 +35,12 @@ import ProfileDialog from "@/components/pages/Dashboard/Profile/ProfileDialog"
 import { ProfileProps } from "@/lib/types/profileTypes"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import deepEqual from "fast-deep-equal"
-import { Button } from "@/components/ui/button"
 import ProfileEmailDialog from "@/components/ui-custom/ProfileEmailDialog"
 import {
   requestAffiliateEmailChange,
   requestSellerEmailChange,
 } from "@/lib/server/requestEmailChange"
+import { LogoutButton } from "@/components/ui-custom/LogoutButton"
 
 export default function Profile({
   AffiliateData,
@@ -362,13 +362,11 @@ export default function Profile({
             affiliate={affiliate}
             isPreview={isPreview}
           />
-          <Button
-            variant="destructive"
-            onClick={() => logoutMutation.mutate()}
-            disabled={logoutMutation.isPending}
-          >
-            {logoutMutation.isPending ? "Logging out..." : "Logout"}
-          </Button>
+          <LogoutButton
+            affiliate={affiliate}
+            isPreview={isPreview}
+            logoutMutation={logoutMutation}
+          />
         </CardFooter>
       </Card>
       <ProfileDialog

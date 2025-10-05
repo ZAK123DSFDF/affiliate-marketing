@@ -469,6 +469,12 @@ export const organizationDashboardCustomization = pgTable(
         pieColor8: string
         pieFallbackColor: string
       }
+      useLogoutButtonCustomization: {
+        logoutButtonBackgroundColor: string
+        logoutButtonTextColor: string
+        logoutButtonDisabledBackgroundColor: string
+        logoutButtonDisabledTextColor: string
+      }
     }>(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),

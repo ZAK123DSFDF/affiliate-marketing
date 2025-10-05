@@ -116,4 +116,10 @@ export const defaultDashboardCustomization = {
     pieColor8: "",
     pieFallbackColor: "",
   },
+  useLogoutButtonCustomization: {
+    logoutButtonBackgroundColor: "",
+    logoutButtonTextColor: "",
+    logoutButtonDisabledBackgroundColor: "",
+    logoutButtonDisabledTextColor: "",
+  },
 }

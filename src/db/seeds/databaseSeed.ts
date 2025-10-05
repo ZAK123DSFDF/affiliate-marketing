@@ -341,6 +341,12 @@ export const organization_dashboard_customization_seed = [
         dashboardButtonDisabledTextColor: "",
         dashboardButtonDisabledBackgroundColor: "",
       },
+      useLogoutButtonCustomization: {
+        logoutButtonBackgroundColor: "",
+        logoutButtonTextColor: "",
+        logoutButtonDisabledBackgroundColor: "",
+        logoutButtonDisabledTextColor: "",
+      },
     },
     createdAt: parseDate("2025-08-12 10:53:45.24"),
     updatedAt: parseDate("2025-08-12 20:11:21.372"),
