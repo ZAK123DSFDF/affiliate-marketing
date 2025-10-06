@@ -33,6 +33,7 @@ import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 import { useOrgLogo } from "@/hooks/useOrgLogo"
 import { useOrg } from "@/hooks/useOrg"
 import { GoogleButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/GoogleButtonCustomizationOptions"
+import { cn } from "@/lib/utils"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -295,7 +296,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                 {isPreview && <ButtonCustomizationOptions size="w-6 h-6" />}
               </form>
             </Form>
-            <div className="relative">
+            <div className={cn("relative", !isPreview && "my-6")}>
               <div className="absolute inset-0 flex items-center">
                 <span
                   className="w-full border-t"
@@ -325,7 +326,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                 />
               </div>
             )}
-            <div className="mb-4">
+            <div className={cn(!isPreview && "mt-4 mb-6")}>
               <GoogleButton
                 affiliate={affiliate}
                 orgId={orgId || ""}
