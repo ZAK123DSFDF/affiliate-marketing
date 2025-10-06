@@ -17,6 +17,7 @@ import {
   buttonCustomizationAtom,
   themeCustomizationAtom,
   notesCustomizationAtom,
+  googleButtonCustomizationAtom,
 } from "@/store/AuthCustomizationAtom"
 import {
   initialCardCustomizationAtom,
@@ -25,6 +26,7 @@ import {
   initialButtonCustomizationAtom,
   initialThemeCustomizationAtom,
   initialNotesCustomizationAtom,
+  initialGoogleButtonCustomizationAtom,
 } from "@/store/AuthChangesAtom"
 import {
   sidebarCustomizationAtom,
@@ -67,6 +69,7 @@ export function useCustomizationSync(
   const setCheckbox = useSetAtom(checkboxCustomizationAtom)
   const setButton = useSetAtom(buttonCustomizationAtom)
   const setTheme = useSetAtom(themeCustomizationAtom)
+  const setGoogleButton = useSetAtom(googleButtonCustomizationAtom)
   const setNotes = useSetAtom(notesCustomizationAtom)
 
   const setInitialCard = useSetAtom(initialCardCustomizationAtom)
@@ -74,6 +77,9 @@ export function useCustomizationSync(
   const setInitialCheckbox = useSetAtom(initialCheckboxCustomizationAtom)
   const setInitialButton = useSetAtom(initialButtonCustomizationAtom)
   const setInitialTheme = useSetAtom(initialThemeCustomizationAtom)
+  const setInitialGoogleButton = useSetAtom(
+    initialGoogleButtonCustomizationAtom
+  )
   const setInitialNotes = useSetAtom(initialNotesCustomizationAtom)
 
   // Dashboard
@@ -161,6 +167,10 @@ export function useCustomizationSync(
       if (typedAuth.useNotesCustomization) {
         setNotes(typedAuth.useNotesCustomization)
         setInitialNotes(typedAuth.useNotesCustomization)
+      }
+      if (typedAuth.useGoogleButtonCustomization) {
+        setInitialGoogleButton(typedAuth.useGoogleButtonCustomization)
+        setGoogleButton(typedAuth.useGoogleButtonCustomization)
       }
     }
 

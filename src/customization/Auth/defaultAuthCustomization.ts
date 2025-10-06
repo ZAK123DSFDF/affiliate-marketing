@@ -29,6 +29,11 @@ export const defaultAuthCustomization = {
     buttonDisabledTextColor: "",
     buttonDisabledBackgroundColor: "",
   },
+  useGoogleButtonCustomization: {
+    googleButtonTextColor: "",
+    googleButtonBackgroundColor: "",
+    googleIconColor: "",
+  },
   useThemeCustomization: {
     headerColor: "",
     backgroundColor: "",
@@ -47,6 +52,7 @@ export const defaultAuthCustomization = {
     splashErrorTextColor: "",
     checkEmailPrimaryColor: "",
     checkEmailSecondaryColor: "",
+    googleSeparatorColor: "",
   },
   useNotesCustomization: {
     customNotesLogin: "",

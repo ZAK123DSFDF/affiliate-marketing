@@ -32,6 +32,7 @@ import { GoogleButton } from "@/components/ui-custom/GoogleButton"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 import { useOrgLogo } from "@/hooks/useOrgLogo"
 import { useOrg } from "@/hooks/useOrg"
+import { GoogleButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/GoogleButtonCustomizationOptions"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -51,8 +52,13 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
       rememberMe: false,
     },
   })
-  const { backgroundColor, linkTextColor, tertiaryTextColor, headerColor } =
-    useAtomValue(themeCustomizationAtom)
+  const {
+    backgroundColor,
+    linkTextColor,
+    tertiaryTextColor,
+    headerColor,
+    googleSeparatorColor,
+  } = useAtomValue(themeCustomizationAtom)
   const {
     buttonDisabledTextColor,
     buttonBackgroundColor,
@@ -287,26 +293,50 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                   )}
                 </Button>
                 {isPreview && <ButtonCustomizationOptions size="w-6 h-6" />}
-                <div className="relative my-4">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">
-                      Or continue with
-                    </span>
-                  </div>
-                </div>
-
-                {/* Google login button */}
-                <GoogleButton
-                  affiliate={affiliate}
-                  orgId={orgId ?? ""}
-                  rememberMe
-                  isPreview={isPreview}
-                />
               </form>
             </Form>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span
+                  className="w-full border-t"
+                  style={{
+                    borderColor:
+                      (affiliate && googleSeparatorColor) || undefined,
+                  }}
+                />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span
+                  className="bg-background px-2 text-muted-foreground"
+                  style={{
+                    color: (affiliate && googleSeparatorColor) || undefined,
+                  }}
+                >
+                  Or continue with
+                </span>
+              </div>
+            </div>
+            {isPreview && (
+              <div className="mb-2">
+                <ThemeCustomizationOptions
+                  name="googleSeparatorColor"
+                  showLabel={false}
+                  buttonSize="w-4 h-4"
+                />
+              </div>
+            )}
+            <div className="mb-4">
+              <GoogleButton
+                affiliate={affiliate}
+                orgId={orgId || ""}
+                isPreview={isPreview}
+              />
+              {isPreview && (
+                <div className="mt-2">
+                  <GoogleButtonCustomizationOptions size="w-6 h-6" />
+                </div>
+              )}
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <div

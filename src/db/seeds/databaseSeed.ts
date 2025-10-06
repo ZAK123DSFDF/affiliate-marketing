@@ -208,12 +208,18 @@ export const organization_auth_customization_seed = [
         splashErrorTextColor: "",
         checkEmailPrimaryColor: "",
         checkEmailSecondaryColor: "",
+        googleSeparatorColor: "",
       },
       useButtonCustomization: {
         buttonTextColor: "",
         buttonBackgroundColor: "",
         buttonDisabledTextColor: "",
         buttonDisabledBackgroundColor: "",
+      },
+      useGoogleButtonCustomization: {
+        googleButtonTextColor: "",
+        googleButtonBackgroundColor: "",
+        googleIconColor: "",
       },
       useCheckboxCustomization: {
         checkboxLabelColor: "",
@@ -340,6 +346,8 @@ export const organization_dashboard_customization_seed = [
         cardHeaderPrimaryTextColor: "#98caa8",
         cardHeaderSecondaryTextColor: "",
         cardHeaderDescriptionTextColor: "",
+        missingPaypalHeaderColor: "",
+        missingPaypalDescriptionColor: "",
       },
       useDashboardButtonCustomization: {
         dashboardButtonTextColor: "",

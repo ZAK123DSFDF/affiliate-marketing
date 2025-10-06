@@ -14,6 +14,8 @@ type DashboardThemeKeys =
   | "cardHeaderSecondaryTextColor"
   | "cardHeaderDescriptionTextColor"
   | "dialogHeaderColor"
+  | "missingPaypalHeaderColor"
+  | "missingPaypalDescriptionColor"
 
 type Props = {
   name: DashboardThemeKeys
@@ -40,6 +42,8 @@ export const DashboardThemeCustomizationOptions = ({
     cardHeaderSecondaryTextColor: "Card Header Secondary Text",
     cardHeaderDescriptionTextColor: "Card Header Description Text",
     dialogHeaderColor: "Dialog Header",
+    missingPaypalHeaderColor: "Missing PayPal Header",
+    missingPaypalDescriptionColor: "Missing PayPal Description",
   }
 
   return (

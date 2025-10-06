@@ -9,6 +9,8 @@ import {
   cardCustomizationAtom,
   CheckboxCustomization,
   checkboxCustomizationAtom,
+  GoogleButtonCustomization,
+  googleButtonCustomizationAtom,
   InputCustomization,
   inputCustomizationAtom,
   NotesCustomization,
@@ -30,6 +32,8 @@ export const initialButtonCustomizationAtom = atom<ButtonCustomization | null>(
 export const initialThemeCustomizationAtom = atom<ThemeCustomization | null>(
   null
 )
+export const initialGoogleButtonCustomizationAtom =
+  atom<GoogleButtonCustomization | null>(null)
 export const initialNotesCustomizationAtom = atom<NotesCustomization | null>(
   null
 )
@@ -42,6 +46,10 @@ export const authHasChangesAtom = atom((get) => {
     [get(checkboxCustomizationAtom), get(initialCheckboxCustomizationAtom)],
     [get(buttonCustomizationAtom), get(initialButtonCustomizationAtom)],
     [get(themeCustomizationAtom), get(initialThemeCustomizationAtom)],
+    [
+      get(googleButtonCustomizationAtom),
+      get(initialGoogleButtonCustomizationAtom),
+    ],
     [get(notesCustomizationAtom), get(initialNotesCustomizationAtom)],
   ]
 

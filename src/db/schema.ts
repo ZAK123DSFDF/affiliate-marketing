@@ -381,6 +381,8 @@ export const organizationDashboardCustomization = pgTable(
         cardHeaderSecondaryTextColor: string
         dialogHeaderColor: string
         cardHeaderDescriptionTextColor: string
+        missingPaypalHeaderColor: string
+        missingPaypalDescriptionColor: string
       }
       useDashboardButtonCustomization: {
         dashboardButtonBackgroundColor: string
@@ -517,6 +519,11 @@ export const organizationAuthCustomization = pgTable(
         buttonDisabledTextColor: string
         buttonDisabledBackgroundColor: string
       }
+      useGoogleButtonCustomization: {
+        googleButtonTextColor: string
+        googleButtonBackgroundColor: string
+        googleIconColor: string
+      }
       useThemeCustomization: {
         headerColor: string
         backgroundColor: string
@@ -535,6 +542,7 @@ export const organizationAuthCustomization = pgTable(
         splashErrorTextColor: string
         checkEmailPrimaryColor: string
         checkEmailSecondaryColor: string
+        googleSeparatorColor: string
       }
     }>(),
     createdAt: timestamp("created_at").defaultNow().notNull(),

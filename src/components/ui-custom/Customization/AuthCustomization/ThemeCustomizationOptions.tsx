@@ -40,6 +40,7 @@ export const ThemeCustomizationOptions = ({
     splashErrorTextColor: "Splash Error Text",
     checkEmailPrimaryColor: "Check Email Primary",
     checkEmailSecondaryColor: "Check Email Secondary",
+    googleSeparatorColor: "Google Separator",
   }
 
   return (

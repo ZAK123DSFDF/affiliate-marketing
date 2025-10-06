@@ -14,6 +14,8 @@ export type ButtonCustomization =
   typeof defaultAuthCustomization.useButtonCustomization
 export type ThemeCustomization =
   typeof defaultAuthCustomization.useThemeCustomization
+export type GoogleButtonCustomization =
+  typeof defaultAuthCustomization.useGoogleButtonCustomization
 export type NotesCustomization =
   typeof defaultAuthCustomization.useNotesCustomization
 
@@ -40,4 +42,8 @@ export const themeCustomizationAtom = atom<ThemeCustomization>(
 
 export const notesCustomizationAtom = atom<NotesCustomization>(
   defaultAuthCustomization.useNotesCustomization
+)
+
+export const googleButtonCustomizationAtom = atom<GoogleButtonCustomization>(
+  defaultAuthCustomization.useGoogleButtonCustomization
 )

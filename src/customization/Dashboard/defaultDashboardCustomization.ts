@@ -28,6 +28,8 @@ export const defaultDashboardCustomization = {
     cardHeaderSecondaryTextColor: "",
     dialogHeaderColor: "",
     cardHeaderDescriptionTextColor: "",
+    missingPaypalHeaderColor: "",
+    missingPaypalDescriptionColor: "",
   },
   useDashboardButtonCustomization: {
     dashboardButtonBackgroundColor: "",
