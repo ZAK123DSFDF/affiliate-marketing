@@ -8,18 +8,22 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { saveCustomizationsAction } from "@/app/(seller)/seller/[orgId]/dashboard/customization/action"
 import { Button } from "@/components/ui/button"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useAtomValue } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { authHasChangesAtom } from "@/store/AuthChangesAtom"
 import { dashboardHasChangesAtom } from "@/store/DashboardChangesAtom"
 import { useLiveCustomizations } from "@/store/LiveCustomizationAtom"
 import { GlobalCustomizationProvider } from "@/components/pages/Dashboard/Customization/GlobalCustomizationProvider"
+import { Switch } from "@/components/ui/switch"
+import { showMissingPaypalAtom } from "@/store/MissingPaypalAtom"
 
 export default function CustomizationPage({ orgId }: { orgId: string }) {
   const [mainTab, setMainTab] = useState("sidebar")
 
   const authHasChanges = useAtomValue(authHasChangesAtom)
   const dashboardHasChanges = useAtomValue(dashboardHasChangesAtom)
-
+  const [showMissingPaypal, setShowMissingPaypal] = useAtom(
+    showMissingPaypalAtom
+  )
   const hasChanges = authHasChanges || dashboardHasChanges
   const liveCustomizations = useLiveCustomizations()
   const queryClient = useQueryClient()
@@ -69,10 +73,25 @@ export default function CustomizationPage({ orgId }: { orgId: string }) {
         </div>
 
         <Tabs value={mainTab} onValueChange={setMainTab} className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="sidebar">Sidebar</TabsTrigger>
-            <TabsTrigger value="auth">Auth Pages</TabsTrigger>
-          </TabsList>
+          <div className="flex items-center justify-between">
+            <TabsList>
+              <TabsTrigger value="sidebar">Sidebar</TabsTrigger>
+              <TabsTrigger value="auth">Auth Pages</TabsTrigger>
+            </TabsList>
+            <div className="flex items-center gap-2">
+              <Switch
+                id="toggle-missing-paypal"
+                checked={showMissingPaypal}
+                onCheckedChange={setShowMissingPaypal}
+              />
+              <label
+                htmlFor="toggle-missing-paypal"
+                className="text-sm text-muted-foreground"
+              >
+                Show Missing PayPal Card
+              </label>
+            </div>
+          </div>
 
           <TabsContent value="sidebar">
             <DashboardCustomization orgId={orgId} />

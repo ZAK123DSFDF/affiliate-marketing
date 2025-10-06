@@ -303,6 +303,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                   affiliate={affiliate}
                   orgId={orgId ?? ""}
                   rememberMe
+                  isPreview={isPreview}
                 />
               </form>
             </Form>

@@ -184,7 +184,11 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
           </CardHeader>
           <CardContent>
             <div className="mb-4">
-              <GoogleButton affiliate={affiliate} orgId={orgId || ""} />
+              <GoogleButton
+                affiliate={affiliate}
+                orgId={orgId || ""}
+                isPreview={isPreview}
+              />
             </div>
             <div className="flex items-center my-4">
               <div className="flex-grow border-t border-gray-300"></div>

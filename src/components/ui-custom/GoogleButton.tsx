@@ -6,16 +6,22 @@ type GoogleButtonProps = {
   affiliate: boolean
   orgId: string
   rememberMe?: boolean
+  isPreview?: boolean
 }
 
 export function GoogleButton({
   affiliate,
   orgId,
   rememberMe = false,
+  isPreview,
 }: GoogleButtonProps) {
   const type = affiliate ? "affiliate" : "seller"
   const handleClick = () => {
-    window.location.href = `/api/auth/google?type=${type}&orgId=${orgId}&rememberMe=${rememberMe}`
+    if (isPreview) {
+      window.open("https://www.google.com", "_blank")
+    } else {
+      window.location.href = `/api/auth/google?type=${type}&orgId=${orgId}&rememberMe=${rememberMe}`
+    }
   }
 
   return (
