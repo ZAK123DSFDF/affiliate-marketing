@@ -78,19 +78,21 @@ export default function CustomizationPage({ orgId }: { orgId: string }) {
               <TabsTrigger value="sidebar">Sidebar</TabsTrigger>
               <TabsTrigger value="auth">Auth Pages</TabsTrigger>
             </TabsList>
-            <div className="flex items-center gap-2">
-              <Switch
-                id="toggle-missing-paypal"
-                checked={showMissingPaypal}
-                onCheckedChange={setShowMissingPaypal}
-              />
-              <label
-                htmlFor="toggle-missing-paypal"
-                className="text-sm text-muted-foreground"
-              >
-                Show Missing PayPal Card
-              </label>
-            </div>
+            {mainTab === "sidebar" && (
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="toggle-missing-paypal"
+                  checked={showMissingPaypal}
+                  onCheckedChange={setShowMissingPaypal}
+                />
+                <label
+                  htmlFor="toggle-missing-paypal"
+                  className="text-sm text-muted-foreground"
+                >
+                  Show Missing PayPal Card
+                </label>
+              </div>
+            )}
           </div>
 
           <TabsContent value="sidebar">
