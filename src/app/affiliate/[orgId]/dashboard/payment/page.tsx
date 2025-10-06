@@ -10,7 +10,7 @@ const paymentPage = async ({ params }: OrgIdProps) => {
   await requireAffiliateWithOrg(orgId)
   return (
     <div className="space-y-6">
-      <MissingPaypalEmailCard orgId={orgId} />
+      <MissingPaypalEmailCard affiliate orgId={orgId} />
       <PaymentTable orgId={orgId} affiliate />
     </div>
   )

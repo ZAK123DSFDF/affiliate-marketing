@@ -18,5 +18,7 @@ export default async function VerifyLoginPage({ searchParams }: Props) {
     )
   }
 
-  return <VerifyClient token={sellerToken} mode="changeEmail" />
+  return (
+    <VerifyClient affiliate={false} token={sellerToken} mode="changeEmail" />
+  )
 }

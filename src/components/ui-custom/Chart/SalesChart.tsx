@@ -174,15 +174,31 @@ export function ChartDailyMetrics({
       )}
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         {(isPreview && previewLoading) || (!isPreview && searchPending) ? (
-          <div
-            className="flex items-center justify-center h-[300px]"
-            style={{
-              backgroundColor:
-                (affiliate && chartLoadingColor) || "rgb(243 244 246)",
-            }}
-          >
+          <div className="flex flex-col items-center justify-center h-[300px] gap-2">
+            <svg
+              className="animate-spin h-6 w-6"
+              viewBox="0 0 24 24"
+              style={{
+                color: (affiliate && chartLoadingColor) || "#6B7280",
+              }}
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+                fill="none"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              />
+            </svg>
             <span
-              className="text-sm text-muted-foreground"
+              className="text-sm"
               style={{
                 color: (affiliate && chartLoadingColor) || "#6B7280",
               }}

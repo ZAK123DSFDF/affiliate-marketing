@@ -133,7 +133,7 @@ export default function AffiliatesTable({
           />
 
           {searchPending ? (
-            <TableLoading columns={columns} />
+            <TableLoading affiliate={affiliate} columns={columns} />
           ) : table.getRowModel().rows.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">
               No Affiliates found.

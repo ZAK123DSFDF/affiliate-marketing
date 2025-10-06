@@ -18,5 +18,5 @@ export default async function VerifyEmailChangePage({ searchParams }: Props) {
     )
   }
 
-  return <VerifyClient token={affiliateToken} mode="changeEmail" />
+  return <VerifyClient affiliate token={affiliateToken} mode="changeEmail" />
 }
