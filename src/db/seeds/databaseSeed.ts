@@ -264,6 +264,8 @@ export const organization_dashboard_customization_seed = [
         tableRowBadgePaidBackgroundColor: "",
         tableRowBadgeOverDueBackgroundColor: "",
         tableRowBadgePendingBackgroundColor: "",
+        tableLoadingColor: "",
+        tableEmptyTextColor: "",
       },
       useToastCustomization: {
         toastTitleColor: "",
@@ -293,6 +295,7 @@ export const organization_dashboard_customization_seed = [
         cardIconPrimaryBackgroundColor: "",
         cardIconTertiaryBackgroundColor: "",
         cardIconSecondaryBackgroundColor: "",
+        kpiLoadingColor: "",
       },
       useSidebarCustomization: {
         sideBarBackgroundColor: "#256490",

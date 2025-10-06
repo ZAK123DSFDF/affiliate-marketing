@@ -53,6 +53,8 @@ export const defaultDashboardCustomization = {
     tableRowBadgePaidTextColor: "",
     tableRowBadgePaidBackgroundColor: "",
     tableBorderColor: "",
+    tableLoadingColor: "",
+    tableEmptyTextColor: "",
   },
   useDialogCustomization: {
     dialogBackgroundColor: "",
@@ -94,6 +96,7 @@ export const defaultDashboardCustomization = {
     cardBackgroundColor: "",
     cardShadow: true,
     cardBorder: true,
+    kpiLoadingColor: "",
   },
   useChartCustomization: {
     chartHorizontalLineColor: "",

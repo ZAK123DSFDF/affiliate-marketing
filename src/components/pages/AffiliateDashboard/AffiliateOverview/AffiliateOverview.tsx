@@ -3,12 +3,6 @@ import React from "react"
 import Cards from "@/components/ui-custom/Cards/Cards"
 import SocialTrafficCharts from "@/components/ui-custom/Chart/DataSourceChart"
 import { ChartDailyMetrics } from "@/components/ui-custom/Chart/SalesChart"
-import { useCustomizationSync } from "@/hooks/useCustomizationSync"
-import PendingState from "@/components/ui-custom/PendingState"
-import ErrorState from "@/components/ui-custom/ErrorState"
-import { AffiliateKpiStats } from "@/lib/types/affiliateKpiStats"
-import { AffiliateReferrerStat } from "@/lib/types/affiliateReferrerStat"
-import { AffiliateKpiTimeSeries } from "@/lib/types/affiliateChartStats"
 
 const AffiliateOverview = ({
   orgId,

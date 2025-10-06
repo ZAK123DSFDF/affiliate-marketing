@@ -34,6 +34,7 @@ import { useAtomValue } from "jotai"
 import {
   dashboardButtonCustomizationAtom,
   dashboardThemeCustomizationAtom,
+  tableCustomizationAtom,
 } from "@/store/DashboardCustomizationAtom"
 
 interface AffiliateLinkProps {
@@ -57,6 +58,7 @@ export default function Links({
     dashboardButtonDisabledBackgroundColor,
     dashboardButtonBackgroundColor,
   } = useAtomValue(dashboardButtonCustomizationAtom)
+  const { tableEmptyTextColor } = useAtomValue(tableCustomizationAtom)
   const dashboardCardStyle = useDashboardCard(affiliate)
   const { showCustomToast } = useCustomToast()
   const [isFakeLoading, setIsFakeLoading] = useState(false)
@@ -283,9 +285,14 @@ export default function Links({
         <CardContent>
           {(searchPending && !isPreview) ||
           (isPreview && isFakeLoadingPreview) ? (
-            <TableLoading columns={columns} />
+            <TableLoading affiliate={affiliate} columns={columns} />
           ) : table.getRowModel().rows.length === 0 ? (
-            <div className="text-center py-6 text-muted-foreground">
+            <div
+              className="text-center py-6 text-muted-foreground"
+              style={{
+                color: (affiliate && tableEmptyTextColor) || undefined,
+              }}
+            >
               No links found.
             </div>
           ) : (

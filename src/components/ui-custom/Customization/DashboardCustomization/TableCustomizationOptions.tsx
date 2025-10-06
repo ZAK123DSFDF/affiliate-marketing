@@ -30,6 +30,8 @@ export const TableCustomizationOptions = ({
       tableRowBadgePaidTextColor,
       tableRowBadgePaidBackgroundColor,
       tableBorderColor,
+      tableLoadingColor,
+      tableEmptyTextColor,
     },
     setTableCustomization,
   ] = useAtom(tableCustomizationAtom)
@@ -96,6 +98,24 @@ export const TableCustomizationOptions = ({
         setTableCustomization((prev) => ({
           ...prev,
           tableBorderColor: val,
+        })),
+    },
+    tableLoadingColor: {
+      label: "Loading Color",
+      value: tableLoadingColor,
+      onChange: (val: string) =>
+        setTableCustomization((prev) => ({
+          ...prev,
+          tableLoadingColor: val,
+        })),
+    },
+    tableEmptyTextColor: {
+      label: "Empty Text Color",
+      value: tableEmptyTextColor,
+      onChange: (val: string) =>
+        setTableCustomization((prev) => ({
+          ...prev,
+          tableEmptyTextColor: val,
         })),
     },
   }

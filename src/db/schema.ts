@@ -406,6 +406,8 @@ export const organizationDashboardCustomization = pgTable(
         tableRowBadgePaidTextColor: string
         tableRowBadgePaidBackgroundColor: string
         tableBorderColor: string
+        tableLoadingColor: string
+        tableEmptyTextColor: string
       }
       useDialogCustomization: {
         dialogBackgroundColor: string
@@ -447,6 +449,7 @@ export const organizationDashboardCustomization = pgTable(
         cardBackgroundColor: string
         cardShadow: boolean
         cardBorder: boolean
+        kpiLoadingColor: string
       }
       useChartCustomization: {
         chartHorizontalLineColor: string

@@ -27,6 +27,7 @@ export const KpiCardCustomizationOptions = ({
       cardIconSecondaryBackgroundColor,
       cardIconTertiaryBackgroundColor,
       cardBackgroundColor,
+      kpiLoadingColor,
     },
     setKpiCardCustomization,
   ] = useAtom(kpiCardCustomizationAtom)
@@ -170,6 +171,15 @@ export const KpiCardCustomizationOptions = ({
             setKpiCardCustomization((prev) => ({
               ...prev,
               cardIconTertiaryBackgroundColor: val,
+            })),
+        },
+        loadingColor: {
+          label: "KPI Loading Color",
+          value: kpiLoadingColor,
+          onChange: (val: string) =>
+            setKpiCardCustomization((prev) => ({
+              ...prev,
+              kpiLoadingColor: val,
             })),
         },
       }}

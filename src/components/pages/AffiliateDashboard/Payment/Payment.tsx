@@ -24,7 +24,10 @@ import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import { dummyAffiliatePayments } from "@/lib/types/previewData"
 import { useAtomValue } from "jotai"
-import { dashboardThemeCustomizationAtom } from "@/store/DashboardCustomizationAtom"
+import {
+  dashboardThemeCustomizationAtom,
+  tableCustomizationAtom,
+} from "@/store/DashboardCustomizationAtom"
 
 interface AffiliateCommissionTableProps {
   orgId: string
@@ -42,6 +45,7 @@ export default function AffiliateCommissionTable({
     cardHeaderPrimaryTextColor,
     dashboardHeaderNameColor,
   } = useAtomValue(dashboardThemeCustomizationAtom)
+  const { tableEmptyTextColor } = useAtomValue(tableCustomizationAtom)
   const dashboardCardStyle = useDashboardCard(affiliate)
   const { filters, setFilters } = useQueryFilter()
   const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false)
@@ -166,9 +170,14 @@ export default function AffiliateCommissionTable({
         </CardHeader>
         <CardContent>
           {(isPending && !isPreview) || (isPreview && isFakeLoadingPreview) ? (
-            <TableLoading columns={columns} />
+            <TableLoading affiliate={affiliate} columns={columns} />
           ) : table.getRowModel().rows.length === 0 ? (
-            <div className="text-center py-6 text-muted-foreground">
+            <div
+              className="text-center py-6 text-muted-foreground"
+              style={{
+                color: (affiliate && tableEmptyTextColor) || undefined,
+              }}
+            >
               No commission data available.
             </div>
           ) : (

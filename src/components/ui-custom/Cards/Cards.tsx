@@ -179,6 +179,11 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
                   <div
                     key={i}
                     className="animate-pulse p-3 rounded-lg bg-gray-100 h-20"
+                    style={{
+                      backgroundColor:
+                        (affiliate && kpiCard.kpiLoadingColor) ||
+                        "rgb(243 244 246)",
+                    }}
                   />
                 ))
               : displayData.map(({ label, value, icon: Icon }, index) => {
