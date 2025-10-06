@@ -23,6 +23,7 @@ export const ChartCustomizationOptions = ({
       toolTipBackgroundColor,
       toolTipTextColor,
       toolTipNumberColor,
+      chartLoadingColor,
     },
     setChartCustomization,
   ] = useAtom(chartCustomizationAtom)
@@ -120,6 +121,15 @@ export const ChartCustomizationOptions = ({
             setChartCustomization((prev) => ({
               ...prev,
               toolTipNumberColor: val,
+            })),
+        },
+        loadingColor: {
+          label: "Chart Loading Color",
+          value: chartLoadingColor,
+          onChange: (val: string) =>
+            setChartCustomization((prev) => ({
+              ...prev,
+              chartLoadingColor: val,
             })),
         },
       }}

@@ -247,6 +247,7 @@ export const organization_dashboard_customization_seed = [
         toolTipChartDateColor: "",
         toolTipBackgroundColor: "",
         chartHorizontalLineColor: "",
+        chartLoadingColor: "",
       },
       useTableCustomization: {
         tableIconColor: "",
@@ -339,6 +340,8 @@ export const organization_dashboard_customization_seed = [
         pieColor7: "",
         pieColor8: "",
         pieFallbackColor: "",
+        pieChartLoadingColor: "",
+        pieChartEmptyTextColor: "",
       },
       useDashboardThemeCustomization: {
         separatorColor: "",

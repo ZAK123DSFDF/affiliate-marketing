@@ -22,6 +22,8 @@ export const PieChartCustomizationOptions = ({
       pieColor7,
       pieColor8,
       pieFallbackColor,
+      pieChartLoadingColor,
+      pieChartEmptyTextColor,
     },
     setPieChartCustomization,
   ] = useAtom(pieChartColorCustomizationAtom)
@@ -86,6 +88,24 @@ export const PieChartCustomizationOptions = ({
             setPieChartCustomization((prev) => ({
               ...prev,
               pieFallbackColor: val,
+            })),
+        },
+        loadingColor: {
+          label: "Pie Chart Loading Color",
+          value: pieChartLoadingColor,
+          onChange: (val: string) =>
+            setPieChartCustomization((prev) => ({
+              ...prev,
+              pieChartLoadingColor: val,
+            })),
+        },
+        emptyTextColor: {
+          label: "Pie Chart Empty Text Color",
+          value: pieChartEmptyTextColor,
+          onChange: (val: string) =>
+            setPieChartCustomization((prev) => ({
+              ...prev,
+              pieChartEmptyTextColor: val,
             })),
         },
       }}

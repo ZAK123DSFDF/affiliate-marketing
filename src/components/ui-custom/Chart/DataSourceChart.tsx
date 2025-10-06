@@ -66,6 +66,8 @@ export default function SocialTrafficPieChart({
     pieColor7,
     pieColor8,
     pieColor1,
+    pieChartLoadingColor,
+    pieChartEmptyTextColor,
   } = useAtomValue(pieChartColorCustomizationAtom)
   const { filters, setFilters } = useQueryFilter({
     yearKey: "sourceYear",
@@ -205,11 +207,28 @@ export default function SocialTrafficPieChart({
       )}
       <CardContent className="flex-1 flex justify-center items-center">
         {(searchPending && !isPreview) || (isPreview && previewLoading) ? (
-          <div className="text-sm text-muted-foreground">
+          <div
+            className="text-sm flex items-center justify-center h-[200px] rounded-md animate-pulse"
+            style={{
+              backgroundColor:
+                (affiliate && pieChartLoadingColor) || "rgb(243 244 246)", // fallback gray-100
+              color:
+                affiliate && pieChartLoadingColor
+                  ? pieChartLoadingColor
+                  : "#6B7280",
+            }}
+          >
             Loading sources...
           </div>
         ) : chartData.length === 0 ? (
-          <div className="text-sm text-muted-foreground">No sources found</div>
+          <div
+            className="text-sm text-muted-foreground"
+            style={{
+              color: (affiliate && pieChartEmptyTextColor) || "#6B7280",
+            }}
+          >
+            No sources found
+          </div>
         ) : (
           <ChartContainer
             config={chartConfig}

@@ -101,7 +101,7 @@ export const TableCustomizationOptions = ({
         })),
     },
     tableLoadingColor: {
-      label: "Loading Color",
+      label: "Table Loading Color",
       value: tableLoadingColor,
       onChange: (val: string) =>
         setTableCustomization((prev) => ({
@@ -110,7 +110,7 @@ export const TableCustomizationOptions = ({
         })),
     },
     tableEmptyTextColor: {
-      label: "Empty Text Color",
+      label: "Table Empty Text Color",
       value: tableEmptyTextColor,
       onChange: (val: string) =>
         setTableCustomization((prev) => ({

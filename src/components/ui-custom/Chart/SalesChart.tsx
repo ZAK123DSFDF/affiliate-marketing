@@ -96,6 +96,7 @@ export function ChartDailyMetrics({
     chartTertiaryColor,
     chartHorizontalLineColor,
     chartDateColor,
+    chartLoadingColor,
   } = useAtomValue(chartCustomizationAtom)
   const {
     separatorColor,
@@ -173,8 +174,21 @@ export function ChartDailyMetrics({
       )}
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         {(isPreview && previewLoading) || (!isPreview && searchPending) ? (
-          <div className="flex items-center justify-center h-[300px]">
-            <span className="text-sm text-muted-foreground">Loading...</span>
+          <div
+            className="flex items-center justify-center h-[300px]"
+            style={{
+              backgroundColor:
+                (affiliate && chartLoadingColor) || "rgb(243 244 246)",
+            }}
+          >
+            <span
+              className="text-sm text-muted-foreground"
+              style={{
+                color: (affiliate && chartLoadingColor) || "#6B7280",
+              }}
+            >
+              Loading...
+            </span>
           </div>
         ) : (
           <ChartContainer

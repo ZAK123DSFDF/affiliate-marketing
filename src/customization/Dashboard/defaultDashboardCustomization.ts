@@ -109,6 +109,7 @@ export const defaultDashboardCustomization = {
     toolTipBackgroundColor: "",
     toolTipTextColor: "",
     toolTipNumberColor: "",
+    chartLoadingColor: "",
   },
   usePieChartColorCustomization: {
     pieColor1: "",
@@ -120,6 +121,8 @@ export const defaultDashboardCustomization = {
     pieColor7: "",
     pieColor8: "",
     pieFallbackColor: "",
+    pieChartLoadingColor: "",
+    pieChartEmptyTextColor: "",
   },
   useLogoutButtonCustomization: {
     logoutButtonBackgroundColor: "",

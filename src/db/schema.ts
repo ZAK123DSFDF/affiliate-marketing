@@ -462,6 +462,7 @@ export const organizationDashboardCustomization = pgTable(
         toolTipBackgroundColor: string
         toolTipTextColor: string
         toolTipNumberColor: string
+        chartLoadingColor: string
       }
       usePieChartColorCustomization: {
         pieColor1: string
@@ -473,6 +474,8 @@ export const organizationDashboardCustomization = pgTable(
         pieColor7: string
         pieColor8: string
         pieFallbackColor: string
+        pieChartLoadingColor: string
+        pieChartEmptyTextColor: string
       }
       useLogoutButtonCustomization: {
         logoutButtonBackgroundColor: string
