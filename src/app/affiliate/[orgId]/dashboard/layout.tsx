@@ -5,6 +5,7 @@ import AffiliateDashboardSidebar from "@/components/AffiliateDashboardSidebar"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { getAffiliateData } from "@/app/affiliate/[orgId]/dashboard/profile/action"
 import { CustomizationProvider } from "@/app/affiliate/[orgId]/dashboard/customizationProvider"
+import { requireAffiliateWithOrg } from "@/lib/server/authGuards"
 
 interface AffiliateDashboardLayoutProps extends OrgIdProps {
   children: React.ReactNode
@@ -15,8 +16,14 @@ export default async function DashboardLayout({
   params,
 }: AffiliateDashboardLayoutProps) {
   const orgId = await getValidatedOrgFromParams({ params })
+  await requireAffiliateWithOrg(orgId)
   const affiliateResponse = await getAffiliateData(orgId)
-  const affiliate = affiliateResponse.ok ? affiliateResponse.data : null
+  if (!affiliateResponse.ok) {
+    console.log("No affiliate found or unauthorized")
+    return null
+  }
+
+  const affiliate = affiliateResponse.data
   return (
     <CustomizationProvider affiliate orgId={orgId}>
       <SidebarProvider affiliate orgId={orgId}>

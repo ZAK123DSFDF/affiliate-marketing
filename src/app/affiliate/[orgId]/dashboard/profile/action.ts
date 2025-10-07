@@ -103,10 +103,10 @@ export async function logoutAction(affiliate: boolean, orgId?: string) {
   const cookieStore = await cookies()
 
   if (affiliate && orgId) {
-    cookieStore.set(`affiliateToken-${orgId}`, "", { maxAge: -1 })
+    cookieStore.delete(`affiliateToken-${orgId}`)
     return { ok: true, redirectTo: `/affiliate/${orgId}/login` }
   } else {
-    cookieStore.set("sellerToken", "", { maxAge: -1 })
+    cookieStore.delete("sellerToken")
     return { ok: true, redirectTo: "/login" }
   }
 }
