@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
 import { customAlphabet } from "nanoid"
+import { redirect } from "next/navigation"
 
 type CreateAffiliatePayload = {
   name: string
@@ -86,9 +87,11 @@ export const SignupAffiliateServer = async ({
       )
 
       const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/affiliate/${organizationId}/verify-signup?affiliateToken=${token}`
-      await sendVerificationEmail(existingAffiliate.email, verifyUrl)
-
-      return { ok: true, message: "Verification email sent" }
+      if (process.env.NODE_ENV === "development") {
+        await sendVerificationEmail(existingAffiliate.email, verifyUrl)
+        return { ok: true, message: "Verification email sent" }
+      }
+      redirect(verifyUrl)
     }
 
     // Create new affiliate + credentials account
@@ -129,9 +132,11 @@ export const SignupAffiliateServer = async ({
     )
 
     const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/affiliate/${organizationId}/verify-signup?affiliateToken=${token}`
-    await sendVerificationEmail(newAffiliate.email, verifyUrl)
-
-    return { ok: true, message: "Verification email sent" }
+    if (process.env.NODE_ENV === "development") {
+      await sendVerificationEmail(newAffiliate.email, verifyUrl)
+      return { ok: true, message: "Verification email sent" }
+    }
+    redirect(verifyUrl)
   } catch (error: any) {
     console.error("Affiliate Signup Error:", error)
     return returnError(error)

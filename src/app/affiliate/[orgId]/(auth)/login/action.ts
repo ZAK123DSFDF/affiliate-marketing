@@ -7,6 +7,7 @@ import { cookies } from "next/headers"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
 import { affiliateAccount, affiliate } from "@/db/schema"
+import { redirect } from "next/navigation"
 
 export const LoginAffiliateServer = async ({
   email,
@@ -90,9 +91,11 @@ export const LoginAffiliateServer = async ({
     )
 
     const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/affiliate/${organizationId}/verify-login?affiliateToken=${token}`
-    await sendVerificationEmail(existingAffiliate.email, verifyUrl)
-
-    return { ok: true, message: "Verification email sent" }
+    if (process.env.NODE_ENV === "development") {
+      await sendVerificationEmail(existingAffiliate.email, verifyUrl)
+      return { ok: true, message: "Verification email sent" }
+    }
+    redirect(verifyUrl)
   } catch (error: any) {
     console.error("Affiliate Login Error:", error)
     return returnError(error)

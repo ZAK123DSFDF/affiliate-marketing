@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken"
 import { sendVerificationEmail } from "@/lib/mail"
 import { returnError } from "@/lib/errorHandler"
 import { getSellerOrgContext } from "@/lib/server/getSellerOrgContext"
+import { redirect } from "next/navigation"
 
 // ------------------- SELLER -------------------
 export const requestSellerEmailChange = async ({
@@ -31,10 +32,11 @@ export const requestSellerEmailChange = async ({
       { expiresIn: "15m" }
     )
     const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-email-change?sellerToken=${token}`
-
-    await sendVerificationEmail(newEmail, verifyUrl)
-
-    return { ok: true, message: "Verification link sent to new email" }
+    if (process.env.NODE_ENV === "development") {
+      await sendVerificationEmail(newEmail, verifyUrl)
+      return { ok: true, message: "Verification link sent to new email" }
+    }
+    redirect(verifyUrl)
   } catch (err) {
     console.error("requestSellerEmailChange error:", err)
     return returnError(err)
@@ -67,10 +69,11 @@ export const requestAffiliateEmailChange = async ({
     )
 
     const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/affiliate/${orgId}/verify-email-change?affiliateToken=${token}`
-
-    await sendVerificationEmail(newEmail, verifyUrl)
-
-    return { ok: true, message: "Verification link sent to new email" }
+    if (process.env.NODE_ENV === "development") {
+      await sendVerificationEmail(newEmail, verifyUrl)
+      return { ok: true, message: "Verification link sent to new email" }
+    }
+    redirect(verifyUrl)
   } catch (err) {
     console.error("requestAffiliateEmailChange error:", err)
     return returnError(err)

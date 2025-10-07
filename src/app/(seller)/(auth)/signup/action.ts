@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
 import { customAlphabet } from "nanoid"
+import { redirect } from "next/navigation"
 
 type CreateUserPayload = {
   name: string
@@ -85,9 +86,12 @@ export const SignupServer = async ({
       )
 
       const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-signup?sellerToken=${token}`
-      await sendVerificationEmail(existingUser.email, verifyUrl)
 
-      return { ok: true, message: "Verification email sent" }
+      if (process.env.NODE_ENV === "development") {
+        await sendVerificationEmail(existingUser.email, verifyUrl)
+        return { ok: true, message: "Verification email sent" }
+      }
+      redirect(verifyUrl)
     }
 
     // Create new user + credentials account
@@ -128,9 +132,11 @@ export const SignupServer = async ({
     )
 
     const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-signup?sellerToken=${token}`
-    await sendVerificationEmail(newUser.email, verifyUrl)
-
-    return { ok: true, message: "Verification email sent" }
+    if (process.env.NODE_ENV === "development") {
+      await sendVerificationEmail(newUser.email, verifyUrl)
+      return { ok: true, message: "Verification email sent" }
+    }
+    redirect(verifyUrl)
   } catch (error: any) {
     console.error("User Signup Error:", error)
     return returnError(error)

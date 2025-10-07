@@ -5,6 +5,7 @@ import * as bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
+import { redirect } from "next/navigation"
 
 export const LoginServer = async ({
   email,
@@ -90,9 +91,11 @@ export const LoginServer = async ({
     )
 
     const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-login?sellerToken=${token}`
-    await sendVerificationEmail(existingUser.email, verifyUrl)
-
-    return { ok: true, message: "Verification email sent" }
+    if (process.env.NODE_ENV === "development") {
+      await sendVerificationEmail(existingUser.email, verifyUrl)
+      return { ok: true, message: "Verification email sent" }
+    }
+    redirect(verifyUrl)
   } catch (error: any) {
     console.error("User Login Error:", error)
     return returnError(error)
