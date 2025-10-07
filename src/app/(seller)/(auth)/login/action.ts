@@ -91,10 +91,6 @@ export const LoginServer = async ({
     )
 
     const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-login?sellerToken=${token}`
-    if (process.env.NODE_ENV === "development") {
-      await sendVerificationEmail(existingUser.email, verifyUrl)
-      return { ok: true, message: "Verification email sent" }
-    }
     redirect(verifyUrl)
   } catch (error: any) {
     console.error("User Login Error:", error)
