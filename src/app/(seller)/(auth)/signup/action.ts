@@ -88,7 +88,11 @@ export const SignupServer = async ({
 
       if (process.env.NODE_ENV === "development") {
         await sendVerificationEmail(existingUser.email, verifyUrl)
-        return { ok: true, message: "Verification email sent" }
+        return {
+          ok: true,
+          message: "Verification email sent",
+          redirectUrl: "/checkEmail",
+        }
       }
       return { ok: true, redirectUrl: verifyUrl }
     }
