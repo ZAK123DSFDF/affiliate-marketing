@@ -137,7 +137,11 @@ export const SignupAffiliateServer = async ({
     const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/affiliate/${organizationId}/verify-signup?affiliateToken=${token}`
     if (process.env.NODE_ENV === "development") {
       await sendVerificationEmail(newAffiliate.email, verifyUrl)
-      return { ok: true, message: "Verification email sent" }
+      return {
+        ok: true,
+        message: "Verification email sent",
+        redirectUrl: `/affiliate/${organizationId}/checkEmail`,
+      }
     }
     return { ok: true, redirectUrl: verifyUrl }
   } catch (error: any) {
