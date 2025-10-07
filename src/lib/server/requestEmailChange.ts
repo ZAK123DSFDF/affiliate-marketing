@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken"
 import { sendVerificationEmail } from "@/lib/mail"
 import { returnError } from "@/lib/errorHandler"
 import { getSellerOrgContext } from "@/lib/server/getSellerOrgContext"
-import { redirect } from "next/navigation"
 
 // ------------------- SELLER -------------------
 export const requestSellerEmailChange = async ({
