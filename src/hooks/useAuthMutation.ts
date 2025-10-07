@@ -9,6 +9,7 @@ export interface AuthResponse {
   message?: string
   toast?: string
   fields?: Record<string, string> | null
+  redirectUrl?: string
 }
 
 export function useAuthMutation<TVariables>(
@@ -44,7 +45,9 @@ export function useAuthMutation<TVariables>(
             affiliate: options?.affiliate ?? false,
           })
         }
-        if (options?.redirectUrl) {
+        if (res.redirectUrl) {
+          router.push(res.redirectUrl)
+        } else if (options?.redirectUrl) {
           router.push(options.redirectUrl)
         }
       } else {

@@ -2,7 +2,7 @@
 "use server"
 
 import { db } from "@/db/drizzle"
-import { account, user } from "@/db/schema"
+import { account } from "@/db/schema"
 import * as bcrypt from "bcrypt"
 import { eq, and } from "drizzle-orm"
 import jwt from "jsonwebtoken"
@@ -69,7 +69,10 @@ export const resetSellerPasswordServer = async ({
       secure: process.env.NODE_ENV === "production",
     })
 
-    return { ok: true }
+    return {
+      ok: true,
+      redirectUrl: `/seller/${activeOrgId}/dashboard/analytics`,
+    }
   } catch (err) {
     console.error("Reset seller password failed:", err)
     return { ok: false, error: "Failed to reset password" }

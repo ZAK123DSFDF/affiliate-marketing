@@ -4,7 +4,6 @@ import { db } from "@/db/drizzle"
 import jwt from "jsonwebtoken"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
-import { redirect } from "next/navigation"
 
 export const ForgotPasswordAffiliateServer = async ({
   email,
@@ -55,7 +54,7 @@ export const ForgotPasswordAffiliateServer = async ({
       await sendVerificationEmail(existingAffiliate.email, resetUrl)
       return { ok: true, message: "Reset link sent to your email" }
     }
-    redirect(resetUrl)
+    return { ok: true, redirectUrl: resetUrl }
   } catch (error: any) {
     console.error("Affiliate Forgot Password Error:", error)
     return returnError(error)

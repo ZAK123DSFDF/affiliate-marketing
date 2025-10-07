@@ -71,13 +71,11 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { showCustomToast } = useCustomToast()
   const affiliateMutation = useAuthMutation(SignupAffiliateServer, {
     affiliate,
-    redirectUrl: `/affiliate/${orgId}/checkEmail`,
     disableSuccessToast: true,
   })
 
   const normalMutation = useAuthMutation(SignupServer, {
     affiliate,
-    redirectUrl: "/checkEmail",
     disableSuccessToast: true,
   })
   const isLoading = isPreview

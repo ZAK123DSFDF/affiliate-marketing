@@ -29,7 +29,7 @@ import { useAuthCard } from "@/hooks/useAuthCard"
 import { resetSellerPasswordServer } from "@/app/(seller)/(auth)/reset-password/action"
 import { resetAffiliatePasswordServer } from "@/app/affiliate/[orgId]/(auth)/reset-password/action"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
-import { useAtomValue } from "jotai/index"
+import { useAtomValue } from "jotai"
 import {
   buttonCustomizationAtom,
   themeCustomizationAtom,
@@ -80,12 +80,10 @@ const ResetPassword = ({
   const authCardStyle = useAuthCard(affiliate)
   const affiliateMutation = useAuthMutation(resetAffiliatePasswordServer, {
     affiliate,
-    redirectUrl: `/affiliate/${orgId}/dashboard/analytics`,
     disableSuccessToast: true,
   })
   const normalMutation = useAuthMutation(resetSellerPasswordServer, {
     affiliate,
-    redirectUrl: `/seller/${orgId}/dashboard/analytics`,
     disableSuccessToast: true,
   })
   const onSubmit = async (data: ResetPasswordFormValues) => {

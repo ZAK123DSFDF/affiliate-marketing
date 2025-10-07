@@ -70,12 +70,10 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { customNotesLogin } = useAtomValue(notesCustomizationAtom)
   const affiliateMutation = useAuthMutation(LoginAffiliateServer, {
     affiliate,
-    redirectUrl: `/affiliate/${orgId}/checkEmail`,
     disableSuccessToast: true,
   })
   const normalMutation = useAuthMutation(LoginServer, {
     affiliate,
-    redirectUrl: "/checkEmail",
     disableSuccessToast: true,
   })
   const isLoading = isPreview

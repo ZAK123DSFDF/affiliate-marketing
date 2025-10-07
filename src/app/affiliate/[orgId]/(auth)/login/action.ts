@@ -3,12 +3,8 @@
 import { db } from "@/db/drizzle"
 import * as bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import { cookies } from "next/headers"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
-import { affiliateAccount, affiliate } from "@/db/schema"
-import { redirect } from "next/navigation"
-
 export const LoginAffiliateServer = async ({
   email,
   password,
@@ -95,7 +91,7 @@ export const LoginAffiliateServer = async ({
       await sendVerificationEmail(existingAffiliate.email, verifyUrl)
       return { ok: true, message: "Verification email sent" }
     }
-    redirect(verifyUrl)
+    return { ok: true, redirectUrl: verifyUrl }
   } catch (error: any) {
     console.error("Affiliate Login Error:", error)
     return returnError(error)

@@ -36,7 +36,11 @@ export const requestSellerEmailChange = async ({
       await sendVerificationEmail(newEmail, verifyUrl)
       return { ok: true, message: "Verification link sent to new email" }
     }
-    redirect(verifyUrl)
+    return {
+      ok: true,
+      message: "Verification link sent",
+      redirectUrl: verifyUrl,
+    }
   } catch (err) {
     console.error("requestSellerEmailChange error:", err)
     return returnError(err)
@@ -73,7 +77,11 @@ export const requestAffiliateEmailChange = async ({
       await sendVerificationEmail(newEmail, verifyUrl)
       return { ok: true, message: "Verification link sent to new email" }
     }
-    redirect(verifyUrl)
+    return {
+      ok: true,
+      message: "Verification link sent",
+      redirectUrl: verifyUrl,
+    }
   } catch (err) {
     console.error("requestAffiliateEmailChange error:", err)
     return returnError(err)

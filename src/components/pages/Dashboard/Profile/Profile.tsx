@@ -41,6 +41,7 @@ import {
   requestSellerEmailChange,
 } from "@/lib/server/requestEmailChange"
 import { LogoutButton } from "@/components/ui-custom/LogoutButton"
+import { AuthResponse, useAuthMutation } from "@/hooks/useAuthMutation"
 
 export default function Profile({
   AffiliateData,
@@ -244,10 +245,10 @@ export default function Profile({
       })
     },
   })
-  const emailChangeMutation = useMutation({
-    mutationFn: async (values: { newEmail: string }) => {
+  const emailChangeMutation = useAuthMutation(
+    async (values: { newEmail: string }) => {
       if (isPreview) {
-        return new Promise((resolve) =>
+        return new Promise<AuthResponse>((resolve) =>
           setTimeout(() => resolve({ ok: true }), 1000)
         )
       }
@@ -265,34 +266,11 @@ export default function Profile({
         })
       }
     },
-    onSuccess: (res: any) => {
-      if (res?.ok) {
-        showCustomToast({
-          type: "success",
-          title: "Email change requested",
-          description: "Check your new email inbox for verification link",
-          affiliate,
-        })
-      } else {
-        showCustomToast({
-          type: "error",
-          title: "Email change failed",
-          description: res.error ?? "Something went wrong.",
-          affiliate,
-        })
-      }
-      setShowEmailDialog(false)
-    },
-    onError: (err: any) => {
-      showCustomToast({
-        type: "error",
-        title: "Email change failed",
-        description: err.message ?? "Unexpected error.",
-        affiliate,
-      })
-      setShowEmailDialog(false)
-    },
-  })
+    {
+      affiliate,
+      disableSuccessToast: false,
+    }
+  )
   const onSubmit = (data: typeof safeDefaults) => {
     const changed = (Object.keys(data) as (keyof typeof data)[]).reduce(
       (acc, key) => {

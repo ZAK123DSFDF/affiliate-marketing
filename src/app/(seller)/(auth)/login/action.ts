@@ -5,7 +5,6 @@ import * as bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
-import { redirect } from "next/navigation"
 
 export const LoginServer = async ({
   email,
@@ -95,7 +94,7 @@ export const LoginServer = async ({
       await sendVerificationEmail(existingUser.email, verifyUrl)
       return { ok: true, message: "Verification email sent" }
     }
-    redirect(verifyUrl)
+    return { ok: true, redirectUrl: verifyUrl }
   } catch (error: any) {
     console.error("User Login Error:", error)
     return returnError(error)

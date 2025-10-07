@@ -4,7 +4,6 @@ import { db } from "@/db/drizzle"
 import jwt from "jsonwebtoken"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
-import { redirect } from "next/navigation"
 
 export const ForgotPasswordServer = async ({ email }: { email: string }) => {
   try {
@@ -53,7 +52,7 @@ export const ForgotPasswordServer = async ({ email }: { email: string }) => {
 
       return { ok: true, message: "Reset link sent to your email" }
     }
-    redirect(resetUrl)
+    return { ok: true, redirectUrl: resetUrl }
   } catch (error: any) {
     console.error("Forgot password error:", error)
     return returnError(error)
