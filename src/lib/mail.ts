@@ -3,7 +3,7 @@ import nodemailer from "nodemailer"
 export const sendVerificationEmail = async (to: string, link: string) => {
   const transporter = nodemailer.createTransport({
     host: "localhost",
-    port: 17422, // MailDev SMTP
+    port: 1025, // MailDev SMTP
     secure: false,
   })
 
