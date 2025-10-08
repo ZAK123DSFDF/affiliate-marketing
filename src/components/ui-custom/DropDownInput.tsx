@@ -9,6 +9,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+import { Plus } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 type DropdownInputProps = {
   label: string
@@ -20,6 +22,8 @@ type DropdownInputProps = {
   width?: string
   selectOpen?: boolean
   setSelectOpen?: (open: boolean) => void
+  includeFooter?: boolean
+  onFooterClick?: () => void
 }
 
 export const DropdownInput = ({
@@ -32,6 +36,8 @@ export const DropdownInput = ({
   width,
   selectOpen,
   setSelectOpen,
+  includeFooter = false,
+  onFooterClick,
 }: DropdownInputProps) => (
   <div className="space-y-1">
     <Label className="text-xs font-medium">{label}</Label>
@@ -55,6 +61,20 @@ export const DropdownInput = ({
             {opt.label}
           </SelectItem>
         ))}
+        {includeFooter && (
+          <div className="sticky bottom-0 mt-1 border-t border-border bg-background p-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start text-sm font-medium"
+              onClick={() => {
+                onFooterClick?.()
+              }}
+            >
+              <Plus className="w-4 h-4 mr-2" /> Add Org
+            </Button>
+          </div>
+        )}
       </SelectContent>
     </Select>
   </div>

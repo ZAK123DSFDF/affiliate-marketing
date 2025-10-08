@@ -77,6 +77,7 @@ const SellerDashboardSidebar = ({ orgId, plan, orgs, UserData }: Props) => {
     },
   ]
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [selectOpen, setSelectOpen] = useState(false)
   const [dialogMode, setDialogMode] = useState<"create" | "upgrade">("create")
 
   const handleClick = () => {
@@ -113,10 +114,11 @@ const SellerDashboardSidebar = ({ orgId, plan, orgs, UserData }: Props) => {
             width="w-40"
             onChange={(val) => switchOrg(val)}
             disabled={orgs.length === 0 || isPending}
+            includeFooter
+            onFooterClick={handleClick}
+            selectOpen={selectOpen}
+            setSelectOpen={(v) => !dialogOpen && setSelectOpen(v)}
           />
-          <Button size="icon" variant="default" onClick={handleClick}>
-            <Plus className="w-4 h-4" />
-          </Button>
           <AppDialog
             open={dialogOpen}
             onOpenChange={setDialogOpen}
