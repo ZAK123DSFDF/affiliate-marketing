@@ -3,8 +3,7 @@
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput"
 import { useAtom } from "jotai"
 import { dashboardThemeCustomizationAtom } from "@/store/DashboardCustomizationAtom"
-import { useMemo } from "react"
-import throttle from "lodash/throttle"
+import { useThrottledUpdater } from "@/hooks/useThrottledUpdater"
 // Valid keys for dashboard theme customization
 type DashboardThemeKeys =
   | "mainBackgroundColor"
@@ -33,7 +32,7 @@ export const DashboardThemeCustomizationOptions = ({
   const [themeCustomization, setThemeCustomization] = useAtom(
     dashboardThemeCustomizationAtom
   )
-
+  const throttled = useThrottledUpdater(setThemeCustomization, 300)
   const labelMap: Record<DashboardThemeKeys, string> = {
     mainBackgroundColor: "Main Background",
     dashboardHeaderNameColor: "Header Name",
@@ -46,24 +45,11 @@ export const DashboardThemeCustomizationOptions = ({
     missingPaypalHeaderColor: "Missing PayPal Header",
     missingPaypalDescriptionColor: "Missing PayPal Description",
   }
-  const throttledSetTheme = useMemo(
-    () =>
-      throttle(
-        (val: string) =>
-          setThemeCustomization((prev) => ({
-            ...prev,
-            [name]: val,
-          })),
-        300,
-        { leading: true, trailing: true }
-      ),
-    [setThemeCustomization, name]
-  )
   return (
     <ResettableColorInput
       label={labelMap[name]}
       value={themeCustomization[name]}
-      onChange={throttledSetTheme}
+      onChange={throttled[name]}
       showLabel={showLabel}
       buttonSize={buttonSize}
     />

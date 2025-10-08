@@ -6,6 +6,7 @@ import {
   ThemeCustomization,
   themeCustomizationAtom,
 } from "@/store/AuthCustomizationAtom"
+import { useThrottledUpdater } from "@/hooks/useThrottledUpdater"
 
 type ThemeKeys = keyof ThemeCustomization
 
@@ -21,7 +22,7 @@ export const ThemeCustomizationOptions = ({
   buttonSize = "w-8 h-8",
 }: Props) => {
   const [theme, setTheme] = useAtom(themeCustomizationAtom)
-
+  const throttled = useThrottledUpdater(setTheme, 300)
   const labelMap: Record<ThemeKeys, string> = {
     headerColor: "Header",
     backgroundColor: "Background",
@@ -47,7 +48,7 @@ export const ThemeCustomizationOptions = ({
     <ResettableColorInput
       label={labelMap[name]}
       value={theme[name]}
-      onChange={(val) => setTheme((prev) => ({ ...prev, [name]: val }))}
+      onChange={throttled[name]}
       showLabel={showLabel}
       buttonSize={buttonSize}
     />
