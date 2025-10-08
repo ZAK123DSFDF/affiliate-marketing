@@ -13,13 +13,18 @@ import {
   buttonCustomizationAtom,
   themeCustomizationAtom,
 } from "@/store/AuthCustomizationAtom"
-
+type CustomMessages = {
+  signup?: string
+  login?: string
+  changeEmail?: string
+}
 type Props = {
   orgId?: string
   isPreview?: boolean
   setMainTab?: (tab: string) => void
   affiliate: boolean
   mode?: "signup" | "login" | "changeEmail"
+  customMessages?: CustomMessages
 }
 
 const EmailVerified = ({
@@ -28,6 +33,7 @@ const EmailVerified = ({
   setMainTab,
   affiliate,
   mode,
+  customMessages,
 }: Props) => {
   const {
     backgroundColor,
@@ -39,6 +45,9 @@ const EmailVerified = ({
     buttonCustomizationAtom
   )
   const authCardStyle = useAuthCard(affiliate)
+  const message =
+    (mode && customMessages?.[mode]) ||
+    "Your email address has been successfully verified. You can now access all features."
   const router = useRouter()
   const handleClick = () => {
     if (isPreview) {
@@ -114,8 +123,7 @@ const EmailVerified = ({
                     (affiliate && emailVerifiedSecondaryColor) || undefined,
                 }}
               >
-                Your email address has been successfully verified. You can now
-                access all features.
+                {message}
               </p>
               {isPreview && (
                 <ThemeCustomizationOptions

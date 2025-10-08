@@ -32,6 +32,17 @@ export default function VerifyClient({
     retry: false,
     refetchOnWindowFocus: false,
   })
+  const customMessages = affiliate
+    ? {
+        signup: "Your email has been verified. You can now start promoting.",
+        login: "Email verified successfully. Go to your dashboard.",
+        changeEmail: "Email updated successfully. Go to your dashboard.",
+      }
+    : {
+        signup: "Email verified. You can now create your company.",
+        login: "Email verified. Go to your dashboard.",
+        changeEmail: "Email changed successfully. Go to your dashboard.",
+      }
 
   // Redirect if VerifyServer gives redirectUrl
   useEffect(() => {
@@ -63,6 +74,7 @@ export default function VerifyClient({
         affiliate={data.tokenType === "affiliate"}
         orgId={data.activeOrgId}
         mode={data.mode}
+        customMessages={customMessages}
       />
     )
   }
