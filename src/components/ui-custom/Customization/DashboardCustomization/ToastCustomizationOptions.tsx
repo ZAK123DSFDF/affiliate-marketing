@@ -3,6 +3,7 @@
 import { ResettableColorInput } from "@/components/ui-custom/ResettableColorInput"
 import { useAtom } from "jotai"
 import { toastCustomizationAtom } from "@/store/DashboardCustomizationAtom"
+import { useThrottledUpdater } from "@/hooks/useThrottledUpdater"
 
 // Valid keys for toast customization
 type ToastColorKey =
@@ -28,7 +29,7 @@ export const ToastCustomizationOptions = ({
   const [toastCustomization, setToastCustomization] = useAtom(
     toastCustomizationAtom
   )
-
+  const throttled = useThrottledUpdater(setToastCustomization, 300)
   const labelMap: Record<ToastColorKey, string> = {
     toastTitleColor: "Success Toast Text Color",
     toastDescriptionColor: "Success Toast Secondary Text",
@@ -42,12 +43,7 @@ export const ToastCustomizationOptions = ({
     <ResettableColorInput
       label={labelMap[name]}
       value={toastCustomization[name]}
-      onChange={(val) =>
-        setToastCustomization({
-          ...toastCustomization,
-          [name]: val,
-        })
-      }
+      onChange={throttled[name]}
       showLabel={showLabel}
       buttonSize={buttonSize}
     />

@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
 import { useAtom } from "jotai"
 import { cardCustomizationAtom } from "@/store/AuthCustomizationAtom"
+import { useThrottledOptionsUpdater } from "@/hooks/useThrottledOptionsUpdater"
 
 export const CardCustomizationOptions = ({
   triggerSize,
@@ -22,7 +23,7 @@ export const CardCustomizationOptions = ({
     },
     setCardCustomization,
   ] = useAtom(cardCustomizationAtom)
-
+  const throttled = useThrottledOptionsUpdater(setCardCustomization, 300)
   return (
     <OptionWithSwitch
       triggerSize={triggerSize}
@@ -31,20 +32,12 @@ export const CardCustomizationOptions = ({
         shadow: {
           label: "Enable Card Shadow",
           enabled: cardShadow,
-          onToggle: (val) =>
-            setCardCustomization((prev) => ({
-              ...prev,
-              cardShadow: val,
-            })),
+          onToggle: throttled.cardShadow,
           children: {
             shadowColor: {
               label: "Shadow Color",
               value: cardShadowColor,
-              onChange: (val) =>
-                setCardCustomization((prev) => ({
-                  ...prev,
-                  cardShadowColor: val,
-                })),
+              onChange: throttled.cardShadowColor,
             },
             shadowThickness: {
               label: "Shadow Thickness",
@@ -55,42 +48,26 @@ export const CardCustomizationOptions = ({
                 { label: "Large", value: "lg" },
                 { label: "Extra Large", value: "xl" },
               ],
-              onChange: (val) =>
-                setCardCustomization((prev) => ({
-                  ...prev,
-                  cardShadowThickness: val,
-                })),
+              onChange: throttled.cardShadowThickness,
             },
           },
         },
         border: {
           label: "Enable Card Border",
           enabled: cardBorder,
-          onToggle: (val) =>
-            setCardCustomization((prev) => ({
-              ...prev,
-              cardBorder: val,
-            })),
+          onToggle: throttled.cardBorder,
           children: {
             borderColor: {
               label: "Border Color",
               value: cardBorderColor,
-              onChange: (val) =>
-                setCardCustomization((prev) => ({
-                  ...prev,
-                  cardBorderColor: val,
-                })),
+              onChange: throttled.cardBorderColor,
             },
           },
         },
         backgroundColor: {
           label: "Card Background Color",
           value: cardBackgroundColor,
-          onChange: (val) =>
-            setCardCustomization((prev) => ({
-              ...prev,
-              cardBackgroundColor: val,
-            })),
+          onChange: throttled.cardBackgroundColor,
         },
       }}
     />

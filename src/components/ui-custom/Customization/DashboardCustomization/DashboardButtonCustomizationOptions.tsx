@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
 import { useAtom } from "jotai"
 import { dashboardButtonCustomizationAtom } from "@/store/DashboardCustomizationAtom"
+import { useThrottledOptionsUpdater } from "@/hooks/useThrottledOptionsUpdater"
 
 export const DashboardButtonCustomizationOptions = ({
   triggerSize,
@@ -22,26 +23,21 @@ export const DashboardButtonCustomizationOptions = ({
     },
     setDashboardButtonCustomization,
   ] = useAtom(dashboardButtonCustomizationAtom)
-
+  const throttled = useThrottledOptionsUpdater(
+    setDashboardButtonCustomization,
+    300
+  )
   // Enabled properties
   const enabledProps = {
     buttonBackgroundColor: {
       label: "Button Background Color",
       value: dashboardButtonBackgroundColor,
-      onChange: (val: string) =>
-        setDashboardButtonCustomization((prev) => ({
-          ...prev,
-          dashboardButtonBackgroundColor: val,
-        })),
+      onChange: throttled.dashboardButtonBackgroundColor,
     },
     buttonTextColor: {
       label: "Button Text Color",
       value: dashboardButtonTextColor,
-      onChange: (val: string) =>
-        setDashboardButtonCustomization((prev) => ({
-          ...prev,
-          dashboardButtonTextColor: val,
-        })),
+      onChange: throttled.dashboardButtonTextColor,
     },
   }
 
@@ -50,20 +46,12 @@ export const DashboardButtonCustomizationOptions = ({
     buttonDisabledBackgroundColor: {
       label: "Disabled Background Color",
       value: dashboardButtonDisabledBackgroundColor,
-      onChange: (val: string) =>
-        setDashboardButtonCustomization((prev) => ({
-          ...prev,
-          dashboardButtonDisabledBackgroundColor: val,
-        })),
+      onChange: throttled.dashboardButtonDisabledBackgroundColor,
     },
     buttonDisabledTextColor: {
       label: "Disabled Text Color",
       value: dashboardButtonDisabledTextColor,
-      onChange: (val: string) =>
-        setDashboardButtonCustomization((prev) => ({
-          ...prev,
-          dashboardButtonDisabledTextColor: val,
-        })),
+      onChange: throttled.dashboardButtonDisabledTextColor,
     },
   }
 

@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
 import { useAtom } from "jotai"
 import { tableCustomizationAtom } from "@/store/DashboardCustomizationAtom"
+import { useThrottledOptionsUpdater } from "@/hooks/useThrottledOptionsUpdater"
 
 export const TableCustomizationOptions = ({
   triggerSize,
@@ -35,88 +36,52 @@ export const TableCustomizationOptions = ({
     },
     setTableCustomization,
   ] = useAtom(tableCustomizationAtom)
-
+  const throttled = useThrottledOptionsUpdater(setTableCustomization, 300)
   const properties: Record<string, any> = {
     tableHeaderTextColor: {
       label: "Table Header Text Color",
       value: tableHeaderTextColor,
-      onChange: (val: string) =>
-        setTableCustomization((prev) => ({
-          ...prev,
-          tableHeaderTextColor: val,
-        })),
+      onChange: throttled.tableHeaderTextColor,
     },
     tableHoverBackgroundColor: {
       label: "Table Row Hover Background",
       value: tableHoverBackgroundColor,
-      onChange: (val: string) =>
-        setTableCustomization((prev) => ({
-          ...prev,
-          tableHoverBackgroundColor: val,
-        })),
+      onChange: throttled.tableHoverBackgroundColor,
     },
     tableIconColor: {
       label: "Table Icon Color",
       value: tableIconColor,
-      onChange: (val: string) =>
-        setTableCustomization((prev) => ({
-          ...prev,
-          tableIconColor: val,
-        })),
+      onChange: throttled.tableIconColor,
     },
     tableIconHoverColor: {
       label: "Table Icon Hover Color",
       value: tableIconHoverColor,
-      onChange: (val: string) =>
-        setTableCustomization((prev) => ({
-          ...prev,
-          tableIconHoverColor: val,
-        })),
+      onChange: throttled.tableIconHoverColor,
     },
     tableIconHoverBackgroundColor: {
       label: "Table Icon Hover Background",
       value: tableIconHoverBackgroundColor,
-      onChange: (val: string) =>
-        setTableCustomization((prev) => ({
-          ...prev,
-          tableIconHoverBackgroundColor: val,
-        })),
+      onChange: throttled.tableIconHoverBackgroundColor,
     },
     tableRowTertiaryTextColor: {
       label: "Table Row Tertiary Text Color",
       value: tableRowTertiaryTextColor,
-      onChange: (val: string) =>
-        setTableCustomization((prev) => ({
-          ...prev,
-          tableRowTertiaryTextColor: val,
-        })),
+      onChange: throttled.tableRowTertiaryTextColor,
     },
     tableBorderColor: {
       label: "Table Border Color",
       value: tableBorderColor,
-      onChange: (val: string) =>
-        setTableCustomization((prev) => ({
-          ...prev,
-          tableBorderColor: val,
-        })),
+      onChange: throttled.tableBorderColor,
     },
     tableLoadingColor: {
       label: "Table Loading Color",
       value: tableLoadingColor,
-      onChange: (val: string) =>
-        setTableCustomization((prev) => ({
-          ...prev,
-          tableLoadingColor: val,
-        })),
+      onChange: throttled.tableLoadingColor,
     },
     tableEmptyTextColor: {
       label: "Table Empty Text Color",
       value: tableEmptyTextColor,
-      onChange: (val: string) =>
-        setTableCustomization((prev) => ({
-          ...prev,
-          tableEmptyTextColor: val,
-        })),
+      onChange: throttled.tableEmptyTextColor,
     },
   }
 
@@ -126,65 +91,37 @@ export const TableCustomizationOptions = ({
       tableRowPrimaryTextColor: {
         label: "Table Row Primary Text Color",
         value: tableRowPrimaryTextColor,
-        onChange: (val: string) =>
-          setTableCustomization((prev) => ({
-            ...prev,
-            tableRowPrimaryTextColor: val,
-          })),
+        onChange: throttled.tableRowPrimaryTextColor,
       },
       tableRowBadgeOverDueTextColor: {
         label: "Table Badge Overdue Text Color",
         value: tableRowBadgeOverDueTextColor,
-        onChange: (val: string) =>
-          setTableCustomization((prev) => ({
-            ...prev,
-            tableRowBadgeOverDueTextColor: val,
-          })),
+        onChange: throttled.tableRowBadgeOverDueTextColor,
       },
       tableRowBadgeOverDueBackgroundColor: {
         label: "Table Badge Overdue Background",
         value: tableRowBadgeOverDueBackgroundColor,
-        onChange: (val: string) =>
-          setTableCustomization((prev) => ({
-            ...prev,
-            tableRowBadgeOverDueBackgroundColor: val,
-          })),
+        onChange: throttled.tableRowBadgeOverDueBackgroundColor,
       },
       tableRowBadgePendingTextColor: {
         label: "Table Badge Pending Text Color",
         value: tableRowBadgePendingTextColor,
-        onChange: (val: string) =>
-          setTableCustomization((prev) => ({
-            ...prev,
-            tableRowBadgePendingTextColor: val,
-          })),
+        onChange: throttled.tableRowBadgePendingTextColor,
       },
       tableRowBadgePendingBackgroundColor: {
         label: "Table Badge Pending Background",
         value: tableRowBadgePendingBackgroundColor,
-        onChange: (val: string) =>
-          setTableCustomization((prev) => ({
-            ...prev,
-            tableRowBadgePendingBackgroundColor: val,
-          })),
+        onChange: throttled.tableRowBadgePendingBackgroundColor,
       },
       tableRowBadgePaidTextColor: {
         label: "Table Badge Paid Text Color",
         value: tableRowBadgePaidTextColor,
-        onChange: (val: string) =>
-          setTableCustomization((prev) => ({
-            ...prev,
-            tableRowBadgePaidTextColor: val,
-          })),
+        onChange: throttled.tableRowBadgePaidTextColor,
       },
       tableRowBadgePaidBackgroundColor: {
         label: "Table Badge Paid Background",
         value: tableRowBadgePaidBackgroundColor,
-        onChange: (val: string) =>
-          setTableCustomization((prev) => ({
-            ...prev,
-            tableRowBadgePaidBackgroundColor: val,
-          })),
+        onChange: throttled.tableRowBadgePaidBackgroundColor,
       },
     })
   } else if (type === "link") {
@@ -192,11 +129,7 @@ export const TableCustomizationOptions = ({
       tableRowSecondaryTextColor: {
         label: "Table Row Secondary Text Color",
         value: tableRowSecondaryTextColor,
-        onChange: (val: string) =>
-          setTableCustomization((prev) => ({
-            ...prev,
-            tableRowSecondaryTextColor: val,
-          })),
+        onChange: throttled.tableRowSecondaryTextColor,
       },
     })
   }

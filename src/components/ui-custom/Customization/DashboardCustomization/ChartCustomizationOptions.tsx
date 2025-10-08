@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
 import { useAtom } from "jotai"
 import { chartCustomizationAtom } from "@/store/DashboardCustomizationAtom"
+import { useThrottledOptionsUpdater } from "@/hooks/useThrottledOptionsUpdater"
 
 export const ChartCustomizationOptions = ({
   triggerSize,
@@ -27,7 +28,7 @@ export const ChartCustomizationOptions = ({
     },
     setChartCustomization,
   ] = useAtom(chartCustomizationAtom)
-
+  const throttled = useThrottledOptionsUpdater(setChartCustomization, 300)
   return (
     <OptionWithSwitch
       triggerSize={triggerSize}
@@ -36,101 +37,57 @@ export const ChartCustomizationOptions = ({
         horizontalLineColor: {
           label: "Horizontal Line Color",
           value: chartHorizontalLineColor,
-          onChange: (val: string) =>
-            setChartCustomization((prev) => ({
-              ...prev,
-              chartHorizontalLineColor: val,
-            })),
+          onChange: throttled.chartHorizontalLineColor,
         },
         dateColor: {
           label: "Date Color",
           value: chartDateColor,
-          onChange: (val: string) =>
-            setChartCustomization((prev) => ({
-              ...prev,
-              chartDateColor: val,
-            })),
+          onChange: throttled.chartDateColor,
         },
         primaryColor: {
           label: "Primary Chart Color",
           value: chartPrimaryColor,
-          onChange: (val: string) =>
-            setChartCustomization((prev) => ({
-              ...prev,
-              chartPrimaryColor: val,
-            })),
+          onChange: throttled.chartPrimaryColor,
         },
         secondaryColor: {
           label: "Secondary Chart Color",
           value: chartSecondaryColor,
-          onChange: (val: string) =>
-            setChartCustomization((prev) => ({
-              ...prev,
-              chartSecondaryColor: val,
-            })),
+          onChange: throttled.chartSecondaryColor,
         },
         tertiaryColor: {
           label: "Tertiary Chart Color",
           value: chartTertiaryColor,
-          onChange: (val: string) =>
-            setChartCustomization((prev) => ({
-              ...prev,
-              chartTertiaryColor: val,
-            })),
+          onChange: throttled.chartTertiaryColor,
         },
         legendTextColor: {
           label: "Legend Text Color",
           value: chartLegendTextColor,
-          onChange: (val: string) =>
-            setChartCustomization((prev) => ({
-              ...prev,
-              chartLegendTextColor: val,
-            })),
+          onChange: throttled.chartLegendTextColor,
         },
         toolTipChartDateColor: {
           label: "Tooltip Date Color",
           value: toolTipChartDateColor,
-          onChange: (val: string) =>
-            setChartCustomization((prev) => ({
-              ...prev,
-              toolTipChartDateColor: val,
-            })),
+          onChange: throttled.toolTipChartDateColor,
         },
         toolTipBackgroundColor: {
           label: "Tooltip Background Color",
           value: toolTipBackgroundColor,
-          onChange: (val: string) =>
-            setChartCustomization((prev) => ({
-              ...prev,
-              toolTipBackgroundColor: val,
-            })),
+          onChange: throttled.toolTipBackgroundColor,
         },
         toolTipTextColor: {
           label: "Tooltip Text Color",
           value: toolTipTextColor,
-          onChange: (val: string) =>
-            setChartCustomization((prev) => ({
-              ...prev,
-              toolTipTextColor: val,
-            })),
+          onChange: throttled.toolTipTextColor,
         },
         toolTipNumberColor: {
           label: "Tooltip Number Color",
           value: toolTipNumberColor,
-          onChange: (val: string) =>
-            setChartCustomization((prev) => ({
-              ...prev,
-              toolTipNumberColor: val,
-            })),
+          onChange: throttled.toolTipNumberColor,
         },
         loadingColor: {
           label: "Chart Loading Color",
           value: chartLoadingColor,
-          onChange: (val: string) =>
-            setChartCustomization((prev) => ({
-              ...prev,
-              chartLoadingColor: val,
-            })),
+          onChange: throttled.chartLoadingColor,
         },
       }}
     />

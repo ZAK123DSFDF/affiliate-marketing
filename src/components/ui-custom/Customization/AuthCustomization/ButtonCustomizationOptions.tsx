@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
 import { useAtom } from "jotai"
 import { buttonCustomizationAtom } from "@/store/AuthCustomizationAtom"
+import { useThrottledOptionsUpdater } from "@/hooks/useThrottledOptionsUpdater"
 
 export const ButtonCustomizationOptions = ({
   size,
@@ -20,24 +21,17 @@ export const ButtonCustomizationOptions = ({
     },
     setButtonCustomization,
   ] = useAtom(buttonCustomizationAtom)
+  const throttled = useThrottledOptionsUpdater(setButtonCustomization, 300)
   const enabledProps = {
     buttonTextColor: {
       label: "Button Text Color",
       value: buttonTextColor,
-      onChange: (val: string) =>
-        setButtonCustomization((prev) => ({
-          ...prev,
-          buttonTextColor: val,
-        })),
+      onChange: throttled.buttonTextColor,
     },
     buttonBackgroundColor: {
       label: "Button Background Color",
       value: buttonBackgroundColor,
-      onChange: (val: string) =>
-        setButtonCustomization((prev) => ({
-          ...prev,
-          buttonBackgroundColor: val,
-        })),
+      onChange: throttled.buttonBackgroundColor,
     },
   }
 
@@ -46,20 +40,12 @@ export const ButtonCustomizationOptions = ({
     buttonDisabledTextColor: {
       label: "Disabled Text Color",
       value: buttonDisabledTextColor,
-      onChange: (val: string) =>
-        setButtonCustomization((prev) => ({
-          ...prev,
-          buttonDisabledTextColor: val,
-        })),
+      onChange: throttled.buttonDisabledTextColor,
     },
     buttonDisabledBackgroundColor: {
       label: "Disabled Background Color",
       value: buttonDisabledBackgroundColor,
-      onChange: (val: string) =>
-        setButtonCustomization((prev) => ({
-          ...prev,
-          buttonDisabledBackgroundColor: val,
-        })),
+      onChange: throttled.buttonDisabledBackgroundColor,
     },
   }
 

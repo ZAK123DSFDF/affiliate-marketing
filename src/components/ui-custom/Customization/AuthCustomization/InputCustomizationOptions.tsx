@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
 import { useAtom } from "jotai"
 import { inputCustomizationAtom } from "@/store/AuthCustomizationAtom"
+import { useThrottledOptionsUpdater } from "@/hooks/useThrottledOptionsUpdater"
 
 export const InputCustomizationOptions = ({ size }: { size?: string }) => {
   const [
@@ -19,7 +20,7 @@ export const InputCustomizationOptions = ({ size }: { size?: string }) => {
     },
     setInputCustomization,
   ] = useAtom(inputCustomizationAtom)
-
+  const throttled = useThrottledOptionsUpdater(setInputCustomization, 300)
   return (
     <OptionWithSwitch
       triggerSize={size}
@@ -27,83 +28,47 @@ export const InputCustomizationOptions = ({ size }: { size?: string }) => {
         inputLabelColor: {
           label: "Input Label Color",
           value: inputLabelColor,
-          onChange: (val: string) =>
-            setInputCustomization((prev) => ({
-              ...prev,
-              inputLabelColor: val,
-            })),
+          onChange: throttled.inputLabelColor,
         },
         inputIconColor: {
           label: "Input Icon Color",
           value: inputIconColor,
-          onChange: (val: string) =>
-            setInputCustomization((prev) => ({
-              ...prev,
-              inputIconColor: val,
-            })),
+          onChange: throttled.inputIconColor,
         },
         inputTextColor: {
           label: "Input Text Color",
           value: inputTextColor,
-          onChange: (val: string) =>
-            setInputCustomization((prev) => ({
-              ...prev,
-              inputTextColor: val,
-            })),
+          onChange: throttled.inputTextColor,
         },
         inputErrorTextColor: {
           label: "Input Error Text Color",
           value: inputErrorTextColor,
-          onChange: (val: string) =>
-            setInputCustomization((prev) => ({
-              ...prev,
-              inputErrorTextColor: val,
-            })),
+          onChange: throttled.inputErrorTextColor,
         },
         inputBorderColor: {
           label: "Input Border Color",
           value: inputBorderColor,
-          onChange: (val: string) =>
-            setInputCustomization((prev) => ({
-              ...prev,
-              inputBorderColor: val,
-            })),
+          onChange: throttled.inputBorderColor,
         },
         inputPlaceholderTextColor: {
           label: "Input Placeholder Color",
           value: inputPlaceholderTextColor,
-          onChange: (val: string) =>
-            setInputCustomization((prev) => ({
-              ...prev,
-              inputPlaceholderTextColor: val,
-            })),
+          onChange: throttled.inputPlaceholderTextColor,
         },
         inputErrorBorderColor: {
           label: "Input Error Border Color",
           value: inputErrorBorderColor,
-          onChange: (val: string) =>
-            setInputCustomization((prev) => ({
-              ...prev,
-              inputErrorBorderColor: val,
-            })),
+          onChange: throttled.inputErrorBorderColor,
         },
         inputBorderFocusColor: {
           label: "Input Border Focus Color",
           value: inputBorderFocusColor,
-          onChange: (val: string) =>
-            setInputCustomization((prev) => ({
-              ...prev,
-              inputBorderFocusColor: val,
-            })),
+          onChange: throttled.inputBorderFocusColor,
         },
         inputLabelErrorColor: {
           label: "Input Label Error Color",
           value: inputLabelErrorColor,
-          onChange: (val: string) =>
-            setInputCustomization((prev) => ({
-              ...prev,
-              inputLabelErrorColor: val,
-            })),
+          onChange: throttled.inputLabelErrorColor,
         },
       }}
     />

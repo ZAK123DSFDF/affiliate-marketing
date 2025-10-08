@@ -3,13 +3,14 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
 import { useAtom } from "jotai"
 import { checkboxCustomizationAtom } from "@/store/AuthCustomizationAtom"
+import { useThrottledOptionsUpdater } from "@/hooks/useThrottledOptionsUpdater"
 
 export const CheckboxCustomizationOptions = ({ size }: { size?: string }) => {
   const [
     { checkboxLabelColor, checkboxActiveColor, checkboxInactiveColor },
     setCheckboxCustomization,
   ] = useAtom(checkboxCustomizationAtom)
-
+  const throttled = useThrottledOptionsUpdater(setCheckboxCustomization, 300)
   return (
     <OptionWithSwitch
       triggerSize={size}
@@ -17,29 +18,17 @@ export const CheckboxCustomizationOptions = ({ size }: { size?: string }) => {
         checkboxLabelColor: {
           label: "Checkbox Label Color",
           value: checkboxLabelColor,
-          onChange: (val: string) =>
-            setCheckboxCustomization((prev) => ({
-              ...prev,
-              checkboxLabelColor: val,
-            })),
+          onChange: throttled.checkboxLabelColor,
         },
         checkboxActiveColor: {
           label: "Checkbox Active Color",
           value: checkboxActiveColor,
-          onChange: (val: string) =>
-            setCheckboxCustomization((prev) => ({
-              ...prev,
-              checkboxActiveColor: val,
-            })),
+          onChange: throttled.checkboxActiveColor,
         },
         checkboxInactiveColor: {
           label: "Checkbox Inactive Color",
           value: checkboxInactiveColor,
-          onChange: (val: string) =>
-            setCheckboxCustomization((prev) => ({
-              ...prev,
-              checkboxInactiveColor: val,
-            })),
+          onChange: throttled.checkboxInactiveColor,
         },
       }}
     />

@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
 import { useAtom } from "jotai"
 import { dialogCustomizationAtom } from "@/store/DashboardCustomizationAtom"
+import { useThrottledOptionsUpdater } from "@/hooks/useThrottledOptionsUpdater"
 
 export const DialogCustomizationOptions = ({
   triggerSize,
@@ -15,7 +16,7 @@ export const DialogCustomizationOptions = ({
     { dialogBackgroundColor, dialogCloseIconColor, dialogCloseIconBorderColor },
     setDialogCustomization,
   ] = useAtom(dialogCustomizationAtom)
-
+  const throttled = useThrottledOptionsUpdater(setDialogCustomization, 300)
   return (
     <OptionWithSwitch
       triggerSize={triggerSize}
@@ -24,29 +25,17 @@ export const DialogCustomizationOptions = ({
         dialogBackgroundColor: {
           label: "Dialog Background Color",
           value: dialogBackgroundColor,
-          onChange: (val: string) =>
-            setDialogCustomization((prev) => ({
-              ...prev,
-              dialogBackgroundColor: val,
-            })),
+          onChange: throttled.dialogBackgroundColor,
         },
         dialogCloseIconColor: {
           label: "Close Icon Color",
           value: dialogCloseIconColor,
-          onChange: (val: string) =>
-            setDialogCustomization((prev) => ({
-              ...prev,
-              dialogCloseIconColor: val,
-            })),
+          onChange: throttled.dialogCloseIconColor,
         },
         dialogCloseIconBorderColor: {
           label: "Close Icon Border Color",
           value: dialogCloseIconBorderColor,
-          onChange: (val: string) =>
-            setDialogCustomization((prev) => ({
-              ...prev,
-              dialogCloseIconBorderColor: val,
-            })),
+          onChange: throttled.dialogCloseIconBorderColor,
         },
       }}
     />

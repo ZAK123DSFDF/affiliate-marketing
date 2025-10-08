@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
 import { useAtom } from "jotai"
 import { dashboardCardCustomizationAtom } from "@/store/DashboardCustomizationAtom"
+import { useThrottledOptionsUpdater } from "@/hooks/useThrottledOptionsUpdater"
 
 export const DashboardCardCustomizationOptions = ({
   triggerSize,
@@ -22,7 +23,10 @@ export const DashboardCardCustomizationOptions = ({
     },
     setDashboardCardCustomization,
   ] = useAtom(dashboardCardCustomizationAtom)
-
+  const throttled = useThrottledOptionsUpdater(
+    setDashboardCardCustomization,
+    300
+  )
   return (
     <OptionWithSwitch
       triggerSize={triggerSize}
@@ -31,20 +35,12 @@ export const DashboardCardCustomizationOptions = ({
         shadow: {
           label: "Enable Card Shadow",
           enabled: dashboardCardShadow,
-          onToggle: (val: boolean) =>
-            setDashboardCardCustomization((prev) => ({
-              ...prev,
-              dashboardCardShadow: val,
-            })),
+          onToggle: throttled.dashboardCardShadow,
           children: {
             shadowColor: {
               label: "Shadow Color",
               value: dashboardCardShadowColor,
-              onChange: (val: string) =>
-                setDashboardCardCustomization((prev) => ({
-                  ...prev,
-                  dashboardCardShadowColor: val,
-                })),
+              onChange: throttled.dashboardCardShadowColor,
             },
             shadowThickness: {
               label: "Shadow Thickness",
@@ -55,42 +51,26 @@ export const DashboardCardCustomizationOptions = ({
                 { label: "Large", value: "lg" },
                 { label: "Extra Large", value: "xl" },
               ],
-              onChange: (val: string) =>
-                setDashboardCardCustomization((prev) => ({
-                  ...prev,
-                  dashboardCardShadowThickness: val,
-                })),
+              onChange: throttled.dashboardCardShadowThickness,
             },
           },
         },
         border: {
           label: "Enable Card Border",
           enabled: dashboardCardBorder,
-          onToggle: (val: boolean) =>
-            setDashboardCardCustomization((prev) => ({
-              ...prev,
-              dashboardCardBorder: val,
-            })),
+          onToggle: throttled.dashboardCardBorder,
           children: {
             borderColor: {
               label: "Border Color",
               value: dashboardCardBorderColor,
-              onChange: (val: string) =>
-                setDashboardCardCustomization((prev) => ({
-                  ...prev,
-                  dashboardCardBorderColor: val,
-                })),
+              onChange: throttled.dashboardCardBorderColor,
             },
           },
         },
         backgroundColor: {
           label: "Card Background Color",
           value: dashboardCardBackgroundColor,
-          onChange: (val: string) =>
-            setDashboardCardCustomization((prev) => ({
-              ...prev,
-              dashboardCardBackgroundColor: val,
-            })),
+          onChange: throttled.dashboardCardBackgroundColor,
         },
       }}
     />

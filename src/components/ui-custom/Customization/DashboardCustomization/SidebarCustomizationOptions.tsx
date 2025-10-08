@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
 import { useAtom } from "jotai"
 import { sidebarCustomizationAtom } from "@/store/DashboardCustomizationAtom"
+import { useThrottledOptionsUpdater } from "@/hooks/useThrottledOptionsUpdater"
 
 export const SidebarCustomizationOptions = ({
   triggerSize,
@@ -26,7 +27,7 @@ export const SidebarCustomizationOptions = ({
     },
     setSidebarCustomization,
   ] = useAtom(sidebarCustomizationAtom)
-
+  const throttled = useThrottledOptionsUpdater(setSidebarCustomization, 300)
   return (
     <OptionWithSwitch
       triggerSize={triggerSize}
@@ -35,92 +36,52 @@ export const SidebarCustomizationOptions = ({
         sideBarBackgroundColor: {
           label: "Sidebar Background",
           value: sideBarBackgroundColor,
-          onChange: (val: string) =>
-            setSidebarCustomization((prev) => ({
-              ...prev,
-              sideBarBackgroundColor: val,
-            })),
+          onChange: throttled.sideBarBackgroundColor,
         },
         sideBarActiveNavigationTextColor: {
           label: "Active Nav Text",
           value: sideBarActiveNavigationTextColor,
-          onChange: (val: string) =>
-            setSidebarCustomization((prev) => ({
-              ...prev,
-              sideBarActiveNavigationTextColor: val,
-            })),
+          onChange: throttled.sideBarActiveNavigationTextColor,
         },
         sideBarInActiveNavigationTextColor: {
           label: "Inactive Nav Text",
           value: sideBarInActiveNavigationTextColor,
-          onChange: (val: string) =>
-            setSidebarCustomization((prev) => ({
-              ...prev,
-              sideBarInActiveNavigationTextColor: val,
-            })),
+          onChange: throttled.sideBarInActiveNavigationTextColor,
         },
         sideBarActiveNavigationBackgroundColor: {
           label: "Active Nav Background",
           value: sideBarActiveNavigationBackgroundColor,
-          onChange: (val: string) =>
-            setSidebarCustomization((prev) => ({
-              ...prev,
-              sideBarActiveNavigationBackgroundColor: val,
-            })),
+          onChange: throttled.sideBarActiveNavigationBackgroundColor,
         },
         sideBarHoverNavigationBackgroundColor: {
           label: "Hover Nav Background",
           value: sideBarHoverNavigationBackgroundColor,
-          onChange: (val: string) =>
-            setSidebarCustomization((prev) => ({
-              ...prev,
-              sideBarHoverNavigationBackgroundColor: val,
-            })),
+          onChange: throttled.sideBarHoverNavigationBackgroundColor,
         },
         sideBarHoverNavigationTextColor: {
           label: "Hover Nav Text",
           value: sideBarHoverNavigationTextColor,
-          onChange: (val: string) =>
-            setSidebarCustomization((prev) => ({
-              ...prev,
-              sideBarHoverNavigationTextColor: val,
-            })),
+          onChange: throttled.sideBarHoverNavigationTextColor,
         },
         sideBarProfileBackgroundColor: {
           label: "Profile Background",
           value: sideBarProfileBackgroundColor,
-          onChange: (val: string) =>
-            setSidebarCustomization((prev) => ({
-              ...prev,
-              sideBarProfileBackgroundColor: val,
-            })),
+          onChange: throttled.sideBarProfileBackgroundColor,
         },
         sideBarProfileTextPrimaryColor: {
           label: "Profile Text Primary",
           value: sideBarProfileTextPrimaryColor,
-          onChange: (val: string) =>
-            setSidebarCustomization((prev) => ({
-              ...prev,
-              sideBarProfileTextPrimaryColor: val,
-            })),
+          onChange: throttled.sideBarProfileTextPrimaryColor,
         },
         sideBarProfileTextSecondaryColor: {
           label: "Profile Text Secondary",
           value: sideBarProfileTextSecondaryColor,
-          onChange: (val: string) =>
-            setSidebarCustomization((prev) => ({
-              ...prev,
-              sideBarProfileTextSecondaryColor: val,
-            })),
+          onChange: throttled.sideBarProfileTextSecondaryColor,
         },
         sideBarNavigationFocusRingColor: {
           label: "Focus Ring Color",
           value: sideBarNavigationFocusRingColor,
-          onChange: (val: string) =>
-            setSidebarCustomization((prev) => ({
-              ...prev,
-              sideBarNavigationFocusRingColor: val,
-            })),
+          onChange: throttled.sideBarNavigationFocusRingColor,
         },
       }}
     />

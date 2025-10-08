@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
 import { useAtom } from "jotai"
 import { googleButtonCustomizationAtom } from "@/store/AuthCustomizationAtom"
+import { useThrottledOptionsUpdater } from "@/hooks/useThrottledOptionsUpdater"
 
 export const GoogleButtonCustomizationOptions = ({
   size,
@@ -13,34 +14,25 @@ export const GoogleButtonCustomizationOptions = ({
     { googleButtonTextColor, googleButtonBackgroundColor, googleIconColor },
     setGoogleButtonCustomization,
   ] = useAtom(googleButtonCustomizationAtom)
-
+  const throttled = useThrottledOptionsUpdater(
+    setGoogleButtonCustomization,
+    300
+  )
   const properties = {
     googleButtonTextColor: {
       label: "Google Text Color",
       value: googleButtonTextColor,
-      onChange: (val: string) =>
-        setGoogleButtonCustomization((prev) => ({
-          ...prev,
-          googleButtonTextColor: val,
-        })),
+      onChange: throttled.googleButtonTextColor,
     },
     googleButtonBackgroundColor: {
       label: "Google Background Color",
       value: googleButtonBackgroundColor,
-      onChange: (val: string) =>
-        setGoogleButtonCustomization((prev) => ({
-          ...prev,
-          googleButtonBackgroundColor: val,
-        })),
+      onChange: throttled.googleButtonBackgroundColor,
     },
     googleIconColor: {
       label: "Google Icon Color",
       value: googleIconColor,
-      onChange: (val: string) =>
-        setGoogleButtonCustomization((prev) => ({
-          ...prev,
-          googleIconColor: val,
-        })),
+      onChange: throttled.googleIconColor,
     },
   }
 

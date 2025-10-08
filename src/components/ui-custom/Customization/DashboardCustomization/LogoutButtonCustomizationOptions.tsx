@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
 import { useAtom } from "jotai"
 import { logoutButtonCustomizationAtom } from "@/store/DashboardCustomizationAtom"
+import { useThrottledOptionsUpdater } from "@/hooks/useThrottledOptionsUpdater"
 
 export const LogoutButtonCustomizationOptions = ({
   size = "w-6 h-6",
@@ -18,7 +19,10 @@ export const LogoutButtonCustomizationOptions = ({
     },
     setLogoutButtonCustomization,
   ] = useAtom(logoutButtonCustomizationAtom)
-
+  const throttled = useThrottledOptionsUpdater(
+    setLogoutButtonCustomization,
+    300
+  )
   return (
     <OptionWithSwitch
       triggerSize={size}
@@ -26,38 +30,22 @@ export const LogoutButtonCustomizationOptions = ({
         logoutButtonBackgroundColor: {
           label: "Logout Button Background Color",
           value: logoutButtonBackgroundColor,
-          onChange: (val: string) =>
-            setLogoutButtonCustomization((prev) => ({
-              ...prev,
-              logoutButtonBackgroundColor: val,
-            })),
+          onChange: throttled.logoutButtonBackgroundColor,
         },
         logoutButtonTextColor: {
           label: "Logout Button Text Color",
           value: logoutButtonTextColor,
-          onChange: (val: string) =>
-            setLogoutButtonCustomization((prev) => ({
-              ...prev,
-              logoutButtonTextColor: val,
-            })),
+          onChange: throttled.logoutButtonTextColor,
         },
         logoutButtonDisabledBackgroundColor: {
           label: "Logout Button Disabled Background",
           value: logoutButtonDisabledBackgroundColor,
-          onChange: (val: string) =>
-            setLogoutButtonCustomization((prev) => ({
-              ...prev,
-              logoutButtonDisabledBackgroundColor: val,
-            })),
+          onChange: throttled.logoutButtonDisabledBackgroundColor,
         },
         logoutButtonDisabledTextColor: {
           label: "Logout Button Disabled Text",
           value: logoutButtonDisabledTextColor,
-          onChange: (val: string) =>
-            setLogoutButtonCustomization((prev) => ({
-              ...prev,
-              logoutButtonDisabledTextColor: val,
-            })),
+          onChange: throttled.logoutButtonDisabledTextColor,
         },
       }}
     />

@@ -3,6 +3,7 @@
 import { OptionWithSwitch } from "@/components/ui-custom/OptionWithSwitch"
 import { useAtom } from "jotai"
 import { yearSelectCustomizationAtom } from "@/store/DashboardCustomizationAtom"
+import { useThrottledOptionsUpdater } from "@/hooks/useThrottledOptionsUpdater"
 
 export const YearSelectCustomizationOptions = ({
   triggerSize,
@@ -26,7 +27,7 @@ export const YearSelectCustomizationOptions = ({
     },
     setYearSelectCustomization,
   ] = useAtom(yearSelectCustomizationAtom)
-
+  const throttled = useThrottledOptionsUpdater(setYearSelectCustomization, 300)
   return (
     <OptionWithSwitch
       triggerSize={triggerSize}
@@ -35,92 +36,52 @@ export const YearSelectCustomizationOptions = ({
         yearSelectBackgroundColor: {
           label: "Year Select Background",
           value: yearSelectBackgroundColor,
-          onChange: (val: string) =>
-            setYearSelectCustomization((prev) => ({
-              ...prev,
-              yearSelectBackgroundColor: val,
-            })),
+          onChange: throttled.yearSelectBackgroundColor,
         },
         yearSelectTextColor: {
           label: "Year Select Text",
           value: yearSelectTextColor,
-          onChange: (val: string) =>
-            setYearSelectCustomization((prev) => ({
-              ...prev,
-              yearSelectTextColor: val,
-            })),
+          onChange: throttled.yearSelectTextColor,
         },
         yearSelectActiveBorderColor: {
           label: "Active Border",
           value: yearSelectActiveBorderColor,
-          onChange: (val: string) =>
-            setYearSelectCustomization((prev) => ({
-              ...prev,
-              yearSelectActiveBorderColor: val,
-            })),
+          onChange: throttled.yearSelectActiveBorderColor,
         },
         yearSelectDropDownBackgroundColor: {
           label: "Dropdown Background",
           value: yearSelectDropDownBackgroundColor,
-          onChange: (val: string) =>
-            setYearSelectCustomization((prev) => ({
-              ...prev,
-              yearSelectDropDownBackgroundColor: val,
-            })),
+          onChange: throttled.yearSelectDropDownBackgroundColor,
         },
         yearSelectDropDownTextColor: {
           label: "Dropdown Text",
           value: yearSelectDropDownTextColor,
-          onChange: (val: string) =>
-            setYearSelectCustomization((prev) => ({
-              ...prev,
-              yearSelectDropDownTextColor: val,
-            })),
+          onChange: throttled.yearSelectDropDownTextColor,
         },
         yearSelectDropDownActiveTextColor: {
           label: "Dropdown Active Text",
           value: yearSelectDropDownActiveTextColor,
-          onChange: (val: string) =>
-            setYearSelectCustomization((prev) => ({
-              ...prev,
-              yearSelectDropDownActiveTextColor: val,
-            })),
+          onChange: throttled.yearSelectDropDownActiveTextColor,
         },
         yearSelectDropDownActiveBackgroundColor: {
           label: "Dropdown Active Background",
           value: yearSelectDropDownActiveBackgroundColor,
-          onChange: (val: string) =>
-            setYearSelectCustomization((prev) => ({
-              ...prev,
-              yearSelectDropDownActiveBackgroundColor: val,
-            })),
+          onChange: throttled.yearSelectDropDownActiveBackgroundColor,
         },
         yearSelectDropDownIconColor: {
           label: "Dropdown Icon",
           value: yearSelectDropDownIconColor,
-          onChange: (val: string) =>
-            setYearSelectCustomization((prev) => ({
-              ...prev,
-              yearSelectDropDownIconColor: val,
-            })),
+          onChange: throttled.yearSelectDropDownIconColor,
         },
         yearSelectDropDownHoverBackgroundColor: {
           label: "Dropdown Hover Background",
           value: yearSelectDropDownHoverBackgroundColor,
-          onChange: (val: string) =>
-            setYearSelectCustomization((prev) => ({
-              ...prev,
-              yearSelectDropDownHoverBackgroundColor: val,
-            })),
+          onChange: throttled.yearSelectDropDownHoverBackgroundColor,
         },
         yearSelectDropDownHoverTextColor: {
           label: "Dropdown Hover Text",
           value: yearSelectDropDownHoverTextColor,
-          onChange: (val: string) =>
-            setYearSelectCustomization((prev) => ({
-              ...prev,
-              yearSelectDropDownHoverTextColor: val,
-            })),
+          onChange: throttled.yearSelectDropDownHoverTextColor,
         },
       }}
     />
