@@ -51,7 +51,7 @@ export default function FrameworkInstructions() {
       </p>
 
       <Tabs defaultValue="Next.js" className="w-full">
-        <TabsList>
+        <TabsList className="grid grid-cols-4 w-full">
           {frameworks.map((fw) => (
             <TabsTrigger key={fw.name} value={fw.name}>
               {fw.name}
