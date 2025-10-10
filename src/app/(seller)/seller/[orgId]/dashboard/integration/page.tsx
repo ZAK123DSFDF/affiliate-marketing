@@ -7,5 +7,5 @@ export default async function IntegrationPage({ params }: OrgIdProps) {
   const orgId = await getValidatedOrgFromParams({ params })
   await requireSellerWithOrg(orgId)
 
-  return <IntegrationClientPage />
+  return <IntegrationClientPage orgId={orgId} />
 }

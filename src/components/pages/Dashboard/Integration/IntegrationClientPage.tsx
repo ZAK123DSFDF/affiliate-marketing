@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import StripeIntegration from "@/components/pages/Dashboard/Integration/StripeIntegration"
 import PaddleIntegration from "@/components/pages/Dashboard/Integration/PaddleIntegration"
 
-const IntegrationClientPage = () => {
+const IntegrationClientPage = ({ orgId }: { orgId: string }) => {
   const [activeTab, setActiveTab] = useState("stripe")
 
   return (
@@ -76,7 +76,7 @@ const IntegrationClientPage = () => {
         {/* Content aligned left */}
         <div className="flex justify-start">
           <TabsContent value="stripe" className="w-full">
-            <StripeIntegration />
+            <StripeIntegration orgId={orgId} />
           </TabsContent>
           <TabsContent value="paddle" className="w-full">
             <PaddleIntegration />

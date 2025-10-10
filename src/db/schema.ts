@@ -139,6 +139,19 @@ export const organization = pgTable("organization", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
+export const organizationStripeAccount = pgTable(
+  "organization_stripe_account",
+  {
+    stripeAccountId: text("stripe_account_id").primaryKey(),
+    orgId: text("org_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    email: text("email"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  }
+)
+
 export const payoutReference = pgTable("payout_reference", {
   refId: varchar("ref_id", { length: 12 }).primaryKey(),
   orgId: text("org_id")
