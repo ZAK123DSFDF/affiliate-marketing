@@ -1,15 +1,12 @@
 // app/actions/auth/getUser.ts
 "use server"
-
-import { cookies } from "next/headers"
-import jwt from "jsonwebtoken"
 import { db } from "@/db/drizzle"
 import { account, user } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { returnError } from "@/lib/errorHandler"
 import * as bcrypt from "bcrypt"
 import { ResponseData } from "@/lib/types/response"
-import { SafeUserData, SafeUserWithCapabilities } from "@/lib/types/authUser"
+import { SafeUserWithCapabilities } from "@/lib/types/authUser"
 import { revalidatePath } from "next/cache"
 import { getUserAuthCapabilities } from "@/lib/server/getUserAuthCapabilities"
 import { getCurrentUser } from "@/lib/server/getCurrentUser"

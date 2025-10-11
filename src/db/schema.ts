@@ -151,7 +151,17 @@ export const organizationStripeAccount = pgTable(
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   }
 )
-
+export const organizationPaddleAccount = pgTable(
+  "organization_paddle_account",
+  {
+    webhookPublicKey: text("webhook_public_key").primaryKey(),
+    orgId: text("org_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  }
+)
 export const payoutReference = pgTable("payout_reference", {
   refId: varchar("ref_id", { length: 12 }).primaryKey(),
   orgId: text("org_id")

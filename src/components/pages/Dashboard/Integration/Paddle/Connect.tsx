@@ -1,28 +1,95 @@
+"use client"
+
 import React from "react"
+import Image from "next/image"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { Loader2, CopyIcon, KeyRound } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import Image from "next/image"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
-import { CopyIcon } from "lucide-react"
-import { Input } from "@/components/ui/input"
+import { InputField } from "@/components/Auth/FormFields"
+import { Form } from "@/components/ui/form"
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import {
+  getOrgWebhookKey,
+  savePaddleWebhookKey,
+} from "@/app/(seller)/seller/[orgId]/dashboard/integration/action"
+
+const webhookSchema = z.object({
+  webhookKey: z.string().min(1, "Webhook key cannot be empty"),
+})
+
+type WebhookSchema = z.infer<typeof webhookSchema>
+
 interface ConnectProps {
   WEBHOOK_URL: string
   copied: boolean
-  webhookKey: string
   handleCopy: () => void
-  handleWebhookKeyChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  orgId: string
 }
-const Connect = ({
+
+export default function Connect({
   WEBHOOK_URL,
   copied,
-  webhookKey,
   handleCopy,
-  handleWebhookKeyChange,
-}: ConnectProps) => {
+  orgId,
+}: ConnectProps) {
+  const { showCustomToast } = useCustomToast()
+
+  const form = useForm<WebhookSchema>({
+    resolver: zodResolver(webhookSchema),
+    defaultValues: { webhookKey: "" },
+  })
+
+  const mutation = useMutation({
+    mutationFn: async (key: string) => {
+      return await savePaddleWebhookKey({ orgId, webhookPublicKey: key })
+    },
+    onSuccess: () => {
+      showCustomToast({
+        type: "success",
+        title: "Connected",
+        description: "Paddle webhook key saved successfully.",
+        affiliate: false,
+      })
+      form.reset()
+    },
+    onError: (err: any) => {
+      showCustomToast({
+        type: "error",
+        title: "Connection failed",
+        description: err.message || "Something went wrong.",
+        affiliate: false,
+      })
+    },
+  })
+
+  const onSubmit = (data: WebhookSchema) => {
+    mutation.mutate(data.webhookKey)
+  }
+  const { data, isPending } = useQuery({
+    queryKey: ["paddle-webhook-key", orgId],
+    queryFn: async () => await getOrgWebhookKey(orgId),
+  })
+
+  const savedKey = data?.webhookPublicKey ?? ""
+
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="animate-spin h-5 w-5 text-muted-foreground" />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold">Connect Paddle</h3>
+
       <Tabs defaultValue="step1" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="step1">Step 1</TabsTrigger>
@@ -31,7 +98,7 @@ const Connect = ({
           <TabsTrigger value="step4">Step 4</TabsTrigger>
         </TabsList>
 
-        {/* Step 1 */}
+        {/* STEP 1 */}
         <TabsContent value="step1">
           <Card>
             <CardHeader className="font-semibold">
@@ -54,7 +121,7 @@ const Connect = ({
           </Card>
         </TabsContent>
 
-        {/* Step 2 */}
+        {/* STEP 2 */}
         <TabsContent value="step2">
           <Card>
             <CardHeader className="font-semibold">
@@ -69,7 +136,7 @@ const Connect = ({
                   Type: <strong>Webhook</strong>
                 </li>
                 <li>
-                  Usage: <strong>Platform</strong> (or Simulation)
+                  Usage: <strong>Platform</strong> (or Platform and Simulation)
                 </li>
               </ul>
               <Image
@@ -103,7 +170,7 @@ const Connect = ({
           </Card>
         </TabsContent>
 
-        {/* Step 3 */}
+        {/* STEP 3 */}
         <TabsContent value="step3">
           <Card>
             <CardHeader className="font-semibold">
@@ -133,13 +200,13 @@ const Connect = ({
           </Card>
         </TabsContent>
 
-        {/* Step 4 */}
+        {/* STEP 4 */}
         <TabsContent value="step4">
           <Card>
             <CardHeader className="font-semibold">
               Copy Webhook Secret Key
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <p>
                 After saving, click on the destination you just created, then
                 click <strong>Edit</strong>. Scroll down and click{" "}
@@ -153,21 +220,46 @@ const Connect = ({
                 className="rounded-xl border"
               />
               <p>Paste the copied Webhook Public Key below:</p>
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="text"
-                  placeholder="Paste your Paddle Webhook Public Key..."
-                  value={webhookKey}
-                  onChange={handleWebhookKeyChange}
-                />
-                <Button
-                  onClick={() =>
-                    console.log("Submitted Paddle Public Key:", webhookKey)
-                  }
+
+              {/* Webhook Form */}
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
                 >
-                  Submit
-                </Button>
-              </div>
+                  <InputField
+                    control={form.control}
+                    name="webhookKey"
+                    label="Webhook Public Key"
+                    placeholder="Enter your Paddle Webhook Public Key"
+                    type="text"
+                    icon={KeyRound}
+                    disabled={!!savedKey}
+                    affiliate={false}
+                  />
+
+                  {savedKey ? (
+                    <Button disabled className="w-full" variant="outline">
+                      ✅ Connected
+                    </Button>
+                  ) : (
+                    <Button
+                      type="submit"
+                      disabled={mutation.isPending}
+                      className="w-full"
+                    >
+                      {mutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Connecting...
+                        </>
+                      ) : (
+                        "Connect"
+                      )}
+                    </Button>
+                  )}
+                </form>
+              </Form>
             </CardContent>
           </Card>
         </TabsContent>
@@ -175,4 +267,3 @@ const Connect = ({
     </div>
   )
 }
-export default Connect

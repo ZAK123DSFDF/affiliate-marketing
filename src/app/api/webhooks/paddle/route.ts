@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import crypto from "crypto"
 import { db } from "@/db/drizzle"
-import { affiliateInvoice, subscriptionExpiration } from "@/db/schema"
+import {
+  affiliateInvoice,
+  organizationPaddleAccount,
+  subscriptionExpiration,
+} from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { calculateTrialDays } from "@/util/CalculateTrialDays"
 import { convertToUSD } from "@/util/CurrencyConvert"
@@ -12,6 +16,7 @@ import { calculateExpirationDate } from "@/util/CalculateExpiration"
 import { getAffiliateLinkRecord } from "@/services/getAffiliateLinkRecord"
 import { getOrganizationById } from "@/services/getOrganizationById"
 import { getSubscriptionExpiration } from "@/services/getSubscriptionExpiration"
+import { getPaddleAccount } from "@/lib/server/getPaddleAccount"
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,8 +34,70 @@ export async function POST(request: NextRequest) {
     const [tsPart, h1Part] = signatureHeader.split(";")
     const timestamp = tsPart.split("=")[1]
     const receivedSignature = h1Part.split("=")[1]
+    const payload = JSON.parse(rawBody)
+    const customData = payload.data?.custom_data || {}
+    let refDataRaw = customData.refearnapp_affiliate_code
+    let secret: string | null = null
 
-    const secret = process.env.PADDLE_WEBHOOK_PUBLIC_KEY
+    if (refDataRaw) {
+      // ✅ Normal path with custom data
+      const { code } = JSON.parse(refDataRaw)
+      const affiliateLinkRecord = await getAffiliateLinkRecord(code)
+      if (!affiliateLinkRecord)
+        return NextResponse.json(
+          { error: "Invalid affiliate code" },
+          { status: 400 }
+        )
+
+      const orgPaddleAccount = await getPaddleAccount(
+        affiliateLinkRecord.organizationId
+      )
+      if (!orgPaddleAccount)
+        return NextResponse.json(
+          { error: "Missing Paddle account" },
+          { status: 400 }
+        )
+      secret = orgPaddleAccount.webhookPublicKey
+    } else {
+      // ⚙️ Fallback path: use subscriptionId → affiliateInvoice chain
+      const subscriptionId = payload.data?.subscription_id
+      if (!subscriptionId) {
+        return NextResponse.json(
+          { error: "Missing both custom data and subscriptionId" },
+          { status: 400 }
+        )
+      }
+
+      const existingInvoice = await db.query.affiliateInvoice.findFirst({
+        where: eq(affiliateInvoice.subscriptionId, subscriptionId),
+      })
+      if (!existingInvoice) {
+        return NextResponse.json(
+          { error: "Affiliate invoice not found for subscription" },
+          { status: 400 }
+        )
+      }
+
+      const affiliateLinkRecord = await db.query.affiliateLink.findFirst({
+        where: (link, { eq }) => eq(link.id, existingInvoice.affiliateLinkId),
+      })
+      if (!affiliateLinkRecord)
+        return NextResponse.json(
+          { error: "Affiliate link not found" },
+          { status: 400 }
+        )
+
+      const orgPaddleAccount = await getPaddleAccount(
+        affiliateLinkRecord.organizationId
+      )
+      if (!orgPaddleAccount)
+        return NextResponse.json(
+          { error: "Missing Paddle account" },
+          { status: 400 }
+        )
+      secret = orgPaddleAccount.webhookPublicKey
+    }
+
     if (!secret) {
       return NextResponse.json(
         { error: "Missing webhook secret" },
@@ -50,7 +117,7 @@ export async function POST(request: NextRequest) {
       })
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 })
     }
-    const payload = JSON.parse(rawBody)
+
     switch (payload.event_type) {
       case "transaction.completed": {
         const tx = payload.data

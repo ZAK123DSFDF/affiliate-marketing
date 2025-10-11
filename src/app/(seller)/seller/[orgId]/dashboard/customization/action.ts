@@ -10,6 +10,7 @@ import { eq } from "drizzle-orm"
 import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization"
 import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization"
 import { deepMerge } from "@/util/DeepMerge"
+import { getOrgAuth } from "@/lib/server/GetOrgAuth"
 
 export type AuthCustomization = typeof defaultAuthCustomization
 export type DashboardCustomization = typeof defaultDashboardCustomization
@@ -21,6 +22,7 @@ export async function saveCustomizationsAction(
     dashboard?: Partial<DashboardCustomization>
   }
 ) {
+  await getOrgAuth(orgId)
   // Quick guard
   if (
     (!data.auth || Object.keys(data.auth).length === 0) &&
@@ -89,6 +91,7 @@ export async function saveCustomizationsAction(
 export async function getAuthCustomization(
   orgId: string
 ): Promise<AuthCustomization> {
+  await getOrgAuth(orgId)
   const [authRow] = await db
     .select({ auth: organizationAuthCustomization.auth })
     .from(organizationAuthCustomization)
@@ -100,6 +103,7 @@ export async function getAuthCustomization(
 export async function getDashboardCustomization(
   orgId: string
 ): Promise<DashboardCustomization> {
+  await getOrgAuth(orgId)
   const [dashboardRow] = await db
     .select({ dashboard: organizationDashboardCustomization.dashboard })
     .from(organizationDashboardCustomization)
@@ -110,6 +114,7 @@ export async function getDashboardCustomization(
 export async function getCustomizations(
   orgId: string
 ): Promise<{ auth: AuthCustomization; dashboard: DashboardCustomization }> {
+  await getOrgAuth(orgId)
   const [auth, dashboard] = await Promise.all([
     getAuthCustomization(orgId),
     getDashboardCustomization(orgId),
