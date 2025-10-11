@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card"
 import FrameworkInstructions from "@/components/pages/Dashboard/Integration/FrameworkInstructions"
 import EmbedStripeCheckout from "@/components/pages/Dashboard/Integration/Stripe/EmbedStripeCheckout"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import { Loader2 } from "lucide-react"
 
 export default function StripeIntegration({ orgId }: { orgId: string }) {
   const queryClient = useQueryClient()
@@ -99,7 +100,13 @@ export default function StripeIntegration({ orgId }: { orgId: string }) {
       })
     },
   })
-
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center py-10">
+        <Loader2 className="animate-spin h-6 w-6 text-muted-foreground" />
+      </div>
+    )
+  }
   return (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold">Stripe Integration</h3>
@@ -123,14 +130,13 @@ export default function StripeIntegration({ orgId }: { orgId: string }) {
               </p>
             ) : (
               <p className="text-muted-foreground">
-                Connect your verified Stripe account to start handling payouts.
+                Link your verified Stripe account to let us track your payment
+                events automatically.
               </p>
             )}
             <Button
               onClick={() => connectMutation.mutate()}
-              disabled={
-                data?.connected || connectMutation.isPending || isPending
-              }
+              disabled={data?.connected || connectMutation.isPending}
             >
               {connectMutation.isPending
                 ? "Redirecting..."
