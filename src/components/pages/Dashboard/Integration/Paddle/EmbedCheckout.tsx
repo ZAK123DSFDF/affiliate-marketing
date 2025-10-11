@@ -31,7 +31,7 @@ const EmbedCheckout = () => {
         {/* Server */}
         <TabsContent value="server">
           <Tabs defaultValue="Nextjs_serverAction">
-            <TabsList className="grid grid-cols-4 w-full">
+            <TabsList className="grid grid-cols-5 w-full">
               {Object.keys(serverSnippets).map((key) => (
                 <TabsTrigger key={key} value={key}>
                   {serverLabels[key as keyof typeof serverLabels] ?? key}
@@ -72,7 +72,7 @@ const EmbedCheckout = () => {
         {/* Client */}
         <TabsContent value="client">
           <Tabs defaultValue="react">
-            <TabsList className="grid grid-cols-4 w-full">
+            <TabsList className="grid grid-cols-5 w-full">
               {Object.keys(clientSnippets).map((key) => (
                 <TabsTrigger key={key} value={key}>
                   {clientLabels[key as keyof typeof clientLabels] ?? key}

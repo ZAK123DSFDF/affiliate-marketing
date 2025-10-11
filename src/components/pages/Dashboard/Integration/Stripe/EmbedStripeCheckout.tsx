@@ -158,7 +158,7 @@ export default defineEventHandler(async (event) => {
         metadata to track commissions.
       </p>
       <Tabs defaultValue="Nextjs_serverAction" className="w-full">
-        <TabsList className="grid grid-cols-4 w-full">
+        <TabsList className="grid grid-cols-5 w-full">
           {Object.keys(snippets).map((key) => (
             <TabsTrigger key={key} value={key}>
               {labels[key as keyof typeof labels] ?? key}
