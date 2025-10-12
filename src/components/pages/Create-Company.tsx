@@ -86,9 +86,9 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
           />
           <InputField
             control={form.control}
-            name="domainName"
-            label="Company Domain"
-            placeholder="yourcompany.com"
+            name="websiteUrl"
+            label="Website URL"
+            placeholder="example.com"
             type="text"
             icon={User}
             affiliate={false}
