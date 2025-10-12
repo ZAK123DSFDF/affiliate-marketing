@@ -117,7 +117,7 @@ export const organization = pgTable("organization", {
     .primaryKey()
     .$defaultFn(() => generateOrganizationId()),
   name: text("name").notNull(),
-  domainName: text("domain_name").notNull(),
+  websiteUrl: text("website_name").notNull(),
   logoUrl: text("logo_url"),
   userId: uuid("user_id")
     .notNull()

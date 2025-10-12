@@ -44,7 +44,7 @@ END`.mapWith(Number),
 
   links: sql<string[]>`
     ARRAY_AGG(
-      DISTINCT ('https://' || ${organization.domainName} || '?' || ${organization.referralParam} || '=' || ${affiliateLink.id})
+      DISTINCT ('https://' || ${organization.websiteUrl} || '?' || ${organization.referralParam} || '=' || ${affiliateLink.id})
     )
   `,
   paypalEmail: sql<string | null>`

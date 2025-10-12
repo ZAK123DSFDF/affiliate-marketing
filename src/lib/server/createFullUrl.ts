@@ -10,7 +10,7 @@ export const createFullUrl = async (decoded: { id: string; orgId: string }) => {
   if (!org) throw new Error("Organization not found")
   const code = generateAffiliateCode() // e.g., "7hjKpQ"
   const param = org.referralParam
-  const domain = org.domainName.replace(/^https?:\/\//, "")
+  const domain = org.websiteUrl.replace(/^https?:\/\//, "")
 
   const fullUrl = `https://${domain}/?${param}=${code}`
 

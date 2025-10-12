@@ -14,7 +14,7 @@ export async function getOrgAuth(orgId: string): Promise<OrgAuthResult> {
   const { id: userId } = jwt.decode(token) as { id: string }
   const org = await db
     .select({
-      domain: organization.domainName,
+      domain: organization.websiteUrl,
       param: organization.referralParam,
       currency: organization.currency,
       userId: organization.userId,

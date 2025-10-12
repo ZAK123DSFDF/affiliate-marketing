@@ -54,7 +54,7 @@ export const orgInfo = async (
       data: {
         id: org.id,
         name: org.name,
-        domainName: org.domainName,
+        domainName: org.websiteUrl,
         logoUrl: org.logoUrl ?? "",
         referralParam: org.referralParam as "ref" | "via" | "aff",
         cookieLifetimeValue: String(org.cookieLifetimeValue ?? "30"),

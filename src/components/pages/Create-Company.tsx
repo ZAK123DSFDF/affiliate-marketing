@@ -15,16 +15,16 @@ import { CreateOrganization } from "@/app/(seller)/(auth)/create-company/action"
 import { InputField } from "@/components/Auth/FormFields"
 import { SelectField } from "@/components/ui-custom/SelectFields"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
-import { FileUpload } from "@/components/ui-custom/FileUpload"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
-
+const domainRegex =
+  /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}|localhost|\d{1,3}(?:\.\d{1,3}){3}$/i
 export const companySchema = z.object({
   name: z.string().min(2),
-  domainName: z
+  websiteUrl: z
     .string()
     .min(2)
     .regex(
-      /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}|localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/i,
+      domainRegex,
       "Invalid domain format (e.g., 'example.com' or 'localhost')"
     ),
   logoUrl: z.string().url().optional().or(z.literal("")),
@@ -48,7 +48,7 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
     resolver: zodResolver(companySchema),
     defaultValues: {
       name: "",
-      domainName: "",
+      websiteUrl: "",
       logoUrl: "",
       referralParam: "ref",
       cookieLifetimeValue: 30,

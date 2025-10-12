@@ -15,6 +15,7 @@ import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustom
 import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization"
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { eq } from "drizzle-orm"
+import { sanitizeDomain } from "@/util/SanitizeDomain"
 
 const s3Client = new S3Client({
   region: "auto",
@@ -43,15 +44,13 @@ export const CreateOrganization = async (
       orgIds?: string[]
     }
 
-    const sanitizedDomain = input.domainName
-      .replace(/^https?:\/\//i, "")
-      .replace(/\/$/, "")
+    const sanitizedWebsiteName = sanitizeDomain(input.websiteUrl)
 
     const [newOrg] = await db
       .insert(organization)
       .values({
         ...input,
-        domainName: sanitizedDomain,
+        websiteUrl: sanitizedWebsiteName,
         commissionValue: input.commissionValue.toFixed(2),
         userId: decoded.id,
         logoUrl: input.logoUrl || null,

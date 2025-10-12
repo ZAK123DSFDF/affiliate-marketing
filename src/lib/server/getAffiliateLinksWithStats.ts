@@ -39,7 +39,7 @@ export async function getAffiliateLinksWithStatsAction(
 END`.mapWith(Number),
       fullUrl: sql<string>`
   COALESCE(
-    MIN('https://' || ${organization.domainName} || '?' || ${organization.referralParam} || '=' || ${affiliateLink.id}),
+    MIN('https://' || ${organization.websiteUrl} || '?' || ${organization.referralParam} || '=' || ${affiliateLink.id}),
     ''
   )
 `,
@@ -79,7 +79,7 @@ END`.mapWith(Number),
     )
     .groupBy(
       affiliateLink.id,
-      organization.domainName,
+      organization.websiteUrl,
       organization.referralParam
     )
 }

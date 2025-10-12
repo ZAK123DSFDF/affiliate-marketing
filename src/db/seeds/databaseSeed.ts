@@ -151,7 +151,7 @@ export const organization_seed = [
   {
     id: "tp7JLBb5",
     name: "Acme Inc",
-    domainName: "better-auth-pi.vercel.app",
+    websiteUrl: "better-auth-pi.vercel.app",
     userId: "29022934-eb52-49af-aca4-b6ed553c89dd",
     logoUrl: null,
     referralParam: "ref" as const,

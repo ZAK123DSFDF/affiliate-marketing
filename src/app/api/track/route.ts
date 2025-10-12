@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       .select({
         linkId: affiliateLink.id,
         orgId: affiliateLink.organizationId,
-        orgDomain: organization.domainName,
+        orgDomain: organization.websiteUrl,
       })
       .from(affiliateLink)
       .innerJoin(
@@ -75,12 +75,4 @@ export async function POST(req: NextRequest) {
       }
     )
   }
-}
-
-// Handle preflight request
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 204,
-    headers: corsHeaders,
-  })
 }
