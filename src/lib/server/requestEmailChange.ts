@@ -3,7 +3,7 @@
 import jwt from "jsonwebtoken"
 import { sendVerificationEmail } from "@/lib/mail"
 import { returnError } from "@/lib/errorHandler"
-import { getSellerOrgContext } from "@/lib/server/getSellerOrgContext"
+import { getOrganizationContext } from "@/lib/server/getOrganizationContext"
 import { db } from "@/db/drizzle"
 import { and, eq } from "drizzle-orm"
 import { affiliate, user } from "@/db/schema"
@@ -25,7 +25,7 @@ export const requestSellerEmailChange = async ({
       throw { status: 400, toast: "Email already in use" }
     }
 
-    const { orgIds, activeOrgId, role, type } = await getSellerOrgContext()
+    const { orgIds, activeOrgId, role, type } = await getOrganizationContext()
     const token = jwt.sign(
       {
         id: userId,

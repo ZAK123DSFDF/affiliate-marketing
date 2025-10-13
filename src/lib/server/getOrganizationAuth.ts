@@ -14,7 +14,7 @@ export interface SellerTokenPayload {
   activeOrgId?: string
 }
 
-export async function getSellerAuth(): Promise<SellerTokenPayload | null> {
+export async function getOrganizationAuth(): Promise<SellerTokenPayload | null> {
   const cookieStore = await cookies()
   const token = cookieStore.get("sellerToken")?.value
   if (!token) return null

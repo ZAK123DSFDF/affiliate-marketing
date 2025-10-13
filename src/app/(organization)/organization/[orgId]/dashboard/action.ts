@@ -10,7 +10,7 @@ import { SellerReferrerStat } from "@/lib/types/affiliateReferrerStat"
 import { getReferrerStats } from "@/lib/server/getReferrerStats"
 import { AffiliateStats } from "@/lib/types/affiliateStats"
 import { getTopAffiliatesByConversionRate } from "@/lib/server/getTopAffiliateByConversionRate"
-import { getSellerKpiStatsAction } from "@/lib/server/getSellerKpiStats"
+import { getSellerKpiStatsAction } from "@/lib/server/getOrganizationKpiStats"
 import { ExchangeRate } from "@/util/ExchangeRate"
 import { convertedCurrency } from "@/util/ConvertedCurrency"
 

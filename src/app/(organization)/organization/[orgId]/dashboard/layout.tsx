@@ -1,6 +1,6 @@
 // app/dashboard/layout.tsx
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
-import SellerDashboardSidebar from "@/components/SellerDashboardSidebar"
+import OrganizationDashboardSidebar from "@/components/OrganizationDashboardSidebar"
 import { OrgIdProps } from "@/lib/types/orgId"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { getUserPlan } from "@/lib/server/getUserPlan"
@@ -22,7 +22,7 @@ export default async function DashboardLayout({
   const user = userResponse.ok ? userResponse.data : null
   return (
     <SidebarProvider affiliate={false} orgId={orgId}>
-      <SellerDashboardSidebar
+      <OrganizationDashboardSidebar
         orgId={orgId}
         plan={plan}
         orgs={orgs}

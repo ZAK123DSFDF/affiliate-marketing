@@ -1,6 +1,9 @@
 // lib/server/authGuards.ts
 import { redirect } from "next/navigation"
-import { getSellerAuth, SellerTokenPayload } from "@/lib/server/getSellerAuth"
+import {
+  getOrganizationAuth,
+  SellerTokenPayload,
+} from "@/lib/server/getOrganizationAuth"
 import {
   AffiliateTokenPayload,
   getAffiliateAuth,
@@ -9,7 +12,7 @@ import {
 export async function requireSellerWithOrg(
   paramsOrgId?: string
 ): Promise<SellerTokenPayload> {
-  const decoded = await getSellerAuth()
+  const decoded = await getOrganizationAuth()
 
   if (!decoded) {
     redirect("/login")
@@ -31,7 +34,7 @@ export async function requireSellerWithOrg(
 }
 
 export async function redirectIfAuthed() {
-  const decoded = await getSellerAuth()
+  const decoded = await getOrganizationAuth()
 
   if (decoded) {
     if (decoded.activeOrgId) {

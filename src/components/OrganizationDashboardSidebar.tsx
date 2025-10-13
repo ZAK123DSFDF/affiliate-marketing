@@ -41,7 +41,12 @@ type Props = {
   orgs: { id: string; name: string }[]
   UserData: SellerData | null
 }
-const SellerDashboardSidebar = ({ orgId, plan, orgs, UserData }: Props) => {
+const OrganizationDashboardSidebar = ({
+  orgId,
+  plan,
+  orgs,
+  UserData,
+}: Props) => {
   const pathname = usePathname()
   const { mutate: switchOrg, isPending } = useSwitchOrg()
   const items = [
@@ -184,4 +189,4 @@ const SellerDashboardSidebar = ({ orgId, plan, orgs, UserData }: Props) => {
   )
 }
 
-export default SellerDashboardSidebar
+export default OrganizationDashboardSidebar

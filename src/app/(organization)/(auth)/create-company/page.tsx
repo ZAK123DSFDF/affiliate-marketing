@@ -1,10 +1,10 @@
 import React from "react"
 import { redirect } from "next/navigation"
-import { getSellerAuth } from "@/lib/server/getSellerAuth"
+import { getOrganizationAuth } from "@/lib/server/getOrganizationAuth"
 import CreateCompany from "@/components/pages/Create-Company"
 
 const createCompanyPage = async () => {
-  const decoded = await getSellerAuth()
+  const decoded = await getOrganizationAuth()
 
   if (!decoded) {
     redirect("/login")

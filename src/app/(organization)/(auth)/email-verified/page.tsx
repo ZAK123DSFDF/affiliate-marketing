@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation"
 import EmailVerified from "@/components/pages/Email-verified"
-import { getSellerAuth } from "@/lib/server/getSellerAuth"
+import { getOrganizationAuth } from "@/lib/server/getOrganizationAuth"
 
 export default async function EmailVerifiedPage() {
-  const decoded = await getSellerAuth()
+  const decoded = await getOrganizationAuth()
   if (!decoded) {
     redirect("/login")
   }
