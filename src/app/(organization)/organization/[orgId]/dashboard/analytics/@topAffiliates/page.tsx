@@ -2,7 +2,7 @@ import React from "react"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { OrgIdProps } from "@/lib/types/orgId"
 import AffiliatesTable from "@/components/pages/Dashboard/Affiliates/Affiliates"
-import { getTopAffiliates } from "@/app/(seller)/seller/[orgId]/dashboard/action"
+import { getTopAffiliates } from "@/app/(organization)/seller/[orgId]/dashboard/action"
 import { ErrorCard } from "@/components/ui-custom/ErrorCard"
 import { requireSellerWithOrg } from "@/lib/server/authGuards"
 

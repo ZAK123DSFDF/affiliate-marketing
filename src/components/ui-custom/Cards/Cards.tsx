@@ -19,7 +19,7 @@ import {
 import { mapAffiliateStats, mapSellerStats } from "@/util/mapStats"
 import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateKpiStats } from "@/app/affiliate/[orgId]/dashboard/action"
-import { getSellerKpiStats } from "@/app/(seller)/seller/[orgId]/dashboard/action"
+import { getSellerKpiStats } from "@/app/(organization)/seller/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import { formatValue } from "@/util/FormatValue"

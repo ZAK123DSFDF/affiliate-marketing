@@ -10,7 +10,7 @@ import Link from "next/link"
 import { InputField } from "@/components/Auth/FormFields"
 import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema"
 import { SignupAffiliateServer } from "@/app/affiliate/[orgId]/(auth)/signup/action"
-import { SignupServer } from "@/app/(seller)/(auth)/signup/action"
+import { SignupServer } from "@/app/(organization)/(auth)/signup/action"
 
 import { CardCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/CardCustomizationOptions"
 import { InputCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/InputCustomizationOptions"

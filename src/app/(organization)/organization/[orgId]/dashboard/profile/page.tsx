@@ -1,7 +1,7 @@
 import React from "react"
 import Profile from "@/components/pages/Dashboard/Profile/Profile"
 import { OrgIdProps } from "@/lib/types/orgId"
-import { getUserData } from "@/app/(seller)/seller/[orgId]/dashboard/profile/action"
+import { getUserData } from "@/app/(organization)/seller/[orgId]/dashboard/profile/action"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { ErrorCard } from "@/components/ui-custom/ErrorCard"
 import { requireSellerWithOrg } from "@/lib/server/authGuards"

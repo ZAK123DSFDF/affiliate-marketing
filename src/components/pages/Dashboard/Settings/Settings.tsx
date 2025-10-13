@@ -29,7 +29,7 @@ import {
 } from "lucide-react"
 import { z } from "zod"
 
-import { updateOrgSettings } from "@/app/(seller)/seller/[orgId]/dashboard/settings/action"
+import { updateOrgSettings } from "@/app/(organization)/seller/[orgId]/dashboard/settings/action"
 import { useToast } from "@/hooks/use-toast"
 import { orgSettingsSchema } from "@/lib/schema/orgSettingSchema"
 import React, { useMemo } from "react"

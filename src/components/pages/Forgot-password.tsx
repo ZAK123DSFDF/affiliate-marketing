@@ -27,7 +27,7 @@ import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { LinkButton } from "@/components/ui-custom/LinkButton"
 import { useAuthCard } from "@/hooks/useAuthCard"
-import { ForgotPasswordServer } from "@/app/(seller)/(auth)/forgot-password/action"
+import { ForgotPasswordServer } from "@/app/(organization)/(auth)/forgot-password/action"
 import { ForgotPasswordAffiliateServer } from "@/app/affiliate/[orgId]/(auth)/forgot-password/action"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
 import { useAtomValue } from "jotai"

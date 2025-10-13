@@ -6,7 +6,7 @@ import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { getUserPlan } from "@/lib/server/getUserPlan"
 import { requireSellerWithOrg } from "@/lib/server/authGuards"
 import { getUserOrgs } from "@/lib/server/getUserOrgs"
-import { getUserData } from "@/app/(seller)/seller/[orgId]/dashboard/profile/action"
+import { getUserData } from "@/app/(organization)/seller/[orgId]/dashboard/profile/action"
 interface SellerDashboardLayoutProps extends OrgIdProps {
   children: React.ReactNode
 }

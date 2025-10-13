@@ -20,7 +20,7 @@ import {
   Loader2,
   Percent,
 } from "lucide-react"
-import { CreateOrganization } from "@/app/(seller)/(auth)/create-company/action"
+import { CreateOrganization } from "@/app/(organization)/(auth)/create-company/action"
 import { InputField } from "@/components/Auth/FormFields"
 import { SelectField } from "@/components/ui-custom/SelectFields"
 import { useAuthMutation } from "@/hooks/useAuthMutation"

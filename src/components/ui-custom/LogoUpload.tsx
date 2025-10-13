@@ -9,7 +9,7 @@ import { useAtomValue } from "jotai"
 import {
   deleteOrganizationLogo,
   updateOrganizationLogo,
-} from "@/app/(seller)/(auth)/create-company/action"
+} from "@/app/(organization)/(auth)/create-company/action"
 import { FileUploadRef } from "@/components/ui-custom/FileUploadRef"
 import { uploadsAtom } from "@/store/UploadAtom"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
