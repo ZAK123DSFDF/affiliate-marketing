@@ -1,4 +1,3 @@
-// app/create-company/page.tsx
 "use client"
 
 import { useForm } from "react-hook-form"
@@ -10,7 +9,17 @@ import { Form } from "@/components/ui/form"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Loader2, User } from "lucide-react"
+import {
+  BadgeDollarSign,
+  Building2,
+  Calendar,
+  Clock,
+  Coins,
+  Globe,
+  Link2,
+  Loader2,
+  Percent,
+} from "lucide-react"
 import { CreateOrganization } from "@/app/(seller)/(auth)/create-company/action"
 import { InputField } from "@/components/Auth/FormFields"
 import { SelectField } from "@/components/ui-custom/SelectFields"
@@ -43,7 +52,7 @@ type CreateCompanyProps = {
   mode: "create" | "add"
   embed?: boolean
 }
-export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
+const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
   const form = useForm<CompanySchema>({
     resolver: zodResolver(companySchema),
     defaultValues: {
@@ -60,6 +69,7 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
       currency: "USD",
     },
   })
+  const commissionType = form.watch("commissionType")
   const router = useRouter()
 
   const { mutate, isPending } = useAuthMutation(CreateOrganization, {
@@ -81,7 +91,7 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
             label="Company Name"
             placeholder="Acme Inc"
             type="text"
-            icon={User}
+            icon={Building2}
             affiliate={false}
           />
           <InputField
@@ -90,7 +100,7 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
             label="Website URL"
             placeholder="example.com"
             type="text"
-            icon={User}
+            icon={Globe}
             affiliate={false}
           />
           <LogoUpload
@@ -111,6 +121,7 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
               { value: "via", label: "via" },
               { value: "aff", label: "aff" },
             ]}
+            icon={Link2}
             affiliate={false}
           />
         </div>
@@ -122,7 +133,7 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
             label="Cookie Lifetime"
             type="number"
             placeholder="30"
-            icon={User}
+            icon={Clock}
             affiliate={false}
           />
           <SelectField
@@ -136,6 +147,7 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
               { value: "month", label: "Month" },
               { value: "year", label: "Year" },
             ]}
+            icon={Calendar}
             affiliate={false}
           />
           <SelectField
@@ -147,6 +159,7 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
               { value: "percentage", label: "Percentage" },
               { value: "fixed", label: "Fixed" },
             ]}
+            icon={Coins}
             affiliate={false}
           />
           <InputField
@@ -155,7 +168,7 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
             label="Commission Value"
             type="number"
             placeholder="10"
-            icon={User}
+            icon={commissionType === "percentage" ? Percent : BadgeDollarSign}
             affiliate={false}
           />
           <InputField
@@ -164,7 +177,7 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
             label="Commission Duration"
             type="number"
             placeholder="30"
-            icon={User}
+            icon={Calendar}
             affiliate={false}
           />
           <SelectField
@@ -178,6 +191,7 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
               { value: "month", label: "Month" },
               { value: "year", label: "Year" },
             ]}
+            icon={Calendar}
             affiliate={false}
           />
           <SelectField
@@ -192,6 +206,7 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
               { value: "CAD", label: "CAD" },
               { value: "AUD", label: "AUD" },
             ]}
+            icon={BadgeDollarSign}
             affiliate={false}
           />
         </div>
@@ -206,7 +221,6 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
       </form>
     </Form>
   )
-
   if (embed) {
     return (
       <div className="p-4">
@@ -230,3 +244,4 @@ export default function CreateCompany({ mode, embed }: CreateCompanyProps) {
     </div>
   )
 }
+export default CreateCompany

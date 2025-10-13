@@ -54,10 +54,10 @@ export const orgInfo = async (
       data: {
         id: org.id,
         name: org.name,
-        domainName: org.websiteUrl,
+        websiteUrl: org.websiteUrl,
         logoUrl: org.logoUrl ?? "",
         referralParam: org.referralParam as "ref" | "via" | "aff",
-        cookieLifetimeValue: String(org.cookieLifetimeValue ?? "30"),
+        cookieLifetimeValue: org.cookieLifetimeValue,
         cookieLifetimeUnit: org.cookieLifetimeUnit as
           | "day"
           | "week"
@@ -65,7 +65,7 @@ export const orgInfo = async (
           | "year",
         commissionType: org.commissionType as "percentage" | "fixed",
         commissionValue: String(org.commissionValue ?? "0.00"),
-        commissionDurationValue: String(org.commissionDurationValue ?? "30"),
+        commissionDurationValue: org.commissionDurationValue,
         commissionDurationUnit: org.commissionDurationUnit as
           | "day"
           | "week"
@@ -93,23 +93,25 @@ export async function updateOrgSettings(
     console.log("data", data)
     const updateData: Record<string, any> = {
       ...(data.name && { name: data.name.trim() }),
-      ...(data.domainName && {
-        domainName: data.domainName.trim().replace(/^https?:\/\//, ""),
+      ...(data.websiteUrl && {
+        websiteUrl: data.websiteUrl.trim().replace(/^https?:\/\//, ""),
       }),
       ...(data.logoUrl !== undefined && { logoUrl: data.logoUrl || null }),
       ...(data.referralParam && { referralParam: data.referralParam }),
       ...(data.cookieLifetimeValue && {
-        cookieLifetimeValue: data.cookieLifetimeValue,
+        cookieLifetimeValue: Math.round(Number(data.cookieLifetimeValue)),
       }),
       ...(data.cookieLifetimeUnit && {
         cookieLifetimeUnit: data.cookieLifetimeUnit,
       }),
       ...(data.commissionType && { commissionType: data.commissionType }),
       ...(data.commissionValue && {
-        commissionValue: Number(data.commissionValue).toFixed(2),
+        commissionValue: Number(Number(data.commissionValue).toFixed(2)),
       }),
       ...(data.commissionDurationValue && {
-        commissionDurationValue: data.commissionDurationValue,
+        commissionDurationValue: Math.round(
+          Number(data.commissionDurationValue)
+        ),
       }),
       ...(data.commissionDurationUnit && {
         commissionDurationUnit: data.commissionDurationUnit,

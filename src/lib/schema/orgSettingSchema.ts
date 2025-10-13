@@ -3,7 +3,7 @@ import { z } from "zod"
 export const orgSettingsSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(2),
-  domainName: z.string().min(2),
+  websiteUrl: z.string().min(2),
   logoUrl: z.string().nullable(),
   referralParam: z.enum(["ref", "via", "aff"]),
   cookieLifetimeValue: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid amount"),

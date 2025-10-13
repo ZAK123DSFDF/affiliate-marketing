@@ -14,7 +14,17 @@ import { useForm } from "react-hook-form"
 import { Form } from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import { Loader2, User } from "lucide-react"
+import {
+  BadgeDollarSign,
+  Building2,
+  Calendar,
+  Clock,
+  Coins,
+  Globe,
+  Link2,
+  Loader2,
+  User,
+} from "lucide-react"
 import { z } from "zod"
 
 import { updateOrgSettings } from "@/app/(seller)/seller/[orgId]/dashboard/settings/action"
@@ -24,28 +34,38 @@ import React, { useMemo } from "react"
 import { InputField } from "@/components/Auth/FormFields"
 import { SelectField } from "@/components/ui-custom/SelectFields"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
+import { OrgData } from "@/lib/types/organization"
 
-type OrgData = z.infer<typeof orgSettingsSchema>
+type OrgFormData = z.infer<typeof orgSettingsSchema>
 type Props = { orgData: OrgData }
 
 export default function Settings({ orgData }: Props) {
   const { toast } = useToast()
-  const safeDefaults: OrgData = {
+  const safeDefaults: OrgFormData = {
     id: orgData?.id ?? "",
     name: orgData?.name ?? "",
-    domainName: orgData?.domainName ?? "",
+    websiteUrl: orgData?.websiteUrl ?? "",
     logoUrl: orgData?.logoUrl ?? null,
-    referralParam: orgData?.referralParam ?? "ref",
-    cookieLifetimeValue: orgData?.cookieLifetimeValue ?? "30",
-    cookieLifetimeUnit: orgData?.cookieLifetimeUnit ?? "day",
-    commissionType: orgData?.commissionType ?? "percentage",
-    commissionValue: String(parseFloat(orgData.commissionValue)) ?? "0",
-    commissionDurationValue: orgData?.commissionDurationValue ?? "30",
-    commissionDurationUnit: orgData?.commissionDurationUnit ?? "day",
-    currency: orgData?.currency ?? "USD",
-    attributionModel: orgData?.attributionModel ?? "LAST_CLICK",
+    referralParam: (orgData?.referralParam as "ref" | "via" | "aff") ?? "ref",
+    cookieLifetimeValue: String(orgData?.cookieLifetimeValue ?? "30"),
+    cookieLifetimeUnit:
+      (orgData?.cookieLifetimeUnit as "day" | "week" | "month" | "year") ??
+      "day",
+    commissionType:
+      (orgData?.commissionType as "percentage" | "fixed") ?? "percentage",
+    commissionValue: String(Number(orgData.commissionValue ?? 0)),
+    commissionDurationValue: String(orgData?.commissionDurationValue ?? "30"),
+    commissionDurationUnit:
+      (orgData?.commissionDurationUnit as "day" | "week" | "month" | "year") ??
+      "day",
+    currency:
+      (orgData?.currency as "USD" | "EUR" | "GBP" | "CAD" | "AUD") ?? "USD",
+    attributionModel:
+      (orgData?.attributionModel as "FIRST_CLICK" | "LAST_CLICK") ??
+      "LAST_CLICK",
   }
-  const form = useForm<OrgData>({
+
+  const form = useForm<OrgFormData>({
     resolver: zodResolver(orgSettingsSchema),
     defaultValues: safeDefaults,
   })
@@ -76,7 +96,7 @@ export default function Settings({ orgData }: Props) {
       }),
   })
 
-  const onSubmit = (data: OrgData) => {
+  const onSubmit = (data: OrgFormData) => {
     const changed = (Object.keys(data) as (keyof OrgData)[]).reduce(
       (acc, key) => {
         if (!deepEqual(data[key], safeDefaults[key])) {
@@ -122,16 +142,16 @@ export default function Settings({ orgData }: Props) {
                   label="Company Name"
                   placeholder="Enter your name"
                   type="text"
-                  icon={User}
+                  icon={Building2}
                   affiliate={false}
                 />{" "}
                 <InputField
                   control={form.control}
-                  name="domainName"
-                  label="Domain Name"
+                  name="websiteUrl"
+                  label="Website URL"
                   placeholder="Enter your Domain"
                   type="text"
-                  icon={User}
+                  icon={Globe}
                   affiliate={false}
                 />
                 <SelectField
@@ -155,6 +175,7 @@ export default function Settings({ orgData }: Props) {
                     { value: "via", label: "via" },
                     { value: "aff", label: "aff" },
                   ]}
+                  icon={Link2}
                   affiliate={false}
                 />
                 <div className="flex justify-start">
@@ -183,7 +204,7 @@ export default function Settings({ orgData }: Props) {
                   label="Cookie Lifetime"
                   placeholder="Cookie Lifetime"
                   type="number"
-                  icon={User}
+                  icon={Clock}
                   affiliate={false}
                 />
                 <SelectField
@@ -197,6 +218,7 @@ export default function Settings({ orgData }: Props) {
                     { value: "month", label: "Month" },
                     { value: "year", label: "Year" },
                   ]}
+                  icon={Calendar}
                   affiliate={false}
                 />
                 <SelectField
@@ -208,6 +230,7 @@ export default function Settings({ orgData }: Props) {
                     { value: "percentage", label: "Percentage" },
                     { value: "fixed", label: "Fixed" },
                   ]}
+                  icon={Coins}
                   affiliate={false}
                 />
                 <InputField
@@ -225,7 +248,7 @@ export default function Settings({ orgData }: Props) {
                   label="Commission Duration"
                   placeholder="Commission Duration"
                   type="number"
-                  icon={User}
+                  icon={Calendar}
                   affiliate={false}
                 />
                 <SelectField
@@ -239,6 +262,7 @@ export default function Settings({ orgData }: Props) {
                     { value: "month", label: "Month" },
                     { value: "year", label: "Year" },
                   ]}
+                  icon={Calendar}
                   affiliate={false}
                 />
                 <SelectField
@@ -253,6 +277,7 @@ export default function Settings({ orgData }: Props) {
                     { value: "CAD", label: "CAD" },
                     { value: "AUD", label: "AUD" },
                   ]}
+                  icon={BadgeDollarSign}
                   affiliate={false}
                 />
               </div>

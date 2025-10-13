@@ -1,7 +1,7 @@
 import React from "react"
-import CreateCompany from "@/components/pages/Create-Company"
 import { redirect } from "next/navigation"
 import { getSellerAuth } from "@/lib/server/getSellerAuth"
+import CreateCompany from "@/components/pages/Create-Company"
 
 const createCompanyPage = async () => {
   const decoded = await getSellerAuth()
