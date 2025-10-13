@@ -23,7 +23,9 @@ import {
   Globe,
   Link2,
   Loader2,
-  User,
+  Percent,
+  RefreshCcw,
+  History,
 } from "lucide-react"
 import { z } from "zod"
 
@@ -163,6 +165,11 @@ export default function Settings({ orgData }: Props) {
                     { value: "FIRST_CLICK", label: "first_click" },
                     { value: "LAST_CLICK", label: "last_click" },
                   ]}
+                  icon={
+                    form.watch("attributionModel") === "FIRST_CLICK"
+                      ? History
+                      : RefreshCcw
+                  }
                   affiliate={false}
                 />
                 <SelectField
@@ -239,7 +246,11 @@ export default function Settings({ orgData }: Props) {
                   label="Commission Value"
                   placeholder="Commission Value"
                   type="number"
-                  icon={User}
+                  icon={
+                    form.watch("commissionType") === "percentage"
+                      ? Percent
+                      : BadgeDollarSign
+                  }
                   affiliate={false}
                 />
                 <InputField
