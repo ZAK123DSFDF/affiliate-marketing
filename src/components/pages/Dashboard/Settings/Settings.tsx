@@ -24,8 +24,8 @@ import {
   Link2,
   Loader2,
   Percent,
-  RefreshCcw,
   History,
+  Target,
 } from "lucide-react"
 import { z } from "zod"
 
@@ -167,8 +167,8 @@ export default function Settings({ orgData }: Props) {
                   ]}
                   icon={
                     form.watch("attributionModel") === "FIRST_CLICK"
-                      ? History
-                      : RefreshCcw
+                      ? Target
+                      : History
                   }
                   affiliate={false}
                 />
