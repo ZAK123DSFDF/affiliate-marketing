@@ -18,7 +18,7 @@ import {
   getAffiliatePayouts,
   getAffiliatePayoutsBulk,
   getUnpaidMonths,
-} from "@/app/(organization)/seller/[orgId]/dashboard/payout/action"
+} from "@/app/(organization)/organization/[orgId]/dashboard/payout/action"
 import { useEffect, useState } from "react"
 import MonthSelect from "@/components/ui-custom/MonthSelect"
 import { UnpaidMonth } from "@/lib/types/unpaidMonth"

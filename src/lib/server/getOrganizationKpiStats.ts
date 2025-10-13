@@ -8,7 +8,7 @@ import {
 } from "@/db/schema"
 import { buildWhereWithDate } from "@/util/BuildWhereWithDate"
 
-export async function getSellerKpiStatsAction(
+export async function getOrganizationKpiStatsAction(
   orgId: string,
   year?: number,
   month?: number

@@ -30,7 +30,7 @@ import { Button } from "@/components/ui/button"
 
 import { DropdownInput } from "@/components/ui-custom/DropDownInput"
 import { useSwitchOrg } from "@/hooks/useSwitchOrg"
-import { SellerData } from "@/lib/types/profileTypes"
+import { OrganizationData } from "@/lib/types/profileTypes"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
 
 // Menu items for the sidebar
@@ -39,7 +39,7 @@ type Props = {
   orgId?: string
   plan: { plan: string }
   orgs: { id: string; name: string }[]
-  UserData: SellerData | null
+  UserData: OrganizationData | null
 }
 const OrganizationDashboardSidebar = ({
   orgId,
@@ -52,32 +52,32 @@ const OrganizationDashboardSidebar = ({
   const items = [
     {
       title: "Dashboard",
-      url: `/seller/${orgId}/dashboard/analytics`,
+      url: `/organization/${orgId}/dashboard/analytics`,
       icon: BarChart3,
     },
     {
       title: "Affiliates",
-      url: `/seller/${orgId}/dashboard/affiliates`,
+      url: `/organization/${orgId}/dashboard/affiliates`,
       icon: LinkIcon,
     },
     {
       title: "Payout",
-      url: `/seller/${orgId}/dashboard/payout`,
+      url: `/organization/${orgId}/dashboard/payout`,
       icon: Users,
     },
     {
       title: "Customization",
-      url: `/seller/${orgId}/dashboard/customization`,
+      url: `/organization/${orgId}/dashboard/customization`,
       icon: CreditCard,
     },
     {
       title: "Integration",
-      url: `/seller/${orgId}/dashboard/integration`,
+      url: `/organization/${orgId}/dashboard/integration`,
       icon: Layers,
     },
     {
       title: "Settings",
-      url: `/seller/${orgId}/dashboard/settings`,
+      url: `/organization/${orgId}/dashboard/settings`,
       icon: Settings,
     },
   ]
@@ -173,7 +173,7 @@ const OrganizationDashboardSidebar = ({
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="p-4">
-        <Link href={`/seller/${orgId}/dashboard/profile`}>
+        <Link href={`/organization/${orgId}/dashboard/profile`}>
           <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{UserData?.name}</p>

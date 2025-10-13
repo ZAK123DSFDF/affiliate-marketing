@@ -5,7 +5,7 @@ import { AuthCustomization } from "@/components/pages/Dashboard/Customization/Au
 import { DashboardCustomization } from "@/components/pages/Dashboard/Customization/DashboardCustomization"
 import { ToastCustomization } from "@/components/ui-custom/Customization/ToastCustomization"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { saveCustomizationsAction } from "@/app/(organization)/seller/[orgId]/dashboard/customization/action"
+import { saveCustomizationsAction } from "@/app/(organization)/organization/[orgId]/dashboard/customization/action"
 import { Button } from "@/components/ui/button"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useAtom, useAtomValue } from "jotai"

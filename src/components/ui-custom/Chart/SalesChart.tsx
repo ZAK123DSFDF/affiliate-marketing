@@ -29,7 +29,7 @@ import { Separator } from "@/components/ui/separator"
 import { ChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/ChartCustomizationOptions"
 import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateKpiTimeSeries } from "@/app/affiliate/[orgId]/dashboard/action"
-import { getSellerKpiTimeSeries } from "@/app/(organization)/seller/[orgId]/dashboard/action"
+import { getOrganizationKpiTimeSeries } from "@/app/(organization)/organization/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import { dummyChartData } from "@/lib/types/dummyChartData"
@@ -64,16 +64,19 @@ export function ChartDailyMetrics({
         enabled: !!(affiliate && orgId && !isPreview),
       }
     )
-  const { data: sellerSearchData, isPending: sellerSearchPending } = useSearch(
-    ["seller-kpi-time-series", orgId, filters.year, filters.month],
-    getSellerKpiTimeSeries,
-    [orgId, filters.year, filters.month],
-    {
-      enabled: !!(!affiliate && orgId && !isPreview),
-    }
-  )
-  const searchData = affiliate ? affiliateSearchData : sellerSearchData
-  const searchPending = affiliate ? affiliateSearchPending : sellerSearchPending
+  const { data: organizationSearchData, isPending: organizationSearchPending } =
+    useSearch(
+      ["organization-kpi-time-series", orgId, filters.year, filters.month],
+      getOrganizationKpiTimeSeries,
+      [orgId, filters.year, filters.month],
+      {
+        enabled: !!(!affiliate && orgId && !isPreview),
+      }
+    )
+  const searchData = affiliate ? affiliateSearchData : organizationSearchData
+  const searchPending = affiliate
+    ? affiliateSearchPending
+    : organizationSearchPending
   const [previewLoading, setPreviewLoading] = useState(isPreview)
 
   useEffect(() => {

@@ -5,14 +5,14 @@ import { validateResetToken } from "@/lib/server/validateResetToken"
 import { redirectIfAuthed } from "@/lib/server/authGuards"
 
 type Props = {
-  searchParams: Promise<{ sellerToken?: string }>
+  searchParams: Promise<{ organizationToken?: string }>
 }
 
 const ResetPasswordPage = async ({ searchParams }: Props) => {
   await redirectIfAuthed()
-  const { sellerToken } = await searchParams
+  const { organizationToken } = await searchParams
 
-  if (!sellerToken) {
+  if (!organizationToken) {
     return (
       <InvalidToken
         affiliate={false}
@@ -22,8 +22,8 @@ const ResetPasswordPage = async ({ searchParams }: Props) => {
   }
 
   const sessionPayload = await validateResetToken({
-    token: sellerToken,
-    tokenType: "seller",
+    token: organizationToken,
+    tokenType: "organization",
   })
 
   if (!sessionPayload) {

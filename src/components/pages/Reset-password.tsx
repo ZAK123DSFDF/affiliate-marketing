@@ -26,7 +26,7 @@ import { ButtonCustomizationOptions } from "@/components/ui-custom/Customization
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { LinkButton } from "@/components/ui-custom/LinkButton"
 import { useAuthCard } from "@/hooks/useAuthCard"
-import { resetSellerPasswordServer } from "@/app/(organization)/(auth)/reset-password/action"
+import { resetOrganizationPasswordServer } from "@/app/(organization)/(auth)/reset-password/action"
 import { resetAffiliatePasswordServer } from "@/app/affiliate/[orgId]/(auth)/reset-password/action"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
 import { useAtomValue } from "jotai"
@@ -82,7 +82,7 @@ const ResetPassword = ({
     affiliate,
     disableSuccessToast: true,
   })
-  const normalMutation = useAuthMutation(resetSellerPasswordServer, {
+  const normalMutation = useAuthMutation(resetOrganizationPasswordServer, {
     affiliate,
     disableSuccessToast: true,
   })

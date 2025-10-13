@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken"
 
 export async function getOrganizationContext() {
   const cookieStore = await cookies()
-  const token = cookieStore.get("sellerToken")?.value
+  const token = cookieStore.get("organizationToken")?.value
   if (!token) throw { status: 401, error: "Unauthorized" }
 
   const decoded = jwt.decode(token) as {
@@ -20,6 +20,6 @@ export async function getOrganizationContext() {
     orgIds: decoded?.orgIds ?? [],
     activeOrgId: decoded?.activeOrgId,
     role: decoded?.role ?? "OWNER",
-    type: decoded?.type ?? "SELLER",
+    type: decoded?.type ?? "ORGANIZATION",
   }
 }

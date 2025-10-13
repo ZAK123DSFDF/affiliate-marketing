@@ -14,12 +14,12 @@ import { cn } from "@/lib/utils"
 import { KpiCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/KpiCardCustomizationOptions"
 import {
   AffiliateKpiStats,
-  SellerKpiStats,
+  OrganizationKpiStats,
 } from "@/lib/types/affiliateKpiStats"
-import { mapAffiliateStats, mapSellerStats } from "@/util/mapStats"
+import { mapAffiliateStats, mapOrganizationStats } from "@/util/mapStats"
 import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateKpiStats } from "@/app/affiliate/[orgId]/dashboard/action"
-import { getSellerKpiStats } from "@/app/(organization)/seller/[orgId]/dashboard/action"
+import { getOrganizationKpiStats } from "@/app/(organization)/organization/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import { formatValue } from "@/util/FormatValue"
@@ -41,7 +41,7 @@ const affiliateColorPairs = [
   { iconBg: "bg-purple-100", iconColor: "text-purple-600" },
 ]
 
-const sellerColorPairs = [
+const organizationColorPairs = [
   { iconBg: "bg-blue-100", iconColor: "text-blue-600" },
   { iconBg: "bg-green-100", iconColor: "text-green-600" },
   { iconBg: "bg-purple-100", iconColor: "text-purple-600" },
@@ -68,22 +68,25 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
         enabled: !!(affiliate && orgId && !isPreview),
       }
     )
-  const { data: sellerSearchData, isPending: sellerSearchPending } = useSearch(
-    ["seller-card", orgId, filters.year, filters.month],
-    getSellerKpiStats,
-    [orgId, filters.year, filters.month],
-    {
-      enabled: !!(!affiliate && orgId && !isPreview),
-    }
-  )
-  const searchData = affiliate ? affiliateSearchData : sellerSearchData
-  const searchPending = affiliate ? affiliateSearchPending : sellerSearchPending
+  const { data: organizationSearchData, isPending: organizationSearchPending } =
+    useSearch(
+      ["organization-card", orgId, filters.year, filters.month],
+      getOrganizationKpiStats,
+      [orgId, filters.year, filters.month],
+      {
+        enabled: !!(!affiliate && orgId && !isPreview),
+      }
+    )
+  const searchData = affiliate ? affiliateSearchData : organizationSearchData
+  const searchPending = affiliate
+    ? affiliateSearchPending
+    : organizationSearchPending
   const filteredData = affiliate
     ? affiliateSearchData?.[0]
       ? mapAffiliateStats(affiliateSearchData[0] as AffiliateKpiStats)
       : initialKpiData
-    : sellerSearchData?.[0]
-      ? mapSellerStats(sellerSearchData[0] as SellerKpiStats)
+    : organizationSearchData?.[0]
+      ? mapOrganizationStats(organizationSearchData[0] as OrganizationKpiStats)
       : initialKpiData
 
   const isFiltering = !!(filters.year || filters.month)
@@ -104,13 +107,14 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
       if (searchData)
         return affiliate
           ? mapAffiliateStats(searchData[0] as AffiliateKpiStats)
-          : mapSellerStats(searchData[0] as SellerKpiStats) || initialKpiData
+          : mapOrganizationStats(searchData[0] as OrganizationKpiStats) ||
+              initialKpiData
     }
 
     return filteredData
   }, [isPreview, isFiltering, searchPending, searchData, filteredData])
   const colorTypes = ["Primary", "Secondary", "Tertiary"] as const
-  const colorPairs = affiliate ? affiliateColorPairs : sellerColorPairs
+  const colorPairs = affiliate ? affiliateColorPairs : organizationColorPairs
 
   return (
     <div className="space-y-6">
@@ -221,8 +225,9 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
                             {formatValue(
                               label,
                               value as number,
-                              (sellerSearchData?.[0] as SellerKpiStats)
-                                ?.currency
+                              (
+                                organizationSearchData?.[0] as OrganizationKpiStats
+                              )?.currency
                             )}
                           </div>
                         </div>

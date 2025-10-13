@@ -11,11 +11,11 @@ export interface AffiliateData extends BaseData {
   paypalEmail: string | null
 }
 
-export type SellerData = BaseData
+export type OrganizationData = BaseData
 
 export interface ProfileProps {
   AffiliateData?: AffiliateData
-  UserData?: SellerData
+  UserData?: OrganizationData
   isPreview?: boolean
   affiliate: boolean
   orgId: string

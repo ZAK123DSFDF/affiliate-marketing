@@ -7,8 +7,8 @@ import { getOrganizationContext } from "@/lib/server/getOrganizationContext"
 import { db } from "@/db/drizzle"
 import { and, eq } from "drizzle-orm"
 import { affiliate, user } from "@/db/schema"
-// ------------------- SELLER -------------------
-export const requestSellerEmailChange = async ({
+// ------------------- ORGANIZATION -------------------
+export const requestOrganizationEmailChange = async ({
   userId,
   newEmail,
 }: {
@@ -39,7 +39,7 @@ export const requestSellerEmailChange = async ({
       process.env.SECRET_KEY!,
       { expiresIn: "15m" }
     )
-    const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-email-change?sellerToken=${token}`
+    const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-email-change?organizationToken=${token}`
     if (process.env.NODE_ENV === "development") {
       await sendVerificationEmail(newEmail, verifyUrl)
       return { ok: true, message: "Verification link sent to new email" }
@@ -50,7 +50,7 @@ export const requestSellerEmailChange = async ({
       redirectUrl: verifyUrl,
     }
   } catch (err) {
-    console.error("requestSellerEmailChange error:", err)
+    console.error("requestOrganizationEmailChange error:", err)
     return returnError(err)
   }
 }

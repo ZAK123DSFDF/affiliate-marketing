@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
   if (!code || !orgId) {
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/seller/${orgId || "unknown"}/stripeErrorPage?message=${encodeURIComponent("Missing params")}`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/organization/${orgId || "unknown"}/stripeErrorPage?message=${encodeURIComponent("Missing params")}`
     )
   }
 
@@ -27,14 +27,14 @@ export async function GET(request: Request) {
 
     if (!response) {
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/seller/${orgId}/stripeErrorPage?message=${encodeURIComponent("Missing Stripe response")}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/organization/${orgId}/stripeErrorPage?message=${encodeURIComponent("Missing Stripe response")}`
       )
     }
 
     const connectedAccountId = response.stripe_user_id
     if (!connectedAccountId) {
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/seller/${orgId}/stripeErrorPage?message=${encodeURIComponent("Missing connected account ID")}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/organization/${orgId}/stripeErrorPage?message=${encodeURIComponent("Missing connected account ID")}`
       )
     }
 
@@ -46,7 +46,7 @@ export async function GET(request: Request) {
 
     if (existingAccount) {
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/seller/${orgId}/stripeErrorPage?message=${encodeURIComponent("This Stripe account is already connected to another organization.")}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/organization/${orgId}/stripeErrorPage?message=${encodeURIComponent("This Stripe account is already connected to another organization.")}`
       )
     }
 
@@ -68,12 +68,12 @@ export async function GET(request: Request) {
 
     // ✅ Redirect to success page scoped to orgId
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/seller/${orgId}/stripeSuccessPage?account=${connectedAccountId}`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/organization/${orgId}/stripeSuccessPage?account=${connectedAccountId}`
     )
   } catch (error: any) {
     console.error("Stripe OAuth Error:", error)
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/seller/${orgId}/stripeErrorPage?message=${encodeURIComponent(error.message || "Unexpected error")}`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/organization/${orgId}/stripeErrorPage?message=${encodeURIComponent(error.message || "Unexpected error")}`
     )
   }
 }

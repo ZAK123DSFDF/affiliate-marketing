@@ -7,7 +7,7 @@ export interface AffiliateKpiStats {
   totalCommissionUnpaid: number
   currency: string
 }
-export type SellerKpiStats = AffiliateKpiStats & {
+export type OrganizationKpiStats = AffiliateKpiStats & {
   totalAmount: number
   totalAffiliates: number
   currency: string

@@ -1,14 +1,14 @@
 import React from "react"
 import Profile from "@/components/pages/Dashboard/Profile/Profile"
 import { OrgIdProps } from "@/lib/types/orgId"
-import { getUserData } from "@/app/(organization)/seller/[orgId]/dashboard/profile/action"
+import { getUserData } from "@/app/(organization)/organization/[orgId]/dashboard/profile/action"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { ErrorCard } from "@/components/ui-custom/ErrorCard"
-import { requireSellerWithOrg } from "@/lib/server/authGuards"
+import { requireOrganizationWithOrg } from "@/lib/server/authGuards"
 
 const profilePage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
-  await requireSellerWithOrg(orgId)
+  await requireOrganizationWithOrg(orgId)
   const userResponse = await getUserData()
   if (!userResponse.ok) {
     return <ErrorCard message={userResponse.error || "Something went wrong"} />

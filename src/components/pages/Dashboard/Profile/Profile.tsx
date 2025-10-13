@@ -14,8 +14,8 @@ import {
 import {
   updateUserPassword,
   updateUserProfile,
-  validateCurrentSellerPassword,
-} from "@/app/(organization)/seller/[orgId]/dashboard/profile/action"
+  validateCurrentOrganizationPassword,
+} from "@/app/(organization)/organization/[orgId]/dashboard/profile/action"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   affiliateProfileSchema,
@@ -38,7 +38,7 @@ import deepEqual from "fast-deep-equal"
 import ProfileEmailDialog from "@/components/ui-custom/ProfileEmailDialog"
 import {
   requestAffiliateEmailChange,
-  requestSellerEmailChange,
+  requestOrganizationEmailChange,
 } from "@/lib/server/requestEmailChange"
 import { LogoutButton } from "@/components/ui-custom/LogoutButton"
 import { AuthResponse, useAuthMutation } from "@/hooks/useAuthMutation"
@@ -152,7 +152,7 @@ export default function Profile({
 
       return AffiliateData
         ? validateCurrentPassword(orgId, password)
-        : validateCurrentSellerPassword(password)
+        : validateCurrentOrganizationPassword(password)
     },
     onSuccess: (res: any) => {
       if (res?.ok) {
@@ -260,7 +260,7 @@ export default function Profile({
           orgId,
         })
       } else {
-        return requestSellerEmailChange({
+        return requestOrganizationEmailChange({
           userId: UserData?.id!,
           newEmail: values.newEmail,
         })

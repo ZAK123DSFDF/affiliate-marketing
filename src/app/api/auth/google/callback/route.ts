@@ -34,11 +34,11 @@ export async function GET(req: Request) {
     const email = payload.email!
     const name = payload.name ?? ""
     const rememberMe = !!state.rememberMe
-    const type = (state.type || "seller") as "seller" | "affiliate"
+    const type = (state.type || "organization") as "organization" | "affiliate"
     const orgIdFromState = state.orgId as string | undefined
 
-    // ---------- SELLER flow ----------
-    if (type === "seller") {
+    // ---------- ORGANIZATION flow ----------
+    if (type === "organization") {
       // Try to find an existing OAuth account by providerAccountId
       let linkedAccount = await db.query.account.findFirst({
         where: (a, { and, eq }) =>
@@ -74,7 +74,7 @@ export async function GET(req: Request) {
             .values({
               name,
               email,
-              type: "SELLER",
+              type: "ORGANIZATION",
               role: "OWNER",
             })
             .returning()
@@ -112,7 +112,7 @@ export async function GET(req: Request) {
 
       const cookieStore = await cookies()
       cookieStore.set({
-        name: "sellerToken",
+        name: "organizationToken",
         value: token,
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -131,7 +131,7 @@ export async function GET(req: Request) {
         // Existing orgs → login → redirect to dashboard
         return NextResponse.redirect(
           new URL(
-            `/seller/${activeOrgId}/dashboard/analytics`,
+            `/organization/${activeOrgId}/dashboard/analytics`,
             process.env.NEXT_PUBLIC_BASE_URL
           )
         )

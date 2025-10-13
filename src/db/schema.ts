@@ -22,7 +22,10 @@ import {
   generateOrganizationId,
 } from "@/util/idGenerators"
 export const roleEnum = pgEnum("role", ["OWNER", "ADMIN"])
-export const accountTypeEnum = pgEnum("account_type", ["SELLER", "AFFILIATE"])
+export const accountTypeEnum = pgEnum("account_type", [
+  "ORGANIZATION",
+  "AFFILIATE",
+])
 export const paymentProviderEnum = pgEnum("payment_provider", [
   "stripe",
   "paddle",
@@ -71,7 +74,7 @@ export const user = pgTable("user", {
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   role: roleEnum("role").default("OWNER").notNull(),
-  type: accountTypeEnum("type").default("SELLER").notNull(),
+  type: accountTypeEnum("type").default("ORGANIZATION").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })

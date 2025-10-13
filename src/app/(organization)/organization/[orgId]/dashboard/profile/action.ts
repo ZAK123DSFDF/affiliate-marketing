@@ -53,7 +53,7 @@ export async function updateUserProfile(
     if (!data.name) return { ok: true }
 
     await db.update(user).set({ name: data.name }).where(eq(user.id, id))
-    revalidatePath(`/seller/${orgId}/dashboard/profile`)
+    revalidatePath(`/organization/${orgId}/dashboard/profile`)
     return { ok: true }
   } catch (err) {
     console.error("updateUserProfile error:", err)
@@ -61,7 +61,9 @@ export async function updateUserProfile(
   }
 }
 
-export async function validateCurrentSellerPassword(currentPassword: string) {
+export async function validateCurrentOrganizationPassword(
+  currentPassword: string
+) {
   try {
     const { id } = await getCurrentUser()
     if (!id) throw { status: 401, toast: "Unauthorized" }
@@ -81,7 +83,7 @@ export async function validateCurrentSellerPassword(currentPassword: string) {
 
     return { ok: true }
   } catch (err) {
-    console.error("validateCurrentSellerPassword error:", err)
+    console.error("validateCurrentOrganizationPassword error:", err)
     return returnError(err)
   }
 }

@@ -384,7 +384,7 @@ export const user_seed = [
     name: "zak",
     email: "zak@gmail.com",
     role: "OWNER" as const,
-    type: "SELLER" as const,
+    type: "ORGANIZATION" as const,
     createdAt: parseDate("2025-07-16 11:43:21.288497"),
     updatedAt: parseDate("2025-07-16 11:43:21.288497"),
   },

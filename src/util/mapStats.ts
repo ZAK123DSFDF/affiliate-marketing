@@ -1,6 +1,6 @@
 import {
   AffiliateKpiStats,
-  SellerKpiStats,
+  OrganizationKpiStats,
 } from "@/lib/types/affiliateKpiStats"
 import {
   DollarSign,
@@ -31,7 +31,7 @@ export const mapAffiliateStats = (stats: AffiliateKpiStats) => [
   },
 ]
 
-export const mapSellerStats = (stats: SellerKpiStats) => [
+export const mapOrganizationStats = (stats: OrganizationKpiStats) => [
   { label: "Total Links", value: stats.totalLinks, icon: Link },
   { label: "Total Visitors", value: stats.totalVisitors, icon: MousePointer },
   { label: "Total Sales", value: stats.totalSales, icon: ShoppingCart },

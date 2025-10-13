@@ -3,27 +3,27 @@ import { returnError } from "@/lib/errorHandler"
 import { getOrgAuth } from "@/lib/server/GetOrgAuth"
 import { getOrgAffiliateLinks } from "@/lib/server/GetOrgAffiliateLinks"
 import { ResponseData } from "@/lib/types/response"
-import { SellerKpiStats } from "@/lib/types/affiliateKpiStats"
-import { SellerKpiTimeSeries } from "@/lib/types/affiliateChartStats"
+import { OrganizationKpiStats } from "@/lib/types/affiliateKpiStats"
+import { OrganizationKpiTimeSeries } from "@/lib/types/affiliateChartStats"
 import { getTimeSeriesData } from "@/lib/server/getTimeSeriesData"
-import { SellerReferrerStat } from "@/lib/types/affiliateReferrerStat"
+import { OrganizationReferrerStat } from "@/lib/types/affiliateReferrerStat"
 import { getReferrerStats } from "@/lib/server/getReferrerStats"
 import { AffiliateStats } from "@/lib/types/affiliateStats"
 import { getTopAffiliatesByConversionRate } from "@/lib/server/getTopAffiliateByConversionRate"
-import { getSellerKpiStatsAction } from "@/lib/server/getOrganizationKpiStats"
+import { getOrganizationKpiStatsAction } from "@/lib/server/getOrganizationKpiStats"
 import { ExchangeRate } from "@/util/ExchangeRate"
 import { convertedCurrency } from "@/util/ConvertedCurrency"
 
-export async function getSellerKpiStats(
+export async function getOrganizationKpiStats(
   orgId: string,
   year?: number,
   month?: number
-): Promise<ResponseData<SellerKpiStats[]>> {
+): Promise<ResponseData<OrganizationKpiStats[]>> {
   try {
     const org = await getOrgAuth(orgId)
-    const [row] = await getSellerKpiStatsAction(orgId, year, month)
+    const [row] = await getOrganizationKpiStatsAction(orgId, year, month)
     const rate = await ExchangeRate(org.currency)
-    const sellerKpiStats: SellerKpiStats = {
+    const OrganizationKpiStats: OrganizationKpiStats = {
       totalAffiliates: row?.totalAffiliates ?? 0,
       totalLinks: row?.totalLinks ?? 0,
       totalVisitors: row?.totalVisitors ?? 0,
@@ -34,45 +34,45 @@ export async function getSellerKpiStats(
       totalAmount: (row?.amount ?? 0) * rate,
       currency: org.currency,
     }
-    return { ok: true, data: [sellerKpiStats] }
+    return { ok: true, data: [OrganizationKpiStats] }
   } catch (err) {
-    console.error("Error fetching seller KPI stats:", err)
-    return returnError(err) as ResponseData<SellerKpiStats[]>
+    console.error("Error fetching organization KPI stats:", err)
+    return returnError(err) as ResponseData<OrganizationKpiStats[]>
   }
 }
-export async function getSellerKpiTimeSeries(
+export async function getOrganizationKpiTimeSeries(
   orgId: string,
   year?: number,
   month?: number
-): Promise<ResponseData<SellerKpiTimeSeries[]>> {
+): Promise<ResponseData<OrganizationKpiTimeSeries[]>> {
   try {
     const org = await getOrgAuth(orgId)
     const { linkIds } = await getOrgAffiliateLinks(org, orgId)
     if (!linkIds.length) return { ok: true, data: [] }
-    const data = await getTimeSeriesData<SellerKpiTimeSeries>(
+    const data = await getTimeSeriesData<OrganizationKpiTimeSeries>(
       linkIds,
       year,
       month
     )
     return { ok: true, data }
   } catch (err) {
-    console.error("Error fetching seller KPI time series:", err)
-    return returnError(err) as ResponseData<SellerKpiTimeSeries[]>
+    console.error("Error fetching organization KPI time series:", err)
+    return returnError(err) as ResponseData<OrganizationKpiTimeSeries[]>
   }
 }
-export async function getSellerReferrer(
+export async function getOrganizationReferrer(
   orgId: string,
   year?: number,
   month?: number
-): Promise<ResponseData<SellerReferrerStat[]>> {
+): Promise<ResponseData<OrganizationReferrerStat[]>> {
   try {
     const org = await getOrgAuth(orgId)
     const { linkIds } = await getOrgAffiliateLinks(org, orgId)
     const referrerStats = await getReferrerStats(linkIds, year, month)
     return { ok: true, data: referrerStats }
   } catch (err) {
-    console.error("Error fetching seller referrer:", err)
-    return returnError(err) as ResponseData<SellerReferrerStat[]>
+    console.error("Error fetching organization referrer:", err)
+    return returnError(err) as ResponseData<OrganizationReferrerStat[]>
   }
 }
 export async function getTopAffiliates(

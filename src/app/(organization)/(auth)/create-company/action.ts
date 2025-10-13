@@ -31,7 +31,7 @@ export const CreateOrganization = async (
 ) => {
   try {
     const cookieStore = await cookies()
-    const token = cookieStore.get("sellerToken")?.value
+    const token = cookieStore.get("organizationToken")?.value
     if (!token) throw { status: 401, error: "Unauthorized" }
 
     const decoded = jwt.decode(token) as {
@@ -99,7 +99,7 @@ export const CreateOrganization = async (
       expiresIn,
     })
 
-    cookieStore.set("sellerToken", newToken, { httpOnly: true })
+    cookieStore.set("organizationToken", newToken, { httpOnly: true })
     return { ok: true, message: "Company created successfully!", data: newOrg }
   } catch (err) {
     console.error("Organization create error", err)

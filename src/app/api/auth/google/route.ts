@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 
 export async function GET(req: Request) {
   const url = new URL(req.url)
-  const type = url.searchParams.get("type") || "seller" // "seller" | "affiliate"
+  const type = url.searchParams.get("type") || "organization" // "organization" | "affiliate"
   const orgId = url.searchParams.get("orgId") || undefined
   const rememberMe = url.searchParams.get("rememberMe") === "true"
 

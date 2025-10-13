@@ -75,7 +75,9 @@ const ForgotPassword = ({
     buttonTextColor,
   } = useAtomValue(buttonCustomizationAtom)
   const authCardStyle = useAuthCard(affiliate)
-  const sellerMutation = useAuthMutation(ForgotPasswordServer, { affiliate })
+  const organizationMutation = useAuthMutation(ForgotPasswordServer, {
+    affiliate,
+  })
 
   const affiliateMutation = useAuthMutation(ForgotPasswordAffiliateServer, {
     affiliate,
@@ -108,10 +110,11 @@ const ForgotPassword = ({
     if (orgId && affiliate) {
       affiliateMutation.mutate({ email: data.email, organizationId: orgId })
     } else {
-      sellerMutation.mutate({ email: data.email })
+      organizationMutation.mutate({ email: data.email })
     }
   }
-  const isSubmitting = sellerMutation.isPending || affiliateMutation.isPending
+  const isSubmitting =
+    organizationMutation.isPending || affiliateMutation.isPending
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${

@@ -2,16 +2,16 @@
 import { redirect } from "next/navigation"
 import {
   getOrganizationAuth,
-  SellerTokenPayload,
+  OrganizationTokenPayload,
 } from "@/lib/server/getOrganizationAuth"
 import {
   AffiliateTokenPayload,
   getAffiliateAuth,
 } from "@/lib/server/getAffiliateAuth"
 
-export async function requireSellerWithOrg(
+export async function requireOrganizationWithOrg(
   paramsOrgId?: string
-): Promise<SellerTokenPayload> {
+): Promise<OrganizationTokenPayload> {
   const decoded = await getOrganizationAuth()
 
   if (!decoded) {
@@ -22,11 +22,11 @@ export async function requireSellerWithOrg(
     redirect("/create-company")
   }
   if (!paramsOrgId && decoded.activeOrgId) {
-    redirect(`/seller/${decoded.activeOrgId}/dashboard/analytics`)
+    redirect(`/organization/${decoded.activeOrgId}/dashboard/analytics`)
   }
   if (paramsOrgId && !decoded.orgIds.includes(paramsOrgId)) {
     redirect(
-      `/seller/${decoded.activeOrgId ?? decoded.orgIds[0]}/dashboard/analytics`
+      `/organization/${decoded.activeOrgId ?? decoded.orgIds[0]}/dashboard/analytics`
     )
   }
 
@@ -38,10 +38,10 @@ export async function redirectIfAuthed() {
 
   if (decoded) {
     if (decoded.activeOrgId) {
-      redirect(`/seller/${decoded.activeOrgId}/dashboard/analytics`)
+      redirect(`/organization/${decoded.activeOrgId}/dashboard/analytics`)
     }
     if (decoded.orgIds && decoded.orgIds.length > 0) {
-      redirect(`/seller/${decoded.orgIds[0]}/dashboard/analytics`)
+      redirect(`/organization/${decoded.orgIds[0]}/dashboard/analytics`)
     }
     redirect("/create-company")
   }

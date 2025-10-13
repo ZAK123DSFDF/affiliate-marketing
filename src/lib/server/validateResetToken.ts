@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm"
 
 type ValidateResetTokenProps = {
   token: string
-  tokenType: "affiliate" | "seller"
+  tokenType: "affiliate" | "organization"
 }
 
 export const validateResetToken = async ({
@@ -27,7 +27,7 @@ export const validateResetToken = async ({
     }
 
     // Make sure the account actually exists
-    if (tokenType === "seller") {
+    if (tokenType === "organization") {
       const existingUser = await db.query.user.findFirst({
         where: eq(user.id, sessionPayload.id),
       })

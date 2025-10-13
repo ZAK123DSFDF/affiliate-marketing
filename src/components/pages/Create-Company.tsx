@@ -75,7 +75,7 @@ const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
   const { mutate, isPending } = useAuthMutation(CreateOrganization, {
     onSuccess: (res: any) => {
       if (res.ok && res.data?.id) {
-        router.push(`/seller/${res.data.id}/dashboard/analytics`)
+        router.push(`/organization/${res.data.id}/dashboard/analytics`)
       }
     },
   })

@@ -1,4 +1,4 @@
-// app/(seller)/reset-password/action.ts
+// app/(organization)/reset-password/action.ts
 "use server"
 
 import { db } from "@/db/drizzle"
@@ -8,7 +8,7 @@ import { eq, and } from "drizzle-orm"
 import jwt from "jsonwebtoken"
 import { cookies } from "next/headers"
 
-export const resetSellerPasswordServer = async ({
+export const resetOrganizationPasswordServer = async ({
   userId,
   password,
 }: {
@@ -18,7 +18,7 @@ export const resetSellerPasswordServer = async ({
   try {
     const hashed = await bcrypt.hash(password, 10)
 
-    // 🔑 Update the seller's credentials account password
+    // 🔑 Update the organization's credentials account password
     const [updatedAccount] = await db
       .update(account)
       .set({ password: hashed })
@@ -28,19 +28,19 @@ export const resetSellerPasswordServer = async ({
       .returning()
 
     if (!updatedAccount) {
-      throw new Error("Seller credentials account not found")
+      throw new Error("Organization credentials account not found")
     }
 
-    // 🔑 Fetch seller to normalize email & session payload
+    // 🔑 Fetch organization to normalize email & session payload
     const existingUser = await db.query.user.findFirst({
       where: (u, { eq }) => eq(u.id, userId),
     })
 
     if (!existingUser) {
-      throw new Error("Seller not found")
+      throw new Error("Organization not found")
     }
 
-    // Find organizations owned by this seller
+    // Find organizations owned by this user
     const orgs = await db.query.organization.findMany({
       where: (org, { eq }) => eq(org.userId, existingUser.id),
     })
@@ -63,7 +63,7 @@ export const resetSellerPasswordServer = async ({
     })
 
     const cookieStore = await cookies()
-    cookieStore.set("sellerToken", sessionToken, {
+    cookieStore.set("organizationToken", sessionToken, {
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
@@ -71,10 +71,10 @@ export const resetSellerPasswordServer = async ({
 
     return {
       ok: true,
-      redirectUrl: `/seller/${activeOrgId}/dashboard/analytics`,
+      redirectUrl: `/organization/${activeOrgId}/dashboard/analytics`,
     }
   } catch (err) {
-    console.error("Reset seller password failed:", err)
+    console.error("Reset organization password failed:", err)
     return { ok: false, error: "Failed to reset password" }
   }
 }

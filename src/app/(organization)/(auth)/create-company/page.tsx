@@ -10,11 +10,11 @@ const createCompanyPage = async () => {
     redirect("/login")
   }
   if (decoded.activeOrgId) {
-    redirect(`/seller/${decoded.activeOrgId}/dashboard/analytics`)
+    redirect(`/organization/${decoded.activeOrgId}/dashboard/analytics`)
   }
 
   if (decoded.orgIds && decoded.orgIds.length > 0) {
-    redirect(`/seller/${decoded.orgIds[0]}/dashboard/analytics`)
+    redirect(`/organization/${decoded.orgIds[0]}/dashboard/analytics`)
   }
   return (
     <>

@@ -6,7 +6,7 @@ import React from "react"
 
 export default function ConnectStripeButton() {
   const handleConnect = () => {
-    // Redirect the seller to your backend route, which will redirect to Stripe
+    // Redirect the organization to your backend route, which will redirect to Stripe
     window.location.href = "/api/stripe/connect"
   }
 

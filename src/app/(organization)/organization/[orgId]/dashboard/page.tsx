@@ -5,5 +5,5 @@ import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 
 export default async function DashboardPage({ params }: OrgIdProps) {
   const orgId = await getValidatedOrgFromParams({ params })
-  redirect(`/seller/${orgId}/dashboard/analytics`)
+  redirect(`/organization/${orgId}/dashboard/analytics`)
 }

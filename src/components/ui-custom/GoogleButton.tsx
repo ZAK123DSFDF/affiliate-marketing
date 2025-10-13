@@ -22,7 +22,7 @@ export function GoogleButton({
     googleButtonBackgroundColor,
     googleIconColor,
   } = useAtomValue(googleButtonCustomizationAtom)
-  const type = affiliate ? "affiliate" : "seller"
+  const type = affiliate ? "affiliate" : "organization"
   const handleClick = () => {
     if (isPreview) {
       window.open("https://www.google.com", "_blank")

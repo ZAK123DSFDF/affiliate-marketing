@@ -1,7 +1,7 @@
 import React from "react"
 import StripeSuccess from "@/components/pages/StripeSuccess"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
-import { requireSellerWithOrg } from "@/lib/server/authGuards"
+import { requireOrganizationWithOrg } from "@/lib/server/authGuards"
 import { OrgIdProps } from "@/lib/types/orgId"
 
 const stripeSuccessPage = async ({
@@ -9,7 +9,7 @@ const stripeSuccessPage = async ({
   searchParams,
 }: OrgIdProps & { searchParams: Promise<{ account?: string }> }) => {
   const orgId = await getValidatedOrgFromParams({ params })
-  await requireSellerWithOrg(orgId)
+  await requireOrganizationWithOrg(orgId)
   const { account } = await searchParams
   return (
     <>

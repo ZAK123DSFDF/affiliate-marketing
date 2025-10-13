@@ -9,7 +9,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import {
   deleteOrgPaddleAccount,
   getOrgWebhookKey,
-} from "@/app/(organization)/seller/[orgId]/dashboard/integration/action"
+} from "@/app/(organization)/organization/[orgId]/dashboard/integration/action"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 
 interface DisconnectProps {

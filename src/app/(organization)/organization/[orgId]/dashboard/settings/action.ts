@@ -17,7 +17,7 @@ export const orgInfo = async (
 ): Promise<ResponseData<OrgData>> => {
   try {
     const cookieStore = await cookies()
-    const token = cookieStore.get("sellerToken")?.value
+    const token = cookieStore.get("organizationToken")?.value
 
     if (!token) {
       throw {
@@ -128,7 +128,7 @@ export async function updateOrgSettings(
       .update(organization)
       .set(updateData)
       .where(eq(organization.id, data.id))
-    revalidatePath(`/seller/${data.id}/dashboard/settings`)
+    revalidatePath(`/organization/${data.id}/dashboard/settings`)
     return { ok: true }
   } catch (err) {
     console.error("updateOrgSettings error", err)

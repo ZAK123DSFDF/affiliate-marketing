@@ -21,11 +21,11 @@ import { Separator } from "@/components/ui/separator"
 import { PieChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/PieChartCustomizationOptions"
 import {
   AffiliateReferrerStat,
-  SellerReferrerStat,
+  OrganizationReferrerStat,
 } from "@/lib/types/affiliateReferrerStat"
 import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateReferrers } from "@/app/affiliate/[orgId]/dashboard/action"
-import { getSellerReferrer } from "@/app/(organization)/seller/[orgId]/dashboard/action"
+import { getOrganizationReferrer } from "@/app/(organization)/organization/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import { dummySourceData } from "@/lib/types/dummySourceData"
@@ -81,9 +81,9 @@ export default function SocialTrafficPieChart({
       enabled: !!(affiliate && orgId && !isPreview),
     }
   )
-  const { data: sellerData, isPending: sellerPending } = useSearch(
-    ["seller-source", orgId, filters.year, filters.month],
-    getSellerReferrer,
+  const { data: organizationData, isPending: organizationPending } = useSearch(
+    ["organization-source", orgId, filters.year, filters.month],
+    getOrganizationReferrer,
     [orgId, filters.year, filters.month],
     {
       enabled: !!(!affiliate && orgId && !isPreview),
@@ -97,15 +97,16 @@ export default function SocialTrafficPieChart({
       return () => clearTimeout(timer)
     }
   }, [isPreview])
-  const searchData = affiliate ? affiliateData : sellerData
-  const searchPending = affiliate ? affiliatePending : sellerPending
+  const searchData = affiliate ? affiliateData : organizationData
+  const searchPending = affiliate ? affiliatePending : organizationPending
   const effectiveData = React.useMemo(() => {
     if (isPreview) {
       return dummySourceData
     }
 
     if (affiliate && searchData) return searchData as AffiliateReferrerStat[]
-    if (!affiliate && searchData) return searchData as SellerReferrerStat[]
+    if (!affiliate && searchData)
+      return searchData as OrganizationReferrerStat[]
     return []
   }, [isPreview, searchData, affiliate])
   const chartData = React.useMemo(() => {

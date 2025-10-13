@@ -17,7 +17,7 @@ import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import {
   getOrgWebhookKey,
   savePaddleWebhookKey,
-} from "@/app/(organization)/seller/[orgId]/dashboard/integration/action"
+} from "@/app/(organization)/organization/[orgId]/dashboard/integration/action"
 
 const webhookSchema = z.object({
   webhookKey: z.string().min(1, "Webhook key cannot be empty"),

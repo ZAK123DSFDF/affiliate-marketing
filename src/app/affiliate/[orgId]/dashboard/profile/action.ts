@@ -106,7 +106,7 @@ export async function logoutAction(affiliate: boolean, orgId?: string) {
     cookieStore.delete(`affiliateToken-${orgId}`)
     return { ok: true, redirectTo: `/affiliate/${orgId}/login` }
   } else {
-    cookieStore.delete("sellerToken")
+    cookieStore.delete("organizationToken")
     return { ok: true, redirectTo: "/login" }
   }
 }

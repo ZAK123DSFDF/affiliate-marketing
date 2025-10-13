@@ -46,7 +46,7 @@ export const ForgotPasswordServer = async ({ email }: { email: string }) => {
       expiresIn: "15m",
     })
 
-    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password?sellerToken=${token}`
+    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password?organizationToken=${token}`
     if (process.env.NODE_ENV === "development") {
       await sendVerificationEmail(existingUser.email, resetUrl)
 

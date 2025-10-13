@@ -13,7 +13,7 @@ export function useSwitchOrg() {
     },
     onSuccess: (res, orgId) => {
       if (res.ok) {
-        router.push(`/seller/${orgId}/dashboard/analytics`)
+        router.push(`/organization/${orgId}/dashboard/analytics`)
       } else {
         showCustomToast({
           type: "error",

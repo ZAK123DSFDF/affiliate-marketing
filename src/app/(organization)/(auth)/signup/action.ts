@@ -84,7 +84,7 @@ export const SignupServer = async ({
         { expiresIn: "15m" }
       )
 
-      const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-signup?sellerToken=${token}`
+      const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-signup?organizationToken=${token}`
 
       if (process.env.NODE_ENV === "development") {
         await sendVerificationEmail(existingUser.email, verifyUrl)
@@ -103,7 +103,7 @@ export const SignupServer = async ({
       .values({
         name,
         email: normalizedEmail,
-        type: "SELLER",
+        type: "ORGANIZATION",
         role: "OWNER",
       })
       .returning()
@@ -134,7 +134,7 @@ export const SignupServer = async ({
       { expiresIn: "15m" }
     )
 
-    const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-signup?sellerToken=${token}`
+    const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-signup?organizationToken=${token}`
     if (process.env.NODE_ENV === "development") {
       await sendVerificationEmail(newUser.email, verifyUrl)
       return {

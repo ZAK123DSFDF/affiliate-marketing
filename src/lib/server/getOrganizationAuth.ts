@@ -3,29 +3,29 @@
 import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
 
-export interface SellerTokenPayload {
+export interface OrganizationTokenPayload {
   id: string
   email: string
   role: "ADMIN" | "OWNER"
-  type: "SELLER"
+  type: "ORGANIZATION"
   orgIds: string[]
   iat: number
   exp: number
   activeOrgId?: string
 }
 
-export async function getOrganizationAuth(): Promise<SellerTokenPayload | null> {
+export async function getOrganizationAuth(): Promise<OrganizationTokenPayload | null> {
   const cookieStore = await cookies()
-  const token = cookieStore.get("sellerToken")?.value
+  const token = cookieStore.get("organizationToken")?.value
   if (!token) return null
 
   try {
     const decoded = jwt.verify(
       token,
       process.env.SECRET_KEY!
-    ) as SellerTokenPayload
+    ) as OrganizationTokenPayload
 
-    if (decoded.type !== "SELLER" || !decoded.id || !decoded.email) {
+    if (decoded.type !== "ORGANIZATION" || !decoded.id || !decoded.email) {
       return null
     }
     return decoded

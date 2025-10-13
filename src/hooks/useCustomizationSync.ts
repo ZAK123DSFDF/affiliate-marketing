@@ -8,7 +8,7 @@ import {
   getCustomizations,
   AuthCustomization,
   DashboardCustomization,
-} from "@/app/(organization)/seller/[orgId]/dashboard/customization/action"
+} from "@/app/(organization)/organization/[orgId]/dashboard/customization/action"
 import { useSetAtom } from "jotai"
 import {
   cardCustomizationAtom,

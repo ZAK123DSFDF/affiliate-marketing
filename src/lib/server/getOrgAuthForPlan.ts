@@ -7,7 +7,7 @@ export async function getOrgAuthForPlan(): Promise<{
   orgId: string
 }> {
   const cookieStore = await cookies()
-  const token = cookieStore.get("sellerToken")?.value
+  const token = cookieStore.get("organizationToken")?.value
 
   if (!token) throw { status: 401, toast: "Unauthorized" }
 

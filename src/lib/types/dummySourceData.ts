@@ -1,9 +1,12 @@
 import {
   AffiliateReferrerStat,
-  SellerReferrerStat,
+  OrganizationReferrerStat,
 } from "@/lib/types/affiliateReferrerStat"
 
-export const dummySourceData: (AffiliateReferrerStat | SellerReferrerStat)[] = [
+export const dummySourceData: (
+  | AffiliateReferrerStat
+  | OrganizationReferrerStat
+)[] = [
   { referrer: "unknown", clicks: 2 },
   { referrer: "google.com", clicks: 5 },
   { referrer: "facebook.com", clicks: 3 },

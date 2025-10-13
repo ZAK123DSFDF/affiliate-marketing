@@ -26,14 +26,16 @@ export const VerifyServer = async ({
   mode,
   redirectUrl,
 }: VerifyServerProps) => {
-  let tokenType: "seller" | "affiliate" = "seller"
+  let tokenType: "organization" | "affiliate" = "organization"
   let orgIds: string[] = []
   let activeOrgId: string | undefined
   let orgId: string | undefined
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY!) as any
 
-    tokenType = (decoded.type as string).toLowerCase() as "seller" | "affiliate"
+    tokenType = (decoded.type as string).toLowerCase() as
+      | "organization"
+      | "affiliate"
     orgIds = decoded.orgIds || []
     activeOrgId = decoded.activeOrgId
     orgId = decoded.orgId || decoded.organizationId
@@ -46,14 +48,14 @@ export const VerifyServer = async ({
       activeOrgId: decoded.activeOrgId || undefined,
       orgId: decoded.orgId || decoded.organizationId || undefined,
     }
-    if (tokenType === "seller") {
+    if (tokenType === "organization") {
       sessionPayload.orgIds = orgIds
       sessionPayload.activeOrgId = activeOrgId
     } else {
       sessionPayload.orgId = orgId
     }
     if (mode === "signup") {
-      if (tokenType === "seller") {
+      if (tokenType === "organization") {
         const userAccount = await db.query.account.findFirst({
           where: (a, { and, eq }) =>
             and(eq(a.userId, sessionPayload.id), eq(a.provider, "credentials")),
@@ -85,7 +87,7 @@ export const VerifyServer = async ({
       const newEmail = decoded.newEmail
       if (!newEmail) throw new Error("Missing new email in token")
 
-      if (tokenType === "seller") {
+      if (tokenType === "organization") {
         await db
           .update(user)
           .set({ email: newEmail })
@@ -108,8 +110,8 @@ export const VerifyServer = async ({
 
     cookieStore.set({
       name:
-        tokenType === "seller"
-          ? "sellerToken"
+        tokenType === "organization"
+          ? "organizationToken"
           : `affiliateToken-${sessionPayload.orgId}`,
       value: sessionToken,
       httpOnly: true,
@@ -121,14 +123,14 @@ export const VerifyServer = async ({
       success: true,
       redirectUrl:
         redirectUrl ||
-        (tokenType === "seller"
+        (tokenType === "organization"
           ? "/email-verified"
           : `/affiliate/${sessionPayload.orgId}/email-verified`),
       mode,
       tokenType,
       orgIds,
       activeOrgId:
-        tokenType === "seller"
+        tokenType === "organization"
           ? sessionPayload.activeOrgId
           : sessionPayload.orgId,
     }
@@ -137,7 +139,7 @@ export const VerifyServer = async ({
     return {
       success: false,
       redirectUrl:
-        tokenType === "seller"
+        tokenType === "organization"
           ? "/invalid-token"
           : orgId
             ? `/affiliate/${orgId}/invalid-token`

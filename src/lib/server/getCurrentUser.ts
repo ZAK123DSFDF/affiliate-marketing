@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken"
 
 export async function getCurrentUser() {
   const cookieStore = await cookies()
-  const token = cookieStore.get("sellerToken")?.value
+  const token = cookieStore.get("organizationToken")?.value
   if (!token) throw { status: 401, toast: "Unauthorized" }
   const payload = jwt.verify(token, process.env.SECRET_KEY as string) as {
     id?: string
