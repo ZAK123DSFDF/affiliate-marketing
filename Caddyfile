@@ -1,0 +1,11 @@
+{
+  # Allow using local (non-HTTPS) development domains
+  local_certs
+  auto_https off
+}
+
+# Wildcard rule handles all subdomains under refearnapp.com
+(*.refearnapp.com) {
+  reverse_proxy localhost:3000
+}
+

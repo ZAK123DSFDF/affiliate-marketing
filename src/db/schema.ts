@@ -61,6 +61,7 @@ export const currencyEnum = pgEnum("currency", [
   "CAD",
   "AUD",
 ])
+export const domainTypeEnum = pgEnum("domain_type", ["DEFAULT", "CUSTOM"])
 export const affiliateInvoiceReasonEnum = pgEnum("affiliate_invoice_reason", [
   "subscription_create",
   "subscription_update",
@@ -139,6 +140,18 @@ export const organization = pgTable("organization", {
     .notNull()
     .default("LAST_CLICK"),
   currency: currencyEnum("currency").notNull().default("USD"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+export const domain = pgTable("domain", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  orgId: uuid("org_id")
+    .notNull()
+    .references(() => organization.id, { onDelete: "cascade" }),
+  domain: text("domain").notNull().unique(),
+  type: domainTypeEnum("type").notNull().default("DEFAULT"),
+  isActive: boolean("is_active").notNull().default(false),
+  isRedirect: boolean("is_redirect").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })

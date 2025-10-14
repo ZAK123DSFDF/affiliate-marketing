@@ -1,36 +1,35 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
+import { db } from "@/db/drizzle"
 
-export function middleware() {
-  // retrieve the current response
+export async function middleware(req: NextRequest) {
+  const host = req.headers.get("host")
+  if (!host) return NextResponse.next()
+  const foundDomain = await db.query.domain.findFirst({
+    where: (d, { eq }) => eq(d.domain, host),
+    with: { organization: true },
+  })
 
-  return NextResponse.next()
+  if (!foundDomain) {
+    return NextResponse.rewrite(new URL("/404", req.url))
+  }
+  if (foundDomain.isRedirect && foundDomain.organization) {
+    const newDomain = await db.query.domain.findFirst({
+      where: (d, { eq, and }) =>
+        and(eq(d.orgId, foundDomain.orgId), eq(d.isActive, true)),
+    })
+    if (newDomain) {
+      return NextResponse.redirect(
+        new URL(req.nextUrl.pathname, `https://${newDomain.domain}`)
+      )
+    }
+  }
+  const rewriteUrl = new URL(
+    `/affiliate/${foundDomain.orgId}${req.nextUrl.pathname}`,
+    req.url
+  )
+
+  return NextResponse.rewrite(rewriteUrl)
 }
-
-// ----------------------------------------
-// ⛔️ Rewrite logic disabled — breaks CORS
-// ----------------------------------------
-// function handleRewriteLogic(request: NextRequest): NextResponse {
-//   const host = request.headers.get("host");
-//   if (!host) return NextResponse.next();
-
-//   // Handle Vercel deployment URLs
-//   if (host.endsWith(".vercel.app")) {
-//     const [subdomain] = host.split(".");
-//     const affiliateId = subdomain.replace(/^[^-]+-/, "");
-//     if (affiliateId) {
-//       return NextResponse.rewrite(
-//         new URL(`/affiliate/${affiliateId}`, request.url),
-//       );
-//     }
-//   }
-
-//   // Handle custom domains
-//   const [subdomain, ...domainParts] = host.replace(/:\d+$/, "").split(".");
-//   if (domainParts.length >= 2 && subdomain) {
-//     return NextResponse.rewrite(
-//       new URL(`/affiliate/${subdomain}`, request.url),
-//     );
-//   }
-
-//   return NextResponse.next();
-// }
+export const config = {
+  matcher: ["/((?!_next|api|.*\\..*).*)"],
+}
