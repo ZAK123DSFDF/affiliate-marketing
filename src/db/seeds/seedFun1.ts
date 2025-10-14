@@ -10,6 +10,7 @@ import {
   organizationDashboardCustomization,
   account,
   affiliateAccount,
+  websiteDomain,
 } from "@/db/schema"
 import {
   account_seed,
@@ -22,12 +23,14 @@ import {
   organization_dashboard_customization_seed,
   organization_seed,
   user_seed,
+  websiteDomain_seed,
 } from "@/db/seeds/databaseSeed"
 
 async function seedFun() {
   await db.insert(user).values(user_seed)
   await db.insert(account).values(account_seed)
   await db.insert(organization).values(organization_seed)
+  await db.insert(websiteDomain).values(websiteDomain_seed)
   await db.insert(affiliate).values(affiliate_seed)
   await db.insert(affiliateAccount).values(affiliate_account_seed)
   await db.insert(affiliateLink).values(affiliate_link_seed)

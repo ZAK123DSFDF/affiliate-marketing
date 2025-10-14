@@ -18,6 +18,7 @@ import {
   generateAffiliateClickId,
   generateAffiliateCode,
   generateAffiliatePaymentLinkId,
+  generateDomainId,
   generateInviteLinkId,
   generateOrganizationId,
 } from "@/util/idGenerators"
@@ -143,12 +144,14 @@ export const organization = pgTable("organization", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
-export const domain = pgTable("domain", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  orgId: uuid("org_id")
+export const websiteDomain = pgTable("website_domain", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => generateDomainId()),
+  orgId: text("org_id")
     .notNull()
     .references(() => organization.id, { onDelete: "cascade" }),
-  domain: text("domain").notNull().unique(),
+  domainName: text("domain_name").notNull().unique(),
   type: domainTypeEnum("type").notNull().default("DEFAULT"),
   isActive: boolean("is_active").notNull().default(false),
   isRedirect: boolean("is_redirect").notNull().default(false),

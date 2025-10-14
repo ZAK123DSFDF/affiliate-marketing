@@ -167,6 +167,18 @@ export const organization_seed = [
     attributionModel: "LAST_CLICK" as const,
   },
 ]
+export const websiteDomain_seed = [
+  {
+    id: "4G7kH2B",
+    orgId: "tp7JLBb5",
+    domainName: "shipfast.refearnapp.com", // updated column name
+    type: "DEFAULT" as const,
+    isActive: true,
+    isRedirect: false,
+    createdAt: parseDate("2025-10-14 04:00:00"),
+    updatedAt: parseDate("2025-10-14 04:00:00"),
+  },
+]
 export const organization_auth_customization_seed = [
   {
     id: "tp7JLBb5",
