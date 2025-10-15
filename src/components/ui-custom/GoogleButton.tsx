@@ -9,6 +9,7 @@ type GoogleButtonProps = {
   orgId: string
   rememberMe?: boolean
   isPreview?: boolean
+  page?: "login" | "signup"
 }
 
 export function GoogleButton({
@@ -16,6 +17,7 @@ export function GoogleButton({
   orgId,
   rememberMe = false,
   isPreview,
+  page,
 }: GoogleButtonProps) {
   const {
     googleButtonTextColor,
@@ -27,7 +29,7 @@ export function GoogleButton({
     if (isPreview) {
       window.open("https://www.google.com", "_blank")
     } else {
-      window.location.href = `/api/auth/google?type=${type}&orgId=${orgId}&rememberMe=${rememberMe}`
+      window.location.href = `/api/auth/google?type=${type}&orgId=${orgId}&rememberMe=${rememberMe}&page=${page}`
     }
   }
   const buttonStyles = affiliate

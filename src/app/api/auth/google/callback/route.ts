@@ -7,6 +7,7 @@ import { db } from "@/db/drizzle"
 import { user, account, affiliate, affiliateAccount } from "@/db/schema"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
 import { buildAffiliateUrl } from "@/util/Url"
+import { getCookieDomain } from "@/util/GetCookieDomain"
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID!
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!
@@ -38,7 +39,8 @@ export async function GET(req: Request) {
     const rememberMe = !!state.rememberMe
     const type = (state.type || "organization") as "organization" | "affiliate"
     const orgIdFromState = state.orgId as string | undefined
-
+    const baseUrl = state.baseUrl || process.env.NEXT_PUBLIC_BASE_URL
+    const page = state.page || "login"
     // ---------- ORGANIZATION flow ----------
     if (type === "organization") {
       // Try to find an existing OAuth account by providerAccountId
@@ -208,30 +210,18 @@ export async function GET(req: Request) {
         expiresIn,
       })
 
-      const cookieStore = await cookies()
-      cookieStore.set({
-        name: `affiliateToken-${orgId}`,
-        value: token,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: state.rememberMe ? 30 * 24 * 60 * 60 : undefined,
-        path: "/",
-      })
-      const baseUrl = await getBaseUrl()
       const redirectUrl = buildAffiliateUrl({
-        path: "dashboard/analytics",
+        path: page === "login" ? "verify-login" : "verify-signup",
         organizationId: orgId,
+        token,
         baseUrl,
         partial: true,
       })
-      return NextResponse.redirect(
-        new URL(redirectUrl, process.env.NEXT_PUBLIC_BASE_URL)
-      )
+      return NextResponse.redirect(new URL(redirectUrl, baseUrl))
     }
 
     // fallback
-    return NextResponse.redirect(new URL("/", process.env.NEXT_PUBLIC_BASE_URL))
+    return NextResponse.redirect(new URL("/login", baseUrl))
   } catch (err) {
     console.error("Google callback error:", err)
     // show error page or redirect somewhere

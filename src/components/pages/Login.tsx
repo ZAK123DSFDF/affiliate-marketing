@@ -331,6 +331,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                 affiliate={affiliate}
                 orgId={orgId || ""}
                 isPreview={isPreview}
+                page="login"
               />
               {isPreview && (
                 <div className="mt-2">

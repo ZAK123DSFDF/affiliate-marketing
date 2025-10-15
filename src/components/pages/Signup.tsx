@@ -317,6 +317,7 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                 affiliate={affiliate}
                 orgId={orgId || ""}
                 isPreview={isPreview}
+                page="signup"
               />
             </div>
             {isPreview && (
