@@ -5,9 +5,7 @@ import { OAuth2Client } from "google-auth-library"
 import jwt from "jsonwebtoken"
 import { db } from "@/db/drizzle"
 import { user, account, affiliate, affiliateAccount } from "@/db/schema"
-import { getBaseUrl } from "@/lib/server/getBaseUrl"
 import { buildAffiliateUrl } from "@/util/Url"
-import { getCookieDomain } from "@/util/GetCookieDomain"
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID!
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!
@@ -57,7 +55,6 @@ export async function GET(req: Request) {
           where: (u, { eq }) => eq(u.id, linkedAccount!.userId),
         })
       } else {
-        // no link by providerId — try find by email
         const existingUserByEmail = await db.query.user.findFirst({
           where: (u, { eq }) => eq(u.email, email),
         })
@@ -161,7 +158,6 @@ export async function GET(req: Request) {
           where: (a, { eq }) => eq(a.id, linkedAffAcc!.affiliateId),
         })
       } else {
-        // try find affiliate in this org by email
         const byEmail = await db.query.affiliate.findFirst({
           where: (a, { and, eq }) =>
             and(eq(a.email, email), eq(a.organizationId, orgId)),
