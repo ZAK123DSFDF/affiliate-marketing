@@ -34,6 +34,7 @@ import { useOrgLogo } from "@/hooks/useOrgLogo"
 import { useOrg } from "@/hooks/useOrg"
 import { GoogleButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/GoogleButtonCustomizationOptions"
 import { cn } from "@/lib/utils"
+import { useAffiliatePath } from "@/hooks/useUrl"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -43,6 +44,7 @@ type Props = {
 const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { showCustomToast } = useCustomToast()
   const [previewLoading, setPreviewLoading] = useState(false)
+  const { getPath } = useAffiliatePath(orgId as string)
   const { org } = useOrg(orgId, affiliate)
   const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
   const form = useForm<LoginFormValues>({
@@ -245,7 +247,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                       tabName="forgot-password"
                       href={
                         affiliate && orgId
-                          ? `/affiliate/${orgId}/forgot-password`
+                          ? getPath("forgot-password")
                           : "/forgot-password"
                       }
                       setTab={setTab}
@@ -359,9 +361,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                 isPreview={isPreview}
                 label="Sign up"
                 tabName="signup"
-                href={
-                  affiliate && orgId ? `/affiliate/${orgId}/signup` : "/signup"
-                }
+                href={affiliate && orgId ? getPath("signup") : "/signup"}
                 setTab={setTab}
                 linkTextColor={linkTextColor}
               />

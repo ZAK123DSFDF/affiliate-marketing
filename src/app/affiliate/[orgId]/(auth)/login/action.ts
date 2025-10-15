@@ -5,6 +5,9 @@ import * as bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
+import { headers } from "next/headers"
+import { buildAffiliateUrl } from "@/util/Url"
+import { getBaseUrl } from "@/lib/server/getBaseUrl"
 export const LoginAffiliateServer = async ({
   email,
   password,
@@ -85,14 +88,24 @@ export const LoginAffiliateServer = async ({
       process.env.SECRET_KEY as string,
       { expiresIn: "15m" }
     )
-
-    const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/affiliate/${organizationId}/verify-login?affiliateToken=${token}`
+    const baseUrl = await getBaseUrl()
+    const verifyUrl = buildAffiliateUrl({
+      path: "verify-login",
+      organizationId,
+      token,
+      baseUrl,
+    })
+    const redirectUrl = buildAffiliateUrl({
+      path: "checkEmail",
+      organizationId,
+      baseUrl,
+    })
     if (process.env.NODE_ENV === "development") {
       await sendVerificationEmail(existingAffiliate.email, verifyUrl)
       return {
         ok: true,
         message: "Verification email sent",
-        redirectUrl: `/affiliate/${organizationId}/checkEmail`,
+        redirectUrl,
       }
     }
     return { ok: true, redirectUrl: verifyUrl }

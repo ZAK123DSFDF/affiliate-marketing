@@ -7,6 +7,8 @@ import * as bcrypt from "bcrypt"
 import { eq, and } from "drizzle-orm"
 import jwt from "jsonwebtoken"
 import { cookies } from "next/headers"
+import { buildAffiliateUrl } from "@/util/Url"
+import { getBaseUrl } from "@/lib/server/getBaseUrl"
 
 export const resetAffiliatePasswordServer = async ({
   affiliateId,
@@ -52,7 +54,13 @@ export const resetAffiliatePasswordServer = async ({
       type: existingAffiliate.type,
       orgId: existingAffiliate.organizationId,
     }
-
+    const baseUrl = await getBaseUrl()
+    const redirectUrl = buildAffiliateUrl({
+      path: "dashboard/analytics",
+      organizationId: orgId,
+      baseUrl,
+      partial: true,
+    })
     // Sign JWT & set cookie
     const sessionToken = jwt.sign(sessionPayload, process.env.SECRET_KEY!, {
       expiresIn: "7d",
@@ -65,7 +73,7 @@ export const resetAffiliatePasswordServer = async ({
       secure: process.env.NODE_ENV === "production",
     })
 
-    return { ok: true, redirectUrl: `/affiliate/${orgId}/dashboard/analytics` }
+    return { ok: true, redirectUrl }
   } catch (err) {
     console.error("Reset affiliate password failed:", err)
     return { ok: false, error: "Failed to reset password" }

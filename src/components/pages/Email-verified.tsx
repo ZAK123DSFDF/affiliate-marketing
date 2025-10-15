@@ -13,6 +13,7 @@ import {
   buttonCustomizationAtom,
   themeCustomizationAtom,
 } from "@/store/AuthCustomizationAtom"
+import { useAffiliatePath } from "@/hooks/useUrl"
 type CustomMessages = {
   signup?: string
   login?: string
@@ -49,12 +50,13 @@ const EmailVerified = ({
     (mode && customMessages?.[mode]) ||
     "Your email address has been successfully verified. You can now access all features."
   const router = useRouter()
+  const { goTo } = useAffiliatePath(orgId as string)
   const handleClick = () => {
     if (isPreview) {
       setMainTab?.("sidebar")
     } else {
       if (affiliate) {
-        router.push(`/affiliate/${orgId}/dashboard/analytics`)
+        goTo("dashboard/analytics")
       } else {
         if (mode === "signup" && !orgId) {
           router.push("/create-company")

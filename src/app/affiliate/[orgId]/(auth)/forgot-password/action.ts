@@ -4,6 +4,8 @@ import { db } from "@/db/drizzle"
 import jwt from "jsonwebtoken"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
+import { getBaseUrl } from "@/lib/server/getBaseUrl"
+import { buildAffiliateUrl } from "@/util/Url"
 
 export const ForgotPasswordAffiliateServer = async ({
   email,
@@ -48,8 +50,13 @@ export const ForgotPasswordAffiliateServer = async ({
     const token = jwt.sign(payload, process.env.SECRET_KEY as string, {
       expiresIn: "15m",
     })
-
-    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/affiliate/${organizationId}/reset-password?affiliateToken=${token}`
+    const baseUrl = await getBaseUrl()
+    const resetUrl = buildAffiliateUrl({
+      path: "reset-password",
+      organizationId,
+      token,
+      baseUrl,
+    })
     if (process.env.NODE_ENV === "development") {
       await sendVerificationEmail(existingAffiliate.email, resetUrl)
       return { ok: true, message: "Reset link sent to your email" }

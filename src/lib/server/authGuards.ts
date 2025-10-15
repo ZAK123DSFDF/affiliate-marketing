@@ -8,6 +8,8 @@ import {
   AffiliateTokenPayload,
   getAffiliateAuth,
 } from "@/lib/server/getAffiliateAuth"
+import { getBaseUrl } from "@/lib/server/getBaseUrl"
+import { buildAffiliateUrl } from "@/util/Url"
 
 export async function requireOrganizationWithOrg(
   paramsOrgId?: string
@@ -54,14 +56,26 @@ export async function requireAffiliateWithOrg(
   paramsOrgId: string
 ): Promise<AffiliateTokenPayload> {
   const decoded = await getAffiliateAuth(paramsOrgId)
+  const baseUrl = await getBaseUrl()
+  const login = buildAffiliateUrl({
+    path: "login",
+    organizationId: paramsOrgId,
+    baseUrl,
+    partial: true,
+  })
 
   if (!decoded) {
-    redirect(`/affiliate/${paramsOrgId}/login`)
+    redirect(login)
   }
-
+  const dashboard = buildAffiliateUrl({
+    path: "dashboard",
+    organizationId: decoded.orgId,
+    baseUrl,
+    partial: true,
+  })
   if (paramsOrgId && decoded.orgId !== paramsOrgId) {
     // Prevent cross-org access
-    redirect(`/affiliate/${decoded.orgId}/dashboard`)
+    redirect(dashboard)
   }
 
   return decoded
@@ -69,9 +83,15 @@ export async function requireAffiliateWithOrg(
 
 export async function redirectIfAffiliateAuthed(orgId: string) {
   const decoded = await getAffiliateAuth(orgId)
-
+  const baseUrl = await getBaseUrl()
+  const dashboard = buildAffiliateUrl({
+    path: "dashboard",
+    organizationId: orgId,
+    baseUrl,
+    partial: true,
+  })
   if (decoded) {
-    redirect(`/affiliate/${decoded.orgId}/dashboard`)
+    redirect(dashboard)
   }
 
   return null

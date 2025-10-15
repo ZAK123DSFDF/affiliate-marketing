@@ -1,6 +1,6 @@
 import React from "react"
-import { AuthCustomizationProvider } from "./authCustomizationProvider"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
+import { AuthCustomizationProvider } from "@/app/affiliate/[orgId]/(auth)/authCustomizationProvider"
 interface authLayoutProps {
   children: React.ReactNode
   params: Promise<{ orgId: string }>

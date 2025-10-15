@@ -6,11 +6,20 @@ import { ResponseData } from "@/lib/types/response"
 import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats"
 import { getAffiliateLinksWithStatsAction } from "@/lib/server/getAffiliateLinksWithStats"
 import { createFullUrl } from "@/lib/server/createFullUrl"
+import { getBaseUrl } from "@/lib/server/getBaseUrl"
+import { buildAffiliateUrl } from "@/util/Url"
 
 export const createAffiliateLink = async (orgId: string) => {
   const decoded = await getAffiliateOrganization(orgId)
   const { org, fullUrl } = await createFullUrl(decoded)
-  revalidatePath(`/affiliate/${org.id}/dashboard/links`)
+  const baseUrl = await getBaseUrl()
+  const revalidationPath = buildAffiliateUrl({
+    path: "dashboard/links",
+    organizationId: org.id,
+    baseUrl,
+    partial: true,
+  })
+  revalidatePath(revalidationPath)
   return fullUrl
 }
 

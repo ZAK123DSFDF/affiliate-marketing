@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev -H 0.0.0.0 --turbopack",
     "build": "next build",
     "build:embed": "rollup -c",
     "start": "next start",

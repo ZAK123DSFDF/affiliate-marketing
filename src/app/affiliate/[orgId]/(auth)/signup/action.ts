@@ -7,6 +7,8 @@ import jwt from "jsonwebtoken"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
 import { customAlphabet } from "nanoid"
+import { getBaseUrl } from "@/lib/server/getBaseUrl"
+import { buildAffiliateUrl } from "@/util/Url"
 
 type CreateAffiliatePayload = {
   name: string
@@ -84,14 +86,24 @@ export const SignupAffiliateServer = async ({
         process.env.SECRET_KEY as string,
         { expiresIn: "15m" }
       )
-
-      const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/affiliate/${organizationId}/verify-signup?affiliateToken=${token}`
+      const baseUrl = await getBaseUrl()
+      const verifyUrl = buildAffiliateUrl({
+        path: "verify-signup",
+        organizationId,
+        token,
+        baseUrl,
+      })
+      const redirectUrl = buildAffiliateUrl({
+        path: "checkEmail",
+        organizationId,
+        baseUrl,
+      })
       if (process.env.NODE_ENV === "development") {
         await sendVerificationEmail(existingAffiliate.email, verifyUrl)
         return {
           ok: true,
           message: "Verification email sent",
-          redirectUrl: `/affiliate/${organizationId}/checkEmail`,
+          redirectUrl,
         }
       }
       return { ok: true, redirectUrl: verifyUrl }
@@ -133,14 +145,25 @@ export const SignupAffiliateServer = async ({
       process.env.SECRET_KEY as string,
       { expiresIn: "15m" }
     )
-
-    const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/affiliate/${organizationId}/verify-signup?affiliateToken=${token}`
+    const baseUrl = await getBaseUrl()
+    const verifyUrl = buildAffiliateUrl({
+      path: "verify-signup",
+      organizationId,
+      token,
+      baseUrl,
+    })
+    const redirectUrl = buildAffiliateUrl({
+      path: "checkEmail",
+      organizationId,
+      baseUrl,
+      partial: true,
+    })
     if (process.env.NODE_ENV === "development") {
       await sendVerificationEmail(newAffiliate.email, verifyUrl)
       return {
         ok: true,
         message: "Verification email sent",
-        redirectUrl: `/affiliate/${organizationId}/checkEmail`,
+        redirectUrl,
       }
     }
     return { ok: true, redirectUrl: verifyUrl }

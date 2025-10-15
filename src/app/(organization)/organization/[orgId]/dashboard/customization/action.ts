@@ -91,7 +91,6 @@ export async function saveCustomizationsAction(
 export async function getAuthCustomization(
   orgId: string
 ): Promise<AuthCustomization> {
-  await getOrgAuth(orgId)
   const [authRow] = await db
     .select({ auth: organizationAuthCustomization.auth })
     .from(organizationAuthCustomization)
@@ -103,7 +102,6 @@ export async function getAuthCustomization(
 export async function getDashboardCustomization(
   orgId: string
 ): Promise<DashboardCustomization> {
-  await getOrgAuth(orgId)
   const [dashboardRow] = await db
     .select({ dashboard: organizationDashboardCustomization.dashboard })
     .from(organizationDashboardCustomization)
@@ -114,7 +112,6 @@ export async function getDashboardCustomization(
 export async function getCustomizations(
   orgId: string
 ): Promise<{ auth: AuthCustomization; dashboard: DashboardCustomization }> {
-  await getOrgAuth(orgId)
   const [auth, dashboard] = await Promise.all([
     getAuthCustomization(orgId),
     getDashboardCustomization(orgId),

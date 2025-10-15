@@ -34,6 +34,7 @@ import { useOrgLogo } from "@/hooks/useOrgLogo"
 import { useOrg } from "@/hooks/useOrg"
 import { GoogleButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/GoogleButtonCustomizationOptions"
 import { cn } from "@/lib/utils"
+import { useAffiliatePath } from "@/hooks/useUrl"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -69,6 +70,7 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   } = useAtomValue(buttonCustomizationAtom)
   const authCardStyle = useAuthCard(affiliate)
   const { showCustomToast } = useCustomToast()
+  const { getPath } = useAffiliatePath(orgId as string)
   const affiliateMutation = useAuthMutation(SignupAffiliateServer, {
     affiliate,
     disableSuccessToast: true,
@@ -352,9 +354,7 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                   isPreview={isPreview}
                   label="Login"
                   tabName="login"
-                  href={
-                    affiliate && orgId ? `/affiliate/${orgId}/login` : "/login"
-                  }
+                  href={affiliate && orgId ? getPath("login") : "/login"}
                   setTab={setTab}
                   linkTextColor={linkTextColor}
                 />

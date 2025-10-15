@@ -17,6 +17,8 @@ import { getPayoutEmailMethod } from "@/lib/server/getPayoutEmailMethod"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { getAffiliateAuthCapabilities } from "@/lib/server/getAffiliateAuthCapabilities"
+import { getBaseUrl } from "@/lib/server/getBaseUrl"
+import { buildAffiliateUrl } from "@/util/Url"
 
 export const getAffiliateData = async (
   orgId: string
@@ -60,7 +62,14 @@ export async function updateAffiliateProfile(
   try {
     const decoded = await getAffiliateOrganization(orgId)
     await updateAffiliateProfileAction(decoded, data)
-    revalidatePath(`/affiliate/${orgId}/dashboard/profile`)
+    const baseUrl = await getBaseUrl()
+    const revalidationPath = buildAffiliateUrl({
+      path: "dashboard/profile",
+      organizationId: orgId,
+      baseUrl,
+      partial: true,
+    })
+    revalidatePath(revalidationPath)
     return { ok: true }
   } catch (err) {
     console.error("updateAffiliateProfile error:", err)
@@ -104,7 +113,14 @@ export async function logoutAction(affiliate: boolean, orgId?: string) {
 
   if (affiliate && orgId) {
     cookieStore.delete(`affiliateToken-${orgId}`)
-    return { ok: true, redirectTo: `/affiliate/${orgId}/login` }
+    const baseUrl = await getBaseUrl()
+    const redirectUrl = buildAffiliateUrl({
+      path: "login",
+      organizationId: orgId,
+      baseUrl,
+      partial: true,
+    })
+    return { ok: true, redirectTo: redirectUrl }
   } else {
     cookieStore.delete("organizationToken")
     return { ok: true, redirectTo: "/login" }

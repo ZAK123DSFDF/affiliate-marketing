@@ -38,6 +38,7 @@ import {
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 import { useOrgLogo } from "@/hooks/useOrgLogo"
 import { useOrg } from "@/hooks/useOrg"
+import { useAffiliatePath } from "@/hooks/useUrl"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -57,6 +58,7 @@ const ForgotPassword = ({
     },
   })
   const [pending, setPending] = useState(false)
+  const { getPath } = useAffiliatePath(orgId as string)
   const { org } = useOrg(orgId, affiliate)
   const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
   const { showCustomToast } = useCustomToast()
@@ -298,9 +300,7 @@ const ForgotPassword = ({
                   isPreview={isPreview}
                   label="Login"
                   tabName="login"
-                  href={
-                    affiliate && orgId ? `/affiliate/${orgId}/login` : "/login"
-                  }
+                  href={affiliate && orgId ? getPath("login") : "/login"}
                   setTab={setTab}
                   linkTextColor={linkTextColor}
                 />

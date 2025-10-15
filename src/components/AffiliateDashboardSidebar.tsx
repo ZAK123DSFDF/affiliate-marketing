@@ -25,9 +25,10 @@ import { useOrgLogo } from "@/hooks/useOrgLogo"
 import { ThemeCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/ThemeCustomizationOptions"
 import { themeCustomizationAtom } from "@/store/AuthCustomizationAtom"
 import { useOrg } from "@/hooks/useOrg"
+import { useAffiliatePath } from "@/hooks/useUrl"
 
 type Props = {
-  orgId?: string
+  orgId: string
   isPreview?: boolean
   onSelectPage?: (page: string) => void
   currentPage?: string
@@ -44,20 +45,21 @@ const AffiliateDashboardSidebar = ({
   AffiliateData,
 }: Props) => {
   const pathname = usePathname()
+  const { getPath } = useAffiliatePath(orgId)
   const items = [
     {
       title: "Dashboard",
-      url: `/affiliate/${orgId}/dashboard/analytics`,
+      url: getPath("dashboard/analytics"),
       icon: BarChart3,
     },
     {
       title: "Links",
-      url: `/affiliate/${orgId}/dashboard/links`,
+      url: getPath("dashboard/links"),
       icon: LinkIcon,
     },
     {
       title: "Payment",
-      url: `/affiliate/${orgId}/dashboard/payment`,
+      url: getPath("dashboard/payment"),
       icon: Users,
     },
   ]
@@ -260,7 +262,7 @@ const AffiliateDashboardSidebar = ({
             />
           </div>
         ) : (
-          <Link href={`/affiliate/${orgId}/dashboard/profile`}>
+          <Link href={getPath("dashboard/profile")}>
             <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">

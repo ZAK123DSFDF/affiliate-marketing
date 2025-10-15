@@ -5,6 +5,8 @@ import { OAuth2Client } from "google-auth-library"
 import jwt from "jsonwebtoken"
 import { db } from "@/db/drizzle"
 import { user, account, affiliate, affiliateAccount } from "@/db/schema"
+import { getBaseUrl } from "@/lib/server/getBaseUrl"
+import { buildAffiliateUrl } from "@/util/Url"
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID!
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!
@@ -216,12 +218,15 @@ export async function GET(req: Request) {
         maxAge: state.rememberMe ? 30 * 24 * 60 * 60 : undefined,
         path: "/",
       })
-
+      const baseUrl = await getBaseUrl()
+      const redirectUrl = buildAffiliateUrl({
+        path: "dashboard/analytics",
+        organizationId: orgId,
+        baseUrl,
+        partial: true,
+      })
       return NextResponse.redirect(
-        new URL(
-          `/affiliate/${orgId}/dashboard/analytics`,
-          process.env.NEXT_PUBLIC_BASE_URL
-        )
+        new URL(redirectUrl, process.env.NEXT_PUBLIC_BASE_URL)
       )
     }
 

@@ -17,6 +17,7 @@ import {
 } from "@/store/DashboardCustomizationAtom"
 import { useAtomValue } from "jotai"
 import { DashboardButtonCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardButtonCustomizationOptions"
+import { useAffiliatePath } from "@/hooks/useUrl"
 type MissingPaypalEmailCardProps = {
   orgId: string
   affiliate: boolean
@@ -31,6 +32,7 @@ export function MissingPaypalEmailCard({
 }: MissingPaypalEmailCardProps) {
   const router = useRouter()
   const dashboardCardStyle = useDashboardCard(affiliate)
+  const { goTo } = useAffiliatePath(orgId as string)
   const { missingPaypalHeaderColor, missingPaypalDescriptionColor } =
     useAtomValue(dashboardThemeCustomizationAtom)
   const { dashboardButtonTextColor, dashboardButtonBackgroundColor } =
@@ -48,7 +50,7 @@ export function MissingPaypalEmailCard({
       onOpenProfile()
       return
     }
-    router.push(`/affiliate/${orgId}/dashboard/profile`)
+    goTo("dashboard/profile")
   }
   return (
     <Card

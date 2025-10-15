@@ -5,6 +5,8 @@ import jwt from "jsonwebtoken"
 import { account, affiliate, affiliateAccount, user } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { db } from "@/db/drizzle"
+import { getBaseUrl } from "@/lib/server/getBaseUrl"
+import { buildAffiliateUrl } from "@/util/Url"
 
 type VerifyServerProps = {
   token: string
@@ -30,6 +32,7 @@ export const VerifyServer = async ({
   let orgIds: string[] = []
   let activeOrgId: string | undefined
   let orgId: string | undefined
+  const baseUrl = await getBaseUrl()
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY!) as any
 
@@ -119,13 +122,17 @@ export const VerifyServer = async ({
       sameSite: "lax",
       maxAge: decoded.rememberMe ? 30 * 24 * 60 * 60 : undefined,
     })
+    const redirectUrl = buildAffiliateUrl({
+      path: "email-verified",
+      organizationId: sessionPayload.orgId,
+      baseUrl,
+      partial: true,
+    })
     return {
       success: true,
       redirectUrl:
         redirectUrl ||
-        (tokenType === "organization"
-          ? "/email-verified"
-          : `/affiliate/${sessionPayload.orgId}/email-verified`),
+        (tokenType === "organization" ? "/email-verified" : redirectUrl),
       mode,
       tokenType,
       orgIds,
@@ -136,13 +143,19 @@ export const VerifyServer = async ({
     }
   } catch (err) {
     console.error("Verify error:", err)
+    const errorUrl = buildAffiliateUrl({
+      path: "invalid-token",
+      organizationId: orgId,
+      baseUrl,
+      partial: true,
+    })
     return {
       success: false,
       redirectUrl:
         tokenType === "organization"
           ? "/invalid-token"
           : orgId
-            ? `/affiliate/${orgId}/invalid-token`
+            ? errorUrl
             : `affiliate/unknown`,
     }
   }
