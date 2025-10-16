@@ -16,4 +16,11 @@ export const orgSettingsSchema = z.object({
   commissionDurationUnit: z.enum(["day", "week", "month", "year"]),
   currency: z.enum(["USD", "EUR", "GBP", "CAD", "AUD"]),
   attributionModel: z.enum(["FIRST_CLICK", "LAST_CLICK"]),
+  defaultDomain: z
+    .string()
+    .min(2, "Subdomain must be at least 2 characters long")
+    .regex(
+      /^[a-z0-9-]+$/,
+      "Subdomain can only contain lowercase letters, numbers, and hyphens"
+    ),
 })

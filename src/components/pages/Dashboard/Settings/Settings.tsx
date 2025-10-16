@@ -60,6 +60,7 @@ export default function Settings({ orgData }: Props) {
     commissionDurationUnit:
       (orgData?.commissionDurationUnit as "day" | "week" | "month" | "year") ??
       "day",
+    defaultDomain: orgData?.defaultDomain ?? "",
     currency:
       (orgData?.currency as "USD" | "EUR" | "GBP" | "CAD" | "AUD") ?? "USD",
     attributionModel:
@@ -291,6 +292,26 @@ export default function Settings({ orgData }: Props) {
                   icon={BadgeDollarSign}
                   affiliate={false}
                 />
+              </div>
+              <div className="grid grid-cols-2 items-end gap-4">
+                <InputField
+                  control={form.control}
+                  name="defaultDomain"
+                  label="Default Subdomain"
+                  placeholder="your-subdomain"
+                  type="text"
+                  affiliate={false}
+                  leading="https://"
+                />
+
+                <div className="flex justify-start">
+                  <Button
+                    type="button"
+                    className="px-4 py-2 w-auto whitespace-nowrap"
+                  >
+                    Check Subdomain
+                  </Button>
+                </div>
               </div>
               <CardFooter className="flex justify-end">
                 <Button

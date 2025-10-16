@@ -27,6 +27,8 @@ type InputFieldProps = {
   profile?: boolean
   affiliate: boolean
   disabled?: boolean
+  leading?: string
+  trailing?: string
 }
 
 export const InputField = ({
@@ -40,6 +42,8 @@ export const InputField = ({
   profile = false,
   affiliate,
   disabled = false,
+  leading,
+  trailing,
 }: InputFieldProps) => {
   const [showPassword, setShowPassword] = useState(false)
   const Icon = icon
@@ -85,12 +89,17 @@ export const InputField = ({
                   }}
                 />
               )}
+              {leading && (
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                  {leading}
+                </span>
+              )}
               <Input
                 type={showPasswordToggle && showPassword ? "text" : type}
                 placeholder={placeholder}
                 disabled={disabled}
                 className={`auth-input-placeholder border ${
-                  icon ? "pl-10" : ""
+                  leading ? "pl-[70px]" : icon ? "pl-10" : "pl-3"
                 } ${profile ? "w-[280px]" : "w-full"} ${
                   fieldState.error
                     ? "border-destructive focus-visible:ring-destructive"
@@ -123,6 +132,11 @@ export const InputField = ({
                           transition: background-color 9999s ease-in-out 0s;
                             }
                   `}</style>
+              {trailing && (
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                  {trailing}
+                </span>
+              )}
               {showPasswordToggle && (
                 <button
                   type="button"
