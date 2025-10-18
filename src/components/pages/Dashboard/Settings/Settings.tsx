@@ -37,7 +37,7 @@ import {
 } from "@/app/(organization)/organization/[orgId]/dashboard/settings/action"
 import { useToast } from "@/hooks/use-toast"
 import { orgSettingsSchema } from "@/lib/schema/orgSettingSchema"
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { InputField } from "@/components/Auth/FormFields"
 import { SelectField } from "@/components/ui-custom/SelectFields"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
@@ -130,6 +130,9 @@ export default function Settings({ orgData }: Props) {
     }
     return deepEqual(current, defaults)
   }, [currentValues, safeDefaults])
+  useEffect(() => {
+    if (isVerified) setIsVerified(false)
+  }, [domainValue, domainType])
   const mut = useMutation<
     ResponseData,
     unknown,
@@ -407,7 +410,10 @@ export default function Settings({ orgData }: Props) {
                   <Button
                     type="button"
                     disabled={
-                      !domainType || domainType === "platform" || !domainChanged
+                      !domainType ||
+                      domainType === "platform" ||
+                      !domainChanged ||
+                      isVerified
                     }
                     className="px-4 py-2 w-auto whitespace-nowrap"
                     onClick={() => setOpen(true)}
