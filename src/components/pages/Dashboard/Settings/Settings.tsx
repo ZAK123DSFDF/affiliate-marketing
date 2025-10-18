@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form"
 import { Form } from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import { ResponseData } from "@/lib/types/response"
+import { MutationData, ResponseData } from "@/lib/types/response"
 import {
   BadgeDollarSign,
   Building2,
@@ -134,7 +134,7 @@ export default function Settings({ orgData }: Props) {
     if (isVerified) setIsVerified(false)
   }, [domainValue, domainType])
   const mut = useMutation<
-    ResponseData,
+    MutationData,
     unknown,
     Partial<OrgData> & { id: string }
   >({
@@ -159,7 +159,7 @@ export default function Settings({ orgData }: Props) {
         description: "Please try again",
       }),
   })
-  const verifyMut = useMutation<ResponseData, unknown, void>({
+  const verifyMut = useMutation<MutationData, unknown, void>({
     mutationFn: async () => {
       const domain = form.getValues("defaultDomain").trim()
       if (!domain) throw new Error("Domain cannot be empty")

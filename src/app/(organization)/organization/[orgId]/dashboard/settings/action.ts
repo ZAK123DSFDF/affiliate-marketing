@@ -8,7 +8,7 @@ import { returnError } from "@/lib/errorHandler"
 import { OrgData } from "@/lib/types/organization"
 import { organization, websiteDomain } from "@/db/schema"
 import { and, eq } from "drizzle-orm"
-import { ResponseData } from "@/lib/types/response"
+import { MutationData, ResponseData } from "@/lib/types/response"
 import { getOrgAuth } from "@/lib/server/GetOrgAuth"
 import { revalidatePath } from "next/cache"
 import dns from "dns/promises"
@@ -102,7 +102,7 @@ export const orgInfo = async (
 }
 export async function updateOrgSettings(
   data: Partial<OrgData> & { id: string }
-): Promise<ResponseData> {
+): Promise<MutationData> {
   try {
     await getOrgAuth(data.id)
     console.log("data", data)
@@ -232,7 +232,7 @@ export async function updateOrgSettings(
     return returnError(err)
   }
 }
-export async function verifyCNAME(domain: string): Promise<ResponseData> {
+export async function verifyCNAME(domain: string): Promise<MutationData> {
   try {
     if (process.env.NODE_ENV === "production") {
       const records = await dns.resolveCname(domain)
@@ -260,7 +260,7 @@ export async function verifyCNAME(domain: string): Promise<ResponseData> {
 }
 
 // ✅ Verify A record (for main domains)
-export async function verifyARecord(domain: string): Promise<ResponseData> {
+export async function verifyARecord(domain: string): Promise<MutationData> {
   try {
     if (process.env.NODE_ENV === "production") {
       const records = await dns.resolve4(domain)

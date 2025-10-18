@@ -13,3 +13,6 @@ export type ResponseData<T> =
       toast?: string
       redirectUrl?: string
     }
+export type MutationData =
+  | Omit<Extract<ResponseData<any>, { ok: true }>, "data">
+  | Extract<ResponseData<any>, { ok: false }>
