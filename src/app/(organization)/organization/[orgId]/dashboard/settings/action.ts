@@ -6,11 +6,15 @@ import jwt from "jsonwebtoken"
 import { db } from "@/db/drizzle"
 import { returnError } from "@/lib/errorHandler"
 import { OrgData } from "@/lib/types/organization"
-import { organization } from "@/db/schema"
-import { eq } from "drizzle-orm"
+import { organization, websiteDomain } from "@/db/schema"
+import { and, eq } from "drizzle-orm"
 import { ResponseData } from "@/lib/types/response"
 import { getOrgAuth } from "@/lib/server/GetOrgAuth"
 import { revalidatePath } from "next/cache"
+import dns from "dns/promises"
+
+const EXPECTED_CNAME = "cname.refearnapp.com"
+const EXPECTED_IP = "123.45.67.89"
 
 export const orgInfo = async (
   orgId: string
@@ -86,7 +90,9 @@ export const orgInfo = async (
           | "CAD"
           | "AUD",
         attributionModel: org.attributionModel,
-        defaultDomain: website?.domainName ?? "",
+        defaultDomain: website?.domainName?.endsWith(".refearnapp.com")
+          ? website.domainName.replace(".refearnapp.com", "")
+          : (website?.domainName ?? ""),
       },
     }
   } catch (err) {
@@ -96,7 +102,7 @@ export const orgInfo = async (
 }
 export async function updateOrgSettings(
   data: Partial<OrgData> & { id: string }
-) {
+): Promise<ResponseData> {
   try {
     await getOrgAuth(data.id)
     console.log("data", data)
@@ -129,18 +135,154 @@ export async function updateOrgSettings(
       ...(data.attributionModel && { attributionModel: data.attributionModel }),
     }
 
-    if (Object.keys(updateData).length === 0) {
-      return { ok: true }
+    // ✅ Handle domain update
+    if (data.defaultDomain) {
+      const normalizedDomain = data.defaultDomain
+        .trim()
+        .toLowerCase()
+        .replace(/^https?:\/\//, "")
+
+      // Get currently active domain of the org
+      const [activeDomain] = await db
+        .select()
+        .from(websiteDomain)
+        .where(
+          and(
+            eq(websiteDomain.orgId, data.id),
+            eq(websiteDomain.isActive, true),
+            eq(websiteDomain.isRedirect, false)
+          )
+        )
+
+      // Check if the new domain already exists in DB
+      const [existingDomain] = await db
+        .select()
+        .from(websiteDomain)
+        .where(eq(websiteDomain.domainName, normalizedDomain))
+
+      if (existingDomain) {
+        if (existingDomain.orgId === data.id) {
+          // 🟢 Case 1: Belongs to current org — re-activate it
+          await db
+            .update(websiteDomain)
+            .set({
+              isActive: true,
+              isRedirect: false,
+              updatedAt: new Date(),
+            })
+            .where(eq(websiteDomain.id, existingDomain.id))
+
+          // Mark previous domain as redirect (if exists and different)
+          if (activeDomain && activeDomain.id !== existingDomain.id) {
+            await db
+              .update(websiteDomain)
+              .set({
+                isActive: false,
+                isRedirect: true,
+                updatedAt: new Date(),
+              })
+              .where(eq(websiteDomain.id, activeDomain.id))
+          }
+        } else {
+          // 🔴 Case 3: Belongs to another org
+          throw {
+            status: 400,
+            error: "Domain already exists in another organization",
+            toast:
+              "This domain is already linked to another organization. Please use a different domain.",
+          }
+        }
+      } else {
+        // 🟡 Case 2: New domain — insert
+        if (activeDomain) {
+          await db
+            .update(websiteDomain)
+            .set({
+              isActive: false,
+              isRedirect: true,
+              updatedAt: new Date(),
+            })
+            .where(eq(websiteDomain.id, activeDomain.id))
+        }
+
+        await db.insert(websiteDomain).values({
+          orgId: data.id,
+          domainName: normalizedDomain,
+          isActive: true,
+          isRedirect: false,
+          type: normalizedDomain.endsWith(".refearnapp.com")
+            ? "DEFAULT"
+            : "CUSTOM",
+        })
+      }
     }
 
-    await db
-      .update(organization)
-      .set(updateData)
-      .where(eq(organization.id, data.id))
+    // ✅ Only update org if there are changes
+    if (Object.keys(updateData).length > 0) {
+      await db
+        .update(organization)
+        .set(updateData)
+        .where(eq(organization.id, data.id))
+    }
+
     revalidatePath(`/organization/${data.id}/dashboard/settings`)
     return { ok: true }
   } catch (err) {
     console.error("updateOrgSettings error", err)
+    return returnError(err)
+  }
+}
+export async function verifyCNAME(domain: string): Promise<ResponseData> {
+  try {
+    if (process.env.NODE_ENV === "production") {
+      const records = await dns.resolveCname(domain)
+      const isValid = records.some((record) => record === EXPECTED_CNAME)
+
+      if (!isValid) {
+        throw {
+          status: 400,
+          error: "Invalid CNAME record",
+          toast: `❌ Expected ${EXPECTED_CNAME}, but got ${records.join(", ")}`,
+        }
+      }
+    } else {
+      console.log(`Simulating CNAME verification for ${domain}`)
+      await new Promise((r) => setTimeout(r, 1000))
+    }
+
+    return {
+      ok: true,
+      toast: "✅ CNAME record is correctly set.",
+    }
+  } catch (err) {
+    return returnError(err)
+  }
+}
+
+// ✅ Verify A record (for main domains)
+export async function verifyARecord(domain: string): Promise<ResponseData> {
+  try {
+    if (process.env.NODE_ENV === "production") {
+      const records = await dns.resolve4(domain)
+      const isValid = records.includes(EXPECTED_IP)
+
+      if (!isValid) {
+        throw {
+          status: 400,
+          error: "Invalid A record",
+          toast: `❌ Expected IP ${EXPECTED_IP}, but got ${records.join(", ")}`,
+        }
+      }
+    } else {
+      console.log(`Simulating A record verification for ${domain}`)
+      await new Promise((r) => setTimeout(r, 1000))
+    }
+
+    return {
+      ok: true,
+      toast: "✅ A record is correctly set.",
+    }
+  } catch (err) {
     return returnError(err)
   }
 }

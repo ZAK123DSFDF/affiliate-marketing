@@ -9,10 +9,9 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { X } from "lucide-react"
+import { Loader2 } from "lucide-react"
 
 interface AppDialogProps {
   open: boolean
@@ -22,6 +21,7 @@ interface AppDialogProps {
   children?: React.ReactNode // 👈 accepts any JSX element
   footer?: React.ReactNode // 👈 optional footer override
   confirmText?: string
+  confirmLoading?: boolean
   onConfirm?: () => void
   affiliate: boolean
   showFooter?: boolean
@@ -36,6 +36,7 @@ export function AppDialog({
   children,
   footer,
   confirmText = "OK",
+  confirmLoading = false,
   onConfirm,
   affiliate = false,
   showFooter = true,
@@ -68,11 +69,14 @@ export function AppDialog({
           <DialogFooter>
             {footer ?? (
               <Button
-                onClick={() => {
-                  onConfirm?.()
-                  onOpenChange(false)
+                onClick={async () => {
+                  await onConfirm?.()
                 }}
+                disabled={confirmLoading}
               >
+                {confirmLoading && (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                )}
                 {confirmText}
               </Button>
             )}

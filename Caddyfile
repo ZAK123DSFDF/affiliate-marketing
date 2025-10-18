@@ -1,9 +1,6 @@
-refearnapp.com {
-   tls internal
-   reverse_proxy 127.0.0.1:3000
- }
-
-*.refearnapp.com {
+refearnapp.com, shipfast.refearnapp.com, shipfastqw.refearnapp.com, shipfast.com, my.shipfast.com, refearnappa.com {
   tls internal
-  reverse_proxy localhost:3000
+  reverse_proxy 127.0.0.1:3000
 }
+
+

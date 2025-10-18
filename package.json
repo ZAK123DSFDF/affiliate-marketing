@@ -79,6 +79,7 @@
     "server-only": "^0.0.1",
     "stripe": "^18.1.0",
     "tailwind-merge": "^3.0.2",
+    "tldts": "^7.0.17",
     "ua-parser-js": "^2.0.4",
     "util": "^0.12.5",
     "zod": "^3.24.2"
