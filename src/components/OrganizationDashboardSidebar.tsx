@@ -86,6 +86,7 @@ const OrganizationDashboardSidebar = ({
   const [dialogMode, setDialogMode] = useState<"create" | "upgrade">("create")
 
   const handleClick = () => {
+    setSelectOpen(false)
     if (!canCreate) {
       setDialogMode("upgrade")
       setDialogOpen(true)

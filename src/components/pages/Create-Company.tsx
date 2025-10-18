@@ -25,6 +25,9 @@ import { InputField } from "@/components/Auth/FormFields"
 import { SelectField } from "@/components/ui-custom/SelectFields"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
+import { hostnameSchema, subdomainSchema } from "@/lib/schema/orgSettingSchema"
+import { DomainInputField } from "@/components/ui-custom/DomainInputField"
+import { useState } from "react"
 const domainRegex =
   /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}|localhost|\d{1,3}(?:\.\d{1,3}){3}$/i
 export const companySchema = z.object({
@@ -45,6 +48,7 @@ export const companySchema = z.object({
   commissionDurationValue: z.coerce.number().min(1),
   commissionDurationUnit: z.enum(["day", "week", "month", "year"]),
   currency: z.enum(["USD", "EUR", "GBP", "CAD", "AUD"]),
+  defaultDomain: z.union([subdomainSchema, hostnameSchema]),
 })
 
 type CompanySchema = z.infer<typeof companySchema>
@@ -67,11 +71,14 @@ const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
       commissionDurationValue: 30,
       commissionDurationUnit: "day",
       currency: "USD",
+      defaultDomain: "",
     },
   })
   const commissionType = form.watch("commissionType")
   const router = useRouter()
-
+  const [domainType, setDomainType] = useState<
+    "platform" | "custom-main" | "custom-subdomain" | null
+  >(null)
   const { mutate, isPending } = useAuthMutation(CreateOrganization, {
     onSuccess: (res: any) => {
       if (res.ok && res.data?.id) {
@@ -210,7 +217,12 @@ const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
             affiliate={false}
           />
         </div>
-
+        <DomainInputField
+          control={form.control}
+          form={form}
+          onDomainTypeChange={setDomainType}
+          createMode
+        />
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" />

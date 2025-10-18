@@ -69,8 +69,8 @@ export function AppDialog({
           <DialogFooter>
             {footer ?? (
               <Button
-                onClick={async () => {
-                  await onConfirm?.()
+                onClick={() => {
+                  onConfirm?.()
                 }}
                 disabled={confirmLoading}
               >

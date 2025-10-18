@@ -6,12 +6,14 @@ export function DomainInputField({
   control,
   form,
   onDomainTypeChange,
+  createMode,
 }: {
   control: any
   form: any
   onDomainTypeChange?: (
     type: "platform" | "custom-main" | "custom-subdomain" | null
   ) => void
+  createMode?: boolean
 }) {
   const [domainType, setDomainType] = useState<
     "platform" | "custom-main" | "custom-subdomain" | null
@@ -40,7 +42,19 @@ export function DomainInputField({
     setDomainType(newType)
     onDomainTypeChange?.(newType)
   }, [domainValue])
-
+  useEffect(() => {
+    if (
+      createMode &&
+      (domainType === "custom-main" || domainType === "custom-subdomain")
+    ) {
+      form.setError("defaultDomain", {
+        type: "manual",
+        message: "Custom domains can only be configured in Settings.",
+      })
+    } else {
+      form.clearErrors("defaultDomain")
+    }
+  }, [domainType, createMode])
   const displayDomain =
     !domainValue || !normalized
       ? ""

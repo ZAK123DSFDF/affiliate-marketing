@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-const subdomainSchema = z
+export const subdomainSchema = z
   .string()
   .min(2, "Subdomain must be at least 2 characters long")
   .regex(
@@ -8,7 +8,7 @@ const subdomainSchema = z
     "Subdomain can only contain lowercase letters, numbers, and hyphens"
   )
 
-const hostnameSchema = z
+export const hostnameSchema = z
   .string()
   .min(2)
   .refine((raw) => {

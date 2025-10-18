@@ -6,6 +6,7 @@ import {
   organization,
   organizationAuthCustomization,
   organizationDashboardCustomization,
+  websiteDomain,
 } from "@/db/schema"
 import { db } from "@/db/drizzle"
 import { companySchema } from "@/components/pages/Create-Company"
@@ -45,7 +46,22 @@ export const CreateOrganization = async (
     }
 
     const sanitizedWebsiteName = sanitizeDomain(input.websiteUrl)
+    const normalizedDomain = input.defaultDomain
+      .trim()
+      .toLowerCase()
+      .replace(/^https?:\/\//, "")
 
+    // 🔍 Check if domain already exists in DB
+    const existingDomain = await db.query.websiteDomain.findFirst({
+      where: eq(websiteDomain.domainName, normalizedDomain),
+    })
+
+    if (existingDomain) {
+      throw {
+        status: 409,
+        toast: `Domain name "${normalizedDomain}" already exists. Please choose another one.`,
+      }
+    }
     const [newOrg] = await db
       .insert(organization)
       .values({
@@ -58,6 +74,13 @@ export const CreateOrganization = async (
       .returning()
 
     if (!newOrg) throw { status: 500, error: "Failed to create org" }
+    await db.insert(websiteDomain).values({
+      orgId: newOrg.id,
+      domainName: normalizedDomain,
+      type: "DEFAULT",
+      isActive: true,
+      isRedirect: false,
+    })
 
     await Promise.all([
       db
