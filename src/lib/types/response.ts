@@ -1,7 +1,7 @@
-export type ResponseData<T = undefined> =
+export type ResponseData<T> =
   | {
       ok: true
-      data?: T
+      data: T
       redirectUrl?: string
       toast?: string
       message?: string

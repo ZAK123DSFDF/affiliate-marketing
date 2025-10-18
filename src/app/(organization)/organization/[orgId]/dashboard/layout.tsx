@@ -7,6 +7,7 @@ import { getUserPlan } from "@/lib/server/getUserPlan"
 import { requireOrganizationWithOrg } from "@/lib/server/authGuards"
 import { getUserOrgs } from "@/lib/server/getUserOrgs"
 import { getUserData } from "@/app/(organization)/organization/[orgId]/dashboard/profile/action"
+import React from "react"
 interface OrganizationDashboardLayoutProps extends OrgIdProps {
   children: React.ReactNode
 }
