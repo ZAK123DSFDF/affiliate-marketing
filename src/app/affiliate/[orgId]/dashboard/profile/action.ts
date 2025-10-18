@@ -4,7 +4,6 @@
 import { returnError } from "@/lib/errorHandler"
 import { ResponseData } from "@/lib/types/response"
 import {
-  SafeAffiliateData,
   SafeAffiliateWithCapabilities,
 } from "@/lib/types/authAffiliate"
 import { revalidatePath } from "next/cache"
@@ -15,7 +14,6 @@ import { updateAffiliateProfileAction } from "@/lib/server/updateAffiliateProfil
 import { getAffiliateDataAction } from "@/lib/server/getAffiliateData"
 import { getPayoutEmailMethod } from "@/lib/server/getPayoutEmailMethod"
 import { cookies } from "next/headers"
-import { redirect } from "next/navigation"
 import { getAffiliateAuthCapabilities } from "@/lib/server/getAffiliateAuthCapabilities"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
 import { buildAffiliateUrl } from "@/util/Url"
