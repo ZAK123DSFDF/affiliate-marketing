@@ -19,7 +19,6 @@ export default async function AnalyticsLayout({
   topAffiliates,
 }: AnalyticsLayoutProps) {
   await getValidatedOrgFromParams({ params })
-
   return (
     <div className="space-y-8">
       {children}
