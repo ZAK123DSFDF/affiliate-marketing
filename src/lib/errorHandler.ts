@@ -4,6 +4,7 @@ interface ErrorResponse {
   error: string
   toast?: string // Unified message for client-side display
   fields?: Record<string, string> | null // Optional field errors
+  data?: any
 }
 
 export function returnError(err: unknown): ErrorResponse {
@@ -27,6 +28,7 @@ export function returnError(err: unknown): ErrorResponse {
       error: errorObj.error || "Unknown error",
       toast: errorObj.toast || "Something went wrong",
       fields: errorObj.fields || null,
+      data: (errorObj as any).data,
     }
   }
 

@@ -25,8 +25,9 @@ import { SelectField } from "@/components/ui-custom/SelectFields"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 import { DomainInputField } from "@/components/ui-custom/DomainInputField"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { CompanyFormValues, companySchema } from "@/lib/schema/companySchema"
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 
 type CreateCompanyProps = {
   mode: "create" | "add"
@@ -36,7 +37,8 @@ const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
   const [domainType, setDomainType] = useState<
     "platform" | "custom-main" | "custom-subdomain" | null
   >(null)
-
+  const { showCustomToast } = useCustomToast()
+  const [lastFailedDomain, setLastFailedDomain] = useState<string | null>(null)
   const createCompanySchema = useMemo(
     () => companySchema(domainType),
     [domainType]
@@ -65,14 +67,29 @@ const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
     onSuccess: (res: any) => {
       if (res.ok && res.data?.id) {
         router.push(`/organization/${res.data.id}/dashboard/analytics`)
+      } else {
+        setLastFailedDomain(res.data)
       }
     },
   })
-
+  useEffect(() => {
+    if (lastFailedDomain && form.watch("defaultDomain") !== lastFailedDomain) {
+      setLastFailedDomain(null)
+    }
+  }, [form.watch("defaultDomain")])
   const onSubmit = (data: CompanyFormValues) => {
     let domain = data.defaultDomain.trim().toLowerCase()
     if (!domain.includes(".") && !domain.endsWith(".refearnapp.com")) {
       domain = `${domain}.refearnapp.com`
+    }
+    if (lastFailedDomain && domain === lastFailedDomain) {
+      showCustomToast({
+        type: "error",
+        title: "Failed",
+        description: `Domain name "${lastFailedDomain}" already exists. Please choose another one.`,
+        affiliate: false,
+      })
+      return
     }
     mutate({ ...data, defaultDomain: domain, mode })
   }
@@ -209,6 +226,7 @@ const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
           control={form.control}
           form={form}
           onDomainTypeChange={setDomainType}
+          createMode
         />
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending ? (

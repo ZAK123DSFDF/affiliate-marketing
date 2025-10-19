@@ -59,6 +59,7 @@ export const CreateOrganization = async (
       throw {
         status: 409,
         toast: `Domain name "${normalizedDomain}" already exists. Please choose another one.`,
+        data: existingDomain.domainName,
       }
     }
     const [newOrg] = await db
@@ -72,7 +73,7 @@ export const CreateOrganization = async (
       })
       .returning()
 
-    if (!newOrg) throw { status: 500, error: "Failed to create org" }
+    if (!newOrg) throw { status: 500, toast: "Failed to create org" }
     await db.insert(websiteDomain).values({
       orgId: newOrg.id,
       domainName: normalizedDomain,
@@ -129,21 +130,26 @@ export const CreateOrganization = async (
   }
 }
 export async function deleteOrganizationLogo(logoUrl: string) {
-  console.log("Deleting logo:", logoUrl)
-  if (!logoUrl) throw new Error("Missing logoUrl")
+  try {
+    console.log("Deleting logo:", logoUrl)
+    if (!logoUrl) throw { status: 500, toast: "logo not found" }
 
-  // 1. Extract the object key from R2 public URL
-  const uploadPath = logoUrl.replace(`${process.env.R2_ACCESS_URL}/`, "")
+    // 1. Extract the object key from R2 public URL
+    const uploadPath = logoUrl.replace(`${process.env.R2_ACCESS_URL}/`, "")
 
-  // 2. Delete from R2
-  await s3Client.send(
-    new DeleteObjectCommand({
-      Bucket: process.env.R2_BUCKET_NAME,
-      Key: uploadPath,
-    })
-  )
+    // 2. Delete from R2
+    await s3Client.send(
+      new DeleteObjectCommand({
+        Bucket: process.env.R2_BUCKET_NAME,
+        Key: uploadPath,
+      })
+    )
 
-  return { success: true }
+    return { ok: true }
+  } catch (err) {
+    console.error("Organization create error", err)
+    return returnError(err)
+  }
 }
 export async function updateOrganizationLogo({
   orgId,
@@ -152,12 +158,17 @@ export async function updateOrganizationLogo({
   orgId: string
   logoUrl: string | null
 }) {
-  if (!orgId) throw new Error("Missing orgId")
+  try {
+    if (!orgId) throw { status: 500, toast: "missing orgId" }
 
-  await db
-    .update(organization)
-    .set({ logoUrl })
-    .where(eq(organization.id, orgId))
+    await db
+      .update(organization)
+      .set({ logoUrl })
+      .where(eq(organization.id, orgId))
 
-  return { success: true, url: logoUrl }
+    return { ok: true }
+  } catch (err) {
+    console.error("Organization create error", err)
+    return returnError(err)
+  }
 }

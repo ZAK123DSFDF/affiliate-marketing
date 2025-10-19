@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form"
 import { Form } from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import { MutationData, ResponseData } from "@/lib/types/response"
+import { MutationData } from "@/lib/types/response"
 import {
   BadgeDollarSign,
   Building2,
@@ -35,7 +35,6 @@ import {
   verifyARecord,
   verifyCNAME,
 } from "@/app/(organization)/organization/[orgId]/dashboard/settings/action"
-import { useToast } from "@/hooks/use-toast"
 import { orgSettingsSchema } from "@/lib/schema/orgSettingSchema"
 import React, { useEffect, useMemo, useState } from "react"
 import { InputField } from "@/components/Auth/FormFields"
@@ -44,12 +43,13 @@ import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 import { OrgData } from "@/lib/types/organization"
 import { DomainInputField } from "@/components/ui-custom/DomainInputField"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
+import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 
 type OrgFormData = z.infer<typeof orgSettingsSchema>
 type Props = { orgData: OrgData }
 
 export default function Settings({ orgData }: Props) {
-  const { toast } = useToast()
+  const { showCustomToast } = useCustomToast()
   const safeDefaults: OrgFormData = {
     id: orgData?.id ?? "",
     name: orgData?.name ?? "",
@@ -85,6 +85,7 @@ export default function Settings({ orgData }: Props) {
     "platform" | "custom-main" | "custom-subdomain" | null
   >(null)
   const [open, setOpen] = useState<boolean>(false)
+  const [lastFailedDomain, setLastFailedDomain] = useState<string | null>(null)
   const domainValue = form.watch("defaultDomain")?.trim() || ""
   const oldDomain = safeDefaults.defaultDomain.trim()
   const domainChanged = domainValue !== oldDomain
@@ -143,20 +144,29 @@ export default function Settings({ orgData }: Props) {
     onSuccess: (res) => {
       if (res?.ok) {
         form.reset(form.getValues())
-        toast({ title: "Settings updated", description: "Saved successfully." })
+        showCustomToast({
+          type: "success",
+          title: "Settings updated",
+          description: "Saved successfully.",
+          affiliate: false,
+        })
+        setLastFailedDomain(null)
       } else {
-        toast({
-          variant: "destructive",
+        showCustomToast({
+          type: "error",
           title: "Error",
           description: res?.toast || res?.error || "Update failed.",
+          affiliate: false,
         })
+        setLastFailedDomain(res.data)
       }
     },
     onError: () =>
-      toast({
-        variant: "destructive",
+      showCustomToast({
+        type: "error",
         title: "Unexpected error",
         description: "Please try again",
+        affiliate: false,
       }),
   })
   const verifyMut = useMutation<MutationData, unknown, void>({
@@ -175,29 +185,47 @@ export default function Settings({ orgData }: Props) {
     },
     onSuccess: (res) => {
       if (res.ok) {
-        toast({ title: "Domain verified", description: res.toast })
+        showCustomToast({
+          type: "success",
+          title: "Domain verified",
+          description: "Domain verification successful.",
+          affiliate: false,
+        })
         setIsVerified(true)
         setOpen(false)
       } else {
-        toast({
-          variant: "destructive",
+        showCustomToast({
+          type: "error",
           title: "Verification failed",
-          description: res.toast || res.error,
+          description: res.toast || res.error || "Could not verify domain",
+          affiliate: false,
         })
         setIsVerified(false)
       }
     },
     onError: (err: any) => {
-      toast({
-        variant: "destructive",
+      showCustomToast({
+        type: "error",
         title: "Unexpected error",
         description: err.message || "Something went wrong",
+        affiliate: false,
       })
     },
   })
   const onSubmit = (data: OrgFormData) => {
-    const oldDomain = normalizeDomain(safeDefaults.defaultDomain)
     const newDomain = normalizeDomain(data.defaultDomain)
+    if (lastFailedDomain && newDomain === normalizeDomain(lastFailedDomain)) {
+      showCustomToast({
+        type: "error",
+        title: "Error",
+        description:
+          "This domain is already linked to another organization. Please use a different domain.",
+        affiliate: false,
+      })
+      return
+    }
+
+    const oldDomain = normalizeDomain(safeDefaults.defaultDomain)
     const finalDomain = newDomain.endsWith(".refearnapp.com")
       ? newDomain
       : /^[a-z0-9-]+$/.test(newDomain)
@@ -221,7 +249,11 @@ export default function Settings({ orgData }: Props) {
 
     mut.mutate({ id: data.id, ...changed })
   }
-
+  useEffect(() => {
+    if (lastFailedDomain && form.watch("defaultDomain") !== lastFailedDomain) {
+      setLastFailedDomain(null)
+    }
+  }, [form.watch("defaultDomain")])
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}

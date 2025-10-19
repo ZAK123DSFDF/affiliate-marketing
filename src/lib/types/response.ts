@@ -12,6 +12,7 @@ export type ResponseData<T> =
       status: number
       toast?: string
       redirectUrl?: string
+      data?: any
     }
 export type MutationData =
   | Omit<Extract<ResponseData<any>, { ok: true }>, "data">

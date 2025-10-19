@@ -1,14 +1,17 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { InputField } from "@/components/Auth/FormFields"
 import { parse } from "tldts"
+import { generateUniqueSubdomain } from "@/util/GenerateUniqueDomain"
 
 export function DomainInputField({
   control,
   form,
+  createMode,
   onDomainTypeChange,
 }: {
   control: any
   form: any
+  createMode?: boolean
   onDomainTypeChange?: (
     type: "platform" | "custom-main" | "custom-subdomain" | null
   ) => void
@@ -16,7 +19,26 @@ export function DomainInputField({
   const [domainType, setDomainType] = useState<
     "platform" | "custom-main" | "custom-subdomain" | null
   >(null)
+  const companyName = form.watch("name")?.trim() || ""
   const domainValue = form.watch("defaultDomain")?.trim() || ""
+  const lastGeneratedName = useRef("")
+
+  useEffect(() => {
+    if (!createMode) return
+
+    const nameLength = companyName.length
+    if (nameLength === 0) {
+      form.setValue("defaultDomain", "")
+      lastGeneratedName.current = ""
+      return
+    }
+
+    if (nameLength > 2 && companyName !== lastGeneratedName.current) {
+      lastGeneratedName.current = companyName
+      const generated = generateUniqueSubdomain(companyName)
+      form.setValue("defaultDomain", generated)
+    }
+  }, [companyName, createMode, form])
   const normalized = domainValue.replace(/^https?:\/\//, "").toLowerCase()
 
   useEffect(() => {
@@ -48,18 +70,21 @@ export function DomainInputField({
           ? normalized
           : `${normalized}.refearnapp.com`
         : normalized
-
   return (
-    <div className="flex flex-col">
-      <InputField
-        control={control}
-        name="defaultDomain"
-        label="Default Domain"
-        placeholder="your-subdomain or customdomain.com"
-        type="text"
-        affiliate={false}
-        leading="https://"
-      />
+    <div className="flex flex-col gap-2">
+      <div className="flex items-end gap-2">
+        <div className="flex-1">
+          <InputField
+            control={control}
+            name="defaultDomain"
+            label="Default Domain"
+            placeholder="your-subdomain or customdomain.com"
+            type="text"
+            affiliate={false}
+            leading="https://"
+          />
+        </div>
+      </div>
 
       <p className="text-sm mt-1 text-muted-foreground">
         {!domainValue

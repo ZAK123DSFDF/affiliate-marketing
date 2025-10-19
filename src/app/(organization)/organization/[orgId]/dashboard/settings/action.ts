@@ -190,6 +190,7 @@ export async function updateOrgSettings(
             error: "Domain already exists in another organization",
             toast:
               "This domain is already linked to another organization. Please use a different domain.",
+            data: existingDomain.domainName,
           }
         }
       } else {
