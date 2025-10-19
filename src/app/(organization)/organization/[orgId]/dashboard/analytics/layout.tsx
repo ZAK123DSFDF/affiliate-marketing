@@ -4,10 +4,10 @@ import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 interface AnalyticsLayoutProps {
   children: React.ReactNode
   params: Promise<{ orgId: string }>
-  cards?: React.ReactNode
-  charts?: React.ReactNode
-  referrers?: React.ReactNode
-  topAffiliates?: React.ReactNode
+  cards: React.ReactNode
+  charts: React.ReactNode
+  referrers: React.ReactNode
+  topAffiliates: React.ReactNode
 }
 
 export default async function AnalyticsLayout({
