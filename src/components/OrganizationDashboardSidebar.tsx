@@ -10,7 +10,6 @@ import {
   CreditCard,
   Layers,
   User,
-  Plus,
 } from "lucide-react"
 import {
   Sidebar,
@@ -25,9 +24,6 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import CreateCompany from "@/components/pages/Create-Company"
-
-import { Button } from "@/components/ui/button"
-
 import { DropdownInput } from "@/components/ui-custom/DropDownInput"
 import { useSwitchOrg } from "@/hooks/useSwitchOrg"
 import { OrganizationData } from "@/lib/types/profileTypes"

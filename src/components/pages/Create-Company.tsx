@@ -2,7 +2,6 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
 import { useRouter } from "next/navigation"
 
 import { Form } from "@/components/ui/form"
@@ -25,40 +24,25 @@ import { InputField } from "@/components/Auth/FormFields"
 import { SelectField } from "@/components/ui-custom/SelectFields"
 import { useAuthMutation } from "@/hooks/useAuthMutation"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
-import { hostnameSchema, subdomainSchema } from "@/lib/schema/orgSettingSchema"
 import { DomainInputField } from "@/components/ui-custom/DomainInputField"
-import { useState } from "react"
-const domainRegex =
-  /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}|localhost|\d{1,3}(?:\.\d{1,3}){3}$/i
-export const companySchema = z.object({
-  name: z.string().min(2),
-  websiteUrl: z
-    .string()
-    .min(2)
-    .regex(
-      domainRegex,
-      "Invalid domain format (e.g., 'example.com' or 'localhost')"
-    ),
-  logoUrl: z.string().url().optional().or(z.literal("")),
-  referralParam: z.enum(["ref", "via", "aff"]),
-  cookieLifetimeValue: z.coerce.number().min(1),
-  cookieLifetimeUnit: z.enum(["day", "week", "month", "year"]),
-  commissionType: z.enum(["percentage", "fixed"]),
-  commissionValue: z.coerce.number().min(0),
-  commissionDurationValue: z.coerce.number().min(1),
-  commissionDurationUnit: z.enum(["day", "week", "month", "year"]),
-  currency: z.enum(["USD", "EUR", "GBP", "CAD", "AUD"]),
-  defaultDomain: z.union([subdomainSchema, hostnameSchema]),
-})
+import { useMemo, useState } from "react"
+import { CompanyFormValues, companySchema } from "@/lib/schema/companySchema"
 
-type CompanySchema = z.infer<typeof companySchema>
 type CreateCompanyProps = {
   mode: "create" | "add"
   embed?: boolean
 }
 const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
-  const form = useForm<CompanySchema>({
-    resolver: zodResolver(companySchema),
+  const [domainType, setDomainType] = useState<
+    "platform" | "custom-main" | "custom-subdomain" | null
+  >(null)
+
+  const createCompanySchema = useMemo(
+    () => companySchema(domainType),
+    [domainType]
+  )
+  const form = useForm<CompanyFormValues>({
+    resolver: zodResolver(createCompanySchema),
     defaultValues: {
       name: "",
       websiteUrl: "",
@@ -76,9 +60,7 @@ const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
   })
   const commissionType = form.watch("commissionType")
   const router = useRouter()
-  const [domainType, setDomainType] = useState<
-    "platform" | "custom-main" | "custom-subdomain" | null
-  >(null)
+
   const { mutate, isPending } = useAuthMutation(CreateOrganization, {
     onSuccess: (res: any) => {
       if (res.ok && res.data?.id) {
@@ -87,7 +69,13 @@ const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
     },
   })
 
-  const onSubmit = (data: CompanySchema) => mutate({ ...data, mode })
+  const onSubmit = (data: CompanyFormValues) => {
+    let domain = data.defaultDomain.trim().toLowerCase()
+    if (!domain.includes(".") && !domain.endsWith(".refearnapp.com")) {
+      domain = `${domain}.refearnapp.com`
+    }
+    mutate({ ...data, defaultDomain: domain, mode })
+  }
   const formContent = (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -221,7 +209,6 @@ const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
           control={form.control}
           form={form}
           onDomainTypeChange={setDomainType}
-          createMode
         />
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending ? (

@@ -9,8 +9,7 @@ import {
   websiteDomain,
 } from "@/db/schema"
 import { db } from "@/db/drizzle"
-import { companySchema } from "@/components/pages/Create-Company"
-import { z } from "zod"
+import { CompanyFormValues } from "@/lib/schema/companySchema"
 import jwt from "jsonwebtoken"
 import { defaultAuthCustomization } from "@/customization/Auth/defaultAuthCustomization"
 import { defaultDashboardCustomization } from "@/customization/Dashboard/defaultDashboardCustomization"
@@ -28,7 +27,7 @@ const s3Client = new S3Client({
 })
 
 export const CreateOrganization = async (
-  input: z.infer<typeof companySchema> & { mode: "create" | "add" }
+  input: CompanyFormValues & { mode: "create" | "add" }
 ) => {
   try {
     const cookieStore = await cookies()
