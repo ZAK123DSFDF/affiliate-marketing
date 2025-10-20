@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
-export function useAffiliatePath(orgId: string) {
+export function useAffiliatePath(orgId?: string) {
   const router = useRouter()
   const [baseUrl, setBaseUrl] = useState<string>("")
   const [isMainHost, setIsMainHost] = useState<boolean>(false)
@@ -21,9 +21,9 @@ export function useAffiliatePath(orgId: string) {
   }, [])
 
   function getPath(path: string) {
-    // Prevent undefined state issues before hydration
     if (!baseUrl) return path
-    return isMainHost ? `/affiliate/${orgId}/${path}` : `/${path}`
+    if (isMainHost && orgId) return `/affiliate/${orgId}/${path}`
+    return `/${path}`
   }
 
   function goTo(path: string) {

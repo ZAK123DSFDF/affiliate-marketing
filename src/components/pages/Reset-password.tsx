@@ -58,7 +58,7 @@ const ResetPassword = ({
   })
 
   const [pending, setPending] = useState(false)
-  const { getPath } = useAffiliatePath(orgId as string)
+  const { getPath } = useAffiliatePath(orgId)
   const { showCustomToast } = useCustomToast()
   const {
     backgroundColor,

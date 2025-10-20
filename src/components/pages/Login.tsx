@@ -41,7 +41,7 @@ type Props = {
 const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { showCustomToast } = useCustomToast()
   const [previewLoading, setPreviewLoading] = useState(false)
-  const { getPath } = useAffiliatePath(orgId as string)
+  const { getPath } = useAffiliatePath(orgId)
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {

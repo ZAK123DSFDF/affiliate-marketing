@@ -50,7 +50,7 @@ const EmailVerified = ({
     (mode && customMessages?.[mode]) ||
     "Your email address has been successfully verified. You can now access all features."
   const router = useRouter()
-  const { goTo } = useAffiliatePath(orgId as string)
+  const { goTo } = useAffiliatePath(orgId)
   const handleClick = () => {
     if (isPreview) {
       setMainTab?.("sidebar")

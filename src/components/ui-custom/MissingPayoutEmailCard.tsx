@@ -32,7 +32,7 @@ export function MissingPaypalEmailCard({
 }: MissingPaypalEmailCardProps) {
   const router = useRouter()
   const dashboardCardStyle = useDashboardCard(affiliate)
-  const { goTo } = useAffiliatePath(orgId as string)
+  const { goTo } = useAffiliatePath(orgId)
   const { missingPaypalHeaderColor, missingPaypalDescriptionColor } =
     useAtomValue(dashboardThemeCustomizationAtom)
   const { dashboardButtonTextColor, dashboardButtonBackgroundColor } =

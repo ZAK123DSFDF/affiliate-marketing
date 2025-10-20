@@ -65,7 +65,7 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   } = useAtomValue(buttonCustomizationAtom)
   const authCardStyle = useAuthCard(affiliate)
   const { showCustomToast } = useCustomToast()
-  const { getPath } = useAffiliatePath(orgId as string)
+  const { getPath } = useAffiliatePath(orgId)
   const emailCache = useCachedValidation({
     showError: (msg) =>
       showCustomToast({
