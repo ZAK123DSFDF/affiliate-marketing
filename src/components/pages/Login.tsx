@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
@@ -35,6 +35,7 @@ import { useOrg } from "@/hooks/useOrg"
 import { GoogleButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/GoogleButtonCustomizationOptions"
 import { cn } from "@/lib/utils"
 import { useAffiliatePath } from "@/hooks/useUrl"
+import { useDevLog } from "@/hooks/useDevlog"
 type Props = {
   orgId?: string
   isPreview?: boolean

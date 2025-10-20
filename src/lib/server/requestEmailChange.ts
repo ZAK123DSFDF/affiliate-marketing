@@ -24,7 +24,11 @@ export const requestOrganizationEmailChange = async ({
     })
 
     if (existingUser) {
-      throw { status: 400, toast: "Email already in use" }
+      throw {
+        status: 400,
+        toast: "Email already in use",
+        data: existingUser.email,
+      }
     }
 
     const { orgIds, activeOrgId, role, type } = await getOrganizationContext()
@@ -78,7 +82,11 @@ export const requestAffiliateEmailChange = async ({
     })
 
     if (existingAffiliate) {
-      throw { status: 400, toast: "Email already in use in this organization" }
+      throw {
+        status: 400,
+        toast: "Email already in use in this organization",
+        data: existingAffiliate.email,
+      }
     }
     const token = jwt.sign(
       {

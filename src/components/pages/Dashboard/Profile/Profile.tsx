@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
@@ -107,6 +107,7 @@ export default function Profile({
   const dashboardCardStyle = useDashboardCard(affiliate)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [showEmailDialog, setShowEmailDialog] = useState(false)
+  const [lastFailedEmail, setLastFailedEmail] = useState<string | null>(null)
   const [step, setStep] = useState<"current" | "new">("current")
   const { showCustomToast } = useCustomToast()
   const updateProfile = useMutation({
@@ -292,12 +293,48 @@ export default function Profile({
   const onSubmitUpdatePassword = (data: any) => {
     updatePassword.mutate(data.newPassword)
   }
-
+  useEffect(() => {
+    const subscription = profileForm.watch((values) => {
+      const currentEmail = values.email?.trim().toLowerCase()
+      if (lastFailedEmail && currentEmail !== lastFailedEmail) {
+        setLastFailedEmail(null)
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [profileForm, lastFailedEmail])
   const resetPasswordModal = () => {
     setShowPasswordModal(false)
     setStep("current")
     currentPasswordForm.reset()
     newPasswordForm.reset()
+  }
+  const handleEmailSubmit = (values: { newEmail: string }) => {
+    const newEmail = values.newEmail.trim().toLowerCase()
+
+    if (lastFailedEmail && newEmail === lastFailedEmail) {
+      showCustomToast({
+        type: "error",
+        title: "Failed",
+        description: affiliate
+          ? "Email already in use in this organization"
+          : "Email already in use",
+        affiliate,
+      })
+      return
+    }
+
+    emailChangeMutation.mutate(values, {
+      onSuccess: (res) => {
+        if (!res?.ok) {
+          setLastFailedEmail(newEmail)
+        } else {
+          setLastFailedEmail(null)
+        }
+      },
+      onError: () => {
+        setLastFailedEmail(newEmail)
+      },
+    })
   }
   return (
     <div className="flex flex-col gap-6">
@@ -364,9 +401,8 @@ export default function Profile({
         open={showEmailDialog}
         onClose={() => setShowEmailDialog(false)}
         affiliate={affiliate}
-        onSubmit={(values) => {
-          emailChangeMutation.mutate(values)
-        }}
+        onSubmit={handleEmailSubmit}
+        loading={emailChangeMutation.isPending}
       />
     </div>
   )
