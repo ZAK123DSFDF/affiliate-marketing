@@ -14,7 +14,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Form } from "@/components/ui/form"
-import Link from "next/link"
 import { InputField } from "@/components/Auth/FormFields"
 import {
   ForgotPasswordFormValues,
@@ -35,10 +34,8 @@ import {
   buttonCustomizationAtom,
   themeCustomizationAtom,
 } from "@/store/AuthCustomizationAtom"
-import { LogoUpload } from "@/components/ui-custom/LogoUpload"
-import { useOrgLogo } from "@/hooks/useOrgLogo"
-import { useOrg } from "@/hooks/useOrg"
 import { useAffiliatePath } from "@/hooks/useUrl"
+import { OrgHeader } from "@/components/ui-custom/OrgHeader"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -59,8 +56,6 @@ const ForgotPassword = ({
   })
   const [pending, setPending] = useState(false)
   const { getPath } = useAffiliatePath(orgId as string)
-  const { org } = useOrg(orgId, affiliate)
-  const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
   const { showCustomToast } = useCustomToast()
   const {
     backgroundColor,
@@ -68,7 +63,6 @@ const ForgotPassword = ({
     tertiaryTextColor,
     primaryCustomization,
     secondaryCustomization,
-    headerColor,
   } = useAtomValue(themeCustomizationAtom)
   const {
     buttonDisabledTextColor,
@@ -130,41 +124,11 @@ const ForgotPassword = ({
     >
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          {affiliate || isPreview ? (
-            <div className="flex items-center justify-center space-x-2 cursor-pointer">
-              <LogoUpload
-                value={logoUrl}
-                onChange={setLogoUrl}
-                affiliate={affiliate}
-                orgId={orgId}
-                orgName={org?.name}
-                mode="avatar"
-              />
-
-              <h1
-                className="text-4xl font-bold"
-                style={{ color: (affiliate && headerColor) || undefined }}
-              >
-                {org?.name || "AffiliateX"}
-              </h1>
-              {isPreview && (
-                <ThemeCustomizationOptions
-                  name="headerColor"
-                  showLabel={false}
-                  buttonSize="w-4 h-4"
-                />
-              )}
-            </div>
-          ) : (
-            <Link href="/" className="inline-block">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-8 h-8 rounded-md bg-primary/90 flex items-center justify-center text-white font-bold">
-                  A
-                </div>
-                <h1 className="text-2xl font-bold">AffiliateX</h1>
-              </div>
-            </Link>
-          )}
+          <OrgHeader
+            orgId={orgId}
+            affiliate={affiliate}
+            isPreview={isPreview}
+          />
         </div>
 
         <Card

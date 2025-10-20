@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Form } from "@/components/ui/form"
-import Link from "next/link"
 import { InputField } from "@/components/Auth/FormFields"
 import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema"
 import { SignupAffiliateServer } from "@/app/affiliate/[orgId]/(auth)/signup/action"
@@ -29,13 +28,11 @@ import {
   themeCustomizationAtom,
 } from "@/store/AuthCustomizationAtom"
 import { GoogleButton } from "@/components/ui-custom/GoogleButton"
-import { LogoUpload } from "@/components/ui-custom/LogoUpload"
-import { useOrgLogo } from "@/hooks/useOrgLogo"
-import { useOrg } from "@/hooks/useOrg"
 import { GoogleButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/GoogleButtonCustomizationOptions"
 import { cn } from "@/lib/utils"
 import { useAffiliatePath } from "@/hooks/useUrl"
 import { useCachedValidation } from "@/hooks/useCachedValidation"
+import { OrgHeader } from "@/components/ui-custom/OrgHeader"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -45,8 +42,6 @@ type Props = {
 const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false)
   const { customNotesSignup } = useAtomValue(notesCustomizationAtom)
-  const { org } = useOrg(orgId, affiliate)
-  const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -60,7 +55,6 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     backgroundColor,
     linkTextColor,
     tertiaryTextColor,
-    headerColor,
     googleSeparatorColor,
   } = useAtomValue(themeCustomizationAtom)
   const {
@@ -161,41 +155,11 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     >
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          {affiliate || isPreview ? (
-            <div className="flex items-center justify-center space-x-2 cursor-pointer">
-              <LogoUpload
-                value={logoUrl}
-                onChange={setLogoUrl}
-                affiliate={affiliate}
-                orgId={orgId}
-                orgName={org?.name}
-                mode="avatar"
-              />
-
-              <h1
-                className="text-4xl font-bold"
-                style={{ color: (affiliate && headerColor) || undefined }}
-              >
-                {org?.name || "AffiliateX"}
-              </h1>
-              {isPreview && (
-                <ThemeCustomizationOptions
-                  name="headerColor"
-                  showLabel={false}
-                  buttonSize="w-4 h-4"
-                />
-              )}
-            </div>
-          ) : (
-            <Link href="/" className="inline-block">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-8 h-8 rounded-md bg-primary/90 flex items-center justify-center text-white font-bold">
-                  A
-                </div>
-                <h1 className="text-2xl font-bold">AffiliateX</h1>
-              </div>
-            </Link>
-          )}
+          <OrgHeader
+            orgId={orgId}
+            affiliate={affiliate}
+            isPreview={isPreview}
+          />
         </div>
 
         <Card
