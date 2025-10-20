@@ -33,6 +33,7 @@ export const validateAffiliatePasswordAction = async (
         status: 403,
         error: "Incorrect current password",
         toast: "Incorrect current password",
+        data: currentPassword,
       }
     }
 

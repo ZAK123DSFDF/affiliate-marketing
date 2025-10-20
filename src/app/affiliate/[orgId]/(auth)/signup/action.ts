@@ -64,6 +64,7 @@ export const SignupAffiliateServer = async ({
           error: "Affiliate already exists.",
           toast:
             "This email is already registered with credentials under this organization.",
+          data: existingAffiliate.email,
           fields: { email: "Email already in use" },
         }
       }

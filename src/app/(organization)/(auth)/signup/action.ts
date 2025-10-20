@@ -54,7 +54,8 @@ export const SignupServer = async ({
         throw {
           status: 409,
           error: "User already exists.",
-          toast: "This email is already registered with credentials.",
+          toast: "This email is already registered",
+          data: existingUser.email,
           fields: { email: "Email already in use" },
         }
       }

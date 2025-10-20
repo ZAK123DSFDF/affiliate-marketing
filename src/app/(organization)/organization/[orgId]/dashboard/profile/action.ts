@@ -78,7 +78,11 @@ export async function validateCurrentOrganizationPassword(
 
     const isMatch = await bcrypt.compare(currentPassword, record.password)
     if (!isMatch) {
-      throw { status: 403, toast: "Incorrect current password" }
+      throw {
+        status: 403,
+        toast: "Incorrect current password",
+        data: currentPassword,
+      }
     }
 
     return { ok: true }

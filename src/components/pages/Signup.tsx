@@ -35,6 +35,7 @@ import { useOrg } from "@/hooks/useOrg"
 import { GoogleButtonCustomizationOptions } from "@/components/ui-custom/Customization/AuthCustomization/GoogleButtonCustomizationOptions"
 import { cn } from "@/lib/utils"
 import { useAffiliatePath } from "@/hooks/useUrl"
+import { useCachedValidation } from "@/hooks/useCachedValidation"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -71,14 +72,41 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const authCardStyle = useAuthCard(affiliate)
   const { showCustomToast } = useCustomToast()
   const { getPath } = useAffiliatePath(orgId as string)
+  const emailCache = useCachedValidation({
+    showError: (msg) =>
+      showCustomToast({
+        type: "error",
+        title: "Signup Failed",
+        description: msg,
+        affiliate,
+      }),
+    errorMessage: affiliate
+      ? "This email is already registered with credentials under this organization."
+      : "This email is already registered",
+    maxCacheSize: 10,
+  })
   const affiliateMutation = useAuthMutation(SignupAffiliateServer, {
     affiliate,
     disableSuccessToast: true,
+    onSuccess: (res: any) => {
+      if (!res.ok) {
+        emailCache.addFailedValue(res.data)
+      } else {
+        emailCache.clearCache()
+      }
+    },
   })
 
   const normalMutation = useAuthMutation(SignupServer, {
     affiliate,
     disableSuccessToast: true,
+    onSuccess: (res: any) => {
+      if (!res.ok) {
+        emailCache.addFailedValue(res.data)
+      } else {
+        emailCache.clearCache()
+      }
+    },
   })
   const isLoading = isPreview
     ? previewLoading
@@ -111,8 +139,12 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
       return
     }
     if (orgId && affiliate) {
+      const email = data.email.trim().toLowerCase()
+      if (emailCache.shouldSkip(email)) return
       affiliateMutation.mutate({ ...data, organizationId: orgId })
     } else {
+      const email = data.email.trim().toLowerCase()
+      if (emailCache.shouldSkip(email)) return
       normalMutation.mutate(data)
     }
   }

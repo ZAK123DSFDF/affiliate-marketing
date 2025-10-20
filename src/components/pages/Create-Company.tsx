@@ -28,6 +28,7 @@ import { DomainInputField } from "@/components/ui-custom/DomainInputField"
 import { useEffect, useMemo, useState } from "react"
 import { CompanyFormValues, companySchema } from "@/lib/schema/companySchema"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import { useCachedValidation } from "@/hooks/useCachedValidation"
 
 type CreateCompanyProps = {
   mode: "create" | "add"
@@ -38,7 +39,6 @@ const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
     "platform" | "custom-main" | "custom-subdomain" | null
   >(null)
   const { showCustomToast } = useCustomToast()
-  const [lastFailedDomain, setLastFailedDomain] = useState<string | null>(null)
   const createCompanySchema = useMemo(
     () => companySchema(domainType),
     [domainType]
@@ -62,35 +62,39 @@ const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
   })
   const commissionType = form.watch("commissionType")
   const router = useRouter()
-
+  const domainCache = useCachedValidation({
+    showError: (msg) =>
+      showCustomToast({
+        type: "error",
+        title: "Failed",
+        description: msg,
+        affiliate: false,
+      }),
+    errorMessage: "This domain is already linked to another organization.",
+    maxCacheSize: 10,
+  })
   const { mutate, isPending } = useAuthMutation(CreateOrganization, {
     onSuccess: (res: any) => {
       if (res.ok && res.data?.id) {
         router.push(`/organization/${res.data.id}/dashboard/analytics`)
       } else {
-        setLastFailedDomain(res.data)
+        domainCache.addFailedValue(res.data)
       }
     },
   })
-  useEffect(() => {
-    if (lastFailedDomain && form.watch("defaultDomain") !== lastFailedDomain) {
-      setLastFailedDomain(null)
-    }
-  }, [form.watch("defaultDomain")])
+
   const onSubmit = (data: CompanyFormValues) => {
     let domain = data.defaultDomain.trim().toLowerCase()
     if (!domain.includes(".") && !domain.endsWith(".refearnapp.com")) {
       domain = `${domain}.refearnapp.com`
     }
-    if (lastFailedDomain && domain === lastFailedDomain) {
-      showCustomToast({
-        type: "error",
-        title: "Failed",
-        description: `Domain name "${lastFailedDomain}" already exists. Please choose another one.`,
-        affiliate: false,
-      })
+    if (
+      domainCache.shouldSkip(
+        domain,
+        `Domain name "${domain}" already exists. Please choose another one.`
+      )
+    )
       return
-    }
     mutate({ ...data, defaultDomain: domain, mode })
   }
   const formContent = (

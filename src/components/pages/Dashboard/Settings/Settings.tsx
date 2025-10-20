@@ -44,6 +44,7 @@ import { OrgData } from "@/lib/types/organization"
 import { DomainInputField } from "@/components/ui-custom/DomainInputField"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import { useCachedValidation } from "@/hooks/useCachedValidation"
 
 type OrgFormData = z.infer<typeof orgSettingsSchema>
 type Props = { orgData: OrgData }
@@ -85,7 +86,6 @@ export default function Settings({ orgData }: Props) {
     "platform" | "custom-main" | "custom-subdomain" | null
   >(null)
   const [open, setOpen] = useState<boolean>(false)
-  const [lastFailedDomain, setLastFailedDomain] = useState<string | null>(null)
   const domainValue = form.watch("defaultDomain")?.trim() || ""
   const oldDomain = safeDefaults.defaultDomain.trim()
   const domainChanged = domainValue !== oldDomain
@@ -134,6 +134,17 @@ export default function Settings({ orgData }: Props) {
   useEffect(() => {
     if (isVerified) setIsVerified(false)
   }, [domainValue, domainType])
+  const domainCache = useCachedValidation({
+    showError: (msg) =>
+      showCustomToast({
+        type: "error",
+        title: "Invalid Domain",
+        description: msg,
+        affiliate: false,
+      }),
+    errorMessage:
+      "This domain is already linked to another organization. Please use a different domain.",
+  })
   const mut = useMutation<
     MutationData,
     unknown,
@@ -150,7 +161,7 @@ export default function Settings({ orgData }: Props) {
           description: "Saved successfully.",
           affiliate: false,
         })
-        setLastFailedDomain(null)
+        domainCache.clearCache()
       } else {
         showCustomToast({
           type: "error",
@@ -158,7 +169,7 @@ export default function Settings({ orgData }: Props) {
           description: res?.toast || res?.error || "Update failed.",
           affiliate: false,
         })
-        setLastFailedDomain(res.data)
+        domainCache.addFailedValue(res.data)
       }
     },
     onError: () =>
@@ -214,16 +225,6 @@ export default function Settings({ orgData }: Props) {
   })
   const onSubmit = (data: OrgFormData) => {
     const newDomain = normalizeDomain(data.defaultDomain)
-    if (lastFailedDomain && newDomain === normalizeDomain(lastFailedDomain)) {
-      showCustomToast({
-        type: "error",
-        title: "Error",
-        description:
-          "This domain is already linked to another organization. Please use a different domain.",
-        affiliate: false,
-      })
-      return
-    }
 
     const oldDomain = normalizeDomain(safeDefaults.defaultDomain)
     const finalDomain = newDomain.endsWith(".refearnapp.com")
@@ -231,6 +232,7 @@ export default function Settings({ orgData }: Props) {
       : /^[a-z0-9-]+$/.test(newDomain)
         ? `${newDomain}.refearnapp.com`
         : newDomain
+    if (domainCache.shouldSkip(finalDomain)) return
     const changed = (Object.keys(data) as (keyof OrgData)[]).reduce(
       (acc, key) => {
         if (key === "defaultDomain") {
@@ -249,11 +251,6 @@ export default function Settings({ orgData }: Props) {
 
     mut.mutate({ id: data.id, ...changed })
   }
-  useEffect(() => {
-    if (lastFailedDomain && form.watch("defaultDomain") !== lastFailedDomain) {
-      setLastFailedDomain(null)
-    }
-  }, [form.watch("defaultDomain")])
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}

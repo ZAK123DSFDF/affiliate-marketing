@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useMemo, useState } from "react"
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
@@ -42,6 +42,7 @@ import {
 } from "@/lib/server/requestEmailChange"
 import { LogoutButton } from "@/components/ui-custom/LogoutButton"
 import { AuthResponse, useAuthMutation } from "@/hooks/useAuthMutation"
+import { useCachedValidation } from "@/hooks/useCachedValidation"
 
 export default function Profile({
   AffiliateData,
@@ -107,9 +108,30 @@ export default function Profile({
   const dashboardCardStyle = useDashboardCard(affiliate)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [showEmailDialog, setShowEmailDialog] = useState(false)
-  const [lastFailedEmail, setLastFailedEmail] = useState<string | null>(null)
   const [step, setStep] = useState<"current" | "new">("current")
   const { showCustomToast } = useCustomToast()
+  const emailCache = useCachedValidation({
+    showError: (msg) =>
+      showCustomToast({
+        type: "error",
+        title: "Failed",
+        description: msg,
+        affiliate,
+      }),
+    errorMessage: affiliate
+      ? "Email already in use in this organization"
+      : "Email already in use",
+  })
+  const passwordCache = useCachedValidation({
+    showError: (msg) =>
+      showCustomToast({
+        type: "error",
+        title: "Invalid Password",
+        description: msg,
+        affiliate,
+      }),
+    errorMessage: "Incorrect password.",
+  })
   const updateProfile = useMutation({
     mutationFn: async (data: {
       name?: string
@@ -165,6 +187,7 @@ export default function Profile({
           description: "Enter your new password below.",
           affiliate,
         })
+        passwordCache.clearCache()
       } else {
         showCustomToast({
           type: "error",
@@ -172,6 +195,7 @@ export default function Profile({
           description: "Incorrect password.",
           affiliate,
         })
+        passwordCache.addFailedValue(res.data)
       }
     },
     onError: () => {
@@ -223,6 +247,7 @@ export default function Profile({
       })
     },
   })
+
   const logoutMutation = useMutation({
     mutationFn: async () => {
       if (isPreview) {
@@ -270,6 +295,13 @@ export default function Profile({
     {
       affiliate,
       disableSuccessToast: false,
+      onSuccess: (res: any) => {
+        if (!res.ok) {
+          emailCache.addFailedValue(res.data)
+        } else {
+          emailCache.clearCache()
+        }
+      },
     }
   )
   const onSubmit = (data: typeof safeDefaults) => {
@@ -288,20 +320,14 @@ export default function Profile({
     updateProfile.mutate(changed)
   }
   const onSubmitValidateCurrent = (data: any) => {
+    const password = data.currentPassword.trim()
+    if (passwordCache.shouldSkip(password)) return
     validatePassword.mutate(data.currentPassword)
   }
   const onSubmitUpdatePassword = (data: any) => {
     updatePassword.mutate(data.newPassword)
   }
-  useEffect(() => {
-    const subscription = profileForm.watch((values) => {
-      const currentEmail = values.email?.trim().toLowerCase()
-      if (lastFailedEmail && currentEmail !== lastFailedEmail) {
-        setLastFailedEmail(null)
-      }
-    })
-    return () => subscription.unsubscribe()
-  }, [profileForm, lastFailedEmail])
+
   const resetPasswordModal = () => {
     setShowPasswordModal(false)
     setStep("current")
@@ -310,31 +336,8 @@ export default function Profile({
   }
   const handleEmailSubmit = (values: { newEmail: string }) => {
     const newEmail = values.newEmail.trim().toLowerCase()
-
-    if (lastFailedEmail && newEmail === lastFailedEmail) {
-      showCustomToast({
-        type: "error",
-        title: "Failed",
-        description: affiliate
-          ? "Email already in use in this organization"
-          : "Email already in use",
-        affiliate,
-      })
-      return
-    }
-
-    emailChangeMutation.mutate(values, {
-      onSuccess: (res) => {
-        if (!res?.ok) {
-          setLastFailedEmail(newEmail)
-        } else {
-          setLastFailedEmail(null)
-        }
-      },
-      onError: () => {
-        setLastFailedEmail(newEmail)
-      },
-    })
+    if (emailCache.shouldSkip(newEmail)) return
+    emailChangeMutation.mutate(values)
   }
   return (
     <div className="flex flex-col gap-6">
