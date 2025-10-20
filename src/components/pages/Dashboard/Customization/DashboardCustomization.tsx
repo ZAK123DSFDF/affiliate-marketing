@@ -12,10 +12,17 @@ import { useAtomValue } from "jotai"
 import { dashboardThemeCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 import { MissingPaypalEmailCard } from "@/components/ui-custom/MissingPayoutEmailCard"
 import { showMissingPaypalAtom } from "@/store/MissingPaypalAtom"
+import { useActiveDomain } from "@/hooks/useActiveDomain"
+import { DomainHeader } from "@/components/ui-custom/DomainHeader"
 
-export function DashboardCustomization({ orgId }: { orgId: string }) {
+export function DashboardCustomization({
+  orgId,
+  domain,
+}: {
+  orgId: string
+  domain?: string
+}) {
   const [selectedPage, setSelectedPage] = useState("dashboard")
-
   const { mainBackgroundColor } = useAtomValue(dashboardThemeCustomizationAtom)
   const showMissingPaypal = useAtomValue(showMissingPaypalAtom)
   if (!orgId) {
@@ -23,69 +30,78 @@ export function DashboardCustomization({ orgId }: { orgId: string }) {
   }
   return (
     <div className="space-y-6">
-      <div className="border rounded-xl overflow-hidden shadow-lg ring ring-muted bg-background max-w-5xl h-[500px] mx-auto relative">
-        <div className="flex h-full">
-          <AffiliateDashboardSidebar
-            affiliate
-            orgId={orgId}
-            isPreview
-            currentPage={selectedPage}
-            onSelectPage={(page: any) => setSelectedPage(page)}
+      <div className="border rounded-lg p-4 transition-all duration-300 mt-6 shadow-md">
+        {domain && (
+          <DomainHeader
+            domain={domain}
+            route={`/${selectedPage}`}
+            className="mx-auto mb-4 max-w-5xl"
           />
-          <div
-            className="flex-1 p-6 overflow-y-auto"
-            style={{
-              backgroundColor: mainBackgroundColor || undefined,
-            }}
-          >
-            <DashboardThemeCustomizationOptions name="mainBackgroundColor" />
-            {selectedPage === "dashboard" && (
-              <div className="space-y-6">
-                {showMissingPaypal && (
-                  <MissingPaypalEmailCard
-                    orgId={orgId}
-                    affiliate
-                    isPreview
-                    onOpenProfile={() => setSelectedPage("profile")}
-                  />
-                )}
-                <AffiliateOverview orgId={orgId} affiliate isPreview />
-              </div>
-            )}
-            {selectedPage === "links" && (
-              <div className="space-y-6">
-                {showMissingPaypal && (
-                  <MissingPaypalEmailCard
-                    orgId={orgId}
-                    affiliate
-                    isPreview
-                    onOpenProfile={() => setSelectedPage("profile")}
-                  />
-                )}
-                <Links orgId={orgId} affiliate isPreview />
-              </div>
-            )}
-            {selectedPage === "payment" && (
-              <div className="space-y-6">
-                {showMissingPaypal && (
-                  <MissingPaypalEmailCard
-                    orgId={orgId}
-                    affiliate
-                    isPreview
-                    onOpenProfile={() => setSelectedPage("profile")}
-                  />
-                )}
-                <PaymentTable orgId={orgId} affiliate isPreview />
-              </div>
-            )}
-            {selectedPage === "profile" && (
-              <Profile
-                orgId={orgId}
-                affiliate
-                AffiliateData={dummyProfileData}
-                isPreview
-              />
-            )}
+        )}
+        <div className="border rounded-xl overflow-hidden shadow-lg ring ring-muted bg-background max-w-5xl h-[500px] mx-auto relative">
+          <div className="flex h-full">
+            <AffiliateDashboardSidebar
+              affiliate
+              orgId={orgId}
+              isPreview
+              currentPage={selectedPage}
+              onSelectPage={(page: any) => setSelectedPage(page)}
+            />
+            <div
+              className="flex-1 p-6 overflow-y-auto"
+              style={{
+                backgroundColor: mainBackgroundColor || undefined,
+              }}
+            >
+              <DashboardThemeCustomizationOptions name="mainBackgroundColor" />
+              {selectedPage === "dashboard" && (
+                <div className="space-y-6">
+                  {showMissingPaypal && (
+                    <MissingPaypalEmailCard
+                      orgId={orgId}
+                      affiliate
+                      isPreview
+                      onOpenProfile={() => setSelectedPage("profile")}
+                    />
+                  )}
+                  <AffiliateOverview orgId={orgId} affiliate isPreview />
+                </div>
+              )}
+              {selectedPage === "links" && (
+                <div className="space-y-6">
+                  {showMissingPaypal && (
+                    <MissingPaypalEmailCard
+                      orgId={orgId}
+                      affiliate
+                      isPreview
+                      onOpenProfile={() => setSelectedPage("profile")}
+                    />
+                  )}
+                  <Links orgId={orgId} affiliate isPreview />
+                </div>
+              )}
+              {selectedPage === "payment" && (
+                <div className="space-y-6">
+                  {showMissingPaypal && (
+                    <MissingPaypalEmailCard
+                      orgId={orgId}
+                      affiliate
+                      isPreview
+                      onOpenProfile={() => setSelectedPage("profile")}
+                    />
+                  )}
+                  <PaymentTable orgId={orgId} affiliate isPreview />
+                </div>
+              )}
+              {selectedPage === "profile" && (
+                <Profile
+                  orgId={orgId}
+                  affiliate
+                  AffiliateData={dummyProfileData}
+                  isPreview
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>

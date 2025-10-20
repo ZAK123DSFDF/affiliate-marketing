@@ -13,15 +13,31 @@ import EmailVerified from "@/components/pages/Email-verified"
 import CheckEmail from "@/components/pages/CheckEmail"
 import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
+import { useActiveDomain } from "@/hooks/useActiveDomain"
+import { DomainHeader } from "@/components/ui-custom/DomainHeader"
 interface AuthCustomizationProps {
   setMainTab?: (tab: string) => void
   orgId: string
+  domain?: string
 }
 export const AuthCustomization = ({
   setMainTab,
   orgId,
+  domain,
 }: AuthCustomizationProps) => {
   const [tab, setTab] = useState("login")
+
+  const routeMap: Record<string, string> = {
+    login: "/login",
+    signup: "/signup",
+    "forgot-password": "/forgot-password",
+    "reset-password": "/reset-password",
+    "invalid-token": "/invalid-token",
+    "email-verified": "/email-verified",
+    "check-email": "/check-email",
+    "splash-loading": "/",
+    "splash-error": "/",
+  }
   const [errorCycle, setErrorCycle] = useState<"loading" | "error">("error")
 
   const handleRetry = () => {
@@ -30,6 +46,9 @@ export const AuthCustomization = ({
   }
   return (
     <div className="border rounded-lg p-4 transition-all duration-300 mt-6 shadow-md">
+      {domain && (
+        <DomainHeader domain={domain} route={routeMap[tab]} className="mb-4" />
+      )}
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="flex flex-wrap gap-2 mb-4 overflow-x-auto whitespace-nowrap">
           <TabsTrigger value="login">Login</TabsTrigger>

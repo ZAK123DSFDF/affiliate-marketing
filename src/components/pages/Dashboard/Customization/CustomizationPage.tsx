@@ -15,10 +15,11 @@ import { useLiveCustomizations } from "@/store/LiveCustomizationAtom"
 import { GlobalCustomizationProvider } from "@/components/pages/Dashboard/Customization/GlobalCustomizationProvider"
 import { Switch } from "@/components/ui/switch"
 import { showMissingPaypalAtom } from "@/store/MissingPaypalAtom"
+import { useActiveDomain } from "@/hooks/useActiveDomain"
 
 export default function CustomizationPage({ orgId }: { orgId: string }) {
   const [mainTab, setMainTab] = useState("sidebar")
-
+  const { domain } = useActiveDomain(orgId)
   const authHasChanges = useAtomValue(authHasChangesAtom)
   const dashboardHasChanges = useAtomValue(dashboardHasChangesAtom)
   const [showMissingPaypal, setShowMissingPaypal] = useAtom(
@@ -96,10 +97,14 @@ export default function CustomizationPage({ orgId }: { orgId: string }) {
           </div>
 
           <TabsContent value="sidebar">
-            <DashboardCustomization orgId={orgId} />
+            <DashboardCustomization orgId={orgId} domain={domain} />
           </TabsContent>
           <TabsContent value="auth">
-            <AuthCustomization orgId={orgId} setMainTab={setMainTab} />
+            <AuthCustomization
+              orgId={orgId}
+              setMainTab={setMainTab}
+              domain={domain}
+            />
           </TabsContent>
         </Tabs>
 
