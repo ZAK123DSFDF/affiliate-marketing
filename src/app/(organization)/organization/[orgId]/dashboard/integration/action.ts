@@ -5,6 +5,8 @@ import { organizationPaddleAccount } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { getOrgAuth } from "@/lib/server/GetOrgAuth"
 import { returnError } from "@/lib/errorHandler"
+import { MutationData } from "@/lib/types/response"
+import { handleAction } from "@/lib/handleAction"
 
 export async function savePaddleWebhookKey({
   orgId,
@@ -12,8 +14,8 @@ export async function savePaddleWebhookKey({
 }: {
   orgId: string
   webhookPublicKey: string
-}) {
-  try {
+}): Promise<MutationData> {
+  return handleAction("savePaddleWebhookKey", async () => {
     // 🔐 Authorization
     await getOrgAuth(orgId)
 
@@ -56,13 +58,9 @@ export async function savePaddleWebhookKey({
 
     return {
       ok: true,
-      status: 200,
       toast: "✅ Paddle webhook key saved successfully",
     }
-  } catch (err) {
-    console.error("savePaddleWebhookKey error:", err)
-    return returnError(err)
-  }
+  })
 }
 export async function getOrgWebhookKey(orgId: string) {
   try {
@@ -84,8 +82,10 @@ export async function getOrgWebhookKey(orgId: string) {
     return { webhookPublicKey: null }
   }
 }
-export async function deleteOrgPaddleAccount(orgId: string) {
-  try {
+export async function deleteOrgPaddleAccount(
+  orgId: string
+): Promise<MutationData> {
+  return handleAction("deletePaddleOrgAccount", async () => {
     await getOrgAuth(orgId)
 
     await db
@@ -93,7 +93,5 @@ export async function deleteOrgPaddleAccount(orgId: string) {
       .where(eq(organizationPaddleAccount.orgId, orgId))
 
     return { ok: true }
-  } catch (err) {
-    return returnError(err)
-  }
+  })
 }

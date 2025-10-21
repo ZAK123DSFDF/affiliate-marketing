@@ -1,5 +1,5 @@
 interface ErrorResponse {
-  ok: boolean
+  ok: false
   status: number
   error: string
   toast?: string // Unified message for client-side display

@@ -5,6 +5,8 @@ import * as bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
+import { MutationData } from "@/lib/types/response"
+import { handleAction } from "@/lib/handleAction"
 
 export const LoginServer = async ({
   email,
@@ -14,8 +16,8 @@ export const LoginServer = async ({
   email: string
   password: string
   rememberMe?: boolean
-}) => {
-  try {
+}): Promise<MutationData> => {
+  return handleAction("Login Server", async () => {
     if (!email || !password) {
       throw {
         status: 400,
@@ -99,8 +101,5 @@ export const LoginServer = async ({
       }
     }
     return { ok: true, redirectUrl: verifyUrl }
-  } catch (error: any) {
-    console.error("User Login Error:", error)
-    return returnError(error)
-  }
+  })
 }

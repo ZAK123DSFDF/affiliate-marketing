@@ -6,6 +6,8 @@ import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
 import { buildAffiliateUrl } from "@/util/Url"
+import { MutationData } from "@/lib/types/response"
+import { handleAction } from "@/lib/handleAction"
 
 export const ForgotPasswordAffiliateServer = async ({
   email,
@@ -13,8 +15,8 @@ export const ForgotPasswordAffiliateServer = async ({
 }: {
   email: string
   organizationId: string
-}) => {
-  try {
+}): Promise<MutationData> => {
+  return handleAction("Forgot Password Affiliate Server", async () => {
     if (!email || !organizationId) {
       throw {
         status: 400,
@@ -62,8 +64,5 @@ export const ForgotPasswordAffiliateServer = async ({
       return { ok: true, message: "Reset link sent to your email" }
     }
     return { ok: true, redirectUrl: resetUrl }
-  } catch (error: any) {
-    console.error("Affiliate Forgot Password Error:", error)
-    return returnError(error)
-  }
+  })
 }

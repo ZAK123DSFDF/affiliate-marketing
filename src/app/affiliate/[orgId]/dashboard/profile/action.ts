@@ -1,11 +1,7 @@
 // app/actions/auth/getUser.ts
 "use server"
-
-import { returnError } from "@/lib/errorHandler"
 import { ResponseData } from "@/lib/types/response"
-import {
-  SafeAffiliateWithCapabilities,
-} from "@/lib/types/authAffiliate"
+import { SafeAffiliateWithCapabilities } from "@/lib/types/authAffiliate"
 import { revalidatePath } from "next/cache"
 import { getAffiliateOrganization } from "@/lib/server/GetAffiliateOrganization"
 import { updateAffiliatePasswordAction } from "@/lib/server/updateAffiliatePassword"
@@ -17,11 +13,12 @@ import { cookies } from "next/headers"
 import { getAffiliateAuthCapabilities } from "@/lib/server/getAffiliateAuthCapabilities"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
 import { buildAffiliateUrl } from "@/util/Url"
+import { handleAction } from "@/lib/handleAction"
 
 export const getAffiliateData = async (
   orgId: string
 ): Promise<ResponseData<SafeAffiliateWithCapabilities>> => {
-  try {
+  return handleAction("getAffiliateData", async () => {
     const decoded = await getAffiliateOrganization(orgId)
     const { canChangeEmail, canChangePassword } =
       await getAffiliateAuthCapabilities(orgId)
@@ -30,25 +27,19 @@ export const getAffiliateData = async (
       ok: true,
       data: { ...affiliateData, canChangeEmail, canChangePassword },
     }
-  } catch (err) {
-    console.error("getAffiliate error:", err)
-    return returnError(err) as ResponseData<SafeAffiliateWithCapabilities>
-  }
+  })
 }
 export const getAffiliatePaymentMethod = async (
   orgId: string
 ): Promise<ResponseData<AffiliatePaymentMethod>> => {
-  try {
+  return handleAction("getAffiliatePaymentMethod", async () => {
     const decoded = await getAffiliateOrganization(orgId)
     const paypalMethod = await getPayoutEmailMethod(decoded)
     return {
       ok: true,
       data: { paypalEmail: paypalMethod?.accountIdentifier ?? null },
     }
-  } catch (err) {
-    console.error("getAffiliatePayout error:", err)
-    return returnError(err) as ResponseData<AffiliatePaymentMethod>
-  }
+  })
 }
 export async function updateAffiliateProfile(
   orgId: string,
@@ -57,7 +48,7 @@ export async function updateAffiliateProfile(
     paypalEmail?: string
   }
 ) {
-  try {
+  return handleAction("updateAffiliateProfile", async () => {
     const decoded = await getAffiliateOrganization(orgId)
     await updateAffiliateProfileAction(decoded, data)
     const baseUrl = await getBaseUrl()
@@ -69,30 +60,24 @@ export async function updateAffiliateProfile(
     })
     revalidatePath(revalidationPath)
     return { ok: true }
-  } catch (err) {
-    console.error("updateAffiliateProfile error:", err)
-    return returnError(err)
-  }
+  })
 }
 
 export async function validateCurrentPassword(
   orgId: string,
   currentPassword: string
 ) {
-  try {
+  return handleAction("Validate Current Password", async () => {
     const decoded = await getAffiliateOrganization(orgId)
     await validateAffiliatePasswordAction(decoded, currentPassword)
     return { ok: true }
-  } catch (err) {
-    console.error("validateCurrentPassword error:", err)
-    return returnError(err)
-  }
+  })
 }
 export async function updateAffiliatePassword(
   orgId: string,
   newPassword: string
 ) {
-  try {
+  return handleAction("updateAffiliatePassword", async () => {
     const decoded = await getAffiliateOrganization(orgId)
     const { canChangePassword } = await getAffiliateAuthCapabilities(orgId)
     if (!canChangePassword) {
@@ -101,26 +86,25 @@ export async function updateAffiliatePassword(
     await updateAffiliatePasswordAction(decoded, newPassword)
 
     return { ok: true }
-  } catch (err) {
-    console.error("updateAffiliatePassword error:", err)
-    return returnError(err)
-  }
+  })
 }
 export async function logoutAction(affiliate: boolean, orgId?: string) {
-  const cookieStore = await cookies()
+  return handleAction("logoutAction", async () => {
+    const cookieStore = await cookies()
 
-  if (affiliate && orgId) {
-    cookieStore.delete(`affiliateToken-${orgId}`)
-    const baseUrl = await getBaseUrl()
-    const redirectUrl = buildAffiliateUrl({
-      path: "login",
-      organizationId: orgId,
-      baseUrl,
-      partial: true,
-    })
-    return { ok: true, redirectTo: redirectUrl }
-  } else {
-    cookieStore.delete("organizationToken")
-    return { ok: true, redirectTo: "/login" }
-  }
+    if (affiliate && orgId) {
+      cookieStore.delete(`affiliateToken-${orgId}`)
+      const baseUrl = await getBaseUrl()
+      const redirectUrl = buildAffiliateUrl({
+        path: "login",
+        organizationId: orgId,
+        baseUrl,
+        partial: true,
+      })
+      return { ok: true, redirectTo: redirectUrl }
+    } else {
+      cookieStore.delete("organizationToken")
+      return { ok: true, redirectTo: "/login" }
+    }
+  })
 }

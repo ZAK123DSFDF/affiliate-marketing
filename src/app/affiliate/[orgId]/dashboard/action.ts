@@ -11,13 +11,14 @@ import { getReferrerStats } from "@/lib/server/getReferrerStats"
 import { getAffiliateKpiStatsAction } from "@/lib/server/getAffiliateKpiStats"
 import { getOrganization } from "@/lib/server/getOrganization"
 import { ExchangeRate } from "@/util/ExchangeRate"
+import { handleAction } from "@/lib/handleAction"
 
 export async function getAffiliateKpiStats(
   orgId: string,
   year?: number,
   month?: number
 ): Promise<ResponseData<AffiliateKpiStats[]>> {
-  try {
+  return handleAction("getAffiliateKpiStats", async () => {
     const decoded = await getAffiliateOrganization(orgId)
     const [row] = await getAffiliateKpiStatsAction(
       decoded.orgId,
@@ -38,17 +39,14 @@ export async function getAffiliateKpiStats(
     }
 
     return { ok: true, data: [affiliateKpiStats] }
-  } catch (err) {
-    console.error("getAffiliateLinksWithStats error:", err)
-    return returnError(err) as ResponseData<AffiliateKpiStats[]>
-  }
+  })
 }
 export async function getAffiliateKpiTimeSeries(
   orgId: string,
   year?: number,
   month?: number
 ): Promise<ResponseData<AffiliateKpiTimeSeries[]>> {
-  try {
+  return handleAction("getAffiliateKpiTimeSeries", async () => {
     const decoded = await getAffiliateOrganization(orgId)
     const { linkIds } = await getAffiliateLinks(decoded)
     if (!linkIds.length) return { ok: true, data: [] }
@@ -60,9 +58,7 @@ export async function getAffiliateKpiTimeSeries(
     )
 
     return { ok: true, data }
-  } catch (err) {
-    return returnError(err) as ResponseData<AffiliateKpiTimeSeries[]>
-  }
+  })
 }
 
 export async function getAffiliateReferrers(
@@ -70,7 +66,7 @@ export async function getAffiliateReferrers(
   year?: number,
   month?: number
 ): Promise<ResponseData<AffiliateReferrerStat[]>> {
-  try {
+  return handleAction("getAffiliateReferrers", async () => {
     const decoded = await getAffiliateOrganization(orgId)
 
     const { linkIds } = await getAffiliateLinks(decoded)
@@ -78,8 +74,5 @@ export async function getAffiliateReferrers(
     const referrerStats = await getReferrerStats(linkIds, year, month)
 
     return { ok: true, data: referrerStats }
-  } catch (err) {
-    console.error("getAffiliateReferrers error:", err)
-    return returnError(err) as ResponseData<AffiliateReferrerStat[]>
-  }
+  })
 }

@@ -7,6 +7,9 @@ import * as bcrypt from "bcrypt"
 import { eq, and } from "drizzle-orm"
 import jwt from "jsonwebtoken"
 import { cookies } from "next/headers"
+import { returnError } from "@/lib/errorHandler"
+import { MutationData } from "@/lib/types/response"
+import { handleAction } from "@/lib/handleAction"
 
 export const resetOrganizationPasswordServer = async ({
   userId,
@@ -14,8 +17,8 @@ export const resetOrganizationPasswordServer = async ({
 }: {
   userId: string
   password: string
-}) => {
-  try {
+}): Promise<MutationData> => {
+  return handleAction("reset Organization Password", async () => {
     const hashed = await bcrypt.hash(password, 10)
 
     // 🔑 Update the organization's credentials account password
@@ -73,8 +76,5 @@ export const resetOrganizationPasswordServer = async ({
       ok: true,
       redirectUrl: `/organization/${activeOrgId}/dashboard/analytics`,
     }
-  } catch (err) {
-    console.error("Reset organization password failed:", err)
-    return { ok: false, error: "Failed to reset password" }
-  }
+  })
 }

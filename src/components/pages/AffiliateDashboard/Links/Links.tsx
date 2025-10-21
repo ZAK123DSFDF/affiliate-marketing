@@ -134,11 +134,11 @@ export default function Links({
 
   const mutation = useMutation({
     mutationFn: createAffiliateLink,
-    onSuccess: async (newLink: string) => {
+    onSuccess: async (res: any) => {
       showCustomToast({
         type: "success",
         title: "Link created!",
-        description: newLink,
+        description: res.data,
         affiliate,
       })
     },

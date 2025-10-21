@@ -4,9 +4,15 @@ import { db } from "@/db/drizzle"
 import jwt from "jsonwebtoken"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
+import { MutationData } from "@/lib/types/response"
+import { handleAction } from "@/lib/handleAction"
 
-export const ForgotPasswordServer = async ({ email }: { email: string }) => {
-  try {
+export const ForgotPasswordServer = async ({
+  email,
+}: {
+  email: string
+}): Promise<MutationData> => {
+  return handleAction("Forgot Password Server", async () => {
     if (!email) {
       throw {
         status: 400,
@@ -53,8 +59,5 @@ export const ForgotPasswordServer = async ({ email }: { email: string }) => {
       return { ok: true, message: "Reset link sent to your email" }
     }
     return { ok: true, redirectUrl: resetUrl }
-  } catch (error: any) {
-    console.error("Forgot password error:", error)
-    return returnError(error)
-  }
+  })
 }

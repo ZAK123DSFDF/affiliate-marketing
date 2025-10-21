@@ -2,11 +2,12 @@
 
 import { returnError } from "@/lib/errorHandler"
 import { ResponseData } from "@/lib/types/response"
-import { AffiliateStats } from "@/lib/types/affiliateStats"
+import { AffiliateBasePayout, AffiliateStats } from "@/lib/types/affiliateStats"
 import { getOrgAuth } from "@/lib/server/GetOrgAuth"
 import { getAffiliatesWithStatsAction } from "@/lib/server/getAffiliatesWithStats"
 import { OrderBy, OrderDir } from "@/lib/types/orderTypes"
 import { convertedCurrency } from "@/util/ConvertedCurrency"
+import { handleAction } from "@/lib/handleAction"
 
 export async function getAffiliatesWithStats(
   orgId: string,
@@ -17,8 +18,8 @@ export async function getAffiliatesWithStats(
   offset?: number,
   email?: string
 ): Promise<ResponseData<AffiliateStats[]>> {
-  const ordered = orderBy === "none" ? undefined : orderBy
-  try {
+  return handleAction("getAffiliatesWithStats", async () => {
+    const ordered = orderBy === "none" ? undefined : orderBy
     const org = await getOrgAuth(orgId)
     const rows = (await getAffiliatesWithStatsAction(
       orgId,
@@ -33,14 +34,11 @@ export async function getAffiliatesWithStats(
         offset,
         email,
       }
-    )) as AffiliateStats[]
-    const converted = await convertedCurrency<AffiliateStats>(
+    )) as AffiliateBasePayout[]
+    const converted = await convertedCurrency<AffiliateBasePayout>(
       org.currency,
       rows
     )
     return { ok: true, data: converted }
-  } catch (err) {
-    console.error("getAffiliatesWithStats error:", err)
-    return returnError(err) as ResponseData<AffiliateStats[]>
-  }
+  })
 }

@@ -13,13 +13,14 @@ import { getTopAffiliatesByConversionRate } from "@/lib/server/getTopAffiliateBy
 import { getOrganizationKpiStatsAction } from "@/lib/server/getOrganizationKpiStats"
 import { ExchangeRate } from "@/util/ExchangeRate"
 import { convertedCurrency } from "@/util/ConvertedCurrency"
+import { handleAction } from "@/lib/handleAction"
 
 export async function getOrganizationKpiStats(
   orgId: string,
   year?: number,
   month?: number
 ): Promise<ResponseData<OrganizationKpiStats[]>> {
-  try {
+  return handleAction("fetching Organization KPI Stats", async () => {
     const org = await getOrgAuth(orgId)
     const [row] = await getOrganizationKpiStatsAction(orgId, year, month)
     const rate = await ExchangeRate(org.currency)
@@ -35,17 +36,14 @@ export async function getOrganizationKpiStats(
       currency: org.currency,
     }
     return { ok: true, data: [OrganizationKpiStats] }
-  } catch (err) {
-    console.error("Error fetching organization KPI stats:", err)
-    return returnError(err) as ResponseData<OrganizationKpiStats[]>
-  }
+  })
 }
 export async function getOrganizationKpiTimeSeries(
   orgId: string,
   year?: number,
   month?: number
 ): Promise<ResponseData<OrganizationKpiTimeSeries[]>> {
-  try {
+  return handleAction("fetching Organization KPI Time Series", async () => {
     const org = await getOrgAuth(orgId)
     const { linkIds } = await getOrgAffiliateLinks(org, orgId)
     if (!linkIds.length) return { ok: true, data: [] }
@@ -55,32 +53,26 @@ export async function getOrganizationKpiTimeSeries(
       month
     )
     return { ok: true, data }
-  } catch (err) {
-    console.error("Error fetching organization KPI time series:", err)
-    return returnError(err) as ResponseData<OrganizationKpiTimeSeries[]>
-  }
+  })
 }
 export async function getOrganizationReferrer(
   orgId: string,
   year?: number,
   month?: number
 ): Promise<ResponseData<OrganizationReferrerStat[]>> {
-  try {
+  return handleAction("fetching Organization Referrer Stats", async () => {
     const org = await getOrgAuth(orgId)
     const { linkIds } = await getOrgAffiliateLinks(org, orgId)
     const referrerStats = await getReferrerStats(linkIds, year, month)
     return { ok: true, data: referrerStats }
-  } catch (err) {
-    console.error("Error fetching organization referrer:", err)
-    return returnError(err) as ResponseData<OrganizationReferrerStat[]>
-  }
+  })
 }
 export async function getTopAffiliates(
   orgId: string,
   year?: number,
   month?: number
 ): Promise<ResponseData<AffiliateStats[]>> {
-  try {
+  return handleAction("fetching Top Affiliates", async () => {
     const org = await getOrgAuth(orgId)
     const TopAffiliateStats = (await getTopAffiliatesByConversionRate(
       orgId,
@@ -92,8 +84,5 @@ export async function getTopAffiliates(
       TopAffiliateStats
     )
     return { ok: true, data: converted }
-  } catch (err) {
-    console.error("Error fetching top affiliates:", err)
-    return returnError(err) as ResponseData<AffiliateStats[]>
-  }
+  })
 }

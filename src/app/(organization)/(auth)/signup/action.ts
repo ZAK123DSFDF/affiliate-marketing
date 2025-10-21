@@ -7,6 +7,8 @@ import jwt from "jsonwebtoken"
 import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
 import { customAlphabet } from "nanoid"
+import { MutationData } from "@/lib/types/response"
+import { handleAction } from "@/lib/handleAction"
 
 type CreateUserPayload = {
   name: string
@@ -21,8 +23,8 @@ export const SignupServer = async ({
   name,
   email,
   password,
-}: CreateUserPayload) => {
-  try {
+}: CreateUserPayload): Promise<MutationData> => {
+  return handleAction("Signup Server", async () => {
     if (!email || !password || !name) {
       throw {
         status: 400,
@@ -145,8 +147,5 @@ export const SignupServer = async ({
       }
     }
     return { ok: true, redirectUrl: verifyUrl }
-  } catch (error: any) {
-    console.error("User Signup Error:", error)
-    return returnError(error)
-  }
+  })
 }

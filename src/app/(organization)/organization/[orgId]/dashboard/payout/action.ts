@@ -12,6 +12,7 @@ import { convertedCurrency } from "@/util/ConvertedCurrency"
 import { customAlphabet } from "nanoid"
 import { payoutReference, payoutReferencePeriods } from "@/db/schema"
 import { db } from "@/db/drizzle"
+import { handleAction } from "@/lib/handleAction"
 export async function getAffiliatePayouts(
   orgId: string,
   year?: number,
@@ -21,7 +22,7 @@ export async function getAffiliatePayouts(
   offset?: number,
   email?: string
 ): Promise<ResponseData<AffiliatePayout[]>> {
-  try {
+  return handleAction("getAffiliatePayouts", async () => {
     const org = await getOrgAuth(orgId)
     const rows = (await getAffiliatePayoutAction(
       orgId,
@@ -38,10 +39,7 @@ export async function getAffiliatePayouts(
       rows
     )
     return { ok: true, data: converted }
-  } catch (err) {
-    console.error("getAffiliatePayouts error:", err)
-    return returnError(err) as ResponseData<AffiliatePayout[]>
-  }
+  })
 }
 export async function getAffiliatePayoutsBulk(
   orgId: string,
@@ -51,7 +49,7 @@ export async function getAffiliatePayoutsBulk(
   offset?: number,
   email?: string
 ): Promise<ResponseData<AffiliatePayout[]>> {
-  try {
+  return handleAction("getAffiliatePayoutsBulk", async () => {
     const org = await getOrgAuth(orgId)
     const rows = (await getAffiliatePayoutBulkAction(
       orgId,
@@ -67,16 +65,13 @@ export async function getAffiliatePayoutsBulk(
       rows
     )
     return { ok: true, data: converted }
-  } catch (err) {
-    console.error("getAffiliatePayoutsBulk error:", err)
-    return returnError(err) as ResponseData<AffiliatePayout[]>
-  }
+  })
 }
 
 export async function getUnpaidMonths(
   orgId: string
 ): Promise<ResponseData<UnpaidMonth[]>> {
-  try {
+  return handleAction("getUnpaidMonths", async () => {
     await getOrgAuth(orgId)
     const rows = await getUnpaidPayoutAction(orgId)
 
@@ -88,9 +83,7 @@ export async function getUnpaidMonths(
         unpaid: row.unpaid,
       })),
     }
-  } catch (e) {
-    return returnError(e) as ResponseData<UnpaidMonth[]>
-  }
+  })
 }
 const alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 const generateRefId = customAlphabet(alphabet, 8)

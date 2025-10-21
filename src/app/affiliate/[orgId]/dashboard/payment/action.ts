@@ -7,12 +7,13 @@ import { returnError } from "@/lib/errorHandler"
 import { getAffiliateCommissionByMonthAction } from "@/lib/server/getAffiliateCommissionByMonth"
 import { getOrganization } from "@/lib/server/getOrganization"
 import { ExchangeRate } from "@/util/ExchangeRate"
+import { handleAction } from "@/lib/handleAction"
 
 export const getAffiliateCommissionByMonth = async (
   orgId: string,
   year?: number
 ): Promise<ResponseData<AffiliatePaymentRow[]>> => {
-  try {
+  return handleAction("getAffiliateCommissionByMonth", async () => {
     const decoded = await getAffiliateOrganization(orgId)
     const targetYear = year ?? new Date().getFullYear()
     const rows = await getAffiliateCommissionByMonthAction(decoded, targetYear)
@@ -26,8 +27,5 @@ export const getAffiliateCommissionByMonth = async (
       currency: org.currency,
     }))
     return { ok: true, data: convertedRows }
-  } catch (err) {
-    console.error("getAffiliateCommissionByMonth error:", err)
-    return returnError(err) as ResponseData<AffiliatePaymentRow[]>
-  }
+  })
 }

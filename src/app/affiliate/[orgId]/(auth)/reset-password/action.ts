@@ -9,6 +9,9 @@ import jwt from "jsonwebtoken"
 import { cookies } from "next/headers"
 import { buildAffiliateUrl } from "@/util/Url"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
+import { MutationData } from "@/lib/types/response"
+import { returnError } from "@/lib/errorHandler"
+import { handleAction } from "@/lib/handleAction"
 
 export const resetAffiliatePasswordServer = async ({
   affiliateId,
@@ -18,8 +21,8 @@ export const resetAffiliatePasswordServer = async ({
   affiliateId: string
   orgId: string
   password: string
-}) => {
-  try {
+}): Promise<MutationData> => {
+  return handleAction("reset Affiliate Password", async () => {
     const hashed = await bcrypt.hash(password, 10)
 
     // 🔑 Update the credentials account password (not affiliate directly)
@@ -74,8 +77,5 @@ export const resetAffiliatePasswordServer = async ({
     })
 
     return { ok: true, redirectUrl }
-  } catch (err) {
-    console.error("Reset affiliate password failed:", err)
-    return { ok: false, error: "Failed to reset password" }
-  }
+  })
 }

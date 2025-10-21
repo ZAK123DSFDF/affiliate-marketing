@@ -8,6 +8,8 @@ import { sendVerificationEmail } from "@/lib/mail"
 import { headers } from "next/headers"
 import { buildAffiliateUrl } from "@/util/Url"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
+import { MutationData } from "@/lib/types/response"
+import { handleAction } from "@/lib/handleAction"
 export const LoginAffiliateServer = async ({
   email,
   password,
@@ -18,8 +20,8 @@ export const LoginAffiliateServer = async ({
   password: string
   organizationId: string
   rememberMe?: boolean
-}) => {
-  try {
+}): Promise<MutationData> => {
+  return handleAction("Login Affiliate Server", async () => {
     if (!email || !password || !organizationId) {
       throw {
         status: 400,
@@ -109,8 +111,5 @@ export const LoginAffiliateServer = async ({
       }
     }
     return { ok: true, redirectUrl: verifyUrl }
-  } catch (error: any) {
-    console.error("Affiliate Login Error:", error)
-    return returnError(error)
-  }
+  })
 }

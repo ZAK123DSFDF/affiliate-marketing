@@ -15,3 +15,6 @@ export interface AffiliatePayout
   extends Omit<AffiliateStats, "conversionRate"> {
   paypalEmail?: string
 }
+export interface AffiliateBasePayout extends Omit<AffiliateStats, "currency"> {
+  paypalEmail?: string | null
+}

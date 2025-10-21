@@ -12,6 +12,7 @@ import { MutationData, ResponseData } from "@/lib/types/response"
 import { getOrgAuth } from "@/lib/server/GetOrgAuth"
 import { revalidatePath } from "next/cache"
 import dns from "dns/promises"
+import { handleAction } from "@/lib/handleAction"
 
 const EXPECTED_CNAME = "cname.refearnapp.com"
 const EXPECTED_IP = "123.45.67.89"
@@ -19,7 +20,7 @@ const EXPECTED_IP = "123.45.67.89"
 export const orgInfo = async (
   orgId: string
 ): Promise<ResponseData<OrgData>> => {
-  try {
+  return handleAction("orgInfo", async () => {
     const cookieStore = await cookies()
     const token = cookieStore.get("organizationToken")?.value
 
@@ -95,15 +96,12 @@ export const orgInfo = async (
           : (website?.domainName ?? ""),
       },
     }
-  } catch (err) {
-    console.error("orgInfo error:", err)
-    return returnError(err) as ResponseData<OrgData>
-  }
+  })
 }
 export async function updateOrgSettings(
   data: Partial<OrgData> & { id: string }
 ): Promise<MutationData> {
-  try {
+  return handleAction("updateOrgSettings", async () => {
     await getOrgAuth(data.id)
     console.log("data", data)
     const updateData: Record<string, any> = {
@@ -228,13 +226,10 @@ export async function updateOrgSettings(
 
     revalidatePath(`/organization/${data.id}/dashboard/settings`)
     return { ok: true }
-  } catch (err) {
-    console.error("updateOrgSettings error", err)
-    return returnError(err)
-  }
+  })
 }
 export async function verifyCNAME(domain: string): Promise<MutationData> {
-  try {
+  return handleAction("verifyCNAME", async () => {
     if (process.env.NODE_ENV === "production") {
       const records = await dns.resolveCname(domain)
       const isValid = records.some((record) => record === EXPECTED_CNAME)
@@ -255,14 +250,12 @@ export async function verifyCNAME(domain: string): Promise<MutationData> {
       ok: true,
       toast: "✅ CNAME record is correctly set.",
     }
-  } catch (err) {
-    return returnError(err)
-  }
+  })
 }
 
 // ✅ Verify A record (for main domains)
 export async function verifyARecord(domain: string): Promise<MutationData> {
-  try {
+  return handleAction("verifyARecord", async () => {
     if (process.env.NODE_ENV === "production") {
       const records = await dns.resolve4(domain)
       const isValid = records.includes(EXPECTED_IP)
@@ -283,7 +276,5 @@ export async function verifyARecord(domain: string): Promise<MutationData> {
       ok: true,
       toast: "✅ A record is correctly set.",
     }
-  } catch (err) {
-    return returnError(err)
-  }
+  })
 }

@@ -9,6 +9,8 @@ import { sendVerificationEmail } from "@/lib/mail"
 import { customAlphabet } from "nanoid"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
 import { buildAffiliateUrl } from "@/util/Url"
+import { MutationData } from "@/lib/types/response"
+import { handleAction } from "@/lib/handleAction"
 
 type CreateAffiliatePayload = {
   name: string
@@ -25,8 +27,8 @@ export const SignupAffiliateServer = async ({
   email,
   password,
   organizationId,
-}: CreateAffiliatePayload) => {
-  try {
+}: CreateAffiliatePayload): Promise<MutationData> => {
+  return handleAction("Signup Affiliate Server", async () => {
     if (!email || !password || !name || !organizationId) {
       throw {
         status: 400,
@@ -168,8 +170,5 @@ export const SignupAffiliateServer = async ({
       }
     }
     return { ok: true, redirectUrl: verifyUrl }
-  } catch (error: any) {
-    console.error("Affiliate Signup Error:", error)
-    return returnError(error)
-  }
+  })
 }

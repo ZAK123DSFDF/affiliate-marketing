@@ -16,6 +16,8 @@ import { defaultDashboardCustomization } from "@/customization/Dashboard/default
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { eq } from "drizzle-orm"
 import { sanitizeDomain } from "@/util/SanitizeDomain"
+import { MutationData } from "@/lib/types/response"
+import { handleAction } from "@/lib/handleAction"
 
 const s3Client = new S3Client({
   region: "auto",
@@ -28,8 +30,8 @@ const s3Client = new S3Client({
 
 export const CreateOrganization = async (
   input: CompanyFormValues & { mode: "create" | "add" }
-) => {
-  try {
+): Promise<MutationData> => {
+  return handleAction("Organization Create", async () => {
     const cookieStore = await cookies()
     const token = cookieStore.get("organizationToken")?.value
     if (!token) throw { status: 401, error: "Unauthorized" }
@@ -123,15 +125,13 @@ export const CreateOrganization = async (
     })
 
     cookieStore.set("organizationToken", newToken, { httpOnly: true })
-    return { ok: true, message: "Company created successfully!", data: newOrg }
-  } catch (err) {
-    console.error("Organization create error", err)
-    return returnError(err)
-  }
+    return { ok: true, toast: "Company created successfully!" }
+  })
 }
-export async function deleteOrganizationLogo(logoUrl: string) {
-  try {
-    console.log("Deleting logo:", logoUrl)
+export async function deleteOrganizationLogo(
+  logoUrl: string
+): Promise<MutationData> {
+  return handleAction("Delete Organization Logo", async () => {
     if (!logoUrl) throw { status: 500, toast: "logo not found" }
 
     // 1. Extract the object key from R2 public URL
@@ -146,10 +146,7 @@ export async function deleteOrganizationLogo(logoUrl: string) {
     )
 
     return { ok: true }
-  } catch (err) {
-    console.error("Organization create error", err)
-    return returnError(err)
-  }
+  })
 }
 export async function updateOrganizationLogo({
   orgId,
@@ -157,8 +154,8 @@ export async function updateOrganizationLogo({
 }: {
   orgId: string
   logoUrl: string | null
-}) {
-  try {
+}): Promise<MutationData> {
+  return handleAction("Update Organization Logo", async () => {
     if (!orgId) throw { status: 500, toast: "missing orgId" }
 
     await db
@@ -167,8 +164,5 @@ export async function updateOrganizationLogo({
       .where(eq(organization.id, orgId))
 
     return { ok: true }
-  } catch (err) {
-    console.error("Organization create error", err)
-    return returnError(err)
-  }
+  })
 }

@@ -5,16 +5,17 @@ import { account, user } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { returnError } from "@/lib/errorHandler"
 import * as bcrypt from "bcrypt"
-import { ResponseData } from "@/lib/types/response"
+import { MutationData, ResponseData } from "@/lib/types/response"
 import { SafeUserWithCapabilities } from "@/lib/types/authUser"
 import { revalidatePath } from "next/cache"
 import { getUserAuthCapabilities } from "@/lib/server/getUserAuthCapabilities"
 import { getCurrentUser } from "@/lib/server/getCurrentUser"
+import { handleAction } from "@/lib/handleAction"
 
 export const getUserData = async (): Promise<
   ResponseData<SafeUserWithCapabilities>
 > => {
-  try {
+  return handleAction("getUserData", async () => {
     const { userId, canChangePassword, canChangeEmail } =
       await getUserAuthCapabilities()
 
@@ -38,16 +39,13 @@ export const getUserData = async (): Promise<
         canChangePassword,
       },
     }
-  } catch (err) {
-    console.error("getUserData error:", err)
-    return returnError(err) as ResponseData<SafeUserWithCapabilities>
-  }
+  })
 }
 export async function updateUserProfile(
   orgId: string,
   data: { name?: string }
-) {
-  try {
+): Promise<MutationData> {
+  return handleAction("updateUserProfile", async () => {
     const { id } = await getCurrentUser()
     if (!id) throw { status: 401, toast: "Unauthorized" }
     if (!data.name) return { ok: true }
@@ -55,16 +53,13 @@ export async function updateUserProfile(
     await db.update(user).set({ name: data.name }).where(eq(user.id, id))
     revalidatePath(`/organization/${orgId}/dashboard/profile`)
     return { ok: true }
-  } catch (err) {
-    console.error("updateUserProfile error:", err)
-    return returnError(err)
-  }
+  })
 }
 
 export async function validateCurrentOrganizationPassword(
   currentPassword: string
-) {
-  try {
+): Promise<MutationData> {
+  return handleAction("validating current Organization Password", async () => {
     const { id } = await getCurrentUser()
     if (!id) throw { status: 401, toast: "Unauthorized" }
 
@@ -86,13 +81,12 @@ export async function validateCurrentOrganizationPassword(
     }
 
     return { ok: true }
-  } catch (err) {
-    console.error("validateCurrentOrganizationPassword error:", err)
-    return returnError(err)
-  }
+  })
 }
-export async function updateUserPassword(newPassword: string) {
-  try {
+export async function updateUserPassword(
+  newPassword: string
+): Promise<MutationData> {
+  return handleAction("updating User Password", async () => {
     const { userId, canChangePassword } = await getUserAuthCapabilities()
 
     if (!canChangePassword) {
@@ -112,8 +106,5 @@ export async function updateUserPassword(newPassword: string) {
     }
 
     return { ok: true }
-  } catch (err) {
-    console.error("updateUserPassword error:", err)
-    return returnError(err)
-  }
+  })
 }
