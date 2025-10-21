@@ -1,6 +1,7 @@
 import { useAtom } from "jotai"
 import { getCacheAtom } from "@/store/CacheAtom"
 import { buildCacheScope } from "@/util/CacheUtils"
+import { useMemo } from "react"
 
 export function useCachedValidation({
   id,
@@ -18,7 +19,8 @@ export function useCachedValidation({
   maxCacheSize?: number
 }) {
   const cacheScope = buildCacheScope(affiliate, orgId)
-  const [cache, setCache] = useAtom(getCacheAtom(id, cacheScope))
+  const atom = useMemo(() => getCacheAtom(id, cacheScope), [id, cacheScope])
+  const [cache, setCache] = useAtom(atom)
 
   function shouldSkip(value: string, customMessage?: string): boolean {
     const trimmed = value.trim()

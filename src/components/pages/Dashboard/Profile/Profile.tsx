@@ -43,10 +43,7 @@ import {
 import { LogoutButton } from "@/components/ui-custom/LogoutButton"
 import { AuthResponse, useAuthMutation } from "@/hooks/useAuthMutation"
 import { useCachedValidation } from "@/hooks/useCachedValidation"
-import {
-  clearAllValidationCaches,
-  clearValidationCachesFor,
-} from "@/util/CacheUtils"
+import { clearValidationCachesFor } from "@/util/CacheUtils"
 
 export default function Profile({
   AffiliateData,
@@ -188,6 +185,7 @@ export default function Profile({
         : validateCurrentOrganizationPassword(password)
     },
     onSuccess: (res: any) => {
+      console.log("res", res)
       if (res?.ok) {
         setStep("new")
         newPasswordForm.reset({ newPassword: "", confirmPassword: "" })
@@ -267,11 +265,7 @@ export default function Profile({
       return logoutAction(affiliate, orgId)
     },
     onSuccess: (res: any) => {
-      if (affiliate) {
-        clearValidationCachesFor(true, orgId)
-      } else {
-        clearAllValidationCaches()
-      }
+      clearValidationCachesFor(affiliate, orgId)
       if (res.redirectTo) {
         window.location.href = res.redirectTo
       }

@@ -11,20 +11,3 @@ export function clearValidationCachesFor(affiliate: boolean, orgId?: string) {
     }
   })
 }
-
-// Removes a specific validation cache entry
-export function removeValidationCache(
-  affiliate: boolean,
-  orgId: string | undefined,
-  id: string
-) {
-  const cacheScope = buildCacheScope(affiliate, orgId)
-  localStorage.removeItem(`refearnapp-${cacheScope}-${id}`)
-}
-export function clearAllValidationCaches() {
-  Object.keys(localStorage).forEach((key) => {
-    if (key.startsWith("refearnapp-")) {
-      localStorage.removeItem(key)
-    }
-  })
-}
