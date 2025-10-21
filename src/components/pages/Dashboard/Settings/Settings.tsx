@@ -135,6 +135,9 @@ export default function Settings({ orgData }: Props) {
     if (isVerified) setIsVerified(false)
   }, [domainValue, domainType])
   const domainCache = useCachedValidation({
+    id: "org-settings-domain",
+    orgId: orgData.id,
+    affiliate: false,
     showError: (msg) =>
       showCustomToast({
         type: "error",
@@ -161,7 +164,6 @@ export default function Settings({ orgData }: Props) {
           description: "Saved successfully.",
           affiliate: false,
         })
-        domainCache.clearCache()
       } else {
         showCustomToast({
           type: "error",

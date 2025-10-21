@@ -63,6 +63,8 @@ const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
   const commissionType = form.watch("commissionType")
   const router = useRouter()
   const domainCache = useCachedValidation({
+    id: "createCompany-domain",
+    affiliate: false,
     showError: (msg) =>
       showCustomToast({
         type: "error",

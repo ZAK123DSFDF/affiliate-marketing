@@ -43,6 +43,10 @@ import {
 import { LogoutButton } from "@/components/ui-custom/LogoutButton"
 import { AuthResponse, useAuthMutation } from "@/hooks/useAuthMutation"
 import { useCachedValidation } from "@/hooks/useCachedValidation"
+import {
+  clearAllValidationCaches,
+  clearValidationCachesFor,
+} from "@/util/CacheUtils"
 
 export default function Profile({
   AffiliateData,
@@ -111,6 +115,9 @@ export default function Profile({
   const [step, setStep] = useState<"current" | "new">("current")
   const { showCustomToast } = useCustomToast()
   const emailCache = useCachedValidation({
+    id: "profile-email-change",
+    orgId,
+    affiliate,
     showError: (msg) =>
       showCustomToast({
         type: "error",
@@ -123,6 +130,9 @@ export default function Profile({
       : "Email already in use",
   })
   const passwordCache = useCachedValidation({
+    id: "profile-password-change",
+    orgId,
+    affiliate,
     showError: (msg) =>
       showCustomToast({
         type: "error",
@@ -187,7 +197,6 @@ export default function Profile({
           description: "Enter your new password below.",
           affiliate,
         })
-        passwordCache.clearCache()
       } else {
         showCustomToast({
           type: "error",
@@ -258,6 +267,11 @@ export default function Profile({
       return logoutAction(affiliate, orgId)
     },
     onSuccess: (res: any) => {
+      if (affiliate) {
+        clearValidationCachesFor(true, orgId)
+      } else {
+        clearAllValidationCaches()
+      }
       if (res.redirectTo) {
         window.location.href = res.redirectTo
       }
@@ -298,8 +312,6 @@ export default function Profile({
       onSuccess: (res: any) => {
         if (!res.ok) {
           emailCache.addFailedValue(res.data)
-        } else {
-          emailCache.clearCache()
         }
       },
     }

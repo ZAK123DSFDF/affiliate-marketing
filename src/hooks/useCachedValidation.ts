@@ -1,29 +1,29 @@
-import { useState } from "react"
+import { useAtom } from "jotai"
+import { getCacheAtom } from "@/store/CacheAtom"
+import { buildCacheScope } from "@/util/CacheUtils"
 
-interface UseCachedValidationOptions {
-  showError: (message: string) => void
-  errorMessage: string
-  maxCacheSize?: number // optional limit for stored failed values
-}
-
-/**
- * Prevents repeated validation calls for the same failed values.
- * Supports multiple cached failures (e.g., multiple emails or passwords).
- */
 export function useCachedValidation({
+  id,
+  orgId,
+  affiliate,
   showError,
   errorMessage,
   maxCacheSize = 10,
-}: UseCachedValidationOptions) {
-  const [failedValues, setFailedValues] = useState<Set<string>>(new Set())
+}: {
+  id: string
+  orgId?: string
+  affiliate: boolean
+  showError: (msg: string) => void
+  errorMessage: string
+  maxCacheSize?: number
+}) {
+  const cacheScope = buildCacheScope(affiliate, orgId)
+  const [cache, setCache] = useAtom(getCacheAtom(id, cacheScope))
+
   function shouldSkip(value: string, customMessage?: string): boolean {
     const trimmed = value.trim()
-    if (failedValues.has(trimmed)) {
-      const message =
-        customMessage ||
-        errorMessage.replace("${value}", trimmed) ||
-        errorMessage
-      showError(message)
+    if (cache.failedValues.includes(trimmed)) {
+      showError(customMessage || errorMessage)
       return true
     }
     return false
@@ -31,26 +31,10 @@ export function useCachedValidation({
 
   function addFailedValue(value: string) {
     const trimmed = value.trim()
-    setFailedValues((prev) => {
-      const updated = new Set(prev)
-      updated.add(trimmed)
-
-      // Keep only last N failed values
-      if (updated.size > maxCacheSize) {
-        const oldest = Array.from(updated)[0]
-        updated.delete(oldest)
-      }
-      return updated
-    })
+    if (!cache.failedValues.includes(trimmed)) {
+      const updated = [...cache.failedValues, trimmed].slice(-maxCacheSize)
+      setCache({ ...cache, failedValues: updated })
+    }
   }
-
-  function clearCache() {
-    setFailedValues(new Set())
-  }
-
-  return {
-    shouldSkip,
-    addFailedValue,
-    clearCache,
-  }
+  return { shouldSkip, addFailedValue }
 }

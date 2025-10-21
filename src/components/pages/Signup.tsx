@@ -67,6 +67,9 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   const { showCustomToast } = useCustomToast()
   const { getPath } = useAffiliatePath(orgId)
   const emailCache = useCachedValidation({
+    id: "signup-email",
+    orgId: orgId,
+    affiliate,
     showError: (msg) =>
       showCustomToast({
         type: "error",
@@ -85,8 +88,6 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     onSuccess: (res: any) => {
       if (!res.ok) {
         emailCache.addFailedValue(res.data)
-      } else {
-        emailCache.clearCache()
       }
     },
   })
@@ -97,8 +98,6 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     onSuccess: (res: any) => {
       if (!res.ok) {
         emailCache.addFailedValue(res.data)
-      } else {
-        emailCache.clearCache()
       }
     },
   })
