@@ -2,7 +2,6 @@
 import { AffiliateKpiStats } from "@/lib/types/affiliateKpiStats"
 import { getAffiliateOrganization } from "@/lib/server/GetAffiliateOrganization"
 import { ResponseData } from "@/lib/types/response"
-import { returnError } from "@/lib/errorHandler"
 import { AffiliateReferrerStat } from "@/lib/types/affiliateReferrerStat"
 import { AffiliateKpiTimeSeries } from "@/lib/types/affiliateChartStats"
 import { getAffiliateLinks } from "@/lib/server/getAffiliateLinks"

@@ -28,7 +28,6 @@ import { LinkButton } from "@/components/ui-custom/LinkButton"
 import { useAuthCard } from "@/hooks/useAuthCard"
 import { ForgotPasswordServer } from "@/app/(organization)/(auth)/forgot-password/action"
 import { ForgotPasswordAffiliateServer } from "@/app/affiliate/[orgId]/(auth)/forgot-password/action"
-import { useAuthMutation } from "@/hooks/useAuthMutation"
 import { useAtomValue } from "jotai"
 import {
   buttonCustomizationAtom,
@@ -36,6 +35,7 @@ import {
 } from "@/store/AuthCustomizationAtom"
 import { useAffiliatePath } from "@/hooks/useUrl"
 import { OrgHeader } from "@/components/ui-custom/OrgHeader"
+import { useAppMutation } from "@/hooks/useAppMutation"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -71,11 +71,11 @@ const ForgotPassword = ({
     buttonTextColor,
   } = useAtomValue(buttonCustomizationAtom)
   const authCardStyle = useAuthCard(affiliate)
-  const organizationMutation = useAuthMutation(ForgotPasswordServer, {
+  const organizationMutation = useAppMutation(ForgotPasswordServer, {
     affiliate,
   })
 
-  const affiliateMutation = useAuthMutation(ForgotPasswordAffiliateServer, {
+  const affiliateMutation = useAppMutation(ForgotPasswordAffiliateServer, {
     affiliate,
   })
   const onSubmit = async (data: ForgotPasswordFormValues) => {

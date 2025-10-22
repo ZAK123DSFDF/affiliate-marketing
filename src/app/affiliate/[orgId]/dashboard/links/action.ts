@@ -1,7 +1,6 @@
 "use server"
 import { getAffiliateOrganization } from "@/lib/server/GetAffiliateOrganization"
 import { revalidatePath } from "next/cache"
-import { returnError } from "@/lib/errorHandler"
 import { MutationData, ResponseData } from "@/lib/types/response"
 import { AffiliateLinkWithStats } from "@/lib/types/affiliateLinkWithStats"
 import { getAffiliateLinksWithStatsAction } from "@/lib/server/getAffiliateLinksWithStats"
@@ -12,7 +11,7 @@ import { handleAction } from "@/lib/handleAction"
 
 export const createAffiliateLink = async (
   orgId: string
-): Promise<MutationData & { data: string }> => {
+): Promise<MutationData> => {
   return handleAction("createAffiliateLink", async () => {
     const decoded = await getAffiliateOrganization(orgId)
     const { org, fullUrl } = await createFullUrl(decoded)
@@ -24,7 +23,7 @@ export const createAffiliateLink = async (
       partial: true,
     })
     revalidatePath(revalidationPath)
-    return { ok: true, data: fullUrl }
+    return { ok: true, toast: `Affiliate link created: ${fullUrl}` }
   })
 }
 

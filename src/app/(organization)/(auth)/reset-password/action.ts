@@ -7,7 +7,6 @@ import * as bcrypt from "bcrypt"
 import { eq, and } from "drizzle-orm"
 import jwt from "jsonwebtoken"
 import { cookies } from "next/headers"
-import { returnError } from "@/lib/errorHandler"
 import { MutationData } from "@/lib/types/response"
 import { handleAction } from "@/lib/handleAction"
 
@@ -31,7 +30,10 @@ export const resetOrganizationPasswordServer = async ({
       .returning()
 
     if (!updatedAccount) {
-      throw new Error("Organization credentials account not found")
+      throw {
+        status: 500,
+        toast: "Organization credentials account not found",
+      }
     }
 
     // 🔑 Fetch organization to normalize email & session payload
@@ -40,7 +42,10 @@ export const resetOrganizationPasswordServer = async ({
     })
 
     if (!existingUser) {
-      throw new Error("Organization not found")
+      throw {
+        status: 500,
+        toast: "Organization not found",
+      }
     }
 
     // Find organizations owned by this user

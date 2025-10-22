@@ -2,7 +2,6 @@
 
 import { db } from "@/db/drizzle"
 import jwt from "jsonwebtoken"
-import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
 import { buildAffiliateUrl } from "@/util/Url"
@@ -37,7 +36,7 @@ export const ForgotPasswordAffiliateServer = async ({
     if (!existingAffiliate) {
       return {
         ok: true,
-        message: "If the email exists, a reset link was sent.",
+        toast: "If the email exists, a reset link was sent.",
       }
     }
 
@@ -61,7 +60,7 @@ export const ForgotPasswordAffiliateServer = async ({
     })
     if (process.env.NODE_ENV === "development") {
       await sendVerificationEmail(existingAffiliate.email, resetUrl)
-      return { ok: true, message: "Reset link sent to your email" }
+      return { ok: true, toast: "Reset link sent to your email" }
     }
     return { ok: true, redirectUrl: resetUrl }
   })

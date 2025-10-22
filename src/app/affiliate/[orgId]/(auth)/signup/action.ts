@@ -4,7 +4,6 @@ import { affiliate, affiliateAccount } from "@/db/schema"
 import { db } from "@/db/drizzle"
 import * as bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
 import { customAlphabet } from "nanoid"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
@@ -105,7 +104,7 @@ export const SignupAffiliateServer = async ({
         await sendVerificationEmail(existingAffiliate.email, verifyUrl)
         return {
           ok: true,
-          message: "Verification email sent",
+          toast: "Verification email sent",
           redirectUrl,
         }
       }
@@ -165,7 +164,7 @@ export const SignupAffiliateServer = async ({
       await sendVerificationEmail(newAffiliate.email, verifyUrl)
       return {
         ok: true,
-        message: "Verification email sent",
+        toast: "Verification email sent",
         redirectUrl,
       }
     }

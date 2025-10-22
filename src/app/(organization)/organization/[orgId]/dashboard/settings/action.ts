@@ -4,7 +4,6 @@
 import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
 import { db } from "@/db/drizzle"
-import { returnError } from "@/lib/errorHandler"
 import { OrgData } from "@/lib/types/organization"
 import { organization, websiteDomain } from "@/db/schema"
 import { and, eq } from "drizzle-orm"
@@ -225,7 +224,7 @@ export async function updateOrgSettings(
     }
 
     revalidatePath(`/organization/${data.id}/dashboard/settings`)
-    return { ok: true }
+    return { ok: true, toast: "Successfully Updated Org Settings" }
   })
 }
 export async function verifyCNAME(domain: string): Promise<MutationData> {

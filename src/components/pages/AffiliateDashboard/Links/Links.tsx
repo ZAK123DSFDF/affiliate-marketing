@@ -10,7 +10,6 @@ import {
 } from "@tanstack/react-table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { useMutation } from "@tanstack/react-query"
 import {
   createAffiliateLink,
   getAffiliateLinksWithStats,
@@ -36,6 +35,7 @@ import {
   dashboardThemeCustomizationAtom,
   tableCustomizationAtom,
 } from "@/store/DashboardCustomizationAtom"
+import { useAppMutation } from "@/hooks/useAppMutation"
 
 interface AffiliateLinkProps {
   orgId: string
@@ -132,24 +132,8 @@ export default function Links({
     })
   }, [isPreview, filters])
 
-  const mutation = useMutation({
-    mutationFn: createAffiliateLink,
-    onSuccess: async (res: any) => {
-      showCustomToast({
-        type: "success",
-        title: "Link created!",
-        description: res.data,
-        affiliate,
-      })
-    },
-    onError: () => {
-      showCustomToast({
-        type: "error",
-        title: "Something went wrong",
-        description: "We couldn't create the affiliate link.",
-        affiliate,
-      })
-    },
+  const mutation = useAppMutation(createAffiliateLink, {
+    affiliate,
   })
 
   const handleCreate = () => {

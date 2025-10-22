@@ -4,7 +4,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { AuthCustomization } from "@/components/pages/Dashboard/Customization/AuthCustomization"
 import { DashboardCustomization } from "@/components/pages/Dashboard/Customization/DashboardCustomization"
 import { ToastCustomization } from "@/components/ui-custom/Customization/ToastCustomization"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { saveCustomizationsAction } from "@/app/(organization)/organization/[orgId]/dashboard/customization/action"
 import { Button } from "@/components/ui/button"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -16,6 +16,7 @@ import { GlobalCustomizationProvider } from "@/components/pages/Dashboard/Custom
 import { Switch } from "@/components/ui/switch"
 import { showMissingPaypalAtom } from "@/store/MissingPaypalAtom"
 import { useActiveDomain } from "@/hooks/useActiveDomain"
+import { AppResponse, useAppMutation } from "@/hooks/useAppMutation"
 
 export default function CustomizationPage({ orgId }: { orgId: string }) {
   const [mainTab, setMainTab] = useState("sidebar")
@@ -28,27 +29,30 @@ export default function CustomizationPage({ orgId }: { orgId: string }) {
   const hasChanges = authHasChanges || dashboardHasChanges
   const liveCustomizations = useLiveCustomizations()
   const queryClient = useQueryClient()
-  const mutation = useMutation({
-    mutationFn: async () => {
+  const mutation = useAppMutation<AppResponse, void>(
+    async () => {
       console.log("🟢 Changes before send:", liveCustomizations)
+
       if (!hasChanges) {
         console.log("⚪ No changes to save")
-        return { success: true }
+        return { ok: true, message: "No changes to save." } // keep same shape as your backend responses
       }
+
       return await saveCustomizationsAction(orgId, liveCustomizations)
     },
-    onSuccess: () => {
-      console.log("✅ Customizations saved")
-      queryClient
-        .invalidateQueries({
-          queryKey: ["customizations", "both", orgId],
-        })
-        .then(() => console.log("invalidated"))
-    },
-    onError: (error) => {
-      console.error("❌ Save failed:", error)
-    },
-  })
+    {
+      onSuccess: async (res) => {
+        if (res.ok) {
+          console.log("✅ Customizations saved")
+          await queryClient.invalidateQueries({
+            queryKey: ["customizations", "both", orgId],
+          })
+          console.log("invalidated")
+        }
+      },
+    }
+  )
+
   const router = useRouter()
   const searchParams = useSearchParams()
   useEffect(() => {

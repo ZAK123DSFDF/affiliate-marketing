@@ -2,7 +2,6 @@
 
 import { db } from "@/db/drizzle"
 import jwt from "jsonwebtoken"
-import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
 import { MutationData } from "@/lib/types/response"
 import { handleAction } from "@/lib/handleAction"
@@ -56,7 +55,7 @@ export const ForgotPasswordServer = async ({
     if (process.env.NODE_ENV === "development") {
       await sendVerificationEmail(existingUser.email, resetUrl)
 
-      return { ok: true, message: "Reset link sent to your email" }
+      return { ok: true, toast: "Reset link sent to your email" }
     }
     return { ok: true, redirectUrl: resetUrl }
   })

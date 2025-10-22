@@ -10,7 +10,6 @@ import { cookies } from "next/headers"
 import { buildAffiliateUrl } from "@/util/Url"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
 import { MutationData } from "@/lib/types/response"
-import { returnError } from "@/lib/errorHandler"
 import { handleAction } from "@/lib/handleAction"
 
 export const resetAffiliatePasswordServer = async ({
@@ -38,7 +37,10 @@ export const resetAffiliatePasswordServer = async ({
       .returning()
 
     if (!updatedAccount) {
-      throw new Error("Affiliate credentials account not found")
+      throw {
+        status: 500,
+        toast: "Affiliate credentials account not found",
+      }
     }
 
     // 🔑 Fetch affiliate to normalize email & session payload
@@ -48,7 +50,10 @@ export const resetAffiliatePasswordServer = async ({
     })
 
     if (!existingAffiliate) {
-      throw new Error("Affiliate not found")
+      throw {
+        status: 500,
+        toast: "Affiliate not found",
+      }
     }
 
     const sessionPayload = {

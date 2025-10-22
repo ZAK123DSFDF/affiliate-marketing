@@ -27,7 +27,6 @@ import { LinkButton } from "@/components/ui-custom/LinkButton"
 import { useAuthCard } from "@/hooks/useAuthCard"
 import { resetOrganizationPasswordServer } from "@/app/(organization)/(auth)/reset-password/action"
 import { resetAffiliatePasswordServer } from "@/app/affiliate/[orgId]/(auth)/reset-password/action"
-import { useAuthMutation } from "@/hooks/useAuthMutation"
 import { useAtomValue } from "jotai"
 import {
   buttonCustomizationAtom,
@@ -35,6 +34,7 @@ import {
 } from "@/store/AuthCustomizationAtom"
 import { useAffiliatePath } from "@/hooks/useUrl"
 import { OrgHeader } from "@/components/ui-custom/OrgHeader"
+import { useAppMutation } from "@/hooks/useAppMutation"
 type Props = {
   userId: string
   orgId?: string
@@ -74,11 +74,11 @@ const ResetPassword = ({
     buttonTextColor,
   } = useAtomValue(buttonCustomizationAtom)
   const authCardStyle = useAuthCard(affiliate)
-  const affiliateMutation = useAuthMutation(resetAffiliatePasswordServer, {
+  const affiliateMutation = useAppMutation(resetAffiliatePasswordServer, {
     affiliate,
     disableSuccessToast: true,
   })
-  const normalMutation = useAuthMutation(resetOrganizationPasswordServer, {
+  const normalMutation = useAppMutation(resetOrganizationPasswordServer, {
     affiliate,
     disableSuccessToast: true,
   })

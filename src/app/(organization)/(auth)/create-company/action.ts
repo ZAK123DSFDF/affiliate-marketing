@@ -1,7 +1,6 @@
 "use server"
 
 import { cookies } from "next/headers"
-import { returnError } from "@/lib/errorHandler"
 import {
   organization,
   organizationAuthCustomization,
@@ -145,7 +144,7 @@ export async function deleteOrganizationLogo(
       })
     )
 
-    return { ok: true }
+    return { ok: true, toast: "Deleted Successfully" }
   })
 }
 export async function updateOrganizationLogo({
@@ -163,6 +162,6 @@ export async function updateOrganizationLogo({
       .set({ logoUrl })
       .where(eq(organization.id, orgId))
 
-    return { ok: true }
+    return { ok: true, toast: "Logo Updated Successfully" }
   })
 }

@@ -20,7 +20,6 @@ import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { LinkButton } from "@/components/ui-custom/LinkButton"
 import { IsRichTextEmpty } from "@/util/IsRichTextEmpty"
 import { useAuthCard } from "@/hooks/useAuthCard"
-import { useAuthMutation } from "@/hooks/useAuthMutation"
 import { useAtomValue } from "jotai"
 import {
   buttonCustomizationAtom,
@@ -33,6 +32,7 @@ import { cn } from "@/lib/utils"
 import { useAffiliatePath } from "@/hooks/useUrl"
 import { useCachedValidation } from "@/hooks/useCachedValidation"
 import { OrgHeader } from "@/components/ui-custom/OrgHeader"
+import { useAppMutation } from "@/hooks/useAppMutation"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -73,7 +73,7 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     showError: (msg) =>
       showCustomToast({
         type: "error",
-        title: "Signup Failed",
+        title: "Failed",
         description: msg,
         affiliate,
       }),
@@ -82,7 +82,7 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
       : "This email is already registered",
     maxCacheSize: 10,
   })
-  const affiliateMutation = useAuthMutation(SignupAffiliateServer, {
+  const affiliateMutation = useAppMutation(SignupAffiliateServer, {
     affiliate,
     disableSuccessToast: true,
     onSuccess: (res: any) => {
@@ -92,7 +92,7 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     },
   })
 
-  const normalMutation = useAuthMutation(SignupServer, {
+  const normalMutation = useAppMutation(SignupServer, {
     affiliate,
     disableSuccessToast: true,
     onSuccess: (res: any) => {

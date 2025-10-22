@@ -1,7 +1,6 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { useMutation } from "@tanstack/react-query"
 import { Loader2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAtomValue } from "jotai"
@@ -14,7 +13,7 @@ import { FileUploadRef } from "@/components/ui-custom/FileUploadRef"
 import { uploadsAtom } from "@/store/UploadAtom"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
 import { SingleUploadProgress } from "@/components/ui-custom/SingleUploadProgress"
-
+import { AppResponse, useAppMutation } from "@/hooks/useAppMutation"
 type LogoUploadProps = {
   value: string | null
   onChange: (url: string | null) => void
@@ -36,17 +35,23 @@ export function LogoUpload({
   const [dialogOpen, setDialogOpen] = useState(false)
   const uploads = useAtomValue(uploadsAtom)
 
-  const deleteLogoMutation = useMutation({
-    mutationFn: async () => {
+  const deleteLogoMutation = useAppMutation<AppResponse, void>(
+    async () => {
       await deleteOrganizationLogo(value!)
       if (orgId) {
         await updateOrganizationLogo({ orgId, logoUrl: null })
       }
+      return {
+        ok: true,
+        message: "Logo deleted successfully.",
+      }
     },
-    onSuccess: () => {
-      onChange(null)
-    },
-  })
+    {
+      onSuccess: () => {
+        onChange(null)
+      },
+    }
+  )
 
   const handleButtonClick = () => {
     fileUploadRef.current?.openFilePicker()

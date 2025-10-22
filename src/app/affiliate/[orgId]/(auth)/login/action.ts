@@ -3,9 +3,7 @@
 import { db } from "@/db/drizzle"
 import * as bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
-import { headers } from "next/headers"
 import { buildAffiliateUrl } from "@/util/Url"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
 import { MutationData } from "@/lib/types/response"
@@ -106,7 +104,7 @@ export const LoginAffiliateServer = async ({
       await sendVerificationEmail(existingAffiliate.email, verifyUrl)
       return {
         ok: true,
-        message: "Verification email sent",
+        toast: "Verification email sent",
         redirectUrl,
       }
     }

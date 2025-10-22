@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect } from "react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -9,6 +9,7 @@ import FrameworkInstructions from "@/components/pages/Dashboard/Integration/Fram
 import EmbedStripeCheckout from "@/components/pages/Dashboard/Integration/Stripe/EmbedStripeCheckout"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { Loader2 } from "lucide-react"
+import { AppResponse, useAppMutation } from "@/hooks/useAppMutation"
 
 export default function StripeIntegration({ orgId }: { orgId: string }) {
   const queryClient = useQueryClient()
@@ -42,64 +43,66 @@ export default function StripeIntegration({ orgId }: { orgId: string }) {
     }
   }, [error])
   // ✅ Connect Mutation
-  const connectMutation = useMutation({
-    mutationFn: async () => {
+  const connectMutation = useAppMutation<AppResponse, void>(
+    async () => {
       const res = await fetch("/api/stripe/connect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orgId }),
       })
+
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Failed to connect Stripe")
-      return data
+      if (!res.ok) {
+        return {
+          ok: false,
+          toast: data.error || "Failed to connect Stripe.",
+        }
+      }
+
+      return { ok: true, data }
     },
-    onSuccess: (data) => {
-      window.location.href = data.url
-    },
-    onError: (error: any) => {
-      showCustomToast({
-        type: "error",
-        title: "Connection Failed",
-        description:
-          error?.message || "Something went wrong while connecting Stripe.",
-        affiliate: false,
-      })
-    },
-  })
+    {
+      onSuccess: (res) => {
+        if (res.ok && res.data?.url) {
+          window.location.href = res.data.url
+        }
+      },
+    }
+  )
 
   // ✅ Disconnect Mutation
-  const disconnectMutation = useMutation({
-    mutationFn: async () => {
+  const disconnectMutation = useAppMutation<AppResponse, void>(
+    async () => {
       const res = await fetch("/api/stripe/disconnect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orgId }),
       })
+
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Failed to disconnect Stripe")
-      return data
+      if (!res.ok) {
+        return {
+          ok: false,
+          toast:
+            data.error || "Something went wrong while disconnecting Stripe.",
+        }
+      }
+
+      return {
+        ok: true,
+        message: "Disconnected Successfully",
+        toast: "Your Stripe account has been disconnected.",
+      }
     },
-    onSuccess: () => {
-      showCustomToast({
-        type: "success",
-        title: "Disconnected Successfully",
-        description: "Your Stripe account has been disconnected.",
-        affiliate: false,
-      })
-      queryClient
-        .invalidateQueries({ queryKey: ["stripeStatus", orgId] })
-        .then(() => console.log("invalidated"))
-    },
-    onError: (error: any) => {
-      showCustomToast({
-        type: "error",
-        title: "Disconnect Failed",
-        description:
-          error?.message || "Something went wrong while disconnecting Stripe.",
-        affiliate: false,
-      })
-    },
-  })
+    {
+      onSuccess: () => {
+        queryClient
+          .invalidateQueries({ queryKey: ["stripeStatus", orgId] })
+          .then(() => console.log("invalidated"))
+      },
+    }
+  )
+
   if (isPending) {
     return (
       <div className="flex items-center justify-center py-10">

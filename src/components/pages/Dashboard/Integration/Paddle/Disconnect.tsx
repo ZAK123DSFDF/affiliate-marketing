@@ -5,12 +5,13 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2, Trash2 } from "lucide-react"
 import Image from "next/image"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   deleteOrgPaddleAccount,
   getOrgWebhookKey,
 } from "@/app/(organization)/organization/[orgId]/dashboard/integration/action"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
+import { AppResponse, useAppMutation } from "@/hooks/useAppMutation"
 
 interface DisconnectProps {
   orgId: string
@@ -29,30 +30,21 @@ const Disconnect = ({ orgId }: DisconnectProps) => {
   const savedKey = data?.webhookPublicKey ?? ""
 
   // Mutation for disconnecting Paddle account
-  const disconnectMutation = useMutation({
-    mutationFn: async () => await deleteOrgPaddleAccount(orgId),
-    onSuccess: () => {
-      showCustomToast({
-        type: "success",
-        title: "Disconnected successfully",
-        description: "Paddle account has been removed from this organization.",
-        affiliate: false,
-      })
-      queryClient
-        .invalidateQueries({
-          queryKey: ["paddle-webhook-key", orgId],
-        })
-        .then(() => console.log("Invalidated"))
-    },
-    onError: (error: any) => {
-      showCustomToast({
-        type: "error",
-        title: "Failed to disconnect",
-        description: error?.toast || "An unexpected error occurred.",
-        affiliate: false,
-      })
-    },
-  })
+  const disconnectMutation = useAppMutation<AppResponse, void>(
+    async () => await deleteOrgPaddleAccount(orgId),
+    {
+      affiliate: false, // 👈 same as before
+      onSuccess: (res) => {
+        if (res.ok) {
+          queryClient
+            .invalidateQueries({
+              queryKey: ["paddle-webhook-key", orgId],
+            })
+            .then(() => console.log("Invalidated"))
+        }
+      },
+    }
+  )
 
   if (isPending) {
     return (

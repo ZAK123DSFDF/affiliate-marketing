@@ -4,7 +4,6 @@ import { db } from "@/db/drizzle"
 import { organizationPaddleAccount } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { getOrgAuth } from "@/lib/server/GetOrgAuth"
-import { returnError } from "@/lib/errorHandler"
 import { MutationData } from "@/lib/types/response"
 import { handleAction } from "@/lib/handleAction"
 
@@ -62,8 +61,10 @@ export async function savePaddleWebhookKey({
     }
   })
 }
-export async function getOrgWebhookKey(orgId: string) {
-  try {
+export async function getOrgWebhookKey(
+  orgId: string
+): Promise<{ webhookPublicKey: string | null }> {
+  return handleAction("getOrgWebhookKey", async () => {
     await getOrgAuth(orgId)
 
     const existing = await db
@@ -74,13 +75,12 @@ export async function getOrgWebhookKey(orgId: string) {
       .where(eq(organizationPaddleAccount.orgId, orgId))
       .limit(1)
 
-    if (existing.length === 0) return { webhookPublicKey: null }
+    if (existing.length === 0) {
+      return { ok: true, webhookPublicKey: null } as any
+    }
 
-    return { webhookPublicKey: existing[0].webhookPublicKey }
-  } catch (err) {
-    console.error("getOrgWebhookKey error:", err)
-    return { webhookPublicKey: null }
-  }
+    return { ok: true, webhookPublicKey: existing[0].webhookPublicKey } as any
+  })
 }
 export async function deleteOrgPaddleAccount(
   orgId: string
@@ -92,6 +92,6 @@ export async function deleteOrgPaddleAccount(
       .delete(organizationPaddleAccount)
       .where(eq(organizationPaddleAccount.orgId, orgId))
 
-    return { ok: true }
+    return { ok: true, toast: "deleted paddle account" }
   })
 }

@@ -3,7 +3,6 @@
 import { getAffiliateOrganization } from "@/lib/server/GetAffiliateOrganization"
 import { AffiliatePaymentRow } from "@/lib/types/affiliatePaymentRow"
 import { ResponseData } from "@/lib/types/response"
-import { returnError } from "@/lib/errorHandler"
 import { getAffiliateCommissionByMonthAction } from "@/lib/server/getAffiliateCommissionByMonth"
 import { getOrganization } from "@/lib/server/getOrganization"
 import { ExchangeRate } from "@/util/ExchangeRate"

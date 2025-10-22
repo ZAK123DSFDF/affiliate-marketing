@@ -4,7 +4,6 @@ import { user, account } from "@/db/schema"
 import { db } from "@/db/drizzle"
 import * as bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import { returnError } from "@/lib/errorHandler"
 import { sendVerificationEmail } from "@/lib/mail"
 import { customAlphabet } from "nanoid"
 import { MutationData } from "@/lib/types/response"
@@ -93,7 +92,7 @@ export const SignupServer = async ({
         await sendVerificationEmail(existingUser.email, verifyUrl)
         return {
           ok: true,
-          message: "Verification email sent",
+          toast: "Verification email sent",
           redirectUrl: "/checkEmail",
         }
       }
@@ -142,7 +141,7 @@ export const SignupServer = async ({
       await sendVerificationEmail(newUser.email, verifyUrl)
       return {
         ok: true,
-        message: "Verification email sent",
+        toast: "Verification email sent",
         redirectUrl: "/checkEmail",
       }
     }

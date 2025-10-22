@@ -5,7 +5,7 @@ import Image from "next/image"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { Loader2, CopyIcon, KeyRound } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -18,6 +18,7 @@ import {
   getOrgWebhookKey,
   savePaddleWebhookKey,
 } from "@/app/(organization)/organization/[orgId]/dashboard/integration/action"
+import { useAppMutation } from "@/hooks/useAppMutation"
 
 const webhookSchema = z.object({
   webhookKey: z.string().min(1, "Webhook key cannot be empty"),
@@ -45,28 +46,17 @@ export default function Connect({
     defaultValues: { webhookKey: "" },
   })
 
-  const mutation = useMutation({
-    mutationFn: async (key: string) => {
+  const mutation = useAppMutation(
+    async (key: string) => {
       return await savePaddleWebhookKey({ orgId, webhookPublicKey: key })
     },
-    onSuccess: () => {
-      showCustomToast({
-        type: "success",
-        title: "Connected",
-        description: "Paddle webhook key saved successfully.",
-        affiliate: false,
-      })
-      form.reset()
-    },
-    onError: (err: any) => {
-      showCustomToast({
-        type: "error",
-        title: "Connection failed",
-        description: err.message || "Something went wrong.",
-        affiliate: false,
-      })
-    },
-  })
+    {
+      onSuccess: () => {
+        form.reset()
+      },
+      affiliate: false,
+    }
+  )
 
   const onSubmit = (data: WebhookSchema) => {
     mutation.mutate(data.webhookKey)

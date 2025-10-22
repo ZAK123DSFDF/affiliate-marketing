@@ -13,7 +13,6 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import { useForm } from "react-hook-form"
 import { Form } from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
 import { MutationData } from "@/lib/types/response"
 import {
   BadgeDollarSign,
@@ -45,6 +44,7 @@ import { DomainInputField } from "@/components/ui-custom/DomainInputField"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { useCachedValidation } from "@/hooks/useCachedValidation"
+import { useAppMutation } from "@/hooks/useAppMutation"
 
 type OrgFormData = z.infer<typeof orgSettingsSchema>
 type Props = { orgData: OrgData }
@@ -141,49 +141,29 @@ export default function Settings({ orgData }: Props) {
     showError: (msg) =>
       showCustomToast({
         type: "error",
-        title: "Invalid Domain",
+        title: "Failed",
         description: msg,
         affiliate: false,
       }),
     errorMessage:
       "This domain is already linked to another organization. Please use a different domain.",
   })
-  const mut = useMutation<
-    MutationData,
-    unknown,
-    Partial<OrgData> & { id: string }
-  >({
-    mutationFn: (data: Partial<OrgData> & { id: string }) =>
-      updateOrgSettings(data),
-    onSuccess: (res) => {
-      if (res?.ok) {
-        form.reset(form.getValues())
-        showCustomToast({
-          type: "success",
-          title: "Settings updated",
-          description: "Saved successfully.",
-          affiliate: false,
-        })
-      } else {
-        showCustomToast({
-          type: "error",
-          title: "Error",
-          description: res?.toast || res?.error || "Update failed.",
-          affiliate: false,
-        })
-        domainCache.addFailedValue(res.data)
-      }
-    },
-    onError: () =>
-      showCustomToast({
-        type: "error",
-        title: "Unexpected error",
-        description: "Please try again",
-        affiliate: false,
-      }),
-  })
-  const verifyMut = useMutation<MutationData, unknown, void>({
-    mutationFn: async () => {
+  const mut = useAppMutation<MutationData, Partial<OrgData> & { id: string }>(
+    async (data) => updateOrgSettings(data),
+    {
+      affiliate: false,
+      onSuccess: (res) => {
+        if (res.ok) {
+          form.reset(form.getValues())
+        } else {
+          domainCache.addFailedValue(res.data)
+        }
+      },
+    }
+  )
+
+  const verifyMut = useAppMutation<MutationData, void>(
+    async () => {
       const domain = form.getValues("defaultDomain").trim()
       if (!domain) throw new Error("Domain cannot be empty")
 
@@ -196,35 +176,19 @@ export default function Settings({ orgData }: Props) {
 
       throw new Error("Invalid domain type")
     },
-    onSuccess: (res) => {
-      if (res.ok) {
-        showCustomToast({
-          type: "success",
-          title: "Domain verified",
-          description: "Domain verification successful.",
-          affiliate: false,
-        })
-        setIsVerified(true)
-        setOpen(false)
-      } else {
-        showCustomToast({
-          type: "error",
-          title: "Verification failed",
-          description: res.toast || res.error || "Could not verify domain",
-          affiliate: false,
-        })
-        setIsVerified(false)
-      }
-    },
-    onError: (err: any) => {
-      showCustomToast({
-        type: "error",
-        title: "Unexpected error",
-        description: err.message || "Something went wrong",
-        affiliate: false,
-      })
-    },
-  })
+    {
+      affiliate: false,
+      onSuccess: (res) => {
+        if (res.ok) {
+          setIsVerified(true)
+          setOpen(false)
+        } else {
+          setIsVerified(false)
+        }
+      },
+    }
+  )
+
   const onSubmit = (data: OrgFormData) => {
     const newDomain = normalizeDomain(data.defaultDomain)
 

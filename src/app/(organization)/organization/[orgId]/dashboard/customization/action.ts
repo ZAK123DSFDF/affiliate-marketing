@@ -12,7 +12,6 @@ import { defaultDashboardCustomization } from "@/customization/Dashboard/default
 import { deepMerge } from "@/util/DeepMerge"
 import { getOrgAuth } from "@/lib/server/GetOrgAuth"
 import { MutationData } from "@/lib/types/response"
-import { returnError } from "@/lib/errorHandler"
 import { handleAction } from "@/lib/handleAction"
 
 export type AuthCustomization = typeof defaultAuthCustomization
@@ -89,7 +88,7 @@ export async function saveCustomizationsAction(
           .where(eq(organizationDashboardCustomization.id, orgId))
       }
     }
-    return { ok: true }
+    return { ok: true, toast: "Customization Saved Successfully" }
   })
 }
 export async function getAuthCustomization(

@@ -20,7 +20,6 @@ import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { LinkButton } from "@/components/ui-custom/LinkButton"
 import { IsRichTextEmpty } from "@/util/IsRichTextEmpty"
 import { useAuthCard } from "@/hooks/useAuthCard"
-import { useAuthMutation } from "@/hooks/useAuthMutation"
 import { useAtomValue } from "jotai"
 import {
   buttonCustomizationAtom,
@@ -32,6 +31,7 @@ import { GoogleButtonCustomizationOptions } from "@/components/ui-custom/Customi
 import { cn } from "@/lib/utils"
 import { useAffiliatePath } from "@/hooks/useUrl"
 import { OrgHeader } from "@/components/ui-custom/OrgHeader"
+import { useAppMutation } from "@/hooks/useAppMutation"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -64,11 +64,11 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
   } = useAtomValue(buttonCustomizationAtom)
   const authCardStyle = useAuthCard(affiliate)
   const { customNotesLogin } = useAtomValue(notesCustomizationAtom)
-  const affiliateMutation = useAuthMutation(LoginAffiliateServer, {
+  const affiliateMutation = useAppMutation(LoginAffiliateServer, {
     affiliate,
     disableSuccessToast: true,
   })
-  const normalMutation = useAuthMutation(LoginServer, {
+  const normalMutation = useAppMutation(LoginServer, {
     affiliate,
     disableSuccessToast: true,
   })

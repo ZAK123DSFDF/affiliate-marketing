@@ -22,13 +22,13 @@ import {
 import { CreateOrganization } from "@/app/(organization)/(auth)/create-company/action"
 import { InputField } from "@/components/Auth/FormFields"
 import { SelectField } from "@/components/ui-custom/SelectFields"
-import { useAuthMutation } from "@/hooks/useAuthMutation"
 import { LogoUpload } from "@/components/ui-custom/LogoUpload"
 import { DomainInputField } from "@/components/ui-custom/DomainInputField"
 import { useMemo, useState } from "react"
 import { CompanyFormValues, companySchema } from "@/lib/schema/companySchema"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { useCachedValidation } from "@/hooks/useCachedValidation"
+import { useAppMutation } from "@/hooks/useAppMutation"
 
 type CreateCompanyProps = {
   mode: "create" | "add"
@@ -75,7 +75,7 @@ const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
     errorMessage: "This domain is already linked to another organization.",
     maxCacheSize: 10,
   })
-  const { mutate, isPending } = useAuthMutation(CreateOrganization, {
+  const { mutate, isPending } = useAppMutation(CreateOrganization, {
     onSuccess: (res: any) => {
       if (res.ok && res.data?.id) {
         router.push(`/organization/${res.data.id}/dashboard/analytics`)

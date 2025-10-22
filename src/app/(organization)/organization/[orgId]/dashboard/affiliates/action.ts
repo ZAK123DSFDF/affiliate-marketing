@@ -1,6 +1,5 @@
 "use server"
 
-import { returnError } from "@/lib/errorHandler"
 import { ResponseData } from "@/lib/types/response"
 import { AffiliateBasePayout, AffiliateStats } from "@/lib/types/affiliateStats"
 import { getOrgAuth } from "@/lib/server/GetOrgAuth"

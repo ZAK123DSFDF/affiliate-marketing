@@ -3,7 +3,6 @@
 import { db } from "@/db/drizzle"
 import { account, user } from "@/db/schema"
 import { eq } from "drizzle-orm"
-import { returnError } from "@/lib/errorHandler"
 import * as bcrypt from "bcrypt"
 import { MutationData, ResponseData } from "@/lib/types/response"
 import { SafeUserWithCapabilities } from "@/lib/types/authUser"
@@ -52,7 +51,7 @@ export async function updateUserProfile(
 
     await db.update(user).set({ name: data.name }).where(eq(user.id, id))
     revalidatePath(`/organization/${orgId}/dashboard/profile`)
-    return { ok: true }
+    return { ok: true, toast: "Successfully Updated Profile" }
   })
 }
 
@@ -80,7 +79,7 @@ export async function validateCurrentOrganizationPassword(
       }
     }
 
-    return { ok: true }
+    return { ok: true, toast: "Validated Password" }
   })
 }
 export async function updateUserPassword(
@@ -105,6 +104,6 @@ export async function updateUserPassword(
       throw { status: 404, toast: "Account not found" }
     }
 
-    return { ok: true }
+    return { ok: true, toast: "Successfully Updated Password" }
   })
 }

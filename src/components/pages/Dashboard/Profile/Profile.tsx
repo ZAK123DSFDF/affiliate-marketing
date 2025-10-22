@@ -3,7 +3,6 @@
 import React, { useMemo, useState } from "react"
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { useForm } from "react-hook-form"
-import { useMutation } from "@tanstack/react-query"
 
 import {
   logoutAction,
@@ -41,9 +40,9 @@ import {
   requestOrganizationEmailChange,
 } from "@/lib/server/requestEmailChange"
 import { LogoutButton } from "@/components/ui-custom/LogoutButton"
-import { AuthResponse, useAuthMutation } from "@/hooks/useAuthMutation"
 import { useCachedValidation } from "@/hooks/useCachedValidation"
 import { clearValidationCachesFor } from "@/util/CacheUtils"
+import { AppResponse, useAppMutation } from "@/hooks/useAppMutation"
 
 export default function Profile({
   AffiliateData,
@@ -133,50 +132,65 @@ export default function Profile({
     showError: (msg) =>
       showCustomToast({
         type: "error",
-        title: "Invalid Password",
+        title: "Failed",
         description: msg,
         affiliate,
       }),
     errorMessage: "Incorrect password.",
   })
-  const updateProfile = useMutation({
-    mutationFn: async (data: {
+  const updateProfile = useAppMutation<
+    AppResponse,
+    {
       name?: string
       email?: string
       paypalEmail?: string
-    }) => {
+    }
+  >(
+    async (data) => {
       if (isPreview) {
-        return new Promise((resolve) =>
-          setTimeout(() => resolve({ ok: true }), 1000)
+        // ✅ Explicitly return a valid AppResponse object
+        return new Promise<AppResponse>((resolve) =>
+          setTimeout(
+            () =>
+              resolve({
+                ok: true,
+                message: "Preview mode: profile update simulated.",
+                toast: "Profile update simulated successfully.",
+              }),
+            1000
+          )
         )
       }
+
+      // ✅ Both functions should return AppResponse as well
       return AffiliateData
         ? updateAffiliateProfile(orgId, data)
         : updateUserProfile(orgId, data)
     },
-    onSuccess: () => {
-      showCustomToast({
-        type: "success",
-        title: "Profile updated successfully",
-        description: "Your profile was updated.",
-        affiliate,
-      })
-    },
-    onError: (err: any) => {
-      showCustomToast({
-        type: "error",
-        title: "Update Error",
-        description: err.message ?? "Something went wrong.",
-        affiliate,
-      })
-    },
-  })
+    {
+      affiliate,
+    }
+  )
 
-  const validatePassword = useMutation({
-    mutationFn: async (password: string) => {
+  const validatePassword = useAppMutation<AppResponse, string>(
+    async (password) => {
       if (isPreview) {
-        return new Promise((resolve) =>
-          setTimeout(() => resolve({ ok: password === "correct123" }), 1000)
+        return new Promise<AppResponse>((resolve) =>
+          setTimeout(
+            () =>
+              resolve({
+                ok: password === "correct123",
+                message:
+                  password === "correct123"
+                    ? "Password validated"
+                    : "Invalid password",
+                toast:
+                  password === "correct123"
+                    ? "Password validated"
+                    : "Invalid password",
+              }),
+            1000
+          )
         )
       }
 
@@ -184,42 +198,32 @@ export default function Profile({
         ? validateCurrentPassword(orgId, password)
         : validateCurrentOrganizationPassword(password)
     },
-    onSuccess: (res: any) => {
-      console.log("res", res)
-      if (res?.ok) {
-        setStep("new")
-        newPasswordForm.reset({ newPassword: "", confirmPassword: "" })
-        showCustomToast({
-          type: "success",
-          title: "Password validated",
-          description: "Enter your new password below.",
-          affiliate,
-        })
-      } else {
-        showCustomToast({
-          type: "error",
-          title: "Invalid Password",
-          description: "Incorrect password.",
-          affiliate,
-        })
-        passwordCache.addFailedValue(res.data)
-      }
-    },
-    onError: () => {
-      showCustomToast({
-        type: "error",
-        title: "Something went wrong",
-        description: "Unexpected error. Please try again.",
-        affiliate,
-      })
-    },
-  })
+    {
+      affiliate,
+      onSuccess: (res) => {
+        if (res.ok) {
+          setStep("new")
+          newPasswordForm.reset({ newPassword: "", confirmPassword: "" })
+        } else {
+          passwordCache.addFailedValue(res.data)
+        }
+      },
+    }
+  )
 
-  const updatePassword = useMutation({
-    mutationFn: async (newPassword: string) => {
+  const updatePassword = useAppMutation<AppResponse, string>(
+    async (newPassword) => {
       if (isPreview) {
-        return new Promise((resolve) =>
-          setTimeout(() => resolve({ ok: true }), 1000)
+        return new Promise<AppResponse>((resolve) =>
+          setTimeout(
+            () =>
+              resolve({
+                ok: true,
+                message: "Password updated successfully",
+                toast: "Password updated successfully",
+              }),
+            1000
+          )
         )
       }
 
@@ -227,62 +231,41 @@ export default function Profile({
         ? updateAffiliatePassword(orgId, newPassword)
         : updateUserPassword(newPassword)
     },
-    onSuccess: (res: any) => {
-      if (res?.ok) {
-        showCustomToast({
-          type: "success",
-          title: "Password updated successfully",
-          description: "You can now use your new password.",
-          affiliate,
-        })
-        resetPasswordModal()
-      } else {
-        showCustomToast({
-          type: "error",
-          title: "Update Failed",
-          description: "Unable to change password.",
-          affiliate,
-        })
-      }
-    },
-    onError: () => {
-      showCustomToast({
-        type: "error",
-        title: "Unexpected Error",
-        description: "Please try again later.",
-        affiliate,
-      })
-    },
-  })
+    {
+      affiliate,
+      onSuccess: (res) => {
+        if (res.ok) {
+          resetPasswordModal()
+        }
+      },
+    }
+  )
 
-  const logoutMutation = useMutation({
-    mutationFn: async () => {
+  const logoutMutation = useAppMutation<AppResponse, void>(
+    async () => {
       if (isPreview) {
-        return new Promise((resolve) =>
+        return new Promise<AppResponse>((resolve) =>
           setTimeout(() => resolve({ ok: true }), 1000)
         )
       }
+
       return logoutAction(affiliate, orgId)
     },
-    onSuccess: (res: any) => {
-      clearValidationCachesFor(affiliate, orgId)
-      if (res.redirectTo) {
-        window.location.href = res.redirectTo
-      }
-    },
-    onError: (err: any) => {
-      showCustomToast({
-        type: "error",
-        title: "Logout failed",
-        description: err.message ?? "Could not log you out.",
-        affiliate,
-      })
-    },
-  })
-  const emailChangeMutation = useAuthMutation(
+    {
+      affiliate,
+      onSuccess: (res) => {
+        clearValidationCachesFor(affiliate, orgId)
+        if (res.redirectUrl) {
+          window.location.href = res.redirectUrl
+        }
+      },
+    }
+  )
+
+  const emailChangeMutation = useAppMutation(
     async (values: { newEmail: string }) => {
       if (isPreview) {
-        return new Promise<AuthResponse>((resolve) =>
+        return new Promise((resolve) =>
           setTimeout(() => resolve({ ok: true }), 1000)
         )
       }
@@ -302,7 +285,6 @@ export default function Profile({
     },
     {
       affiliate,
-      disableSuccessToast: false,
       onSuccess: (res: any) => {
         if (!res.ok) {
           emailCache.addFailedValue(res.data)
