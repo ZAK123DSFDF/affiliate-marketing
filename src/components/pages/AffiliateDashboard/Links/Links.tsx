@@ -75,7 +75,11 @@ export default function Links({
 
     return () => clearTimeout(timer)
   }, [filters, isPreview])
-  const { data: searchData, isPending: searchPending } = useSearch(
+  const {
+    data: searchData,
+    error: searchError,
+    isPending: searchPending,
+  } = useSearch(
     ["affiliate-links", orgId, filters.year, filters.month],
     getAffiliateLinksWithStats,
     [orgId, filters.year, filters.month],
@@ -270,12 +274,17 @@ export default function Links({
           {(searchPending && !isPreview) ||
           (isPreview && isFakeLoadingPreview) ? (
             <TableLoading affiliate={affiliate} columns={columns} />
+          ) : searchError ? (
+            <div
+              className="text-center py-6 text-red-500"
+              style={{ color: (affiliate && tableEmptyTextColor) || undefined }}
+            >
+              {searchError}
+            </div>
           ) : table.getRowModel().rows.length === 0 ? (
             <div
               className="text-center py-6 text-muted-foreground"
-              style={{
-                color: (affiliate && tableEmptyTextColor) || undefined,
-              }}
+              style={{ color: (affiliate && tableEmptyTextColor) || undefined }}
             >
               No links found.
             </div>

@@ -35,7 +35,6 @@ export const getAffiliateLinksWithStats = async (
   return handleAction("getAffiliateLinksWithStats", async () => {
     const decoded = await getAffiliateOrganization(orgId)
     const rows = await getAffiliateLinksWithStatsAction(decoded, year, month)
-
     return { ok: true, data: rows }
   })
 }
