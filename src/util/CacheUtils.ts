@@ -11,3 +11,12 @@ export function clearValidationCachesFor(affiliate: boolean, orgId?: string) {
     }
   })
 }
+export function clearValidationCacheForId(
+  affiliate: boolean,
+  orgId: string | undefined,
+  id: string
+) {
+  const cacheScope = buildCacheScope(affiliate, orgId)
+  const cacheKey = `refearnapp-${cacheScope}-${id}`
+  localStorage.removeItem(cacheKey)
+}

@@ -41,7 +41,10 @@ import {
 } from "@/lib/server/requestEmailChange"
 import { LogoutButton } from "@/components/ui-custom/LogoutButton"
 import { useCachedValidation } from "@/hooks/useCachedValidation"
-import { clearValidationCachesFor } from "@/util/CacheUtils"
+import {
+  clearValidationCacheForId,
+  clearValidationCachesFor,
+} from "@/util/CacheUtils"
 import { AppResponse, useAppMutation } from "@/hooks/useAppMutation"
 
 export default function Profile({
@@ -235,6 +238,7 @@ export default function Profile({
       affiliate,
       onSuccess: (res) => {
         if (res.ok) {
+          clearValidationCacheForId(affiliate, orgId, "profile-password-change")
           resetPasswordModal()
         }
       },
