@@ -450,6 +450,7 @@ export const organizationDashboardCustomization = pgTable(
         tableBorderColor: string
         tableLoadingColor: string
         tableEmptyTextColor: string
+        tableErrorTextColor: string
       }
       useDialogCustomization: {
         dialogBackgroundColor: string
@@ -492,6 +493,7 @@ export const organizationDashboardCustomization = pgTable(
         cardShadow: boolean
         cardBorder: boolean
         kpiLoadingColor: string
+        kpiErrorColor: string
       }
       useChartCustomization: {
         chartHorizontalLineColor: string
@@ -505,6 +507,7 @@ export const organizationDashboardCustomization = pgTable(
         toolTipTextColor: string
         toolTipNumberColor: string
         chartLoadingColor: string
+        chartErrorColor: string
       }
       usePieChartColorCustomization: {
         pieColor1: string
@@ -518,6 +521,7 @@ export const organizationDashboardCustomization = pgTable(
         pieFallbackColor: string
         pieChartLoadingColor: string
         pieChartEmptyTextColor: string
+        pieChartErrorColor: string
       }
       useLogoutButtonCustomization: {
         logoutButtonBackgroundColor: string

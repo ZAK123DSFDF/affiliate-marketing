@@ -26,7 +26,9 @@ export function TableView<TData>({
   isPreview,
   tableEmptyText = "No data available.",
 }: TableViewProps<TData>) {
-  const { tableEmptyTextColor } = useAtomValue(tableCustomizationAtom)
+  const { tableEmptyTextColor, tableErrorTextColor } = useAtomValue(
+    tableCustomizationAtom
+  )
 
   if (isPending) {
     return <TableLoading affiliate={affiliate} columns={columns} />
@@ -37,7 +39,7 @@ export function TableView<TData>({
       <div
         className="text-center py-6 text-red-500"
         style={{
-          color: affiliate ? tableEmptyTextColor : undefined,
+          color: affiliate ? tableErrorTextColor : undefined,
         }}
       >
         {error}

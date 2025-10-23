@@ -33,6 +33,7 @@ export const TableCustomizationOptions = ({
       tableBorderColor,
       tableLoadingColor,
       tableEmptyTextColor,
+      tableErrorTextColor,
     },
     setTableCustomization,
   ] = useAtom(tableCustomizationAtom)
@@ -82,6 +83,11 @@ export const TableCustomizationOptions = ({
       label: "Table Empty Text Color",
       value: tableEmptyTextColor,
       onChange: throttled.tableEmptyTextColor,
+    },
+    tableErrorTextColor: {
+      label: "Table Error Text Color",
+      value: tableErrorTextColor,
+      onChange: throttled.tableErrorTextColor,
     },
   }
 

@@ -68,6 +68,7 @@ export default function SocialTrafficPieChart({
     pieColor1,
     pieChartLoadingColor,
     pieChartEmptyTextColor,
+    pieChartErrorColor,
   } = useAtomValue(pieChartColorCustomizationAtom)
   const { filters, setFilters } = useQueryFilter({
     yearKey: "sourceYear",
@@ -253,7 +254,7 @@ export default function SocialTrafficPieChart({
           <div
             className="text-sm text-red-500 text-center"
             style={{
-              color: (affiliate && pieChartEmptyTextColor) || "#ef4444",
+              color: (affiliate && pieChartErrorColor) || "#ef4444",
             }}
           >
             {searchError}

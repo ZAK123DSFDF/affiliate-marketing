@@ -55,6 +55,7 @@ export const defaultDashboardCustomization = {
     tableBorderColor: "",
     tableLoadingColor: "",
     tableEmptyTextColor: "",
+    tableErrorTextColor: "",
   },
   useDialogCustomization: {
     dialogBackgroundColor: "",
@@ -97,6 +98,7 @@ export const defaultDashboardCustomization = {
     cardShadow: true,
     cardBorder: true,
     kpiLoadingColor: "",
+    kpiErrorColor: "",
   },
   useChartCustomization: {
     chartHorizontalLineColor: "",
@@ -110,6 +112,7 @@ export const defaultDashboardCustomization = {
     toolTipTextColor: "",
     toolTipNumberColor: "",
     chartLoadingColor: "",
+    chartErrorColor: "",
   },
   usePieChartColorCustomization: {
     pieColor1: "",
@@ -123,6 +126,7 @@ export const defaultDashboardCustomization = {
     pieFallbackColor: "",
     pieChartLoadingColor: "",
     pieChartEmptyTextColor: "",
+    pieChartErrorColor: "",
   },
   useLogoutButtonCustomization: {
     logoutButtonBackgroundColor: "",

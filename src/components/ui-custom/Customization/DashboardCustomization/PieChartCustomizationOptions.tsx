@@ -25,6 +25,7 @@ export const PieChartCustomizationOptions = ({
       pieFallbackColor,
       pieChartLoadingColor,
       pieChartEmptyTextColor,
+      pieChartErrorColor,
     },
     setPieChartCustomization,
   ] = useAtom(pieChartColorCustomizationAtom)
@@ -88,6 +89,11 @@ export const PieChartCustomizationOptions = ({
           label: "Pie Chart Empty Text Color",
           value: pieChartEmptyTextColor,
           onChange: throttled.pieChartEmptyTextColor,
+        },
+        errorColor: {
+          label: "Pie Chart Error Color",
+          value: pieChartErrorColor,
+          onChange: throttled.pieChartErrorColor,
         },
       }}
     />

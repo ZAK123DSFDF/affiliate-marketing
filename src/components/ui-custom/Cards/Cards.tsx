@@ -199,7 +199,10 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
               ))
             ) : searchError ? (
               // Error message
-              <div className="col-span-full text-center py-10 text-red-500">
+              <div
+                className="col-span-full text-center py-10 text-red-500"
+                style={{ color: affiliate ? kpiCard.kpiErrorColor : undefined }}
+              >
                 {searchError}
               </div>
             ) : displayData.length === 0 ? (

@@ -266,6 +266,7 @@ export const organization_dashboard_customization_seed = [
         toolTipBackgroundColor: "",
         chartHorizontalLineColor: "",
         chartLoadingColor: "",
+        chartErrorColor: "",
       },
       useTableCustomization: {
         tableIconColor: "",
@@ -285,6 +286,7 @@ export const organization_dashboard_customization_seed = [
         tableRowBadgePendingBackgroundColor: "",
         tableLoadingColor: "",
         tableEmptyTextColor: "",
+        tableErrorTextColor: "",
       },
       useToastCustomization: {
         toastTitleColor: "",
@@ -315,6 +317,7 @@ export const organization_dashboard_customization_seed = [
         cardIconTertiaryBackgroundColor: "",
         cardIconSecondaryBackgroundColor: "",
         kpiLoadingColor: "",
+        kpiErrorColor: "",
       },
       useSidebarCustomization: {
         sideBarBackgroundColor: "#256490",
@@ -360,6 +363,7 @@ export const organization_dashboard_customization_seed = [
         pieFallbackColor: "",
         pieChartLoadingColor: "",
         pieChartEmptyTextColor: "",
+        pieChartErrorColor: "",
       },
       useDashboardThemeCustomization: {
         separatorColor: "",
