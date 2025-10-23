@@ -23,17 +23,16 @@ import { useEffect, useState } from "react"
 import MonthSelect from "@/components/ui-custom/MonthSelect"
 import { UnpaidMonth } from "@/lib/types/unpaidMonth"
 import UnpaidSelect from "@/components/ui-custom/UnpaidPicker"
-import { TableContent } from "@/components/ui-custom/TableContent"
 import { TableTop } from "@/components/ui-custom/TableTop"
 import { PayoutColumns } from "@/components/pages/Dashboard/Payouts/PayoutColumns"
-import { useSearch } from "@/hooks/useSearch"
-import { TableLoading } from "@/components/ui-custom/TableLoading"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import PaginationControls from "@/components/ui-custom/PaginationControls"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
 import CsvUploadPopover from "@/components/ui-custom/CsvUpload"
 import { getNormalizedMonths } from "@/util/Months"
 import { ExchangeRate } from "@/util/ExchangeRate"
+import { useAppQuery } from "@/hooks/useAppQuery"
+import { TableView } from "@/components/ui-custom/TableView"
 
 interface AffiliatesTablePayoutProps {
   orgId: string
@@ -59,7 +58,11 @@ export default function PayoutTable({
     selectedMonths,
     filters
   )
-  const { data: unpaidPayouts, isPending: isPendingUnpaid } = useSearch(
+  const {
+    data: unpaidPayouts,
+    error: isErrorUnpaid,
+    isPending: isPendingUnpaid,
+  } = useAppQuery(
     [
       "unpaid-payouts",
       orgId,
@@ -181,7 +184,11 @@ export default function PayoutTable({
 
     window.open(baseUrl, "_blank")
   }
-  const { data: regularPayouts, isPending: isPendingRegular } = useSearch(
+  const {
+    data: regularPayouts,
+    error: regularError,
+    isPending: isPendingRegular,
+  } = useAppQuery(
     [
       "regular-payouts",
       orgId,
@@ -206,12 +213,13 @@ export default function PayoutTable({
       enabled: !!(!affiliate && orgId) && !isUnpaidMode,
     }
   )
-  const { data: unpaidMonthData, isPending: pendingMonth } = useSearch(
-    ["unpaid-months", orgId],
-    getUnpaidMonths,
-    [orgId],
-    { enabled: !affiliate && unpaidOpen }
-  )
+  const {
+    data: unpaidMonthData,
+    error: pendingMonthError,
+    isPending: pendingMonth,
+  } = useAppQuery(["unpaid-months", orgId], getUnpaidMonths, [orgId], {
+    enabled: !affiliate && unpaidOpen,
+  })
   const applyUnpaidMonths = () => {
     if (selectedMonths.length > 0) {
       setIsUnpaidMode(true)
@@ -224,6 +232,7 @@ export default function PayoutTable({
     setMonthYear({})
   }
   const isPending = isUnpaidMode ? isPendingUnpaid : isPendingRegular
+  const isError = isUnpaidMode ? isErrorUnpaid : regularError
   useEffect(() => {
     if (unpaidMonthData) {
       setUnpaidMonths(unpaidMonthData)
@@ -317,6 +326,7 @@ export default function PayoutTable({
           selection={selectedMonths}
           setSelection={setSelectedMonths}
           loading={pendingMonth}
+          error={pendingMonthError}
           onApply={applyUnpaidMonths}
           disabled={isUnpaidMode}
           open={unpaidOpen}
@@ -359,23 +369,23 @@ export default function PayoutTable({
             table={table}
           />
           {isUnpaidMode ? (
-            pendingMonth || isPending ? (
-              <TableLoading affiliate={affiliate} columns={columns} />
-            ) : table.getRowModel().rows.length === 0 ? (
-              <div className="text-center py-6 text-muted-foreground">
-                No Affiliates found
-              </div>
-            ) : (
-              <TableContent table={table} affiliate={false} />
-            )
-          ) : isPending ? (
-            <TableLoading affiliate={affiliate} columns={columns} />
-          ) : table.getRowModel().rows.length === 0 ? (
-            <div className="text-center py-6 text-muted-foreground">
-              No Affiliates found
-            </div>
+            <TableView
+              table={table}
+              error={pendingMonthError || isError}
+              affiliate={affiliate}
+              columns={columns}
+              isPending={pendingMonth || isPending}
+              tableEmptyText=" No Affiliates found."
+            />
           ) : (
-            <TableContent table={table} affiliate={false} />
+            <TableView
+              isPending={isPending}
+              error={isError}
+              table={table}
+              columns={columns}
+              affiliate={affiliate}
+              tableEmptyText=" No Affiliates found."
+            />
           )}
 
           <PaginationControls

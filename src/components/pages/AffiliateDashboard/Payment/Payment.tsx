@@ -16,18 +16,14 @@ import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Custo
 import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardCardCustomizationOptions"
 import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions"
 import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions"
-import { TableContent } from "@/components/ui-custom/TableContent"
-import { TableLoading } from "@/components/ui-custom/TableLoading"
 import { paymentColumns } from "@/components/pages/AffiliateDashboard/Payment/PaymentColumns"
-import { useSearch } from "@/hooks/useSearch"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import { dummyAffiliatePayments } from "@/lib/types/previewData"
 import { useAtomValue } from "jotai"
-import {
-  dashboardThemeCustomizationAtom,
-  tableCustomizationAtom,
-} from "@/store/DashboardCustomizationAtom"
+import { dashboardThemeCustomizationAtom } from "@/store/DashboardCustomizationAtom"
+import { useAppQuery } from "@/hooks/useAppQuery"
+import { TableView } from "@/components/ui-custom/TableView"
 
 interface AffiliateCommissionTableProps {
   orgId: string
@@ -45,7 +41,6 @@ export default function AffiliateCommissionTable({
     cardHeaderPrimaryTextColor,
     dashboardHeaderNameColor,
   } = useAtomValue(dashboardThemeCustomizationAtom)
-  const { tableEmptyTextColor } = useAtomValue(tableCustomizationAtom)
   const dashboardCardStyle = useDashboardCard(affiliate)
   const { filters, setFilters } = useQueryFilter()
   const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false)
@@ -60,7 +55,11 @@ export default function AffiliateCommissionTable({
 
     return () => clearTimeout(timer)
   }, [filters, isPreview])
-  const { data: yearSelectedData, isPending } = useSearch(
+  const {
+    data: yearSelectedData,
+    error: searchError,
+    isPending,
+  } = useAppQuery(
     ["affiliate-commissions", orgId, filters.year],
     getAffiliateCommissionByMonth,
     [orgId, filters.year],
@@ -169,24 +168,20 @@ export default function AffiliateCommissionTable({
           </div>
         </CardHeader>
         <CardContent>
-          {(isPending && !isPreview) || (isPreview && isFakeLoadingPreview) ? (
-            <TableLoading affiliate={affiliate} columns={columns} />
-          ) : table.getRowModel().rows.length === 0 ? (
-            <div
-              className="text-center py-6 text-muted-foreground"
-              style={{
-                color: (affiliate && tableEmptyTextColor) || undefined,
-              }}
-            >
-              No commission data available.
-            </div>
-          ) : (
-            <TableContent
-              table={table}
-              affiliate={affiliate}
-              isPreview={isPreview}
-            />
-          )}
+          <TableView
+            isPending={
+              !!(
+                (isPending && !isPreview) ||
+                (isPreview && isFakeLoadingPreview)
+              )
+            }
+            error={searchError}
+            table={table}
+            columns={columns}
+            affiliate={affiliate}
+            isPreview={isPreview}
+            tableEmptyText="No commission data available for the selected year."
+          />
         </CardContent>
       </Card>
     </div>

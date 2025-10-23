@@ -17,7 +17,6 @@ import {
   OrganizationKpiStats,
 } from "@/lib/types/affiliateKpiStats"
 import { mapAffiliateStats, mapOrganizationStats } from "@/util/mapStats"
-import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateKpiStats } from "@/app/affiliate/[orgId]/dashboard/action"
 import { getOrganizationKpiStats } from "@/app/(organization)/organization/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
@@ -28,6 +27,7 @@ import {
   dashboardThemeCustomizationAtom,
   kpiCardCustomizationAtom,
 } from "@/store/DashboardCustomizationAtom"
+import { useAppQuery } from "@/hooks/useAppQuery"
 
 interface CardsProps {
   orgId: string
@@ -60,7 +60,7 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
   })
 
   const { data: affiliateSearchData, isPending: affiliateSearchPending } =
-    useSearch(
+    useAppQuery(
       ["affiliate-card", orgId, filters.year, filters.month],
       getAffiliateKpiStats,
       [orgId, filters.year, filters.month],
@@ -69,7 +69,7 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
       }
     )
   const { data: organizationSearchData, isPending: organizationSearchPending } =
-    useSearch(
+    useAppQuery(
       ["organization-card", orgId, filters.year, filters.month],
       getOrganizationKpiStats,
       [orgId, filters.year, filters.month],

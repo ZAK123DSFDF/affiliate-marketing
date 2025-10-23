@@ -2,23 +2,23 @@ import { useQuery, UseQueryResult } from "@tanstack/react-query"
 import { ResponseData } from "@/lib/types/response"
 import { UnpaidMonth } from "@/lib/types/unpaidMonth"
 
-interface UseSearchOptions {
+interface UseAppQueryOptions {
   enabled?: boolean
 }
 
-interface SearchResult<TData> {
+interface AppQueryResult<TData> {
   data: TData | undefined
   error: string | undefined
   isPending: boolean
   queryResult: UseQueryResult<{ data?: TData; toast?: string }>
 }
 
-export function useSearch<Args extends unknown[], TData>(
+export function useAppQuery<Args extends unknown[], TData>(
   queryKey: (string | number | undefined | UnpaidMonth[])[],
   fetchFn: (...args: Args) => Promise<ResponseData<TData>>,
   fetchArgs: Args,
-  options?: UseSearchOptions
-): SearchResult<TData> {
+  options?: UseAppQueryOptions
+): AppQueryResult<TData> {
   const queryResult = useQuery<{ data?: TData; toast?: string }>({
     queryKey,
     queryFn: async () => {

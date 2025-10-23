@@ -23,7 +23,6 @@ import {
   AffiliateReferrerStat,
   OrganizationReferrerStat,
 } from "@/lib/types/affiliateReferrerStat"
-import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateReferrers } from "@/app/affiliate/[orgId]/dashboard/action"
 import { getOrganizationReferrer } from "@/app/(organization)/organization/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
@@ -34,6 +33,7 @@ import {
   dashboardThemeCustomizationAtom,
   pieChartColorCustomizationAtom,
 } from "@/store/DashboardCustomizationAtom"
+import { useAppQuery } from "@/hooks/useAppQuery"
 
 const chartConfig: ChartConfig = {
   visitors: { label: "Visitors" },
@@ -73,7 +73,7 @@ export default function SocialTrafficPieChart({
     yearKey: "sourceYear",
     monthKey: "sourceMonth",
   })
-  const { data: affiliateData, isPending: affiliatePending } = useSearch(
+  const { data: affiliateData, isPending: affiliatePending } = useAppQuery(
     ["affiliate-source", orgId, filters.year, filters.month],
     getAffiliateReferrers,
     [orgId, filters.year, filters.month],
@@ -81,14 +81,15 @@ export default function SocialTrafficPieChart({
       enabled: !!(affiliate && orgId && !isPreview),
     }
   )
-  const { data: organizationData, isPending: organizationPending } = useSearch(
-    ["organization-source", orgId, filters.year, filters.month],
-    getOrganizationReferrer,
-    [orgId, filters.year, filters.month],
-    {
-      enabled: !!(!affiliate && orgId && !isPreview),
-    }
-  )
+  const { data: organizationData, isPending: organizationPending } =
+    useAppQuery(
+      ["organization-source", orgId, filters.year, filters.month],
+      getOrganizationReferrer,
+      [orgId, filters.year, filters.month],
+      {
+        enabled: !!(!affiliate && orgId && !isPreview),
+      }
+    )
   const [previewLoading, setPreviewLoading] = useState(isPreview)
 
   useEffect(() => {

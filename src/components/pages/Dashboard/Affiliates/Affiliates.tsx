@@ -10,16 +10,14 @@ import {
 } from "@tanstack/react-table"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { AffiliateStats } from "@/lib/types/affiliateStats"
 import MonthSelect from "@/components/ui-custom/MonthSelect"
-import { useSearch } from "@/hooks/useSearch"
 import { getAffiliatesWithStats } from "@/app/(organization)/organization/[orgId]/dashboard/affiliates/action"
-import { TableContent } from "@/components/ui-custom/TableContent"
 import { TableTop } from "@/components/ui-custom/TableTop"
 import { AffiliatesColumns } from "@/components/pages/Dashboard/Affiliates/AffiliatesColumns"
-import { TableLoading } from "@/components/ui-custom/TableLoading"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
 import PaginationControls from "@/components/ui-custom/PaginationControls"
+import { useAppQuery } from "@/hooks/useAppQuery"
+import { TableView } from "@/components/ui-custom/TableView"
 
 interface AffiliatesTableProps {
   orgId: string
@@ -44,7 +42,11 @@ export default function AffiliatesTable({
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const { filters, setFilters } = useQueryFilter()
-  const { data: searchData, isPending: searchPending } = useSearch(
+  const {
+    data: searchData,
+    error: searchError,
+    isPending: searchPending,
+  } = useAppQuery(
     [
       "all-affiliates",
       orgId,
@@ -132,15 +134,15 @@ export default function AffiliatesTable({
             mode={mode}
           />
 
-          {searchPending ? (
-            <TableLoading affiliate={affiliate} columns={columns} />
-          ) : table.getRowModel().rows.length === 0 ? (
-            <div className="text-center py-6 text-muted-foreground">
-              No Affiliates found.
-            </div>
-          ) : (
-            <TableContent table={table} affiliate={false} />
-          )}
+          <TableView
+            isPending={searchPending}
+            error={searchError}
+            table={table}
+            affiliate={false}
+            columns={columns}
+            tableEmptyText="No Affiliates found."
+          />
+
           {mode === "default" && (
             <PaginationControls
               offset={filters.offset}

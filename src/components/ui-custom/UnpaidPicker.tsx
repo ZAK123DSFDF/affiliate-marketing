@@ -17,6 +17,7 @@ interface UnpaidSelectProps {
   selection: UnpaidMonth[]
   setSelection: React.Dispatch<React.SetStateAction<UnpaidMonth[]>>
   loading: boolean
+  error?: string | null
   onApply: () => void
   disabled?: boolean
   open: boolean
@@ -28,6 +29,7 @@ export default function UnpaidSelect({
   selection,
   setSelection,
   loading,
+  error,
   onApply,
   disabled,
   open,
@@ -58,7 +60,9 @@ export default function UnpaidSelect({
       <SelectContent affiliate={false} className="w-[280px] p-2">
         <SelectGroup>
           <SelectLabel>Select unpaid months</SelectLabel>
-          {loading ? (
+          {error ? (
+            <div className="p-3 text-center text-sm text-red-500">{error}</div>
+          ) : loading ? (
             <div className="flex items-center justify-center gap-2 p-2">
               <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-600" />
               <span>Loading...</span>

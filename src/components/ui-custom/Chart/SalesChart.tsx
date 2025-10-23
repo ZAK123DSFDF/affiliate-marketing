@@ -27,7 +27,6 @@ import MonthSelect from "@/components/ui-custom/MonthSelect"
 import { DashboardThemeCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/DashboardThemeCustomizationOptions"
 import { Separator } from "@/components/ui/separator"
 import { ChartCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/ChartCustomizationOptions"
-import { useSearch } from "@/hooks/useSearch"
 import { getAffiliateKpiTimeSeries } from "@/app/affiliate/[orgId]/dashboard/action"
 import { getOrganizationKpiTimeSeries } from "@/app/(organization)/organization/[orgId]/dashboard/action"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
@@ -38,6 +37,7 @@ import {
   chartCustomizationAtom,
   dashboardThemeCustomizationAtom,
 } from "@/store/DashboardCustomizationAtom"
+import { useAppQuery } from "@/hooks/useAppQuery"
 
 interface ChartDailyMetricsProps {
   orgId: string
@@ -56,7 +56,7 @@ export function ChartDailyMetrics({
   })
   const dashboardCardStyle = useDashboardCard(affiliate)
   const { data: affiliateSearchData, isPending: affiliateSearchPending } =
-    useSearch(
+    useAppQuery(
       ["affiliate-kpi-time-series", orgId, filters.year, filters.month],
       getAffiliateKpiTimeSeries,
       [orgId, filters.year, filters.month],
@@ -65,7 +65,7 @@ export function ChartDailyMetrics({
       }
     )
   const { data: organizationSearchData, isPending: organizationSearchPending } =
-    useSearch(
+    useAppQuery(
       ["organization-kpi-time-series", orgId, filters.year, filters.month],
       getOrganizationKpiTimeSeries,
       [orgId, filters.year, filters.month],

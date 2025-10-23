@@ -22,20 +22,18 @@ import { DashboardCardCustomizationOptions } from "@/components/ui-custom/Custom
 import { TableCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/TableCustomizationOptions"
 import { YearSelectCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/YearSelectCustomizationOptions"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
-import { useSearch } from "@/hooks/useSearch"
+import { useAppQuery } from "@/hooks/useAppQuery"
 import { useQueryFilter } from "@/hooks/useQueryFilter"
-import { TableContent } from "@/components/ui-custom/TableContent"
 import { LinksColumns } from "@/components/pages/AffiliateDashboard/Links/LinksColumns"
-import { TableLoading } from "@/components/ui-custom/TableLoading"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import { dummyAffiliateLinksRaw } from "@/lib/types/previewData"
 import { useAtomValue } from "jotai"
 import {
   dashboardButtonCustomizationAtom,
   dashboardThemeCustomizationAtom,
-  tableCustomizationAtom,
 } from "@/store/DashboardCustomizationAtom"
 import { useAppMutation } from "@/hooks/useAppMutation"
+import { TableView } from "@/components/ui-custom/TableView"
 
 interface AffiliateLinkProps {
   orgId: string
@@ -58,7 +56,6 @@ export default function Links({
     dashboardButtonDisabledBackgroundColor,
     dashboardButtonBackgroundColor,
   } = useAtomValue(dashboardButtonCustomizationAtom)
-  const { tableEmptyTextColor } = useAtomValue(tableCustomizationAtom)
   const dashboardCardStyle = useDashboardCard(affiliate)
   const { showCustomToast } = useCustomToast()
   const [isFakeLoading, setIsFakeLoading] = useState(false)
@@ -79,7 +76,7 @@ export default function Links({
     data: searchData,
     error: searchError,
     isPending: searchPending,
-  } = useSearch(
+  } = useAppQuery(
     ["affiliate-links", orgId, filters.year, filters.month],
     getAffiliateLinksWithStats,
     [orgId, filters.year, filters.month],
@@ -271,30 +268,20 @@ export default function Links({
           </div>
         </CardHeader>
         <CardContent>
-          {(searchPending && !isPreview) ||
-          (isPreview && isFakeLoadingPreview) ? (
-            <TableLoading affiliate={affiliate} columns={columns} />
-          ) : searchError ? (
-            <div
-              className="text-center py-6 text-red-500"
-              style={{ color: (affiliate && tableEmptyTextColor) || undefined }}
-            >
-              {searchError}
-            </div>
-          ) : table.getRowModel().rows.length === 0 ? (
-            <div
-              className="text-center py-6 text-muted-foreground"
-              style={{ color: (affiliate && tableEmptyTextColor) || undefined }}
-            >
-              No links found.
-            </div>
-          ) : (
-            <TableContent
-              table={table}
-              affiliate={affiliate}
-              isPreview={isPreview}
-            />
-          )}
+          <TableView
+            isPending={
+              !!(
+                (searchPending && !isPreview) ||
+                (isPreview && isFakeLoadingPreview)
+              )
+            }
+            error={searchError}
+            table={table}
+            columns={columns}
+            affiliate={affiliate}
+            isPreview={isPreview}
+            tableEmptyText="No affiliate links found."
+          />
         </CardContent>
       </Card>
     </div>
