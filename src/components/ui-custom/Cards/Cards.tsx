@@ -59,24 +59,31 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
     monthKey: "kpiMonth",
   })
 
-  const { data: affiliateSearchData, isPending: affiliateSearchPending } =
-    useAppQuery(
-      ["affiliate-card", orgId, filters.year, filters.month],
-      getAffiliateKpiStats,
-      [orgId, filters.year, filters.month],
-      {
-        enabled: !!(affiliate && orgId && !isPreview),
-      }
-    )
-  const { data: organizationSearchData, isPending: organizationSearchPending } =
-    useAppQuery(
-      ["organization-card", orgId, filters.year, filters.month],
-      getOrganizationKpiStats,
-      [orgId, filters.year, filters.month],
-      {
-        enabled: !!(!affiliate && orgId && !isPreview),
-      }
-    )
+  const {
+    data: affiliateSearchData,
+    error: affiliateError,
+    isPending: affiliateSearchPending,
+  } = useAppQuery(
+    ["affiliate-card", orgId, filters.year, filters.month],
+    getAffiliateKpiStats,
+    [orgId, filters.year, filters.month],
+    {
+      enabled: !!(affiliate && orgId && !isPreview),
+    }
+  )
+  const {
+    data: organizationSearchData,
+    error: organizationError,
+    isPending: organizationSearchPending,
+  } = useAppQuery(
+    ["organization-card", orgId, filters.year, filters.month],
+    getOrganizationKpiStats,
+    [orgId, filters.year, filters.month],
+    {
+      enabled: !!(!affiliate && orgId && !isPreview),
+    }
+  )
+  const searchError = affiliate ? affiliateError : organizationError
   const searchData = affiliate ? affiliateSearchData : organizationSearchData
   const searchPending = affiliate
     ? affiliateSearchPending
@@ -84,10 +91,10 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
   const filteredData = affiliate
     ? affiliateSearchData?.[0]
       ? mapAffiliateStats(affiliateSearchData[0] as AffiliateKpiStats)
-      : initialKpiData
+      : []
     : organizationSearchData?.[0]
       ? mapOrganizationStats(organizationSearchData[0] as OrganizationKpiStats)
-      : initialKpiData
+      : []
 
   const isFiltering = !!(filters.year || filters.month)
   const [previewLoading, setPreviewLoading] = useState(isPreview)
@@ -178,185 +185,194 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
                   : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
             }`}
           >
-            {(isPreview && previewLoading) || (!isPreview && searchPending)
-              ? Array.from({ length: affiliate ? 3 : 4 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="animate-pulse p-3 rounded-lg bg-gray-100 h-20"
-                    style={{
-                      backgroundColor:
-                        (affiliate && kpiCard.kpiLoadingColor) ||
-                        "rgb(243 244 246)",
-                    }}
-                  />
-                ))
-              : displayData.map(({ label, value, icon: Icon }, index) => {
-                  const colorIndex = index % colorPairs.length
-                  const defaultColorPair = colorPairs[colorIndex]
+            {(isPreview && previewLoading) || (!isPreview && searchPending) ? (
+              Array.from({ length: affiliate ? 3 : 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="animate-pulse p-3 rounded-lg bg-gray-100 h-20"
+                  style={{
+                    backgroundColor:
+                      (affiliate && kpiCard.kpiLoadingColor) ||
+                      "rgb(243 244 246)",
+                  }}
+                />
+              ))
+            ) : searchError ? (
+              // Error message
+              <div className="col-span-full text-center py-10 text-red-500">
+                {searchError}
+              </div>
+            ) : displayData.length === 0 ? (
+              // Empty state
+              <div className="col-span-full text-center py-10 text-muted-foreground">
+                No data available.
+              </div>
+            ) : (
+              displayData.map(({ label, value, icon: Icon }, index) => {
+                const colorIndex = index % colorPairs.length
+                const defaultColorPair = colorPairs[colorIndex]
 
-                  if (!affiliate) {
-                    return (
-                      <div
-                        key={label}
-                        className={cn(
-                          "p-3 flex items-center gap-4 rounded-lg bg-white border shadow-sm",
-                          isPreview ? "text-sm" : "text-base"
-                        )}
-                      >
-                        <div
-                          className={cn(
-                            "flex-shrink-0 rounded-xl flex items-center justify-center",
-                            isPreview ? "w-8 h-8" : "p-3",
-                            defaultColorPair.iconBg
-                          )}
-                        >
-                          <Icon
-                            className={cn(
-                              isPreview ? "w-4 h-4" : "w-8 h-8",
-                              defaultColorPair.iconColor
-                            )}
-                          />
-                        </div>
-                        <div className="space-y-1 overflow-hidden">
-                          <div className="text-muted-foreground font-medium truncate">
-                            {label}
-                          </div>
-                          <div className="font-bold leading-tight truncate">
-                            {formatValue(
-                              label,
-                              value as number,
-                              (
-                                organizationSearchData?.[0] as OrganizationKpiStats
-                              )?.currency
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  }
-
-                  const colorType = colorTypes[colorIndex % colorTypes.length]
-                  const iconBgColor: string | undefined =
-                    (kpiCard[
-                      `cardIcon${colorType}BackgroundColor` as keyof typeof kpiCard
-                    ] as unknown as string | undefined) ||
-                    (affiliate && defaultColorPair.iconBg) ||
-                    undefined
-
-                  const iconTextColor: string | undefined =
-                    (kpiCard[
-                      `cardIcon${colorType}Color` as keyof typeof kpiCard
-                    ] as unknown as string | undefined) ||
-                    (affiliate && defaultColorPair.iconColor) ||
-                    undefined
-
-                  const borderColor =
-                    (affiliate && kpiCard.cardBorderColor) || "#e5e7eb"
-                  const shadowColor =
-                    (affiliate && kpiCard.cardShadowColor) ||
-                    "rgba(0, 0, 0, 0.1)"
-                  const primaryTextColor =
-                    (affiliate && kpiCard.cardPrimaryTextColor) || "inherit"
-                  const secondaryTextColor =
-                    (affiliate && kpiCard.cardSecondaryTextColor) || "#6b7280"
-
+                if (!affiliate) {
                   return (
                     <div
                       key={label}
                       className={cn(
-                        "p-3 flex items-center gap-4 rounded-lg bg-white",
-                        isPreview ? "text-sm" : "text-base",
-                        affiliate && kpiCard.cardBorder && "border",
-                        affiliate &&
-                          kpiCard.cardShadow &&
-                          `shadow-${(affiliate && kpiCard.cardShadowThickness) || "sm"}`
+                        "p-3 flex items-center gap-4 rounded-lg bg-white border shadow-sm",
+                        isPreview ? "text-sm" : "text-base"
                       )}
-                      style={{
-                        borderColor:
-                          affiliate && kpiCard.cardBorder
-                            ? affiliate && borderColor
-                            : undefined,
-                        boxShadow:
-                          affiliate && kpiCard.cardShadow
-                            ? `${
-                                affiliate &&
-                                kpiCard.cardShadowThickness === "xl"
-                                  ? "0 10px 20px"
-                                  : affiliate &&
-                                      kpiCard.cardShadowThickness === "lg"
-                                    ? "0 6px 12px"
-                                    : affiliate &&
-                                        kpiCard.cardShadowThickness === "md"
-                                      ? "0 4px 8px"
-                                      : "0 2px 4px"
-                              } ${affiliate && shadowColor}`
-                            : undefined,
-                        background:
-                          (affiliate && kpiCard.cardBackgroundColor) ||
-                          undefined,
-                      }}
                     >
                       <div
                         className={cn(
                           "flex-shrink-0 rounded-xl flex items-center justify-center",
                           isPreview ? "w-8 h-8" : "p-3",
-                          typeof iconBgColor === "string" &&
-                            affiliate &&
-                            iconBgColor.startsWith("bg-")
-                            ? affiliate && iconBgColor
-                            : ""
+                          defaultColorPair.iconBg
                         )}
-                        style={{
-                          backgroundColor:
-                            typeof iconBgColor === "string" &&
-                            affiliate &&
-                            !iconBgColor.startsWith("bg-")
-                              ? affiliate && iconBgColor
-                              : undefined,
-                        }}
                       >
                         <Icon
                           className={cn(
                             isPreview ? "w-4 h-4" : "w-8 h-8",
-                            typeof iconTextColor === "string" &&
-                              affiliate &&
-                              iconTextColor.startsWith("text-")
-                              ? affiliate && iconTextColor
-                              : ""
+                            defaultColorPair.iconColor
                           )}
-                          style={{
-                            color:
-                              typeof iconTextColor === "string" &&
-                              affiliate &&
-                              !iconTextColor.startsWith("text-")
-                                ? affiliate && iconTextColor
-                                : undefined,
-                          }}
                         />
                       </div>
-
                       <div className="space-y-1 overflow-hidden">
-                        <div
-                          className="truncate font-medium"
-                          style={{ color: affiliate && secondaryTextColor }}
-                        >
+                        <div className="text-muted-foreground font-medium truncate">
                           {label}
                         </div>
-                        <div
-                          className="font-bold leading-tight truncate"
-                          style={{ color: affiliate && primaryTextColor }}
-                        >
+                        <div className="font-bold leading-tight truncate">
                           {formatValue(
                             label,
                             value as number,
-                            (affiliateSearchData?.[0] as AffiliateKpiStats)
-                              ?.currency
+                            (
+                              organizationSearchData?.[0] as OrganizationKpiStats
+                            )?.currency
                           )}
                         </div>
                       </div>
                     </div>
                   )
-                })}
+                }
+
+                const colorType = colorTypes[colorIndex % colorTypes.length]
+                const iconBgColor: string | undefined =
+                  (kpiCard[
+                    `cardIcon${colorType}BackgroundColor` as keyof typeof kpiCard
+                  ] as unknown as string | undefined) ||
+                  (affiliate && defaultColorPair.iconBg) ||
+                  undefined
+
+                const iconTextColor: string | undefined =
+                  (kpiCard[
+                    `cardIcon${colorType}Color` as keyof typeof kpiCard
+                  ] as unknown as string | undefined) ||
+                  (affiliate && defaultColorPair.iconColor) ||
+                  undefined
+
+                const borderColor =
+                  (affiliate && kpiCard.cardBorderColor) || "#e5e7eb"
+                const shadowColor =
+                  (affiliate && kpiCard.cardShadowColor) || "rgba(0, 0, 0, 0.1)"
+                const primaryTextColor =
+                  (affiliate && kpiCard.cardPrimaryTextColor) || "inherit"
+                const secondaryTextColor =
+                  (affiliate && kpiCard.cardSecondaryTextColor) || "#6b7280"
+
+                return (
+                  <div
+                    key={label}
+                    className={cn(
+                      "p-3 flex items-center gap-4 rounded-lg bg-white",
+                      isPreview ? "text-sm" : "text-base",
+                      affiliate && kpiCard.cardBorder && "border",
+                      affiliate &&
+                        kpiCard.cardShadow &&
+                        `shadow-${(affiliate && kpiCard.cardShadowThickness) || "sm"}`
+                    )}
+                    style={{
+                      borderColor:
+                        affiliate && kpiCard.cardBorder
+                          ? affiliate && borderColor
+                          : undefined,
+                      boxShadow:
+                        affiliate && kpiCard.cardShadow
+                          ? `${
+                              affiliate && kpiCard.cardShadowThickness === "xl"
+                                ? "0 10px 20px"
+                                : affiliate &&
+                                    kpiCard.cardShadowThickness === "lg"
+                                  ? "0 6px 12px"
+                                  : affiliate &&
+                                      kpiCard.cardShadowThickness === "md"
+                                    ? "0 4px 8px"
+                                    : "0 2px 4px"
+                            } ${affiliate && shadowColor}`
+                          : undefined,
+                      background:
+                        (affiliate && kpiCard.cardBackgroundColor) || undefined,
+                    }}
+                  >
+                    <div
+                      className={cn(
+                        "flex-shrink-0 rounded-xl flex items-center justify-center",
+                        isPreview ? "w-8 h-8" : "p-3",
+                        typeof iconBgColor === "string" &&
+                          affiliate &&
+                          iconBgColor.startsWith("bg-")
+                          ? affiliate && iconBgColor
+                          : ""
+                      )}
+                      style={{
+                        backgroundColor:
+                          typeof iconBgColor === "string" &&
+                          affiliate &&
+                          !iconBgColor.startsWith("bg-")
+                            ? affiliate && iconBgColor
+                            : undefined,
+                      }}
+                    >
+                      <Icon
+                        className={cn(
+                          isPreview ? "w-4 h-4" : "w-8 h-8",
+                          typeof iconTextColor === "string" &&
+                            affiliate &&
+                            iconTextColor.startsWith("text-")
+                            ? affiliate && iconTextColor
+                            : ""
+                        )}
+                        style={{
+                          color:
+                            typeof iconTextColor === "string" &&
+                            affiliate &&
+                            !iconTextColor.startsWith("text-")
+                              ? affiliate && iconTextColor
+                              : undefined,
+                        }}
+                      />
+                    </div>
+
+                    <div className="space-y-1 overflow-hidden">
+                      <div
+                        className="truncate font-medium"
+                        style={{ color: affiliate && secondaryTextColor }}
+                      >
+                        {label}
+                      </div>
+                      <div
+                        className="font-bold leading-tight truncate"
+                        style={{ color: affiliate && primaryTextColor }}
+                      >
+                        {formatValue(
+                          label,
+                          value as number,
+                          (affiliateSearchData?.[0] as AffiliateKpiStats)
+                            ?.currency
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })
+            )}
           </div>
         </CardContent>
       </Card>

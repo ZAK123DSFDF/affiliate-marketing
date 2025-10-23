@@ -73,7 +73,11 @@ export default function SocialTrafficPieChart({
     yearKey: "sourceYear",
     monthKey: "sourceMonth",
   })
-  const { data: affiliateData, isPending: affiliatePending } = useAppQuery(
+  const {
+    data: affiliateData,
+    error: affiliateError,
+    isPending: affiliatePending,
+  } = useAppQuery(
     ["affiliate-source", orgId, filters.year, filters.month],
     getAffiliateReferrers,
     [orgId, filters.year, filters.month],
@@ -81,15 +85,19 @@ export default function SocialTrafficPieChart({
       enabled: !!(affiliate && orgId && !isPreview),
     }
   )
-  const { data: organizationData, isPending: organizationPending } =
-    useAppQuery(
-      ["organization-source", orgId, filters.year, filters.month],
-      getOrganizationReferrer,
-      [orgId, filters.year, filters.month],
-      {
-        enabled: !!(!affiliate && orgId && !isPreview),
-      }
-    )
+  const {
+    data: organizationData,
+    error: organizationError,
+    isPending: organizationPending,
+  } = useAppQuery(
+    ["organization-source", orgId, filters.year, filters.month],
+    getOrganizationReferrer,
+    [orgId, filters.year, filters.month],
+    {
+      enabled: !!(!affiliate && orgId && !isPreview),
+    }
+  )
+  const searchError = affiliate ? affiliateError : organizationError
   const [previewLoading, setPreviewLoading] = useState(isPreview)
 
   useEffect(() => {
@@ -240,6 +248,15 @@ export default function SocialTrafficPieChart({
             >
               Loading sources...
             </span>
+          </div>
+        ) : searchError ? (
+          <div
+            className="text-sm text-red-500 text-center"
+            style={{
+              color: (affiliate && pieChartEmptyTextColor) || "#ef4444",
+            }}
+          >
+            {searchError}
           </div>
         ) : chartData.length === 0 ? (
           <div

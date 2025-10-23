@@ -55,25 +55,32 @@ export function ChartDailyMetrics({
     monthKey: "chartMonth",
   })
   const dashboardCardStyle = useDashboardCard(affiliate)
-  const { data: affiliateSearchData, isPending: affiliateSearchPending } =
-    useAppQuery(
-      ["affiliate-kpi-time-series", orgId, filters.year, filters.month],
-      getAffiliateKpiTimeSeries,
-      [orgId, filters.year, filters.month],
-      {
-        enabled: !!(affiliate && orgId && !isPreview),
-      }
-    )
-  const { data: organizationSearchData, isPending: organizationSearchPending } =
-    useAppQuery(
-      ["organization-kpi-time-series", orgId, filters.year, filters.month],
-      getOrganizationKpiTimeSeries,
-      [orgId, filters.year, filters.month],
-      {
-        enabled: !!(!affiliate && orgId && !isPreview),
-      }
-    )
+  const {
+    data: affiliateSearchData,
+    error: affiliateSearchError,
+    isPending: affiliateSearchPending,
+  } = useAppQuery(
+    ["affiliate-kpi-time-series", orgId, filters.year, filters.month],
+    getAffiliateKpiTimeSeries,
+    [orgId, filters.year, filters.month],
+    {
+      enabled: !!(affiliate && orgId && !isPreview),
+    }
+  )
+  const {
+    data: organizationSearchData,
+    error: organizationSearchError,
+    isPending: organizationSearchPending,
+  } = useAppQuery(
+    ["organization-kpi-time-series", orgId, filters.year, filters.month],
+    getOrganizationKpiTimeSeries,
+    [orgId, filters.year, filters.month],
+    {
+      enabled: !!(!affiliate && orgId && !isPreview),
+    }
+  )
   const searchData = affiliate ? affiliateSearchData : organizationSearchData
+  const searchError = affiliate ? affiliateSearchError : organizationSearchError
   const searchPending = affiliate
     ? affiliateSearchPending
     : organizationSearchPending
@@ -207,6 +214,29 @@ export function ChartDailyMetrics({
               }}
             >
               Loading...
+            </span>
+          </div>
+        ) : searchError ? (
+          <div className="flex flex-col items-center justify-center h-[300px] gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-red-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v2m0 4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
+              />
+            </svg>
+            <span className="text-sm text-red-500">
+              Failed to load chart data
+            </span>
+            <span className="text-red-500 text-sm text-center px-6">
+              {searchError}
             </span>
           </div>
         ) : (
