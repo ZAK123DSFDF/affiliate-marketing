@@ -191,7 +191,11 @@ export function ChartDailyMetrics({
       )}
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center h-[300px] gap-2">
+          <div
+            className={`flex flex-col items-center justify-center ${
+              isPreview ? "h-[140px]" : "h-[300px]"
+            } gap-2`}
+          >
             <svg
               className="animate-spin h-6 w-6"
               viewBox="0 0 24 24"
@@ -224,7 +228,11 @@ export function ChartDailyMetrics({
             </span>
           </div>
         ) : isError ? (
-          <div className="flex flex-col items-center justify-center h-[300px] gap-2">
+          <div
+            className={`flex flex-col items-center justify-center ${
+              isPreview ? "h-[140px]" : "h-[300px]"
+            } gap-2`}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6 text-red-500"
