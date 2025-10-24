@@ -494,6 +494,7 @@ export const organizationDashboardCustomization = pgTable(
         cardBorder: boolean
         kpiLoadingColor: string
         kpiErrorColor: string
+        kpiEmptyTextColor: string
       }
       useChartCustomization: {
         chartHorizontalLineColor: string

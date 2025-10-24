@@ -34,6 +34,7 @@ import {
   pieChartColorCustomizationAtom,
 } from "@/store/DashboardCustomizationAtom"
 import { useAppQuery } from "@/hooks/useAppQuery"
+import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
 
 const chartConfig: ChartConfig = {
   visitors: { label: "Visitors" },
@@ -100,6 +101,7 @@ export default function SocialTrafficPieChart({
   )
   const searchError = affiliate ? affiliateError : organizationError
   const [previewLoading, setPreviewLoading] = useState(isPreview)
+  const previewSimulation = useAtomValue(previewSimulationAtom)
 
   useEffect(() => {
     if (isPreview) {
@@ -111,6 +113,7 @@ export default function SocialTrafficPieChart({
   const searchPending = affiliate ? affiliatePending : organizationPending
   const effectiveData = React.useMemo(() => {
     if (isPreview) {
+      if (previewSimulation === "empty") return []
       return dummySourceData
     }
 
@@ -118,7 +121,7 @@ export default function SocialTrafficPieChart({
     if (!affiliate && searchData)
       return searchData as OrganizationReferrerStat[]
     return []
-  }, [isPreview, searchData, affiliate])
+  }, [isPreview, searchData, affiliate, previewSimulation])
   const chartData = React.useMemo(() => {
     if (!effectiveData || effectiveData.length === 0) return []
 
@@ -140,6 +143,11 @@ export default function SocialTrafficPieChart({
       fill: colorPalette[index % colorPalette.length],
     }))
   }, [effectiveData])
+  const isLoading =
+    (isPreview && (previewLoading || previewSimulation === "loading")) ||
+    (!isPreview && searchPending)
+
+  const isError = (isPreview && previewSimulation === "error") || searchError
   const totalVisitors = React.useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
   }, [chartData])
@@ -217,7 +225,7 @@ export default function SocialTrafficPieChart({
         </div>
       )}
       <CardContent className="flex-1 flex justify-center items-center">
-        {(searchPending && !isPreview) || (isPreview && previewLoading) ? (
+        {isLoading ? (
           <div className="flex flex-col items-center justify-center h-[200px] gap-2">
             <svg
               className="animate-spin h-5 w-5"
@@ -250,14 +258,14 @@ export default function SocialTrafficPieChart({
               Loading sources...
             </span>
           </div>
-        ) : searchError ? (
+        ) : isError ? (
           <div
             className="text-sm text-red-500 text-center"
             style={{
               color: (affiliate && pieChartErrorColor) || "#ef4444",
             }}
           >
-            {searchError}
+            {searchError || "Failed to load sources. Please try again later."}
           </div>
         ) : chartData.length === 0 ? (
           <div

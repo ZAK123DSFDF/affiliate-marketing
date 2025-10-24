@@ -17,6 +17,8 @@ import { Switch } from "@/components/ui/switch"
 import { showMissingPaypalAtom } from "@/store/MissingPaypalAtom"
 import { useActiveDomain } from "@/hooks/useActiveDomain"
 import { AppResponse, useAppMutation } from "@/hooks/useAppMutation"
+import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
+import { cn } from "@/lib/utils"
 
 export default function CustomizationPage({ orgId }: { orgId: string }) {
   const [mainTab, setMainTab] = useState("sidebar")
@@ -25,6 +27,9 @@ export default function CustomizationPage({ orgId }: { orgId: string }) {
   const dashboardHasChanges = useAtomValue(dashboardHasChangesAtom)
   const [showMissingPaypal, setShowMissingPaypal] = useAtom(
     showMissingPaypalAtom
+  )
+  const [previewSimulation, setPreviewSimulation] = useAtom(
+    previewSimulationAtom
   )
   const hasChanges = authHasChanges || dashboardHasChanges
   const liveCustomizations = useLiveCustomizations()
@@ -84,18 +89,100 @@ export default function CustomizationPage({ orgId }: { orgId: string }) {
               <TabsTrigger value="auth">Auth Pages</TabsTrigger>
             </TabsList>
             {mainTab === "sidebar" && (
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="toggle-missing-paypal"
-                  checked={showMissingPaypal}
-                  onCheckedChange={setShowMissingPaypal}
-                />
-                <label
-                  htmlFor="toggle-missing-paypal"
-                  className="text-sm text-muted-foreground"
-                >
-                  Show Missing PayPal Card
-                </label>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="toggle-missing-paypal"
+                    checked={showMissingPaypal}
+                    onCheckedChange={setShowMissingPaypal}
+                  />
+                  <label
+                    htmlFor="toggle-missing-paypal"
+                    className="text-sm text-muted-foreground"
+                  >
+                    Show Missing PayPal Card
+                  </label>
+                </div>
+                {/* Simulate Loading */}
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="simulate-loading"
+                    checked={previewSimulation === "loading"}
+                    onCheckedChange={(checked) =>
+                      setPreviewSimulation(checked ? "loading" : "none")
+                    }
+                    disabled={
+                      previewSimulation === "error" ||
+                      previewSimulation === "empty"
+                    }
+                  />
+                  <label
+                    htmlFor="simulate-loading"
+                    className={cn(
+                      "text-sm",
+                      previewSimulation === "error" ||
+                        previewSimulation === "empty"
+                        ? "text-muted-foreground/50"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    Show Loading
+                  </label>
+                </div>
+
+                {/* Simulate Error */}
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="simulate-error"
+                    checked={previewSimulation === "error"}
+                    onCheckedChange={(checked) =>
+                      setPreviewSimulation(checked ? "error" : "none")
+                    }
+                    disabled={
+                      previewSimulation === "loading" ||
+                      previewSimulation === "empty"
+                    }
+                  />
+                  <label
+                    htmlFor="simulate-error"
+                    className={cn(
+                      "text-sm",
+                      previewSimulation === "loading" ||
+                        previewSimulation === "empty"
+                        ? "text-muted-foreground/50"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    Show Error
+                  </label>
+                </div>
+
+                {/* 🆕 Simulate Empty */}
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="simulate-empty"
+                    checked={previewSimulation === "empty"}
+                    onCheckedChange={(checked) =>
+                      setPreviewSimulation(checked ? "empty" : "none")
+                    }
+                    disabled={
+                      previewSimulation === "loading" ||
+                      previewSimulation === "error"
+                    }
+                  />
+                  <label
+                    htmlFor="simulate-empty"
+                    className={cn(
+                      "text-sm",
+                      previewSimulation === "loading" ||
+                        previewSimulation === "error"
+                        ? "text-muted-foreground/50"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    Show Empty
+                  </label>
+                </div>
               </div>
             )}
           </div>

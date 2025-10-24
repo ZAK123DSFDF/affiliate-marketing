@@ -24,6 +24,7 @@ import { useAtomValue } from "jotai"
 import { dashboardThemeCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 import { useAppQuery } from "@/hooks/useAppQuery"
 import { TableView } from "@/components/ui-custom/TableView"
+import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
 
 interface AffiliateCommissionTableProps {
   orgId: string
@@ -41,6 +42,7 @@ export default function AffiliateCommissionTable({
     cardHeaderPrimaryTextColor,
     dashboardHeaderNameColor,
   } = useAtomValue(dashboardThemeCustomizationAtom)
+  const previewSimulation = useAtomValue(previewSimulationAtom)
   const dashboardCardStyle = useDashboardCard(affiliate)
   const { filters, setFilters } = useQueryFilter()
   const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false)
@@ -69,14 +71,14 @@ export default function AffiliateCommissionTable({
   )
   const filteredData = React.useMemo(() => {
     if (!isPreview) return yearSelectedData
-
+    if (previewSimulation === "empty") return []
     if (!filters.year) return dummyAffiliatePayments
 
     return dummyAffiliatePayments.filter((row) => {
       const rowYear = new Date(row.month).getFullYear()
       return rowYear === filters.year
     })
-  }, [filters.year, isPreview])
+  }, [filters.year, isPreview, previewSimulation])
 
   const columns = paymentColumns(affiliate)
   const table = useReactTable({
@@ -172,10 +174,15 @@ export default function AffiliateCommissionTable({
             isPending={
               !!(
                 (isPending && !isPreview) ||
-                (isPreview && isFakeLoadingPreview)
+                (isPreview &&
+                  (isFakeLoadingPreview || previewSimulation === "loading"))
               )
             }
-            error={searchError}
+            error={
+              isPreview && previewSimulation === "error"
+                ? "Simulated error fetching commission data."
+                : searchError
+            }
             table={table}
             columns={columns}
             affiliate={affiliate}

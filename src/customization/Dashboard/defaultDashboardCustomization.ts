@@ -99,6 +99,7 @@ export const defaultDashboardCustomization = {
     cardBorder: true,
     kpiLoadingColor: "",
     kpiErrorColor: "",
+    kpiEmptyTextColor: "",
   },
   useChartCustomization: {
     chartHorizontalLineColor: "",

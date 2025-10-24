@@ -30,6 +30,7 @@ export const KpiCardCustomizationOptions = ({
       cardBackgroundColor,
       kpiLoadingColor,
       kpiErrorColor,
+      kpiEmptyTextColor,
     },
     setKpiCardCustomization,
   ] = useAtom(kpiCardCustomizationAtom)
@@ -128,6 +129,11 @@ export const KpiCardCustomizationOptions = ({
           label: "KPI Error Color",
           value: kpiErrorColor,
           onChange: throttled.kpiErrorColor,
+        },
+        emptyTextColor: {
+          label: "KPI Empty Text Color",
+          value: kpiEmptyTextColor,
+          onChange: throttled.kpiEmptyTextColor,
         },
       }}
     />

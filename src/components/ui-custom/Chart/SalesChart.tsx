@@ -38,6 +38,7 @@ import {
   dashboardThemeCustomizationAtom,
 } from "@/store/DashboardCustomizationAtom"
 import { useAppQuery } from "@/hooks/useAppQuery"
+import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
 
 interface ChartDailyMetricsProps {
   orgId: string
@@ -50,6 +51,7 @@ export function ChartDailyMetrics({
   affiliate = false,
   isPreview = false,
 }: ChartDailyMetricsProps) {
+  const previewSimulation = useAtomValue(previewSimulationAtom)
   const { filters, setFilters } = useQueryFilter({
     yearKey: "chartYear",
     monthKey: "chartMonth",
@@ -93,13 +95,14 @@ export function ChartDailyMetrics({
     }
   }, [isPreview])
   const data = React.useMemo(() => {
+    if (previewSimulation === "empty") return []
     const source = isPreview ? dummyChartData : (searchData ?? [])
     return source.map((item) => ({
       ...item,
       date: item.createdAt,
       visits: item.visitors,
     }))
-  }, [isPreview, searchData])
+  }, [isPreview, searchData, previewSimulation])
   const {
     chartSecondaryColor,
     chartPrimaryColor,
@@ -129,7 +132,10 @@ export function ChartDailyMetrics({
   }
 
   const chartKeys = Object.keys(chartConfig)
-
+  const isLoading =
+    (isPreview && (previewLoading || previewSimulation === "loading")) ||
+    (!isPreview && searchPending)
+  const isError = (isPreview && previewSimulation === "error") || searchError
   return (
     <Card
       className={`${isPreview ? "h-[340px]" : "h-[480px]"} flex flex-col relative`}
@@ -184,7 +190,7 @@ export function ChartDailyMetrics({
         </div>
       )}
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        {(isPreview && previewLoading) || (!isPreview && searchPending) ? (
+        {isLoading ? (
           <div className="flex flex-col items-center justify-center h-[300px] gap-2">
             <svg
               className="animate-spin h-6 w-6"
@@ -217,14 +223,15 @@ export function ChartDailyMetrics({
               Loading...
             </span>
           </div>
-        ) : searchError ? (
+        ) : isError ? (
           <div className="flex flex-col items-center justify-center h-[300px] gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6 text-red-500"
               fill="none"
+              stroke="currentColor"
               style={{
-                color: (affiliate && chartErrorColor) || "#6B7280",
+                color: (affiliate && chartErrorColor) || undefined,
               }}
               viewBox="0 0 24 24"
               strokeWidth={2}
@@ -238,7 +245,7 @@ export function ChartDailyMetrics({
             <span
               className="text-sm text-red-500"
               style={{
-                color: (affiliate && chartErrorColor) || "#6B7280",
+                color: (affiliate && chartErrorColor) || undefined,
               }}
             >
               Failed to load chart data
@@ -246,10 +253,10 @@ export function ChartDailyMetrics({
             <span
               className="text-red-500 text-sm text-center px-6"
               style={{
-                color: (affiliate && chartErrorColor) || "#6B7280",
+                color: (affiliate && chartErrorColor) || undefined,
               }}
             >
-              {searchError}
+              {searchError || "An unexpected error occurred."}
             </span>
           </div>
         ) : (

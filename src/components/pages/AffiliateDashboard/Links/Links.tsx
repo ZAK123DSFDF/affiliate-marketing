@@ -34,6 +34,7 @@ import {
 } from "@/store/DashboardCustomizationAtom"
 import { useAppMutation } from "@/hooks/useAppMutation"
 import { TableView } from "@/components/ui-custom/TableView"
+import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
 
 interface AffiliateLinkProps {
   orgId: string
@@ -50,6 +51,7 @@ export default function Links({
     dashboardHeaderNameColor,
     cardHeaderPrimaryTextColor,
   } = useAtomValue(dashboardThemeCustomizationAtom)
+  const previewSimulation = useAtomValue(previewSimulationAtom)
   const {
     dashboardButtonDisabledTextColor,
     dashboardButtonTextColor,
@@ -86,7 +88,7 @@ export default function Links({
   )
   const filteredPreviewData = React.useMemo(() => {
     if (!isPreview) return searchData as AffiliateLinkWithStats[]
-
+    if (previewSimulation === "empty") return []
     if (!dummyAffiliateLinksRaw) return []
 
     return dummyAffiliateLinksRaw.map((link) => {
@@ -131,7 +133,7 @@ export default function Links({
         conversionRate,
       } satisfies AffiliateLinkWithStats
     })
-  }, [isPreview, filters])
+  }, [isPreview, filters, previewSimulation])
 
   const mutation = useAppMutation(createAffiliateLink, {
     affiliate,
@@ -272,10 +274,15 @@ export default function Links({
             isPending={
               !!(
                 (searchPending && !isPreview) ||
-                (isPreview && isFakeLoadingPreview)
+                (isPreview &&
+                  (isFakeLoadingPreview || previewSimulation === "loading"))
               )
             }
-            error={searchError}
+            error={
+              isPreview && previewSimulation === "error"
+                ? "Simulated error fetching affiliate links."
+                : searchError
+            }
             table={table}
             columns={columns}
             affiliate={affiliate}

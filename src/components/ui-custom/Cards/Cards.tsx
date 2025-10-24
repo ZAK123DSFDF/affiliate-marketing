@@ -28,6 +28,7 @@ import {
   kpiCardCustomizationAtom,
 } from "@/store/DashboardCustomizationAtom"
 import { useAppQuery } from "@/hooks/useAppQuery"
+import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
 
 interface CardsProps {
   orgId: string
@@ -52,6 +53,7 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
   const { cardHeaderPrimaryTextColor } = useAtomValue(
     dashboardThemeCustomizationAtom
   )
+  const previewSimulation = useAtomValue(previewSimulationAtom)
   const dashboardCardStyle = useDashboardCard(affiliate)
   const kpiCard = useAtomValue(kpiCardCustomizationAtom)
   const { filters, setFilters } = useQueryFilter({
@@ -106,6 +108,7 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
   }, [isPreview])
   const displayData = React.useMemo(() => {
     if (isPreview) {
+      if (previewSimulation === "empty") return []
       return mapAffiliateStats(dummyAffiliateKpiCardStats[0]) || initialKpiData
     }
 
@@ -185,7 +188,9 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
                   : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
             }`}
           >
-            {(isPreview && previewLoading) || (!isPreview && searchPending) ? (
+            {(isPreview &&
+              (previewLoading || previewSimulation === "loading")) ||
+            (!isPreview && searchPending) ? (
               Array.from({ length: affiliate ? 3 : 4 }).map((_, i) => (
                 <div
                   key={i}
@@ -197,17 +202,22 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
                   }}
                 />
               ))
-            ) : searchError ? (
+            ) : (isPreview && previewSimulation === "error") || searchError ? (
               // Error message
               <div
                 className="col-span-full text-center py-10 text-red-500"
                 style={{ color: affiliate ? kpiCard.kpiErrorColor : undefined }}
               >
-                {searchError}
+                {searchError || "Simulated preview error loading data."}
               </div>
             ) : displayData.length === 0 ? (
               // Empty state
-              <div className="col-span-full text-center py-10 text-muted-foreground">
+              <div
+                className="col-span-full text-center py-10 text-muted-foreground"
+                style={{
+                  color: affiliate ? kpiCard.kpiEmptyTextColor : undefined,
+                }}
+              >
                 No data available.
               </div>
             ) : (

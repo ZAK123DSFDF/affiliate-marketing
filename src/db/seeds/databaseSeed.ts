@@ -318,6 +318,7 @@ export const organization_dashboard_customization_seed = [
         cardIconSecondaryBackgroundColor: "",
         kpiLoadingColor: "",
         kpiErrorColor: "",
+        kpiEmptyTextColor: "",
       },
       useSidebarCustomization: {
         sideBarBackgroundColor: "#256490",
