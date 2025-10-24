@@ -7,7 +7,9 @@ export const createFullUrl = async (decoded: { id: string; orgId: string }) => {
   const org = await db.query.organization.findFirst({
     where: (o, { eq }) => eq(o.id, decoded.orgId),
   })
-  if (!org) throw new Error("Organization not found")
+  if (!org) {
+    throw { status: 500, toast: "failed to fetch organization data" }
+  }
   const code = generateAffiliateCode() // e.g., "7hjKpQ"
   const param = org.referralParam
   const domain = org.websiteUrl.replace(/^https?:\/\//, "")

@@ -165,16 +165,31 @@ export default function Settings({ orgData }: Props) {
   const verifyMut = useAppMutation<MutationData, void>(
     async () => {
       const domain = form.getValues("defaultDomain").trim()
-      if (!domain) throw new Error("Domain cannot be empty")
+      if (!domain) {
+        showCustomToast({
+          type: "error",
+          title: "Missing Domain",
+          description: "Please enter a domain before verifying.",
+          affiliate: false,
+        })
+        return { ok: false, data: null } as MutationData
+      }
 
       if (domainType === "custom-main") {
         return verifyARecord(domain)
       }
+
       if (domainType === "custom-subdomain") {
         return verifyCNAME(domain)
       }
+      showCustomToast({
+        type: "error",
+        title: "Invalid Domain Type",
+        description: "Please select a valid domain type before verifying.",
+        affiliate: false,
+      })
 
-      throw new Error("Invalid domain type")
+      return { ok: false, data: null } as MutationData
     },
     {
       affiliate: false,

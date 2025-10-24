@@ -24,24 +24,18 @@ export default function StripeIntegration({ orgId }: { orgId: string }) {
         body: JSON.stringify({ orgId }),
       })
       const data = await res.json().catch(() => ({}))
-      if (!res.ok)
-        throw new Error(data.error || "Failed to fetch Stripe status")
+      if (!res.ok) {
+        showCustomToast({
+          type: "error",
+          title: "Failed to Load Stripe Status",
+          description: "Something went wrong while checking Stripe status.",
+          affiliate: false,
+        })
+      }
+
       return data
     },
   })
-
-  useEffect(() => {
-    if (error) {
-      showCustomToast({
-        type: "error",
-        title: "Failed to Load Stripe Status",
-        description:
-          (error as Error)?.message ||
-          "Something went wrong while checking Stripe status.",
-        affiliate: false,
-      })
-    }
-  }, [error])
   // ✅ Connect Mutation
   const connectMutation = useAppMutation<AppResponse, void>(
     async () => {

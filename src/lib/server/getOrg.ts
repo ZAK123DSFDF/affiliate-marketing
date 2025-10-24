@@ -9,7 +9,13 @@ export const getOrg = async (orgId: string): Promise<Organization> => {
     where: eq(organization.id, orgId),
   })
 
-  if (!org) throw new Error("Organization not found")
+  if (!org) {
+    throw {
+      status: 500,
+      error: "failed to organization data",
+      toast: "failed to fetch organization data",
+    }
+  }
 
   return org
 }
