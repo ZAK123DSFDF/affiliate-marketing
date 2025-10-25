@@ -40,6 +40,7 @@ export function MissingPaypalEmailCard({
   const { data, isLoading } = useQuery<ResponseData<AffiliatePaymentMethod>>({
     queryKey: ["affiliatePaymentMethod", orgId],
     queryFn: () => getAffiliatePaymentMethod(orgId), // pass orgId here
+    enabled: !!(affiliate && orgId),
   })
 
   if (isLoading) return null
