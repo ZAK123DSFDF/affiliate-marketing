@@ -203,9 +203,7 @@ export const payoutReferencePeriods = pgTable(
     month: integer("month").notNull(),
     year: integer("year").notNull(),
   },
-  (t) => ({
-    pk: primaryKey({ columns: [t.refId, t.month, t.year] }),
-  })
+  (t) => [primaryKey({ columns: [t.refId, t.month, t.year] })]
 )
 export const affiliate = pgTable(
   "affiliate",
@@ -220,12 +218,7 @@ export const affiliate = pgTable(
       .notNull()
       .references(() => organization.id, { onDelete: "cascade" }),
   },
-  (table) => ({
-    orgEmailUnique: unique("org_email_unique").on(
-      table.email,
-      table.organizationId
-    ),
-  })
+  (table) => [unique("org_email_unique").on(table.email, table.organizationId)]
 )
 export const affiliateAccount = pgTable("affiliate_account", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -259,9 +252,7 @@ export const exchangeRate = pgTable(
     rate: text("rate").notNull(),
     fetchedAt: timestamp("fetched_at").notNull(),
   },
-  (t) => ({
-    pk: primaryKey({ columns: [t.baseCurrency, t.targetCurrency] }),
-  })
+  (t) => [primaryKey({ columns: [t.baseCurrency, t.targetCurrency] })]
 )
 export const affiliateLink = pgTable("affiliate_link", {
   id: text("id")

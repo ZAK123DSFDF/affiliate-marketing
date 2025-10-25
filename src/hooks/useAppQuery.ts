@@ -27,6 +27,7 @@ export function useAppQuery<Args extends unknown[], TData>(
       return { toast: res.toast }
     },
     enabled: options?.enabled ?? true,
+    refetchOnWindowFocus: false,
   })
 
   return {
