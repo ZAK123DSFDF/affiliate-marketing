@@ -9,7 +9,8 @@ export async function proxy(req: NextRequest) {
   if (
     host.includes("localhost:3000") ||
     host.includes("127.0.0.1:3000") ||
-    host === "refearnapp.com"
+    host === "refearnapp.com" ||
+    host === "affiliate-marketing-hazel.vercel.app"
   ) {
     return NextResponse.next()
   }
@@ -59,6 +60,6 @@ export async function proxy(req: NextRequest) {
   return response
 }
 
-// export const config = {
-//   matcher: ["/((?!_next|api|.*\\..*).*)"],
-// }
+export const config = {
+  matcher: ["/((?!_next|api|.*\\..*).*)"],
+}
