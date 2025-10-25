@@ -59,6 +59,6 @@ export async function proxy(req: NextRequest) {
   return response
 }
 
-export const config = {
-  matcher: ["/((?!_next|api|.*\\..*).*)"],
-}
+// export const config = {
+//   matcher: ["/((?!_next|api|.*\\..*).*)"],
+// }
