@@ -3,7 +3,7 @@ import { db } from "@/db/drizzle"
 import { websiteDomain } from "@/db/schema"
 import { and, eq } from "drizzle-orm"
 
-export async function proxy(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const host = req.headers.get("host")
   if (!host) return NextResponse.next()
   if (

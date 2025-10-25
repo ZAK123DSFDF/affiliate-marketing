@@ -4,7 +4,7 @@ import { headers } from "next/headers"
 export async function getBaseUrl() {
   const hdrs = await headers()
   const currentHost =
-    hdrs.get("x-current-host") || // custom, if set by proxy
+    hdrs.get("x-current-host") || // custom, if set by middleware
     hdrs.get("host") // standard host header sent by browser
 
   if (!currentHost)
