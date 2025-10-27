@@ -8,13 +8,14 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
-import { useState } from "react"
+import React, { useState } from "react"
 import { useAtomValue } from "jotai"
 import {
   cardCustomizationAtom,
   checkboxCustomizationAtom,
   inputCustomizationAtom,
 } from "@/store/AuthCustomizationAtom"
+import { Textarea } from "@/components/ui/textarea"
 
 type InputFieldProps = {
   control: any
@@ -170,7 +171,107 @@ export const InputField = ({
     />
   )
 }
+type TextareaFieldProps = {
+  control: any
+  name: string
+  label: string
+  placeholder?: string
+  rows?: number
+  affiliate: boolean
+  disabled?: boolean
+}
+export const TextareaField = ({
+  control,
+  name,
+  label,
+  placeholder = "",
+  rows = 4,
+  affiliate,
+  disabled = false,
+}: TextareaFieldProps) => {
+  const {
+    inputBorderColor,
+    inputErrorBorderColor,
+    inputErrorTextColor,
+    inputPlaceholderTextColor,
+    inputLabelColor,
+    inputBorderFocusColor,
+    inputLabelErrorColor,
+    inputTextColor,
+  } = useAtomValue(inputCustomizationAtom)
+  const { cardBackgroundColor } = useAtomValue(cardCustomizationAtom)
 
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <FormItem>
+          <FormLabel
+            className={fieldState.error ? "text-destructive" : ""}
+            style={{
+              color: fieldState.error
+                ? (affiliate && inputLabelErrorColor) || undefined
+                : (affiliate && inputLabelColor) || undefined,
+            }}
+          >
+            {label}
+          </FormLabel>
+          <FormControl>
+            <div className="relative">
+              <Textarea
+                {...field}
+                placeholder={placeholder}
+                rows={rows}
+                disabled={disabled}
+                className={`auth-input-placeholder border resize-none ${
+                  fieldState.error
+                    ? "border-destructive focus-visible:ring-destructive"
+                    : ""
+                }`}
+                style={{
+                  color: fieldState.error
+                    ? (affiliate && inputErrorTextColor) || undefined
+                    : (affiliate && inputTextColor) || undefined,
+                  borderColor: fieldState.error
+                    ? (affiliate && inputErrorBorderColor) || undefined
+                    : (affiliate && inputBorderColor) || undefined,
+                }}
+              />
+              <style>{`
+                .auth-input-placeholder::placeholder {
+                    color: ${(affiliate && inputPlaceholderTextColor) || undefined} !important;
+                }
+                textarea.auth-input-placeholder:focus {
+                    outline: none !important;
+                    border-color: ${(affiliate && inputBorderFocusColor) || undefined} !important;
+                    box-shadow: 0 0 0 1px ${(affiliate && inputBorderFocusColor) || undefined} !important;
+                }
+                textarea.auth-input-placeholder:-webkit-autofill {
+                    box-shadow: 0 0 0px 1000px ${(affiliate && cardBackgroundColor) || undefined} inset !important;
+                    -webkit-box-shadow: 0 0 0px 1000px ${(affiliate && cardBackgroundColor) || undefined} inset !important;
+                    -webkit-text-fill-color: ${(affiliate && inputTextColor) || undefined} !important;
+                }
+              `}</style>
+            </div>
+          </FormControl>
+          {fieldState.error && (
+            <div
+              style={{
+                color: (affiliate && inputLabelErrorColor) || "red",
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                marginTop: "0.25rem",
+              }}
+            >
+              {fieldState.error.message}
+            </div>
+          )}
+        </FormItem>
+      )}
+    />
+  )
+}
 type CheckboxFieldProps = {
   control: any
   name: string

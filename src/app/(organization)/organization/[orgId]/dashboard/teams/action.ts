@@ -45,6 +45,7 @@ export const inviteTeamMember = async ({
         fields: { email: "Already a team member" },
       }
     }
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000)
     const [invite] = await db
       .insert(invitation)
       .values({
@@ -52,11 +53,12 @@ export const inviteTeamMember = async ({
         organizationId: orgId,
         title,
         body: description,
+        expiresAt,
       })
       .returning()
 
     // Construct invite link using the generated token
-    const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL}/signup?teamToken=${invite.token}`
+    const inviteLink = `${process.env.NEXT_PUBLIC_BASE_URL}/organization/${orgId}/teams/signup?teamToken=${invite.token}`
     const subject = `Team Invitation: ${title}`
     const text = `${description}\n\nJoin your team here:\n${inviteLink}`
 

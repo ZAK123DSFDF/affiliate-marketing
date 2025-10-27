@@ -2,7 +2,6 @@
 
 import React, { useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TableView } from "@/components/ui-custom/TableView"
 import {
@@ -20,16 +19,9 @@ import { useAppMutation } from "@/hooks/useAppMutation"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form"
+import { Form } from "@/components/ui/form"
 import { inviteTeamMember } from "@/app/(organization)/organization/[orgId]/dashboard/teams/action"
+import { InputField, TextareaField } from "@/components/Auth/FormFields"
 
 const initialTeams = [
   { id: 1, email: "alice@example.com", isActive: true },
@@ -52,12 +44,9 @@ export default function Teams({
 }) {
   const [teams, setTeams] = useState(initialTeams)
   const [loadingId, setLoadingId] = useState<number | null>(null)
-  const [deleteDialog, setDeleteDialog] = useState<{
-    open: boolean
-    id: number | null
-  }>({
+  const [deleteDialog, setDeleteDialog] = useState({
     open: false,
-    id: null,
+    id: null as number | null,
   })
   const [openInvite, setOpenInvite] = useState(false)
 
@@ -67,7 +56,6 @@ export default function Teams({
   })
 
   const mutation = useAppMutation(inviteTeamMember, {
-    disableSuccessToast: false,
     onSuccess: () => {
       setOpenInvite(false)
       form.reset()
@@ -223,48 +211,31 @@ export default function Teams({
       >
         <Form {...form}>
           <form className="space-y-4">
-            <FormField
+            <InputField
               control={form.control}
               name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="user@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Email"
+              placeholder="user@example.com"
+              type="email"
+              affiliate={affiliate}
             />
-            <FormField
+
+            <InputField
               control={form.control}
               name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Invitation title" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Title"
+              placeholder="Invitation title"
+              type="text"
+              affiliate={affiliate}
             />
-            <FormField
+
+            <TextareaField
               control={form.control}
               name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Message</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Write your invitation message..."
-                      className="h-28"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Message"
+              placeholder="Write your invitation message..."
+              rows={4}
+              affiliate={affiliate}
             />
           </form>
         </Form>
