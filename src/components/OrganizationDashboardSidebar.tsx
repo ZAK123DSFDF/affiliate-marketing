@@ -76,6 +76,11 @@ const OrganizationDashboardSidebar = ({
       url: `/organization/${orgId}/dashboard/settings`,
       icon: Settings,
     },
+    {
+      title: "Teams",
+      url: `/organization/${orgId}/dashboard/teams`,
+      icon: Users,
+    },
   ]
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectOpen, setSelectOpen] = useState(false)

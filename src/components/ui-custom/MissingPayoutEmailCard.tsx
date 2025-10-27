@@ -1,7 +1,6 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { getAffiliatePaymentMethod } from "@/app/affiliate/[orgId]/dashboard/profile/action"
@@ -30,7 +29,6 @@ export function MissingPaypalEmailCard({
   isPreview = false,
   onOpenProfile,
 }: MissingPaypalEmailCardProps) {
-  const router = useRouter()
   const dashboardCardStyle = useDashboardCard(affiliate)
   const { goTo } = useAffiliatePath(orgId)
   const { missingPaypalHeaderColor, missingPaypalDescriptionColor } =
@@ -40,7 +38,7 @@ export function MissingPaypalEmailCard({
   const { data, isLoading } = useQuery<ResponseData<AffiliatePaymentMethod>>({
     queryKey: ["affiliatePaymentMethod", orgId],
     queryFn: () => getAffiliatePaymentMethod(orgId), // pass orgId here
-    enabled: !!(affiliate && orgId),
+    enabled: !!(!isPreview && affiliate && orgId),
   })
 
   if (isLoading) return null

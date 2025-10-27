@@ -12,7 +12,6 @@ import {
   numeric,
   varchar,
 } from "drizzle-orm/pg-core"
-import { relations } from "drizzle-orm"
 import { createId } from "@paralleldrive/cuid2"
 import {
   generateAffiliateClickId,
@@ -22,7 +21,7 @@ import {
   generateInviteLinkId,
   generateOrganizationId,
 } from "@/util/idGenerators"
-export const roleEnum = pgEnum("role", ["OWNER", "ADMIN"])
+export const roleEnum = pgEnum("role", ["OWNER", "ADMIN", "TEAM"])
 export const accountTypeEnum = pgEnum("account_type", [
   "ORGANIZATION",
   "AFFILIATE",
@@ -77,6 +76,36 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   role: roleEnum("role").default("OWNER").notNull(),
   type: accountTypeEnum("type").default("ORGANIZATION").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+export const team = pgTable(
+  "team",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    role: roleEnum("role").default("TEAM").notNull(),
+    type: accountTypeEnum("type").default("ORGANIZATION").notNull(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [
+    unique("org_team_email_unique").on(table.email, table.organizationId),
+  ]
+)
+export const teamAccount = pgTable("team_account", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  teamId: uuid("team_id")
+    .notNull()
+    .references(() => team.id, { onDelete: "cascade" }),
+  provider: providerEnum("provider").notNull(),
+  providerAccountId: text("provider_account_id").notNull(),
+  emailVerified: timestamp("email_verified"),
+  password: text("password"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
@@ -336,9 +365,6 @@ export const invitation = pgTable("invitation", {
     .primaryKey()
     .$defaultFn(() => generateInviteLinkId()),
   email: text("email").notNull(),
-  inviterId: uuid("inviter_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
   organizationId: text("organization_id")
     .notNull()
     .references(() => organization.id, { onDelete: "cascade" }),
@@ -349,35 +375,14 @@ export const invitation = pgTable("invitation", {
   token: text("token")
     .notNull()
     .unique()
-    .$defaultFn(() => createId()), // Unique invite token
+    .$defaultFn(() => createId()),
   accepted: boolean("accepted").default(false).notNull(),
 
   expiresAt: timestamp("expires_at"), // Optional expiration
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
-export const organizationRelations = relations(organization, ({ many }) => ({
-  affiliateLinks: many(affiliateLink),
-}))
-export const affiliateRelations = relations(affiliate, ({ many }) => ({
-  affiliateLinks: many(affiliateLink),
-}))
-export const affiliateLinkRelations = relations(affiliateLink, ({ one }) => ({
-  affiliate: one(affiliate, {
-    fields: [affiliateLink.affiliateId],
-    references: [affiliate.id],
-  }),
-  organization: one(organization, {
-    fields: [affiliateLink.organizationId],
-    references: [organization.id],
-  }),
-}))
-export const invitationRelations = relations(invitation, ({ one }) => ({
-  organization: one(organization, {
-    fields: [invitation.organizationId],
-    references: [organization.id],
-  }),
-}))
+
 export const organizationDashboardCustomization = pgTable(
   "organization_dashboard_customization",
   {

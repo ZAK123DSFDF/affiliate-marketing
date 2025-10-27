@@ -12,7 +12,6 @@ import { useAtomValue } from "jotai"
 import { dashboardThemeCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 import { MissingPaypalEmailCard } from "@/components/ui-custom/MissingPayoutEmailCard"
 import { showMissingPaypalAtom } from "@/store/MissingPaypalAtom"
-import { useActiveDomain } from "@/hooks/useActiveDomain"
 import { DomainHeader } from "@/components/ui-custom/DomainHeader"
 
 export function DashboardCustomization({

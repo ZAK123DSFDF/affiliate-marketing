@@ -21,6 +21,7 @@ import { useAtomValue } from "jotai"
 import { sidebarCustomizationAtom } from "@/store/DashboardCustomizationAtom"
 import { useAffiliatePath } from "@/hooks/useUrl"
 import { OrgHeader } from "@/components/ui-custom/OrgHeader"
+import { SidebarCustomizationOptions } from "@/components/ui-custom/Customization/DashboardCustomization/SidebarCustomizationOptions"
 
 type Props = {
   orgId: string
@@ -83,19 +84,21 @@ const AffiliateDashboardSidebar = ({
   return (
     <Sidebar className={baseSidebarClass}>
       <SidebarHeader
-        className="flex items-center justify-center py-4"
         style={{
           backgroundColor:
             (affiliate && sideBarBackgroundColor) ||
             "hsl(var(--sidebar-background))",
         }}
       >
-        <OrgHeader
-          orgId={orgId}
-          affiliate={affiliate}
-          isPreview={isPreview}
-          sidebar
-        />
+        <div className="flex items-center justify-center gap-3 w-full">
+          <OrgHeader
+            orgId={orgId}
+            affiliate={affiliate}
+            isPreview={isPreview}
+            sidebar
+          />
+          {isPreview && <SidebarCustomizationOptions triggerSize="w-6 h-6" />}
+        </div>
       </SidebarHeader>
 
       <SidebarContent
