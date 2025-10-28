@@ -8,7 +8,7 @@ import { buildAffiliateUrl } from "@/util/Url"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
 import { MutationData } from "@/lib/types/response"
 import { handleAction } from "@/lib/handleAction"
-export const LoginAffiliateServer = async ({
+export const LoginTeamServer = async ({
   email,
   password,
   organizationId,
@@ -19,7 +19,7 @@ export const LoginAffiliateServer = async ({
   organizationId: string
   rememberMe?: boolean
 }): Promise<MutationData> => {
-  return handleAction("Login Affiliate Server", async () => {
+  return handleAction("Login Team Server", async () => {
     if (!email || !password || !organizationId) {
       throw {
         status: 400,
@@ -29,39 +29,36 @@ export const LoginAffiliateServer = async ({
     }
 
     // Find the affiliate by organization and email
-    const existingAffiliate = await db.query.affiliate.findFirst({
+    const existingTeam = await db.query.team.findFirst({
       where: (a, { and, eq }) =>
         and(eq(a.email, email), eq(a.organizationId, organizationId)),
     })
 
-    if (!existingAffiliate) {
+    if (!existingTeam) {
       throw {
         status: 404,
         error: "Affiliate not found.",
         toast:
           "Invalid credentials. Please check your email, password, and organization.",
-        fields: { email: "Affiliate not found in this organization" },
+        fields: { email: "team not found in this organization" },
       }
     }
 
     // Find the affiliate account with provider = 'credentials'
-    const affiliateAcc = await db.query.affiliateAccount.findFirst({
+    const teamAcc = await db.query.teamAccount.findFirst({
       where: (aa, { and, eq }) =>
-        and(
-          eq(aa.affiliateId, existingAffiliate.id),
-          eq(aa.provider, "credentials")
-        ),
+        and(eq(aa.teamId, existingTeam.id), eq(aa.provider, "credentials")),
     })
 
-    if (!affiliateAcc || !affiliateAcc.password) {
+    if (!teamAcc || !teamAcc.password) {
       throw {
         status: 401,
         error: "Affiliate account not found.",
-        toast: "Invalid credentials. No password found for this affiliate.",
+        toast: "Invalid credentials. No password found for this team.",
       }
     }
 
-    const validPassword = await bcrypt.compare(password, affiliateAcc.password)
+    const validPassword = await bcrypt.compare(password, teamAcc.password)
 
     if (!validPassword) {
       throw {
@@ -74,33 +71,23 @@ export const LoginAffiliateServer = async ({
 
     const token = jwt.sign(
       {
-        id: existingAffiliate.id,
-        email: existingAffiliate.email,
-        type: existingAffiliate.type,
-        organizationId: existingAffiliate.organizationId,
+        id: existingTeam.id,
+        email: existingTeam.email,
+        type: existingTeam.type,
+        role: existingTeam.role,
+        organizationId: existingTeam.organizationId,
         rememberMe,
       },
       process.env.SECRET_KEY as string,
       { expiresIn: "15m" }
     )
-    const baseUrl = await getBaseUrl()
-    const verifyUrl = buildAffiliateUrl({
-      path: "verify-login",
-      organizationId,
-      token,
-      baseUrl,
-    })
-    const redirectUrl = buildAffiliateUrl({
-      path: "checkEmail",
-      organizationId,
-      baseUrl,
-    })
+    const verifyUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/organization/${organizationId}/teams/verify-signup?teamToken=${token}`
     if (process.env.NODE_ENV === "development") {
-      await sendVerificationEmail(existingAffiliate.email, verifyUrl)
+      await sendVerificationEmail(existingTeam.email, verifyUrl)
       return {
         ok: true,
         toast: "Verification email sent",
-        redirectUrl,
+        redirectUrl: `/organization/${organizationId}/teams/checkEmail`,
       }
     }
     return { ok: true, redirectUrl: verifyUrl }

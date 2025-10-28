@@ -10,6 +10,7 @@ import {
 } from "@/lib/server/getAffiliateAuth"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
 import { buildAffiliateUrl } from "@/util/Url"
+import { getTeamAuth, TeamTokenPayload } from "@/lib/server/getTeamAuth"
 
 export async function requireOrganizationWithOrg(
   paramsOrgId?: string
@@ -49,6 +50,22 @@ export async function redirectIfAuthed() {
   }
 
   return null
+}
+export async function redirectTeamIfAuthed(orgId: string) {
+  const decoded = await getTeamAuth(orgId)
+  if (decoded) {
+    redirect(`/organization/${orgId}/teams/dashboard/analytics`)
+  }
+  return null
+}
+export async function requireTeamWithOrg(
+  orgId: string
+): Promise<TeamTokenPayload> {
+  const decoded = await getTeamAuth(orgId)
+  if (!decoded) {
+    redirect(`/organization/${orgId}/teams/login`)
+  }
+  return decoded
 }
 
 // 🔹 Affiliate Guards
