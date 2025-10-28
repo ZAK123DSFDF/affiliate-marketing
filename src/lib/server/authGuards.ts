@@ -65,6 +65,9 @@ export async function requireTeamWithOrg(
   if (!decoded) {
     redirect(`/organization/${orgId}/teams/login`)
   }
+  if (decoded.orgId !== orgId) {
+    redirect(`/organization/${decoded.orgId}/teams/dashboard/analytics`)
+  }
   return decoded
 }
 

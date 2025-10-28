@@ -1,15 +1,15 @@
 import React from "react"
 import Profile from "@/components/pages/Dashboard/Profile/Profile"
 import { OrgIdProps } from "@/lib/types/orgId"
-import { getUserData } from "@/app/(organization)/organization/[orgId]/dashboard/profile/action"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
 import { ErrorCard } from "@/components/ui-custom/ErrorCard"
-import { requireOrganizationWithOrg } from "@/lib/server/authGuards"
+import { requireTeamWithOrg } from "@/lib/server/authGuards"
+import { getTeamData } from "@/app/(organization)/organization/[orgId]/teams/dashboard/profile/action"
 
 const profilePage = async ({ params }: OrgIdProps) => {
   const orgId = await getValidatedOrgFromParams({ params })
-  await requireOrganizationWithOrg(orgId)
-  const userResponse = await getUserData()
+  await requireTeamWithOrg(orgId)
+  const userResponse = await getTeamData(orgId)
   if (!userResponse.ok) {
     return <ErrorCard message={userResponse.error || "Something went wrong"} />
   }

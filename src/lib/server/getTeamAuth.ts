@@ -8,10 +8,9 @@ export interface TeamTokenPayload {
   email: string
   role: "TEAM" | "OWNER"
   type: "ORGANIZATION"
-  orgIds: string[]
   iat: number
   exp: number
-  orgId?: string
+  orgId: string
 }
 
 export async function getTeamAuth(

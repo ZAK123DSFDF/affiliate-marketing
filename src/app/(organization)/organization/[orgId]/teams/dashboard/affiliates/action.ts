@@ -2,13 +2,13 @@
 
 import { ResponseData } from "@/lib/types/response"
 import { AffiliateBasePayout, AffiliateStats } from "@/lib/types/affiliateStats"
-import { getOrgAuth } from "@/lib/server/GetOrgAuth"
 import { getAffiliatesWithStatsAction } from "@/lib/server/getAffiliatesWithStats"
 import { OrderBy, OrderDir } from "@/lib/types/orderTypes"
 import { convertedCurrency } from "@/util/ConvertedCurrency"
 import { handleAction } from "@/lib/handleAction"
+import { getTeamAuthAction } from "@/lib/server/getTeamAuthAction"
 
-export async function getAffiliatesWithStats(
+export async function getTeamAffiliatesWithStats(
   orgId: string,
   year?: number,
   month?: number,
@@ -19,7 +19,7 @@ export async function getAffiliatesWithStats(
 ): Promise<ResponseData<AffiliateStats[]>> {
   return handleAction("getAffiliatesWithStats", async () => {
     const ordered = orderBy === "none" ? undefined : orderBy
-    const org = await getOrgAuth(orgId)
+    const org = await getTeamAuthAction(orgId)
     const rows = (await getAffiliatesWithStatsAction(
       orgId,
       year,

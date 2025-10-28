@@ -3,13 +3,13 @@ import InvalidToken from "@/components/pages/InvalidToken"
 import VerifyClient from "@/components/pages/VerifyClient"
 
 type Props = {
-  searchParams: Promise<{ organizationToken?: string }>
+  searchParams: Promise<{ teamToken?: string }>
 }
 
 export default async function VerifyLoginPage({ searchParams }: Props) {
-  const { organizationToken } = await searchParams
+  const { teamToken } = await searchParams
 
-  if (!organizationToken) {
+  if (!teamToken) {
     return (
       <InvalidToken
         affiliate={false}
@@ -18,11 +18,5 @@ export default async function VerifyLoginPage({ searchParams }: Props) {
     )
   }
 
-  return (
-    <VerifyClient
-      affiliate={false}
-      token={organizationToken}
-      mode="changeEmail"
-    />
-  )
+  return <VerifyClient affiliate={false} token={teamToken} mode="changeEmail" />
 }
