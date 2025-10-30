@@ -45,11 +45,19 @@ import { AppDialog } from "@/components/ui-custom/AppDialog"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { useCachedValidation } from "@/hooks/useCachedValidation"
 import { useAppMutation } from "@/hooks/useAppMutation"
+import {
+  updateTeamOrgSettings,
+  verifyTeamARecord,
+  verifyTeamCNAME,
+} from "@/app/(organization)/organization/[orgId]/teams/dashboard/settings/action"
 
 type OrgFormData = z.infer<typeof orgSettingsSchema>
 type Props = { orgData: OrgData }
 
-export default function Settings({ orgData }: Props) {
+export default function Settings({
+  orgData,
+  isTeam = false,
+}: Props & { isTeam?: boolean }) {
   const { showCustomToast } = useCustomToast()
   const safeDefaults: OrgFormData = {
     id: orgData?.id ?? "",
@@ -99,6 +107,9 @@ export default function Settings({ orgData }: Props) {
       ? lower.replace(".refearnapp.com", "")
       : lower
   }
+  const updateFn = isTeam ? updateTeamOrgSettings : updateOrgSettings
+  const verifyARecordFn = isTeam ? verifyTeamARecord : verifyARecord
+  const verifyCNAMEFn = isTeam ? verifyTeamCNAME : verifyCNAME
   const nonDomainFieldsChanged = useMemo(() => {
     const current = form.getValues()
     return Object.keys(safeDefaults).some(
@@ -149,7 +160,7 @@ export default function Settings({ orgData }: Props) {
       "This domain is already linked to another organization. Please use a different domain.",
   })
   const mut = useAppMutation<MutationData, Partial<OrgData> & { id: string }>(
-    async (data) => updateOrgSettings(data),
+    async (data) => updateFn(data),
     {
       affiliate: false,
       onSuccess: (res) => {
@@ -176,11 +187,11 @@ export default function Settings({ orgData }: Props) {
       }
 
       if (domainType === "custom-main") {
-        return verifyARecord(domain)
+        return verifyARecordFn(domain)
       }
 
       if (domainType === "custom-subdomain") {
-        return verifyCNAME(domain)
+        return verifyCNAMEFn(domain)
       }
       showCustomToast({
         type: "error",

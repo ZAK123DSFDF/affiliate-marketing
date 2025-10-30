@@ -18,6 +18,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   affiliateProfileSchema,
+  teamProfileSchema,
   userProfileSchema,
 } from "@/lib/schema/profileSchema"
 import {
@@ -35,10 +36,7 @@ import { ProfileProps } from "@/lib/types/profileTypes"
 import { useDashboardCard } from "@/hooks/useDashboardCard"
 import deepEqual from "fast-deep-equal"
 import ProfileEmailDialog from "@/components/ui-custom/ProfileEmailDialog"
-import {
-  requestAffiliateEmailChange,
-  requestOrganizationEmailChange,
-} from "@/lib/server/requestEmailChange"
+import { requestEmailChange } from "@/lib/server/requestEmailChange"
 import { LogoutButton } from "@/components/ui-custom/LogoutButton"
 import { useCachedValidation } from "@/hooks/useCachedValidation"
 import {
@@ -46,24 +44,40 @@ import {
   clearValidationCachesFor,
 } from "@/util/CacheUtils"
 import { AppResponse, useAppMutation } from "@/hooks/useAppMutation"
+import {
+  updateTeamPassword,
+  updateTeamProfile,
+  validateCurrentTeamPassword,
+} from "@/app/(organization)/organization/[orgId]/teams/dashboard/profile/action"
 
 export default function Profile({
   AffiliateData,
   UserData,
+  TeamData,
+  isTeam = false,
   isPreview = false,
   affiliate = false,
   orgId,
 }: ProfileProps) {
   const initialName = AffiliateData
     ? AffiliateData.name
-    : (UserData?.name ?? "")
+    : isTeam
+      ? (TeamData?.name ?? "")
+      : (UserData?.name ?? "")
+
   const initialEmail = AffiliateData
     ? AffiliateData.email
-    : (UserData?.email ?? "")
+    : isTeam
+      ? (TeamData?.email ?? "")
+      : (UserData?.email ?? "")
   const initialPaypalEmail = AffiliateData?.paypalEmail ?? ""
   const profileForm = useForm({
     resolver: zodResolver(
-      affiliate ? affiliateProfileSchema : userProfileSchema
+      affiliate
+        ? affiliateProfileSchema
+        : isTeam
+          ? teamProfileSchema
+          : userProfileSchema
     ),
     defaultValues: affiliate
       ? {
@@ -168,7 +182,9 @@ export default function Profile({
       // ✅ Both functions should return AppResponse as well
       return AffiliateData
         ? updateAffiliateProfile(orgId, data)
-        : updateUserProfile(orgId, data)
+        : isTeam
+          ? updateTeamProfile(orgId, data)
+          : updateUserProfile(orgId, data)
     },
     {
       affiliate,
@@ -199,7 +215,9 @@ export default function Profile({
 
       return AffiliateData
         ? validateCurrentPassword(orgId, password)
-        : validateCurrentOrganizationPassword(password)
+        : isTeam
+          ? validateCurrentTeamPassword(orgId, password)
+          : validateCurrentOrganizationPassword(password)
     },
     {
       affiliate,
@@ -232,7 +250,9 @@ export default function Profile({
 
       return AffiliateData
         ? updateAffiliatePassword(orgId, newPassword)
-        : updateUserPassword(newPassword)
+        : isTeam
+          ? updateTeamPassword(orgId, newPassword)
+          : updateUserPassword(newPassword)
     },
     {
       affiliate,
@@ -253,7 +273,7 @@ export default function Profile({
         )
       }
 
-      return logoutAction(affiliate, orgId)
+      return logoutAction({ affiliate, isTeam, orgId })
     },
     {
       affiliate,
@@ -274,18 +294,17 @@ export default function Profile({
         )
       }
 
-      if (affiliate) {
-        return requestAffiliateEmailChange({
-          affiliateId: AffiliateData?.id!,
-          newEmail: values.newEmail,
-          orgId,
-        })
-      } else {
-        return requestOrganizationEmailChange({
-          userId: UserData?.id!,
-          newEmail: values.newEmail,
-        })
-      }
+      return requestEmailChange({
+        orgId,
+        id: affiliate
+          ? AffiliateData?.id!
+          : isTeam
+            ? TeamData?.id!
+            : UserData?.id!,
+        newEmail: values.newEmail,
+        isAffiliate: affiliate,
+        isTeam,
+      })
     },
     {
       affiliate,
@@ -358,10 +377,14 @@ export default function Profile({
             data={{
               canChangeEmail: affiliate
                 ? AffiliateData?.canChangeEmail
-                : UserData?.canChangeEmail,
+                : isTeam
+                  ? TeamData?.canChangeEmail
+                  : UserData?.canChangeEmail,
               canChangePassword: affiliate
                 ? AffiliateData?.canChangePassword
-                : UserData?.canChangePassword,
+                : isTeam
+                  ? TeamData?.canChangePassword
+                  : UserData?.canChangePassword,
             }}
           />
         </CardContent>

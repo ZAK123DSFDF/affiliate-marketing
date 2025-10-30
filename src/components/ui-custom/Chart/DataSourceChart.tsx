@@ -35,6 +35,7 @@ import {
 } from "@/store/DashboardCustomizationAtom"
 import { useAppQuery } from "@/hooks/useAppQuery"
 import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
+import { getTeamOrganizationReferrer } from "@/app/(organization)/organization/[orgId]/teams/dashboard/action"
 
 const chartConfig: ChartConfig = {
   visitors: { label: "Visitors" },
@@ -44,10 +45,12 @@ export default function SocialTrafficPieChart({
   orgId,
   isPreview = false,
   affiliate = false,
+  isTeam = false,
 }: {
   orgId: string
   isPreview?: boolean
   affiliate: boolean
+  isTeam?: boolean
 }) {
   const innerRadius = isPreview ? 60 : 100
   const outerRadius = isPreview ? 90 : 140
@@ -87,13 +90,14 @@ export default function SocialTrafficPieChart({
       enabled: !!(affiliate && orgId && !isPreview),
     }
   )
+  const fetchFn = isTeam ? getTeamOrganizationReferrer : getOrganizationReferrer
   const {
     data: organizationData,
     error: organizationError,
     isPending: organizationPending,
   } = useAppQuery(
     ["organization-source", orgId, filters.year, filters.month],
-    getOrganizationReferrer,
+    fetchFn,
     [orgId, filters.year, filters.month],
     {
       enabled: !!(!affiliate && orgId && !isPreview),

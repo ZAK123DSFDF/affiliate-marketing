@@ -9,7 +9,13 @@ import EmbedCheckout from "@/components/pages/Dashboard/Integration/Paddle/Embed
 
 const WEBHOOK_URL = "https://yourdomain.com/api/webhooks/paddle"
 
-export default function PaddleIntegration({ orgId }: { orgId: string }) {
+export default function PaddleIntegration({
+  orgId,
+  isTeam = false,
+}: {
+  orgId: string
+  isTeam?: boolean
+}) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
@@ -36,12 +42,13 @@ export default function PaddleIntegration({ orgId }: { orgId: string }) {
             copied={copied}
             handleCopy={handleCopy}
             orgId={orgId}
+            isTeam={isTeam}
           />
         </TabsContent>
 
         {/* DISCONNECT PADDLE */}
         <TabsContent value="disconnect">
-          <Disconnect orgId={orgId} />
+          <Disconnect orgId={orgId} isTeam={isTeam} />
         </TabsContent>
 
         {/* EMBED SCRIPT */}

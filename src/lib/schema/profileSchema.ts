@@ -11,3 +11,4 @@ export const affiliateProfileSchema = z.object({
 export const userProfileSchema = affiliateProfileSchema.omit({
   paypalEmail: true,
 })
+export const teamProfileSchema = userProfileSchema

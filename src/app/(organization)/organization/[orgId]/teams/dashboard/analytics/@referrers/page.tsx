@@ -8,7 +8,7 @@ const referrersPage = async ({ params }: OrgIdProps) => {
   await requireTeamWithOrg(orgId)
   return (
     <>
-      <SocialTrafficCharts orgId={orgId} affiliate={false} />
+      <SocialTrafficCharts orgId={orgId} affiliate={false} isTeam />
     </>
   )
 }

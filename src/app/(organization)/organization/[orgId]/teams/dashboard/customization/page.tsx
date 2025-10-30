@@ -9,7 +9,7 @@ export default async function CustomizationServerPage({ params }: OrgIdProps) {
   await requireTeamWithOrg(orgId)
   return (
     <>
-      <CustomizationPage orgId={orgId} />
+      <CustomizationPage orgId={orgId} isTeam />
     </>
   )
 }

@@ -5,7 +5,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import StripeIntegration from "@/components/pages/Dashboard/Integration/StripeIntegration"
 import PaddleIntegration from "@/components/pages/Dashboard/Integration/PaddleIntegration"
 
-const IntegrationClientPage = ({ orgId }: { orgId: string }) => {
+const IntegrationClientPage = ({
+  orgId,
+  isTeam = false,
+}: {
+  orgId: string
+  isTeam?: boolean
+}) => {
   const [activeTab, setActiveTab] = useState("stripe")
 
   return (
@@ -79,7 +85,7 @@ const IntegrationClientPage = ({ orgId }: { orgId: string }) => {
             <StripeIntegration orgId={orgId} />
           </TabsContent>
           <TabsContent value="paddle" className="w-full">
-            <PaddleIntegration orgId={orgId} />
+            <PaddleIntegration orgId={orgId} isTeam />
           </TabsContent>
         </div>
       </Tabs>

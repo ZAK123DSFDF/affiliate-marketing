@@ -12,26 +12,32 @@ import {
 } from "@/app/(organization)/organization/[orgId]/dashboard/integration/action"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { AppResponse, useAppMutation } from "@/hooks/useAppMutation"
+import {
+  deleteTeamOrgPaddleAccount,
+  getTeamOrgWebhookKey,
+} from "@/app/(organization)/organization/[orgId]/teams/dashboard/integration/action"
 
 interface DisconnectProps {
   orgId: string
+  isTeam?: boolean
 }
 
-const Disconnect = ({ orgId }: DisconnectProps) => {
+const Disconnect = ({ orgId, isTeam = false }: DisconnectProps) => {
   const { showCustomToast } = useCustomToast()
   const queryClient = useQueryClient()
-
+  const deleteFn = isTeam ? deleteTeamOrgPaddleAccount : deleteOrgPaddleAccount
+  const getFn = isTeam ? getTeamOrgWebhookKey : getOrgWebhookKey
   // Fetch webhook key
   const { data, isPending } = useQuery({
     queryKey: ["paddle-webhook-key", orgId],
-    queryFn: async () => await getOrgWebhookKey(orgId),
+    queryFn: async () => await getFn(orgId),
   })
 
   const savedKey = data?.webhookPublicKey ?? ""
 
   // Mutation for disconnecting Paddle account
   const disconnectMutation = useAppMutation<AppResponse, void>(
-    async () => await deleteOrgPaddleAccount(orgId),
+    async () => await deleteFn(orgId),
     {
       affiliate: false, // 👈 same as before
       onSuccess: (res) => {

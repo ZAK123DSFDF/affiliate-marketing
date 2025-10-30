@@ -88,7 +88,15 @@ export async function updateAffiliatePassword(
     return { ok: true }
   })
 }
-export async function logoutAction(affiliate: boolean, orgId?: string) {
+export async function logoutAction({
+  affiliate,
+  isTeam,
+  orgId,
+}: {
+  affiliate?: boolean
+  isTeam?: boolean
+  orgId?: string
+}) {
   return handleAction("logoutAction", async () => {
     const cookieStore = await cookies()
 
@@ -102,9 +110,14 @@ export async function logoutAction(affiliate: boolean, orgId?: string) {
         partial: true,
       })
       return { ok: true, redirectTo: redirectUrl }
-    } else {
-      cookieStore.delete("organizationToken")
-      return { ok: true, redirectTo: "/login" }
     }
+
+    if (isTeam && orgId) {
+      cookieStore.delete(`teamToken-${orgId}`)
+      return { ok: true, redirectTo: `/organization/${orgId}/teams/login` }
+    }
+
+    cookieStore.delete("organizationToken")
+    return { ok: true, redirectTo: "/login" }
   })
 }

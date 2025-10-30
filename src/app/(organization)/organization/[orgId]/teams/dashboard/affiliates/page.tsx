@@ -14,6 +14,7 @@ const affiliatePage = async ({ params }: OrgIdProps) => {
         orgId={orgId}
         cardTitle="All Affiliates"
         showHeader
+        isTeam
       />
     </>
   )

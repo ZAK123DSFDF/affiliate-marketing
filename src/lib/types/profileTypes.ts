@@ -12,10 +12,13 @@ export interface AffiliateData extends BaseData {
 }
 
 export type OrganizationData = BaseData
+export type TeamData = BaseData
 
 export interface ProfileProps {
   AffiliateData?: AffiliateData
   UserData?: OrganizationData
+  TeamData?: TeamData
+  isTeam?: boolean
   isPreview?: boolean
   affiliate: boolean
   orgId: string

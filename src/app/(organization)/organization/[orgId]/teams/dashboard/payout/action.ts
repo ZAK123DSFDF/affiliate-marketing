@@ -94,7 +94,7 @@ export async function createTeamAffiliatePayouts({
   months,
 }: CreatePayoutInput) {
   await getTeamAuthAction(orgId)
-  await createOrganizationAffiliatePayout({
+  return await createOrganizationAffiliatePayout({
     orgId,
     affiliateIds,
     isUnpaid,

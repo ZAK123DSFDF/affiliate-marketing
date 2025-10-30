@@ -39,17 +39,20 @@ import {
 } from "@/store/DashboardCustomizationAtom"
 import { useAppQuery } from "@/hooks/useAppQuery"
 import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
+import { getTeamOrganizationKpiTimeSeries } from "@/app/(organization)/organization/[orgId]/teams/dashboard/action"
 
 interface ChartDailyMetricsProps {
   orgId: string
   affiliate: boolean
   isPreview?: boolean
+  isTeam?: boolean
 }
 
 export function ChartDailyMetrics({
   orgId,
   affiliate = false,
   isPreview = false,
+  isTeam = false,
 }: ChartDailyMetricsProps) {
   const previewSimulation = useAtomValue(previewSimulationAtom)
   const { filters, setFilters } = useQueryFilter({
@@ -69,13 +72,16 @@ export function ChartDailyMetrics({
       enabled: !!(affiliate && orgId && !isPreview),
     }
   )
+  const fetchFn = isTeam
+    ? getTeamOrganizationKpiTimeSeries
+    : getOrganizationKpiTimeSeries
   const {
     data: organizationSearchData,
     error: organizationSearchError,
     isPending: organizationSearchPending,
   } = useAppQuery(
     ["organization-kpi-time-series", orgId, filters.year, filters.month],
-    getOrganizationKpiTimeSeries,
+    fetchFn,
     [orgId, filters.year, filters.month],
     {
       enabled: !!(!affiliate && orgId && !isPreview),

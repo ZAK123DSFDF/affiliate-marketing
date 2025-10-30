@@ -29,11 +29,13 @@ import {
 } from "@/store/DashboardCustomizationAtom"
 import { useAppQuery } from "@/hooks/useAppQuery"
 import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
+import { getTeamOrganizationKpiStats } from "@/app/(organization)/organization/[orgId]/teams/dashboard/action"
 
 interface CardsProps {
   orgId: string
   affiliate: boolean
   isPreview?: boolean
+  isTeam?: boolean
 }
 
 const affiliateColorPairs = [
@@ -49,7 +51,12 @@ const organizationColorPairs = [
   { iconBg: "bg-yellow-100", iconColor: "text-yellow-600" },
 ]
 
-const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
+const Cards = ({
+  orgId,
+  affiliate = false,
+  isPreview = false,
+  isTeam = false,
+}: CardsProps) => {
   const { cardHeaderPrimaryTextColor } = useAtomValue(
     dashboardThemeCustomizationAtom
   )
@@ -73,13 +80,19 @@ const Cards = ({ orgId, affiliate = false, isPreview = false }: CardsProps) => {
       enabled: !!(affiliate && orgId && !isPreview),
     }
   )
+  const fetchFn = isTeam ? getTeamOrganizationKpiStats : getOrganizationKpiStats
   const {
     data: organizationSearchData,
     error: organizationError,
     isPending: organizationSearchPending,
   } = useAppQuery(
-    ["organization-card", orgId, filters.year, filters.month],
-    getOrganizationKpiStats,
+    [
+      isTeam ? "team-card" : "organization-card",
+      orgId,
+      filters.year,
+      filters.month,
+    ],
+    fetchFn,
     [orgId, filters.year, filters.month],
     {
       enabled: !!(!affiliate && orgId && !isPreview),

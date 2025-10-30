@@ -18,6 +18,7 @@ import { useQueryFilter } from "@/hooks/useQueryFilter"
 import PaginationControls from "@/components/ui-custom/PaginationControls"
 import { useAppQuery } from "@/hooks/useAppQuery"
 import { TableView } from "@/components/ui-custom/TableView"
+import { getTeamAffiliatesWithStats } from "@/app/(organization)/organization/[orgId]/teams/dashboard/affiliates/action"
 
 interface AffiliatesTableProps {
   orgId: string
@@ -25,6 +26,7 @@ interface AffiliatesTableProps {
   showHeader?: boolean
   affiliate: boolean
   mode?: "default" | "top"
+  isTeam?: boolean
 }
 export default function AffiliatesTable({
   orgId,
@@ -32,6 +34,7 @@ export default function AffiliatesTable({
   showHeader = false,
   affiliate = false,
   mode = "default",
+  isTeam = false,
 }: AffiliatesTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -42,13 +45,14 @@ export default function AffiliatesTable({
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const { filters, setFilters } = useQueryFilter()
+  const fetchFn = isTeam ? getTeamAffiliatesWithStats : getAffiliatesWithStats
   const {
     data: searchData,
     error: searchError,
     isPending: searchPending,
   } = useAppQuery(
     [
-      "all-affiliates",
+      isTeam ? "team-affiliates" : "org-affiliates",
       orgId,
       filters.year,
       filters.month,
@@ -57,7 +61,7 @@ export default function AffiliatesTable({
       filters.offset,
       filters.email,
     ],
-    getAffiliatesWithStats,
+    fetchFn,
     [
       orgId,
       filters.year,

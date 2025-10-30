@@ -9,7 +9,7 @@ const chartsPage = async ({ params }: OrgIdProps) => {
   await requireTeamWithOrg(orgId)
   return (
     <>
-      <ChartDailyMetrics orgId={orgId} affiliate={false} />
+      <ChartDailyMetrics orgId={orgId} affiliate={false} isTeam />
     </>
   )
 }

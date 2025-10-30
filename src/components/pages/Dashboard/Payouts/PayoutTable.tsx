@@ -33,14 +33,22 @@ import { getNormalizedMonths } from "@/util/Months"
 import { ExchangeRate } from "@/util/ExchangeRate"
 import { useAppQuery } from "@/hooks/useAppQuery"
 import { TableView } from "@/components/ui-custom/TableView"
+import {
+  createTeamAffiliatePayouts,
+  getTeamAffiliatePayouts,
+  getTeamAffiliatePayoutsBulk,
+  getTeamUnpaidMonths,
+} from "@/app/(organization)/organization/[orgId]/teams/dashboard/payout/action"
 
 interface AffiliatesTablePayoutProps {
   orgId: string
   affiliate: boolean
+  isTeam?: boolean
 }
 export default function PayoutTable({
   orgId,
   affiliate = false,
+  isTeam = false,
 }: AffiliatesTablePayoutProps) {
   const [, setMonthYear] = useState<{
     month?: number
@@ -53,6 +61,14 @@ export default function PayoutTable({
   const [unpaidOpen, setUnpaidOpen] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [, setDialogMessage] = useState("")
+  const fetchPayouts = isTeam ? getTeamAffiliatePayouts : getAffiliatePayouts
+  const fetchPayoutsBulk = isTeam
+    ? getTeamAffiliatePayoutsBulk
+    : getAffiliatePayoutsBulk
+  const fetchUnpaidMonths = isTeam ? getTeamUnpaidMonths : getUnpaidMonths
+  const createPayouts = isTeam
+    ? createTeamAffiliatePayouts
+    : createAffiliatePayouts
   const normalizedMonths = getNormalizedMonths(
     isUnpaidMode,
     selectedMonths,
@@ -72,7 +88,7 @@ export default function PayoutTable({
       filters.offset,
       filters.email,
     ],
-    getAffiliatePayoutsBulk,
+    fetchPayoutsBulk,
     [
       orgId,
       selectedMonths,
@@ -146,7 +162,7 @@ export default function PayoutTable({
           },
         ]
       }
-      const insertedRefs = await createAffiliatePayouts({
+      const insertedRefs = await createPayouts({
         orgId,
         affiliateIds,
         isUnpaid: isUnpaidMode,
@@ -199,7 +215,7 @@ export default function PayoutTable({
       filters.offset,
       filters.email,
     ],
-    getAffiliatePayouts,
+    fetchPayouts,
     [
       orgId,
       filters.year,
@@ -217,7 +233,7 @@ export default function PayoutTable({
     data: unpaidMonthData,
     error: pendingMonthError,
     isPending: pendingMonth,
-  } = useAppQuery(["unpaid-months", orgId], getUnpaidMonths, [orgId], {
+  } = useAppQuery(["unpaid-months", orgId], fetchUnpaidMonths, [orgId], {
     enabled: !affiliate && unpaidOpen,
   })
   const applyUnpaidMonths = () => {

@@ -9,7 +9,7 @@ const cardsPage = async ({ params }: OrgIdProps) => {
   await requireTeamWithOrg(orgId)
   return (
     <>
-      <Cards orgId={orgId} affiliate={false} />
+      <Cards orgId={orgId} affiliate={false} isTeam />
     </>
   )
 }

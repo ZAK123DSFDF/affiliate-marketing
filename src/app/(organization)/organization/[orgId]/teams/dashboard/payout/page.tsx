@@ -9,7 +9,7 @@ const payoutPage = async ({ params }: OrgIdProps) => {
   await requireTeamWithOrg(orgId)
   return (
     <>
-      <PayoutTable affiliate={false} orgId={orgId} />
+      <PayoutTable affiliate={false} orgId={orgId} isTeam />
     </>
   )
 }

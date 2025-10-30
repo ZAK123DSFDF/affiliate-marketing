@@ -7,5 +7,5 @@ export default async function IntegrationPage({ params }: OrgIdProps) {
   const orgId = await getValidatedOrgFromParams({ params })
   await requireTeamWithOrg(orgId)
 
-  return <IntegrationClientPage orgId={orgId} />
+  return <IntegrationClientPage orgId={orgId} isTeam />
 }

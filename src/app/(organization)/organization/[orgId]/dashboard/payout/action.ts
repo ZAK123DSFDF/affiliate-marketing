@@ -93,7 +93,7 @@ export async function createAffiliatePayouts({
   months,
 }: CreatePayoutInput) {
   await getOrgAuth(orgId)
-  await createOrganizationAffiliatePayout({
+  return await createOrganizationAffiliatePayout({
     orgId,
     affiliateIds,
     isUnpaid,

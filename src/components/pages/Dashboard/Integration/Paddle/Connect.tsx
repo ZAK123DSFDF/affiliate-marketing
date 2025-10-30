@@ -19,6 +19,10 @@ import {
   savePaddleWebhookKey,
 } from "@/app/(organization)/organization/[orgId]/dashboard/integration/action"
 import { useAppMutation } from "@/hooks/useAppMutation"
+import {
+  getTeamOrgWebhookKey,
+  saveTeamPaddleWebhookKey,
+} from "@/app/(organization)/organization/[orgId]/teams/dashboard/integration/action"
 
 const webhookSchema = z.object({
   webhookKey: z.string().min(1, "Webhook key cannot be empty"),
@@ -31,6 +35,7 @@ interface ConnectProps {
   copied: boolean
   handleCopy: () => void
   orgId: string
+  isTeam?: boolean
 }
 
 export default function Connect({
@@ -38,6 +43,7 @@ export default function Connect({
   copied,
   handleCopy,
   orgId,
+  isTeam = false,
 }: ConnectProps) {
   const { showCustomToast } = useCustomToast()
 
@@ -45,10 +51,11 @@ export default function Connect({
     resolver: zodResolver(webhookSchema),
     defaultValues: { webhookKey: "" },
   })
-
+  const saveFn = isTeam ? saveTeamPaddleWebhookKey : savePaddleWebhookKey
+  const getFn = isTeam ? getTeamOrgWebhookKey : getOrgWebhookKey
   const mutation = useAppMutation(
     async (key: string) => {
-      return await savePaddleWebhookKey({ orgId, webhookPublicKey: key })
+      return await saveFn({ orgId, webhookPublicKey: key })
     },
     {
       onSuccess: () => {
@@ -63,7 +70,7 @@ export default function Connect({
   }
   const { data, isPending } = useQuery({
     queryKey: ["paddle-webhook-key", orgId],
-    queryFn: async () => await getOrgWebhookKey(orgId),
+    queryFn: async () => await getFn(orgId),
   })
 
   const savedKey = data?.webhookPublicKey ?? ""

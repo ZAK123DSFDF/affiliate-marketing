@@ -19,8 +19,15 @@ import { useActiveDomain } from "@/hooks/useActiveDomain"
 import { AppResponse, useAppMutation } from "@/hooks/useAppMutation"
 import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
 import { cn } from "@/lib/utils"
+import { saveTeamCustomizationsAction } from "@/app/(organization)/organization/[orgId]/teams/dashboard/customization/action"
 
-export default function CustomizationPage({ orgId }: { orgId: string }) {
+export default function CustomizationPage({
+  orgId,
+  isTeam = false,
+}: {
+  orgId: string
+  isTeam?: boolean
+}) {
   const [mainTab, setMainTab] = useState("sidebar")
   const { domain } = useActiveDomain(orgId)
   const authHasChanges = useAtomValue(authHasChangesAtom)
@@ -43,7 +50,11 @@ export default function CustomizationPage({ orgId }: { orgId: string }) {
         return { ok: true, message: "No changes to save." } // keep same shape as your backend responses
       }
 
-      return await saveCustomizationsAction(orgId, liveCustomizations)
+      const saveFn = isTeam
+        ? saveTeamCustomizationsAction
+        : saveCustomizationsAction
+
+      return saveFn(orgId, liveCustomizations)
     },
     {
       onSuccess: async (res) => {
