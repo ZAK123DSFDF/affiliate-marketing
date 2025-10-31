@@ -4,7 +4,14 @@ import { cookies } from "next/headers"
 import { OAuth2Client } from "google-auth-library"
 import jwt from "jsonwebtoken"
 import { db } from "@/db/drizzle"
-import { user, account, affiliate, affiliateAccount } from "@/db/schema"
+import {
+  user,
+  account,
+  affiliate,
+  affiliateAccount,
+  teamAccount,
+  team,
+} from "@/db/schema"
 import { buildAffiliateUrl } from "@/util/Url"
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID!
@@ -35,10 +42,86 @@ export async function GET(req: Request) {
     const email = payload.email!
     const name = payload.name ?? ""
     const rememberMe = !!state.rememberMe
-    const type = (state.type || "organization") as "organization" | "affiliate"
+    const type = (state.type || "organization") as
+      | "organization"
+      | "affiliate"
+      | "team"
     const orgIdFromState = state.orgId as string | undefined
     const baseUrl = state.baseUrl || process.env.NEXT_PUBLIC_BASE_URL
     const page = state.page || "login"
+    // ---------- TEAM flow ----------
+    if (type === "team") {
+      let teamAcc = await db.query.teamAccount.findFirst({
+        where: (aa, { and, eq }) =>
+          and(eq(aa.provider, "google"), eq(aa.providerAccountId, googleSub)),
+      })
+      let appUser: any = null
+      if (teamAcc) {
+        appUser = await db.query.team.findFirst({
+          where: (t, { eq }) => eq(t.id, teamAcc!.teamId),
+        })
+      } else {
+        const existingTeamByEmail = await db.query.team.findFirst({
+          where: (t, { eq }) => eq(t.email, email),
+        })
+        if (existingTeamByEmail) {
+          await db.insert(teamAccount).values({
+            teamId: existingTeamByEmail.id,
+            provider: "google",
+            providerAccountId: googleSub,
+            emailVerified: new Date(),
+          })
+          appUser = existingTeamByEmail
+        } else {
+          const [createdTeam] = await db
+            .insert(team)
+            .values({
+              name,
+              email,
+              organizationId: orgIdFromState!,
+              type: "ORGANIZATION",
+              role: "TEAM",
+            })
+            .returning()
+          appUser = createdTeam
+          await db.insert(teamAccount).values({
+            teamId: createdTeam.id,
+            provider: "google",
+            providerAccountId: googleSub,
+            emailVerified: new Date(),
+          })
+          const sessionPayload = {
+            id: appUser.id,
+            email: appUser.email,
+            type: "ORGANIZATION",
+            role: "TEAM",
+            orgId: orgIdFromState, // affiliate's active org
+          }
+          const expiresIn = rememberMe ? "30d" : "1d"
+          const token = jwt.sign(sessionPayload, process.env.SECRET_KEY!, {
+            expiresIn,
+          })
+
+          // Store cookie
+          const cookieStore = await cookies()
+          cookieStore.set({
+            name: `teamToken-${orgIdFromState}`,
+            value: token,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: rememberMe ? 30 * 24 * 60 * 60 : undefined,
+            path: "/",
+          })
+          return NextResponse.redirect(
+            new URL(
+              `/organization/${orgIdFromState}/teams/dashboard/analytics`,
+              process.env.NEXT_PUBLIC_BASE_URL
+            )
+          )
+        }
+      }
+    }
     // ---------- ORGANIZATION flow ----------
     if (type === "organization") {
       // Try to find an existing OAuth account by providerAccountId

@@ -38,8 +38,15 @@ type Props = {
   isPreview?: boolean
   setTab?: (tab: string) => void
   affiliate: boolean
+  isTeam?: boolean
 }
-const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
+const Signup = ({
+  orgId,
+  isPreview = false,
+  setTab,
+  affiliate,
+  isTeam = false,
+}: Props) => {
   const [previewLoading, setPreviewLoading] = useState(false)
   const { customNotesSignup } = useAtomValue(notesCustomizationAtom)
   const form = useForm<SignUpFormValues>({
@@ -313,6 +320,7 @@ const Signup = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                 orgId={orgId || ""}
                 isPreview={isPreview}
                 page="signup"
+                isTeam={isTeam}
               />
             </div>
             {isPreview && (

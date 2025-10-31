@@ -72,6 +72,7 @@ export default function VerifyClient({
     return (
       <EmailVerified
         affiliate={data.tokenType === "affiliate"}
+        isTeam={data.tokenRole === "team"}
         orgId={data.activeOrgId}
         mode={data.mode}
         customMessages={customMessages}

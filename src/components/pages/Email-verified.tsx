@@ -26,6 +26,7 @@ type Props = {
   affiliate: boolean
   mode?: "signup" | "login" | "changeEmail"
   customMessages?: CustomMessages
+  isTeam?: boolean
 }
 
 const EmailVerified = ({
@@ -35,6 +36,7 @@ const EmailVerified = ({
   affiliate,
   mode,
   customMessages,
+  isTeam,
 }: Props) => {
   const {
     backgroundColor,
@@ -57,6 +59,8 @@ const EmailVerified = ({
     } else {
       if (affiliate) {
         goTo("dashboard/analytics")
+      } else if (isTeam) {
+        router.push(`/organization/${orgId}/teams/dashboard/analytics`)
       } else {
         if (mode === "signup" && !orgId) {
           router.push("/create-company")

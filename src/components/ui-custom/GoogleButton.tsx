@@ -10,6 +10,7 @@ type GoogleButtonProps = {
   rememberMe?: boolean
   isPreview?: boolean
   page?: "login" | "signup"
+  isTeam?: boolean
 }
 
 export function GoogleButton({
@@ -18,13 +19,14 @@ export function GoogleButton({
   rememberMe = false,
   isPreview,
   page,
+  isTeam = false,
 }: GoogleButtonProps) {
   const {
     googleButtonTextColor,
     googleButtonBackgroundColor,
     googleIconColor,
   } = useAtomValue(googleButtonCustomizationAtom)
-  const type = affiliate ? "affiliate" : "organization"
+  const type = isTeam ? "team" : affiliate ? "affiliate" : "organization"
   const handleClick = () => {
     if (isPreview) {
       window.open("https://www.google.com", "_blank")

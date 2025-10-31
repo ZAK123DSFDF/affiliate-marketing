@@ -2,7 +2,14 @@
 
 import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
-import { account, affiliate, affiliateAccount, user } from "@/db/schema"
+import {
+  account,
+  affiliate,
+  affiliateAccount,
+  team,
+  teamAccount,
+  user,
+} from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { db } from "@/db/drizzle"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
@@ -29,6 +36,7 @@ export const VerifyServer = async ({
   redirectUrl,
 }: VerifyServerProps) => {
   let tokenType: "organization" | "affiliate" = "organization"
+  let tokenRole: "owner" | "team" = "team"
   let orgIds: string[] = []
   let activeOrgId: string | undefined
   let orgId: string | undefined
@@ -39,6 +47,7 @@ export const VerifyServer = async ({
     tokenType = (decoded.type as string).toLowerCase() as
       | "organization"
       | "affiliate"
+    tokenRole = (decoded.role as string).toLowerCase() as "owner" | "team"
     orgIds = decoded.orgIds || []
     activeOrgId = decoded.activeOrgId
     orgId = decoded.orgId || decoded.organizationId
@@ -51,6 +60,9 @@ export const VerifyServer = async ({
       activeOrgId: decoded.activeOrgId || undefined,
       orgId: decoded.orgId || decoded.organizationId || undefined,
     }
+    if (tokenRole === "team" && tokenType === "organization") {
+      sessionPayload.orgId = orgId
+    }
     if (tokenType === "organization") {
       sessionPayload.orgIds = orgIds
       sessionPayload.activeOrgId = activeOrgId
@@ -58,6 +70,22 @@ export const VerifyServer = async ({
       sessionPayload.orgId = orgId
     }
     if (mode === "signup") {
+      if (tokenRole === "team" && tokenType === "organization") {
+        const teamAccRecord = await db.query.teamAccount.findFirst({
+          where: (ta, { and, eq }) =>
+            and(
+              eq(ta.teamId, sessionPayload.id),
+              eq(ta.provider, "credentials")
+            ),
+        })
+
+        if (teamAccRecord) {
+          await db
+            .update(teamAccount)
+            .set({ emailVerified: new Date() })
+            .where(eq(teamAccount.id, teamAccRecord.id))
+        }
+      }
       if (tokenType === "organization") {
         const userAccount = await db.query.account.findFirst({
           where: (a, { and, eq }) =>
@@ -89,7 +117,12 @@ export const VerifyServer = async ({
     if (mode === "changeEmail") {
       const newEmail = decoded.newEmail
       if (!newEmail) throw new Error("Missing new email in token")
-
+      if (tokenRole === "team" && tokenType === "organization") {
+        await db
+          .update(team)
+          .set({ email: newEmail })
+          .where(eq(team.id, decoded.id))
+      }
       if (tokenType === "organization") {
         await db
           .update(user)
@@ -113,9 +146,11 @@ export const VerifyServer = async ({
 
     cookieStore.set({
       name:
-        tokenType === "organization"
-          ? "organizationToken"
-          : `affiliateToken-${sessionPayload.orgId}`,
+        tokenRole === "team" && tokenType === "organization"
+          ? `teamToken-${sessionPayload.orgId}`
+          : tokenType === "organization"
+            ? "organizationToken"
+            : `affiliateToken-${sessionPayload.orgId}`,
       value: sessionToken,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -132,14 +167,21 @@ export const VerifyServer = async ({
       success: true,
       redirectUrl:
         redirectUrl ||
-        (tokenType === "organization" ? "/email-verified" : redirectUrl),
+        (tokenRole === "team" && tokenType === "organization"
+          ? `/organization/${sessionPayload.orgId}/teams/email-verified`
+          : tokenType === "organization"
+            ? "/email-verified"
+            : redirectUrl),
       mode,
       tokenType,
+      tokenRole,
       orgIds,
       activeOrgId:
-        tokenType === "organization"
-          ? sessionPayload.activeOrgId
-          : sessionPayload.orgId,
+        tokenRole === "team" && tokenType === "organization"
+          ? sessionPayload.orgId
+          : tokenType === "organization"
+            ? sessionPayload.activeOrgId
+            : sessionPayload.orgId,
     }
   } catch (err) {
     console.error("Verify error:", err)
@@ -152,11 +194,13 @@ export const VerifyServer = async ({
     return {
       success: false,
       redirectUrl:
-        tokenType === "organization"
-          ? "/invalid-token"
-          : orgId
-            ? errorUrl
-            : `affiliate/unknown`,
+        tokenRole === "team" && tokenType === "organization"
+          ? `/organization/${orgId}/teams/invalid-token`
+          : tokenType === "organization"
+            ? "/invalid-token"
+            : orgId
+              ? errorUrl
+              : `affiliate/unknown`,
     }
   }
 }
