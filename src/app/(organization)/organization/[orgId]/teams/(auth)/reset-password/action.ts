@@ -10,7 +10,7 @@ import { cookies } from "next/headers"
 import { MutationData } from "@/lib/types/response"
 import { handleAction } from "@/lib/handleAction"
 
-export const resetAffiliatePasswordServer = async ({
+export const resetTeamPasswordServer = async ({
   teamId,
   orgId,
   password,

@@ -35,12 +35,14 @@ import {
 import { useAffiliatePath } from "@/hooks/useUrl"
 import { OrgHeader } from "@/components/ui-custom/OrgHeader"
 import { useAppMutation } from "@/hooks/useAppMutation"
+import { resetTeamPasswordServer } from "@/app/(organization)/organization/[orgId]/teams/(auth)/reset-password/action"
 type Props = {
   userId: string
   orgId?: string
   isPreview?: boolean
   setTab?: (tab: string) => void
   affiliate: boolean
+  isTeam?: boolean
 }
 const ResetPassword = ({
   userId,
@@ -48,6 +50,7 @@ const ResetPassword = ({
   isPreview = false,
   setTab,
   affiliate,
+  isTeam = false,
 }: Props) => {
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(passwordSchema),
@@ -82,6 +85,10 @@ const ResetPassword = ({
     affiliate,
     disableSuccessToast: true,
   })
+  const teamMutation = useAppMutation(resetTeamPasswordServer, {
+    affiliate,
+    disableSuccessToast: true,
+  })
   const onSubmit = async (data: ResetPasswordFormValues) => {
     if (isPreview) {
       setPending(true)
@@ -108,7 +115,13 @@ const ResetPassword = ({
       return
     }
     try {
-      if (orgId && affiliate) {
+      if (isTeam && orgId) {
+        teamMutation.mutate({
+          teamId: userId,
+          orgId,
+          password: data.password,
+        })
+      } else if (orgId && affiliate) {
         affiliateMutation.mutate({
           affiliateId: userId,
           orgId,
@@ -124,7 +137,13 @@ const ResetPassword = ({
       console.error("Password reset failed", error)
     }
   }
-  const isSubmitting = affiliateMutation.isPending || normalMutation.isPending
+  const isSubmitting =
+    pending ||
+    (affiliate
+      ? affiliateMutation.isPending
+      : isTeam
+        ? teamMutation.isPending
+        : normalMutation.isPending)
   return (
     <div
       className={`relative min-h-screen flex items-center justify-center p-4 ${
@@ -221,20 +240,18 @@ const ResetPassword = ({
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={pending || isSubmitting}
+                  disabled={isSubmitting}
                   style={{
-                    backgroundColor:
-                      pending || isSubmitting
-                        ? (affiliate && buttonDisabledBackgroundColor) ||
-                          undefined
-                        : (affiliate && buttonBackgroundColor) || undefined,
-                    color:
-                      pending || isSubmitting
-                        ? (affiliate && buttonDisabledTextColor) || undefined
-                        : (affiliate && buttonTextColor) || undefined,
+                    backgroundColor: isSubmitting
+                      ? (affiliate && buttonDisabledBackgroundColor) ||
+                        undefined
+                      : (affiliate && buttonBackgroundColor) || undefined,
+                    color: isSubmitting
+                      ? (affiliate && buttonDisabledTextColor) || undefined
+                      : (affiliate && buttonTextColor) || undefined,
                   }}
                 >
-                  {pending || isSubmitting ? (
+                  {isSubmitting ? (
                     <>
                       <Loader2
                         className="h-4 w-4 animate-spin mr-2"
@@ -290,7 +307,13 @@ const ResetPassword = ({
                   isPreview={isPreview}
                   label="Login"
                   tabName="login"
-                  href={affiliate && orgId ? getPath("login") : "/login"}
+                  href={
+                    isTeam && orgId
+                      ? `/organization/${orgId}/teams/login`
+                      : affiliate && orgId
+                        ? getPath("login")
+                        : "/login"
+                  }
                   setTab={setTab}
                   linkTextColor={linkTextColor}
                 />

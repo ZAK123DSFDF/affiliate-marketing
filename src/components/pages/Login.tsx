@@ -45,7 +45,7 @@ const Login = ({
   isPreview = false,
   setTab,
   affiliate,
-  isTeam,
+  isTeam = false,
 }: Props) => {
   const { showCustomToast } = useCustomToast()
   const [previewLoading, setPreviewLoading] = useState(false)
