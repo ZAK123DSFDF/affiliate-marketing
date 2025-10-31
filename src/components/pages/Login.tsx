@@ -32,13 +32,21 @@ import { cn } from "@/lib/utils"
 import { useAffiliatePath } from "@/hooks/useUrl"
 import { OrgHeader } from "@/components/ui-custom/OrgHeader"
 import { useAppMutation } from "@/hooks/useAppMutation"
+import { LoginTeamServer } from "@/app/(organization)/organization/[orgId]/teams/(auth)/login/action"
 type Props = {
   orgId?: string
   isPreview?: boolean
   setTab?: (tab: string) => void
   affiliate: boolean
+  isTeam?: boolean
 }
-const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
+const Login = ({
+  orgId,
+  isPreview = false,
+  setTab,
+  affiliate,
+  isTeam,
+}: Props) => {
   const { showCustomToast } = useCustomToast()
   const [previewLoading, setPreviewLoading] = useState(false)
   const { getPath } = useAffiliatePath(orgId)
@@ -72,11 +80,17 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
     affiliate,
     disableSuccessToast: true,
   })
+  const teamMutation = useAppMutation(LoginTeamServer, {
+    affiliate,
+    disableSuccessToast: true,
+  })
   const isLoading = isPreview
     ? previewLoading
-    : orgId
-      ? affiliateMutation.isPending
-      : normalMutation.isPending
+    : isTeam
+      ? teamMutation.isPending
+      : orgId
+        ? affiliateMutation.isPending
+        : normalMutation.isPending
   const onSubmit = async (data: any) => {
     if (isPreview) {
       setPreviewLoading(true)
@@ -105,7 +119,9 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
 
       return
     }
-    if (orgId && affiliate) {
+    if (isTeam && orgId) {
+      teamMutation.mutate({ ...data, organizationId: orgId })
+    } else if (orgId && affiliate) {
       affiliateMutation.mutate({ ...data, organizationId: orgId })
     } else {
       normalMutation.mutate(data)
@@ -210,9 +226,11 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                       label="Forgot Password"
                       tabName="forgot-password"
                       href={
-                        affiliate && orgId
-                          ? getPath("forgot-password")
-                          : "/forgot-password"
+                        isTeam && orgId
+                          ? `/organization/${orgId}/teams/forgot-password`
+                          : affiliate && orgId
+                            ? getPath("forgot-password")
+                            : "/forgot-password"
                       }
                       setTab={setTab}
                       linkTextColor={linkTextColor}
@@ -296,6 +314,7 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                 orgId={orgId || ""}
                 isPreview={isPreview}
                 page="login"
+                isTeam={isTeam}
               />
               {isPreview && (
                 <div className="mt-2">
@@ -326,7 +345,13 @@ const Login = ({ orgId, isPreview = false, setTab, affiliate }: Props) => {
                 isPreview={isPreview}
                 label="Sign up"
                 tabName="signup"
-                href={affiliate && orgId ? getPath("signup") : "/signup"}
+                href={
+                  isTeam && orgId
+                    ? `/organization/${orgId}/teams/signup`
+                    : affiliate && orgId
+                      ? getPath("signup")
+                      : "/signup"
+                }
                 setTab={setTab}
                 linkTextColor={linkTextColor}
               />

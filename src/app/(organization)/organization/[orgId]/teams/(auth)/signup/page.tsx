@@ -32,7 +32,7 @@ const TeamSignupPage = async ({ params, searchParams }: TeamSignupProps) => {
 
   return (
     <>
-      <Signup affiliate={false} orgId={orgId} />
+      <Signup affiliate={false} orgId={orgId} isTeam />
     </>
   )
 }

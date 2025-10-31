@@ -33,6 +33,7 @@ import { useAffiliatePath } from "@/hooks/useUrl"
 import { useCachedValidation } from "@/hooks/useCachedValidation"
 import { OrgHeader } from "@/components/ui-custom/OrgHeader"
 import { useAppMutation } from "@/hooks/useAppMutation"
+import { SignupTeamServer } from "@/app/(organization)/organization/[orgId]/teams/(auth)/signup/action"
 type Props = {
   orgId?: string
   isPreview?: boolean
@@ -98,7 +99,15 @@ const Signup = ({
       }
     },
   })
-
+  const teamMutation = useAppMutation(SignupTeamServer, {
+    affiliate,
+    disableSuccessToast: true,
+    onSuccess: (res: any) => {
+      if (!res.ok) {
+        emailCache.addFailedValue(res.data)
+      }
+    },
+  })
   const normalMutation = useAppMutation(SignupServer, {
     affiliate,
     disableSuccessToast: true,
@@ -110,9 +119,11 @@ const Signup = ({
   })
   const isLoading = isPreview
     ? previewLoading
-    : orgId
-      ? affiliateMutation.isPending
-      : normalMutation.isPending
+    : isTeam
+      ? teamMutation.isPending
+      : orgId
+        ? affiliateMutation.isPending
+        : normalMutation.isPending
 
   const onSubmit = async (data: any) => {
     if (isPreview) {
@@ -138,7 +149,11 @@ const Signup = ({
 
       return
     }
-    if (orgId && affiliate) {
+    if (isTeam && orgId) {
+      const email = data.email.trim().toLowerCase()
+      if (emailCache.shouldSkip(email)) return
+      teamMutation.mutate({ ...data, organizationId: orgId })
+    } else if (orgId && affiliate) {
       const email = data.email.trim().toLowerCase()
       if (emailCache.shouldSkip(email)) return
       affiliateMutation.mutate({ ...data, organizationId: orgId })
@@ -358,7 +373,13 @@ const Signup = ({
                   isPreview={isPreview}
                   label="Login"
                   tabName="login"
-                  href={affiliate && orgId ? getPath("login") : "/login"}
+                  href={
+                    isTeam && orgId
+                      ? `/organization/${orgId}/teams/login`
+                      : affiliate && orgId
+                        ? getPath("login")
+                        : "/login"
+                  }
                   setTab={setTab}
                   linkTextColor={linkTextColor}
                 />
