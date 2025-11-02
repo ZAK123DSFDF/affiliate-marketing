@@ -56,10 +56,10 @@ export async function updateTeamProfile(
 }
 
 export async function validateCurrentTeamPassword(
-  currentPassword: string,
-  orgId: string
+  orgId: string,
+  currentPassword: string
 ): Promise<MutationData> {
-  return handleAction("validating current Organization Password", async () => {
+  return handleAction("validating current Team Password", async () => {
     const { id } = await getCurrentTeam(orgId)
     if (!id) throw { status: 401, toast: "Unauthorized" }
 
@@ -84,8 +84,8 @@ export async function validateCurrentTeamPassword(
   })
 }
 export async function updateTeamPassword(
-  newPassword: string,
-  orgId: string
+  orgId: string,
+  newPassword: string
 ): Promise<MutationData> {
   return handleAction("updating User Password", async () => {
     const { userId, canChangePassword } = await getTeamAuthCapabilities(orgId)

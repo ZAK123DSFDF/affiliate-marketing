@@ -28,7 +28,6 @@ const ResetPasswordPage = async ({ searchParams, params }: Props) => {
     token: teamToken,
     tokenType: "organization",
   })
-
   if (!sessionPayload) {
     return (
       <InvalidToken
@@ -43,6 +42,7 @@ const ResetPasswordPage = async ({ searchParams, params }: Props) => {
       affiliate={false}
       userId={sessionPayload.id}
       orgId={sessionPayload.orgId}
+      isTeam
     />
   )
 }

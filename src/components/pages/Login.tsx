@@ -278,84 +278,86 @@ const Login = ({
                 {isPreview && <ButtonCustomizationOptions size="w-6 h-6" />}
               </form>
             </Form>
-            <div className={cn("relative", !isPreview && "my-6")}>
-              <div className="absolute inset-0 flex items-center">
-                <span
-                  className="w-full border-t"
-                  style={{
-                    borderColor:
-                      (affiliate && googleSeparatorColor) || undefined,
-                  }}
-                />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span
-                  className="bg-background px-2 text-muted-foreground"
-                  style={{
-                    color: (affiliate && googleSeparatorColor) || undefined,
-                  }}
-                >
-                  Or continue with
-                </span>
-              </div>
-            </div>
-            {isPreview && (
-              <div className="mb-2">
-                <ThemeCustomizationOptions
-                  name="googleSeparatorColor"
-                  showLabel={false}
-                  buttonSize="w-4 h-4"
+            {!isTeam && (
+              <>
+                <div className={cn("relative", !isPreview && "my-6")}>
+                  <div className="absolute inset-0 flex items-center">
+                    <span
+                      className="w-full border-t"
+                      style={{
+                        borderColor:
+                          (affiliate && googleSeparatorColor) || undefined,
+                      }}
+                    />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span
+                      className="bg-background px-2 text-muted-foreground"
+                      style={{
+                        color: (affiliate && googleSeparatorColor) || undefined,
+                      }}
+                    >
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+
+                {isPreview && (
+                  <div className="mb-2">
+                    <ThemeCustomizationOptions
+                      name="googleSeparatorColor"
+                      showLabel={false}
+                      buttonSize="w-4 h-4"
+                    />
+                  </div>
+                )}
+
+                <div className={cn(!isPreview && "mt-4 mb-6")}>
+                  <GoogleButton
+                    affiliate={affiliate}
+                    orgId={orgId || ""}
+                    isPreview={isPreview}
+                    page="login"
+                    isTeam={isTeam}
+                  />
+                  {isPreview && (
+                    <div className="mt-2">
+                      <GoogleButtonCustomizationOptions size="w-6 h-6" />
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4">
+            {!isTeam && (
+              <div
+                className="text-center text-sm"
+                style={{
+                  color: (affiliate && tertiaryTextColor) || undefined,
+                }}
+              >
+                <div className="flex flex-row gap-2">
+                  {isPreview && (
+                    <ThemeCustomizationOptions
+                      name="tertiaryTextColor"
+                      showLabel={false}
+                      buttonSize="w-4 h-4"
+                    />
+                  )}
+                  <span>Don't have an account? </span>
+                </div>
+
+                <LinkButton
+                  isPreview={isPreview}
+                  label="Sign up"
+                  tabName="signup"
+                  href={affiliate && orgId ? getPath("signup") : "/signup"}
+                  setTab={setTab}
+                  linkTextColor={linkTextColor}
                 />
               </div>
             )}
-            <div className={cn(!isPreview && "mt-4 mb-6")}>
-              <GoogleButton
-                affiliate={affiliate}
-                orgId={orgId || ""}
-                isPreview={isPreview}
-                page="login"
-                isTeam={isTeam}
-              />
-              {isPreview && (
-                <div className="mt-2">
-                  <GoogleButtonCustomizationOptions size="w-6 h-6" />
-                </div>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <div
-              className="text-center text-sm"
-              style={{
-                color: (affiliate && tertiaryTextColor) || undefined,
-              }}
-            >
-              <div className="flex flex-row gap-2">
-                {isPreview && (
-                  <ThemeCustomizationOptions
-                    name="tertiaryTextColor"
-                    showLabel={false}
-                    buttonSize="w-4 h-4"
-                  />
-                )}
-                <span>Don't have an account? </span>
-              </div>
-
-              <LinkButton
-                isPreview={isPreview}
-                label="Sign up"
-                tabName="signup"
-                href={
-                  isTeam && orgId
-                    ? `/organization/${orgId}/teams/signup`
-                    : affiliate && orgId
-                      ? getPath("signup")
-                      : "/signup"
-                }
-                setTab={setTab}
-                linkTextColor={linkTextColor}
-              />
-            </div>
           </CardFooter>
           {isPreview && (
             <div className="absolute bottom-0 left-0 p-2">

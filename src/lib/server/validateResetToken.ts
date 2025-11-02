@@ -3,7 +3,7 @@
 
 import jwt from "jsonwebtoken"
 import { db } from "@/db/drizzle"
-import { user, affiliate } from "@/db/schema"
+import { user, affiliate, team } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
 type ValidateResetTokenProps = {
@@ -28,10 +28,17 @@ export const validateResetToken = async ({
 
     // Make sure the account actually exists
     if (tokenType === "organization") {
-      const existingUser = await db.query.user.findFirst({
-        where: eq(user.id, sessionPayload.id),
-      })
-      if (!existingUser) return null
+      if (sessionPayload.role === "TEAM") {
+        const existingTeam = await db.query.team.findFirst({
+          where: eq(team.id, sessionPayload.id),
+        })
+        if (!existingTeam) return null
+      } else {
+        const existingUser = await db.query.user.findFirst({
+          where: eq(user.id, sessionPayload.id),
+        })
+        if (!existingUser) return null
+      }
     }
 
     if (tokenType === "affiliate") {

@@ -9,7 +9,7 @@ const loginPage = async ({ params }: OrgIdProps) => {
   await redirectTeamIfAuthed(orgId)
   return (
     <>
-      <Login affiliate={false} isTeam />
+      <Login affiliate={false} isTeam orgId={orgId} />
     </>
   )
 }

@@ -56,9 +56,11 @@ export default function Teams({
   })
 
   const mutation = useAppMutation(inviteTeamMember, {
-    onSuccess: () => {
-      setOpenInvite(false)
-      form.reset()
+    onSuccess: (res: any) => {
+      if (res.ok) {
+        setOpenInvite(false)
+        form.reset()
+      }
     },
   })
 
