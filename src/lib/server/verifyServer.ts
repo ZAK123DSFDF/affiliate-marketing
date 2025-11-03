@@ -36,7 +36,7 @@ export const VerifyServer = async ({
   redirectUrl,
 }: VerifyServerProps) => {
   let tokenType: "organization" | "affiliate" = "organization"
-  let tokenRole: "owner" | "team" = "team"
+  let tokenRole: "owner" | "team" | null = null
   let orgIds: string[] = []
   let activeOrgId: string | undefined
   let orgId: string | undefined
@@ -47,7 +47,9 @@ export const VerifyServer = async ({
     tokenType = (decoded.type as string).toLowerCase() as
       | "organization"
       | "affiliate"
-    tokenRole = (decoded.role as string).toLowerCase() as "owner" | "team"
+    if (decoded.role) {
+      tokenRole = decoded.role.toLowerCase() as "owner" | "team"
+    }
     orgIds = decoded.orgIds || []
     activeOrgId = decoded.activeOrgId
     orgId = decoded.orgId || decoded.organizationId
@@ -62,8 +64,7 @@ export const VerifyServer = async ({
     }
     if (tokenRole === "team" && tokenType === "organization") {
       sessionPayload.orgId = orgId
-    }
-    if (tokenType === "organization") {
+    } else if (tokenType === "organization") {
       sessionPayload.orgIds = orgIds
       sessionPayload.activeOrgId = activeOrgId
     } else {
@@ -85,8 +86,7 @@ export const VerifyServer = async ({
             .set({ emailVerified: new Date() })
             .where(eq(teamAccount.id, teamAccRecord.id))
         }
-      }
-      if (tokenType === "organization") {
+      } else if (tokenType === "organization") {
         const userAccount = await db.query.account.findFirst({
           where: (a, { and, eq }) =>
             and(eq(a.userId, sessionPayload.id), eq(a.provider, "credentials")),
@@ -122,8 +122,7 @@ export const VerifyServer = async ({
           .update(team)
           .set({ email: newEmail })
           .where(eq(team.id, decoded.id))
-      }
-      if (tokenType === "organization") {
+      } else if (tokenType === "organization") {
         await db
           .update(user)
           .set({ email: newEmail })

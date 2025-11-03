@@ -10,6 +10,16 @@ export const createFullUrl = async (decoded: { id: string; orgId: string }) => {
   if (!org) {
     throw { status: 500, toast: "failed to fetch organization data" }
   }
+  const existingLinks = await db.query.affiliateLink.findMany({
+    where: (a, { eq }) => eq(a.affiliateId, decoded.id),
+  })
+
+  if (existingLinks.length >= 10) {
+    throw {
+      status: 400,
+      toast: "You have reached the maximum of 10 affiliate links.",
+    }
+  }
   const code = generateAffiliateCode() // e.g., "7hjKpQ"
   const param = org.referralParam
   const domain = org.websiteUrl.replace(/^https?:\/\//, "")

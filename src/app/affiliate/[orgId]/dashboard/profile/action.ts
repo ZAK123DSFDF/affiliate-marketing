@@ -109,6 +109,7 @@ export async function logoutAction({
         baseUrl,
         partial: true,
       })
+      console.log("redirect url", redirectUrl)
       return { ok: true, redirectTo: redirectUrl }
     }
 

@@ -124,7 +124,11 @@ export const CreateOrganization = async (
     })
 
     cookieStore.set("organizationToken", newToken, { httpOnly: true })
-    return { ok: true, toast: "Company created successfully!" }
+    return {
+      ok: true,
+      toast: "Company created successfully!",
+      data: { id: newOrg.id },
+    }
   })
 }
 export async function deleteOrganizationLogo(
