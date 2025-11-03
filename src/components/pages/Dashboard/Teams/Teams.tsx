@@ -6,28 +6,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TableView } from "@/components/ui-custom/TableView"
 import {
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
-  ColumnDef,
+  ColumnFiltersState,
+  VisibilityState,
 } from "@tanstack/react-table"
-import { Badge } from "@/components/ui/badge"
-import { Trash2, Power, PowerOff, Loader2 } from "lucide-react"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
 import { useAppMutation } from "@/hooks/useAppMutation"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form } from "@/components/ui/form"
-import { inviteTeamMember } from "@/app/(organization)/organization/[orgId]/dashboard/teams/action"
+import {
+  getTeams,
+  inviteTeamMember,
+  toggleTeamStatus,
+  deleteTeamMember,
+} from "@/app/(organization)/organization/[orgId]/dashboard/teams/action"
 import { InputField, TextareaField } from "@/components/Auth/FormFields"
-
-const initialTeams = [
-  { id: 1, email: "alice@example.com", isActive: true },
-  { id: 2, email: "bob@example.com", isActive: false },
-  { id: 3, email: "charlie@example.com", isActive: true },
-]
+import { useQueryFilter } from "@/hooks/useQueryFilter"
+import { useAppQuery } from "@/hooks/useAppQuery"
+import { TeamsColumns } from "@/components/pages/Dashboard/Teams/TeamsColumns"
+import { TableTop } from "@/components/ui-custom/TableTop"
+import PaginationControls from "@/components/ui-custom/PaginationControls"
+import { useQueryClient } from "@tanstack/react-query"
 
 const inviteSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -42,21 +43,40 @@ export default function Teams({
   orgId: string
   affiliate: boolean
 }) {
-  const [teams, setTeams] = useState(initialTeams)
-  const [loadingId, setLoadingId] = useState<number | null>(null)
-  const [deleteDialog, setDeleteDialog] = useState({
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean
+    id: string | null
+  }>({
     open: false,
-    id: null as number | null,
+    id: null,
   })
+  const [toggleDialog, setToggleDialog] = useState<{
+    open: boolean
+    id: string | null
+    active: boolean
+  }>({ open: false, id: null, active: false })
   const [openInvite, setOpenInvite] = useState(false)
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState({})
+  const queryClient = useQueryClient()
+  const { filters, setFilters } = useQueryFilter()
 
-  const form = useForm<z.infer<typeof inviteSchema>>({
-    resolver: zodResolver(inviteSchema),
-    defaultValues: { email: "", title: "", description: "" },
-  })
+  // Fetch teams
+  const {
+    data: searchData,
+    error: searchError,
+    isPending: searchPending,
+  } = useAppQuery(
+    ["org-teams", orgId, filters.offset, filters.email],
+    getTeams,
+    [orgId, filters.offset, filters.email],
+    { enabled: !!orgId }
+  )
 
-  const mutation = useAppMutation(inviteTeamMember, {
-    onSuccess: (res: any) => {
+  // Invite mutation
+  const inviteMutation = useAppMutation(inviteTeamMember, {
+    onSuccess: (res) => {
       if (res.ok) {
         setOpenInvite(false)
         form.reset()
@@ -64,109 +84,73 @@ export default function Teams({
     },
   })
 
+  // Activate/deactivate mutation
+  const toggleMutation = useAppMutation(toggleTeamStatus, {
+    onSuccess: (_, variables) => {
+      queryClient
+        .invalidateQueries({
+          queryKey: ["org-teams", variables.orgId],
+        })
+        .then(() => console.log("Invalidated teams query"))
+    },
+  })
+
+  // Delete mutation
+  const deleteMutation = useAppMutation(deleteTeamMember, {
+    onSuccess: (_, variables) => {
+      setDeleteDialog({ open: false, id: null })
+      queryClient
+        .invalidateQueries({
+          queryKey: ["org-teams", variables.orgId],
+        })
+        .then(() => console.log("Invalidated teams query"))
+    },
+  })
+
+  const form = useForm<z.infer<typeof inviteSchema>>({
+    resolver: zodResolver(inviteSchema),
+    defaultValues: { email: "", title: "", description: "" },
+  })
+
   const onSubmit = (data: z.infer<typeof inviteSchema>) => {
-    mutation.mutate({ ...data, orgId })
+    inviteMutation.mutate({ ...data, orgId })
   }
-
-  const handleActivateToggle = async (id: number) => {
-    setLoadingId(id)
-    await new Promise((r) => setTimeout(r, 1000))
-    setTeams((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, isActive: !t.isActive } : t))
-    )
-    setLoadingId(null)
-  }
-
-  const handleDelete = (id: number) => {
-    setDeleteDialog({ open: true, id })
-  }
-
   const confirmDelete = () => {
-    if (deleteDialog.id != null) {
-      setTeams((prev) => prev.filter((t) => t.id !== deleteDialog.id))
-    }
-    setDeleteDialog({ open: false, id: null })
+    if (deleteDialog.id) deleteMutation.mutate({ id: deleteDialog.id, orgId })
   }
-
-  const columns: ColumnDef<(typeof initialTeams)[0]>[] = useMemo(
-    () => [
-      {
-        accessorKey: "email",
-        header: "Team Email",
-        cell: ({ row }) => (
-          <div className="font-medium text-sm">{row.getValue("email")}</div>
-        ),
-      },
-      {
-        accessorKey: "isActive",
-        header: "Status",
-        cell: ({ row }) => {
-          const isActive = row.getValue("isActive") as boolean
-          return (
-            <Badge
-              variant="outline"
-              className={`px-2 py-1 rounded-full text-xs border-2 ${
-                isActive
-                  ? "border-green-500 text-green-600 bg-green-50"
-                  : "border-red-500 text-red-600 bg-red-50"
-              }`}
-            >
-              {isActive ? "Active" : "Inactive"}
-            </Badge>
-          )
-        },
-      },
-      {
-        id: "actions",
-        header: "Action",
-        cell: ({ row }) => {
-          const { id, isActive } = row.original
-          const isLoading = loadingId === id
-
-          return (
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="min-w-[110px]"
-                onClick={() => handleActivateToggle(id)}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                ) : isActive ? (
-                  <>
-                    <PowerOff className="w-4 h-4 mr-1" /> Deactivate
-                  </>
-                ) : (
-                  <>
-                    <Power className="w-4 h-4 mr-1" /> Activate
-                  </>
-                )}
-              </Button>
-
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => handleDelete(id)}
-              >
-                <Trash2 className="w-4 h-4 mr-1" /> Delete
-              </Button>
-            </div>
-          )
-        },
-      },
-    ],
-    [loadingId]
+  const confirmToggle = () => {
+    if (toggleDialog.id) {
+      toggleMutation.mutate({
+        id: toggleDialog.id,
+        active: !toggleDialog.active,
+        orgId,
+      })
+      setToggleDialog({ open: false, id: null, active: false })
+    }
+  }
+  const columns = useMemo(
+    () =>
+      TeamsColumns({
+        onToggle: (id, active) => setToggleDialog({ open: true, id, active }),
+        onDelete: (id) => setDeleteDialog({ open: true, id }),
+      }),
+    []
   )
-
+  const tableData = searchData ?? []
   const table = useReactTable({
-    data: teams,
+    data: tableData,
     columns,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    manualFiltering: true,
+    manualPagination: true,
+    state: {
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
   })
 
   return (
@@ -188,14 +172,27 @@ export default function Teams({
           <CardTitle>Team Members</CardTitle>
         </CardHeader>
         <CardContent>
+          <TableTop
+            table={table}
+            filters={{ email: filters.email }}
+            onOrderChange={() => {}}
+            onEmailChange={(email) => setFilters({ email: email || undefined })}
+            affiliate={affiliate}
+            hideOrder
+          />
           <TableView
-            isPending={false}
-            error=""
+            isPending={searchPending}
+            error={searchError}
             table={table}
             columns={columns}
             affiliate={affiliate}
             isPreview={false}
             tableEmptyText="No team members found."
+          />
+          <PaginationControls
+            offset={filters.offset}
+            tableDataLength={tableData.length}
+            setFilters={setFilters}
           />
         </CardContent>
       </Card>
@@ -207,7 +204,7 @@ export default function Teams({
         title="Invite a Team Member"
         description="Send an invitation email to add a new member to your organization."
         confirmText="Send Invite"
-        confirmLoading={mutation.isPending}
+        confirmLoading={inviteMutation.isPending}
         onConfirm={form.handleSubmit(onSubmit)}
         affiliate={affiliate}
       >
@@ -252,12 +249,41 @@ export default function Teams({
         title="Delete Team Member"
         description="Are you sure you want to delete this team member? This action cannot be undone."
         confirmText="Yes, Delete"
-        confirmLoading={false}
+        confirmLoading={deleteMutation.isPending}
         onConfirm={confirmDelete}
         affiliate={affiliate}
       >
         <p className="text-sm text-muted-foreground">
           Deleting a member will permanently remove their access.
+        </p>
+      </AppDialog>
+      <AppDialog
+        open={toggleDialog.open}
+        onOpenChange={(open) =>
+          setToggleDialog({
+            open,
+            id: open ? toggleDialog.id : null,
+            active: false,
+          })
+        }
+        title={
+          toggleDialog.active
+            ? "Deactivate Team Member"
+            : "Activate Team Member"
+        }
+        description={
+          toggleDialog.active
+            ? "Are you sure you want to deactivate this team member?"
+            : "Are you sure you want to activate this team member?"
+        }
+        confirmText={toggleDialog.active ? "Yes, Deactivate" : "Yes, Activate"}
+        confirmLoading={toggleMutation.isPending}
+        onConfirm={confirmToggle}
+        affiliate={affiliate}
+      >
+        <p className="text-sm text-muted-foreground">
+          This will immediately {toggleDialog.active ? "disable" : "enable"} the
+          member’s access.
         </p>
       </AppDialog>
     </div>

@@ -18,6 +18,7 @@ type TableProps<TData> = {
   onEmailChange: (email: string) => void
   affiliate: boolean
   mode?: "default" | "top"
+  hideOrder?: boolean
 }
 
 export const TableTop = <TData,>({
@@ -27,6 +28,7 @@ export const TableTop = <TData,>({
   onEmailChange,
   affiliate,
   mode = "default",
+  hideOrder = false,
 }: TableProps<TData>) => {
   return (
     <div className="flex items-center py-4">
@@ -36,12 +38,14 @@ export const TableTop = <TData,>({
           onChange={onEmailChange}
           placeholder="Filter emails..."
         />
-        <OrderSelect
-          value={filters}
-          onChange={onOrderChange}
-          affiliate={affiliate}
-          mode={mode}
-        />
+        {!hideOrder && (
+          <OrderSelect
+            value={filters}
+            onChange={onOrderChange}
+            affiliate={affiliate}
+            mode={mode}
+          />
+        )}
       </div>
 
       <DropdownMenu>

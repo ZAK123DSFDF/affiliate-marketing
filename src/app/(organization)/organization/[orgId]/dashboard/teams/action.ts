@@ -2,9 +2,10 @@
 
 import { db } from "@/db/drizzle"
 import { invitation, team } from "@/db/schema"
-import { and, eq } from "drizzle-orm"
+import { and, eq, ilike } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { handleAction } from "@/lib/handleAction"
+import { MutationData, ResponseData } from "@/lib/types/response"
 
 export const inviteTeamMember = async ({
   email,
@@ -87,6 +88,71 @@ export const inviteTeamMember = async ({
     return {
       ok: true,
       toast: "Invitation sent successfully.",
+    }
+  })
+}
+export async function getTeams(
+  orgId: string,
+  offset?: number,
+  email?: string
+): Promise<ResponseData<any[]>> {
+  return handleAction("getTeams", async () => {
+    const limit = 10
+    const whereClauses = [eq(team.organizationId, orgId)]
+
+    if (email) {
+      whereClauses.push(ilike(team.email, `%${email}%`))
+    }
+
+    const rows = await db
+      .select({
+        id: team.id,
+        email: team.email,
+        isActive: team.isActive,
+      })
+      .from(team)
+      .where(and(...whereClauses))
+      .limit(limit)
+      .offset(((offset ?? 1) - 1) * limit)
+      .orderBy(team.createdAt)
+
+    return { ok: true, data: rows }
+  })
+}
+export async function toggleTeamStatus({
+  id,
+  active,
+  orgId,
+}: {
+  id: string
+  active: boolean
+  orgId: string
+}): Promise<MutationData> {
+  return handleAction("toggleTeamStatus", async () => {
+    await db
+      .update(team)
+      .set({ isActive: active })
+      .where(and(eq(team.id, id), eq(team.organizationId, orgId)))
+    return {
+      ok: true,
+      toast: `Team member ${active ? "activated" : "deactivated"} successfully.`,
+    }
+  })
+}
+export async function deleteTeamMember({
+  id,
+  orgId,
+}: {
+  id: string
+  orgId: string
+}): Promise<MutationData> {
+  return handleAction("deleteTeamMember", async () => {
+    await db
+      .delete(team)
+      .where(and(eq(team.id, id), eq(team.organizationId, orgId)))
+    return {
+      ok: true,
+      toast: "Team member deleted successfully.",
     }
   })
 }
