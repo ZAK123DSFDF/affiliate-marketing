@@ -37,10 +37,19 @@ export const LoginTeamServer = async ({
     if (!existingTeam) {
       throw {
         status: 404,
-        error: "Affiliate not found.",
+        error: "team not found.",
         toast:
           "Invalid credentials. Please check your email, password, and organization.",
         fields: { email: "team not found in this organization" },
+      }
+    }
+    if (!existingTeam.isActive) {
+      throw {
+        status: 403,
+        error: "Team deactivated.",
+        toast:
+          "Your team account has been deactivated by the organization owner.",
+        fields: { email: "This account is currently deactivated" },
       }
     }
 

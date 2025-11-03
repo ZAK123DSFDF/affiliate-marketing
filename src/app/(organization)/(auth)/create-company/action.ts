@@ -17,6 +17,7 @@ import { eq } from "drizzle-orm"
 import { sanitizeDomain } from "@/util/SanitizeDomain"
 import { MutationData } from "@/lib/types/response"
 import { handleAction } from "@/lib/handleAction"
+import { getUserPlan } from "@/lib/server/getUserPlan"
 
 const s3Client = new S3Client({
   region: "auto",
@@ -43,6 +44,25 @@ export const CreateOrganization = async (
       exp: number
       iat: number
       orgIds?: string[]
+    }
+    const plan = await getUserPlan()
+    const orgCount = await db.query.organization.findMany({
+      where: eq(organization.userId, decoded.id),
+    })
+    if (plan.plan === "FREE" && orgCount.length >= 1) {
+      throw {
+        status: 403,
+        toast:
+          "Free plan allows only one organization. Upgrade to Pro or Ultimate.",
+      }
+    }
+
+    if (plan.plan === "PRO" && orgCount.length >= 1) {
+      throw {
+        status: 403,
+        toast:
+          "Pro plan allows only one organization. Upgrade to Ultimate for more.",
+      }
     }
 
     const sanitizedWebsiteName = sanitizeDomain(input.websiteUrl)

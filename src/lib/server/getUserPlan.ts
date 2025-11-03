@@ -5,9 +5,10 @@ import { subscription, purchase } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { getOrgAuthForPlan } from "@/lib/server/getOrgAuthForPlan"
 
-export type UserPlanResult =
-  | { plan: string; type: "SUBSCRIPTION" | "PURCHASE" }
-  | { plan: "FREE" }
+export type UserPlanResult = {
+  plan: "FREE" | "PRO" | "ULTIMATE"
+  type: "SUBSCRIPTION" | "PURCHASE" | "FREE"
+}
 
 function isSubscriptionValid(
   sub: typeof subscription.$inferSelect | null | undefined
@@ -30,13 +31,21 @@ export async function getUserPlan(): Promise<UserPlanResult> {
     }),
   ])
 
+  // ✅ If user has valid subscription
   if (userSub && isSubscriptionValid(userSub)) {
-    return { plan: userSub.plan, type: "SUBSCRIPTION" }
+    return { plan: userSub.plan as "PRO" | "ULTIMATE", type: "SUBSCRIPTION" }
   }
 
+  // ✅ If user has one-time purchase
   if (userPurchase) {
-    return { plan: userPurchase.tier, type: "PURCHASE" }
+    let mappedPlan: "PRO" | "ULTIMATE" = "PRO"
+
+    if (userPurchase.tier === "ONE_TIME_200") mappedPlan = "ULTIMATE"
+    if (userPurchase.tier === "ONE_TIME_100") mappedPlan = "PRO"
+
+    return { plan: mappedPlan, type: "PURCHASE" }
   }
 
-  return { plan: "FREE" }
+  // ✅ Default free
+  return { plan: "FREE", type: "FREE" }
 }

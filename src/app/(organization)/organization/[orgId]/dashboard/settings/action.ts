@@ -13,6 +13,7 @@ export const orgInfo = async (
   orgId: string
 ): Promise<ResponseData<OrgData>> => {
   return handleAction("orgInfo", async () => {
+    await getOrgAuth(orgId)
     return await getOrgData(orgId, false)
   })
 }

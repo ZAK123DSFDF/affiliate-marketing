@@ -29,6 +29,7 @@ import { TeamsColumns } from "@/components/pages/Dashboard/Teams/TeamsColumns"
 import { TableTop } from "@/components/ui-custom/TableTop"
 import PaginationControls from "@/components/ui-custom/PaginationControls"
 import { useQueryClient } from "@tanstack/react-query"
+import { PlanInfo } from "@/lib/types/planInfo"
 
 const inviteSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -39,9 +40,11 @@ const inviteSchema = z.object({
 export default function Teams({
   orgId,
   affiliate = false,
+  plan,
 }: {
   orgId: string
   affiliate: boolean
+  plan: PlanInfo
 }) {
   const [deleteDialog, setDeleteDialog] = useState<{
     open: boolean
@@ -56,6 +59,7 @@ export default function Teams({
     active: boolean
   }>({ open: false, id: null, active: false })
   const [openInvite, setOpenInvite] = useState(false)
+  const [upgradeDialog, setUpgradeDialog] = useState(false)
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
@@ -73,7 +77,7 @@ export default function Teams({
     [orgId, filters.offset, filters.email],
     { enabled: !!orgId }
   )
-
+  const teamCount = searchData?.length ?? 0
   // Invite mutation
   const inviteMutation = useAppMutation(inviteTeamMember, {
     onSuccess: (res) => {
@@ -152,7 +156,13 @@ export default function Teams({
       rowSelection,
     },
   })
-
+  const handleInviteClick = () => {
+    if (plan.plan === "PRO" && teamCount >= 3) {
+      setUpgradeDialog(true)
+    } else {
+      setOpenInvite(true)
+    }
+  }
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
@@ -163,7 +173,7 @@ export default function Teams({
             Manage your teams and invitations
           </p>
         </div>
-        <Button onClick={() => setOpenInvite(true)}>Invite Member</Button>
+        <Button onClick={handleInviteClick}>Invite Member</Button>
       </div>
 
       {/* Table */}
@@ -239,7 +249,37 @@ export default function Teams({
           </form>
         </Form>
       </AppDialog>
-
+      <AppDialog
+        open={upgradeDialog}
+        onOpenChange={setUpgradeDialog}
+        title={
+          plan.type === "PURCHASE"
+            ? "Purchase Ultimate Bundle"
+            : "Upgrade Required"
+        }
+        description={
+          plan.type === "PURCHASE"
+            ? "Your Pro bundle allows up to 3 team members. Purchase the Ultimate bundle to add more."
+            : "Your Pro plan allows up to 3 team members. Upgrade to Ultimate to add more."
+        }
+        confirmText={
+          plan.type === "PURCHASE" ? "Purchase Ultimate Bundle" : "Upgrade Now"
+        }
+        onConfirm={() => {
+          if (plan.type === "PURCHASE") {
+            console.log("Redirect to bundle purchase flow 🛒")
+          } else {
+            console.log("Redirect to subscription upgrade flow 🚀")
+          }
+        }}
+        affiliate={affiliate}
+      >
+        <p className="text-sm text-muted-foreground">
+          {plan.type === "PURCHASE"
+            ? "Unlock unlimited team members and advanced features by purchasing the Ultimate bundle."
+            : "Unlock unlimited team members and advanced features by upgrading your subscription."}
+        </p>
+      </AppDialog>
       {/* Delete Confirmation Dialog */}
       <AppDialog
         open={deleteDialog.open}

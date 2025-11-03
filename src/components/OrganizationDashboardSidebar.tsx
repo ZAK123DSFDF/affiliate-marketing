@@ -28,12 +28,13 @@ import { DropdownInput } from "@/components/ui-custom/DropDownInput"
 import { useSwitchOrg } from "@/hooks/useSwitchOrg"
 import { OrganizationData } from "@/lib/types/profileTypes"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
+import { PlanInfo } from "@/lib/types/planInfo"
 
 // Menu items for the sidebar
 
 type Props = {
   orgId?: string
-  plan: { plan: string }
+  plan: PlanInfo
   orgs: { id: string; name: string }[]
   UserData: OrganizationData | null
 }
@@ -76,12 +77,14 @@ const OrganizationDashboardSidebar = ({
       url: `/organization/${orgId}/dashboard/settings`,
       icon: Settings,
     },
-    {
+  ]
+  if (plan.plan === "PRO" || plan.plan === "ULTIMATE") {
+    items.push({
       title: "Teams",
       url: `/organization/${orgId}/dashboard/teams`,
       icon: Users,
-    },
-  ]
+    })
+  }
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectOpen, setSelectOpen] = useState(false)
   const [dialogMode, setDialogMode] = useState<"create" | "upgrade">("create")
@@ -96,9 +99,16 @@ const OrganizationDashboardSidebar = ({
     setDialogMode("create")
     setDialogOpen(true)
   }
+  const getUpgradeText = (plan: PlanInfo) => {
+    if (plan.plan === "FREE") return "Upgrade or Purchase"
+    if (plan.type === "PURCHASE" && plan.plan === "PRO")
+      return "Purchase Ultimate Bundle"
+    if (plan.type === "SUBSCRIPTION" && plan.plan === "PRO") return "Upgrade"
+    return ""
+  }
   const currentOrg = orgs?.find((o) => o.id === orgId)
   const canCreate =
-    plan?.plan === "ULTIMATE" || (orgs?.length < 1 && plan?.plan !== "ULTIMATE")
+    plan.plan === "ULTIMATE" || (plan.plan === "PRO" && orgs.length < 1)
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center justify-center py-4">
@@ -133,13 +143,21 @@ const OrganizationDashboardSidebar = ({
             title={dialogMode === "upgrade" ? "Upgrade Required" : undefined}
             description={
               dialogMode === "upgrade"
-                ? "Your subscription must be Ultimate to create a new company."
+                ? plan.type === "PURCHASE"
+                  ? "You need to purchase the Ultimate bundle to create a new company."
+                  : "You need to upgrade to Ultimate to create a new company."
                 : undefined
             }
-            confirmText={dialogMode === "upgrade" ? "Upgrade" : "OK"}
+            confirmText={dialogMode === "upgrade" ? getUpgradeText(plan) : "OK"}
             onConfirm={
               dialogMode === "upgrade"
-                ? () => console.log("Redirect to upgrade flow 🚀")
+                ? () => {
+                    if (plan.type === "PURCHASE") {
+                      console.log("Redirect to purchase flow 🛒")
+                    } else {
+                      console.log("Redirect to subscription upgrade flow 🚀")
+                    }
+                  }
                 : undefined
             }
             showFooter={dialogMode === "upgrade"}

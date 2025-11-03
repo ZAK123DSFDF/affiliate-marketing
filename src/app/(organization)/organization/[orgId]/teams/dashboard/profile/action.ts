@@ -10,6 +10,7 @@ import { revalidatePath } from "next/cache"
 import { handleAction } from "@/lib/handleAction"
 import { getTeamAuthCapabilities } from "@/lib/server/getTeamAuthCapabilities"
 import { getCurrentTeam } from "@/lib/server/getCurrentTeam"
+import { getTeamAuthAction } from "@/lib/server/getTeamAuthAction"
 
 export const getTeamData = async (
   orgId: string

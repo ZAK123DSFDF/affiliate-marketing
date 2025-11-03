@@ -10,6 +10,7 @@ import { revalidatePath } from "next/cache"
 import { getUserAuthCapabilities } from "@/lib/server/getUserAuthCapabilities"
 import { getCurrentUser } from "@/lib/server/getCurrentUser"
 import { handleAction } from "@/lib/handleAction"
+import { getOrgAuth } from "@/lib/server/GetOrgAuth"
 
 export const getUserData = async (): Promise<
   ResponseData<SafeUserWithCapabilities>

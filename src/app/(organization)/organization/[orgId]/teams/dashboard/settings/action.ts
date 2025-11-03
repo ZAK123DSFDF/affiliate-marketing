@@ -1,4 +1,3 @@
-// app/actions/auth/orgInfo.ts
 "use server"
 import { OrgData } from "@/lib/types/organization"
 import { MutationData, ResponseData } from "@/lib/types/response"

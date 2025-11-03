@@ -6,6 +6,8 @@ import { and, eq, ilike } from "drizzle-orm"
 import { sendEmail } from "@/lib/email"
 import { handleAction } from "@/lib/handleAction"
 import { MutationData, ResponseData } from "@/lib/types/response"
+import { getUserPlan } from "@/lib/server/getUserPlan"
+import { getOrgAuth } from "@/lib/server/GetOrgAuth"
 
 export const inviteTeamMember = async ({
   email,
@@ -19,6 +21,7 @@ export const inviteTeamMember = async ({
   orgId: string
 }) => {
   return handleAction("Invite Team Member", async () => {
+    await getOrgAuth(orgId)
     if (!email || !title || !description || !orgId) {
       throw {
         status: 400,
@@ -30,6 +33,27 @@ export const inviteTeamMember = async ({
           description: !description ? "Description is required" : "",
           orgId: !orgId ? "Organization is required" : "",
         },
+      }
+    }
+    // 🟢 Enforce plan-based restrictions
+    const plan = await getUserPlan()
+
+    // Fetch how many team members currently exist
+    const teamCount = await db.query.team.findMany({
+      where: eq(team.organizationId, orgId),
+    })
+
+    if (plan.plan === "FREE") {
+      throw {
+        status: 403,
+        toast: "Free plan users cannot invite team members.",
+      }
+    }
+
+    if (plan.plan === "PRO" && teamCount.length >= 3) {
+      throw {
+        status: 403,
+        toast: "Pro plan allows up to 3 team members. Upgrade for more.",
       }
     }
 
@@ -97,6 +121,7 @@ export async function getTeams(
   email?: string
 ): Promise<ResponseData<any[]>> {
   return handleAction("getTeams", async () => {
+    await getOrgAuth(orgId)
     const limit = 10
     const whereClauses = [eq(team.organizationId, orgId)]
 
@@ -129,6 +154,16 @@ export async function toggleTeamStatus({
   orgId: string
 }): Promise<MutationData> {
   return handleAction("toggleTeamStatus", async () => {
+    await getOrgAuth(orgId)
+    // 🟢 Enforce plan-based restrictions
+    const plan = await getUserPlan()
+
+    if (plan.plan === "FREE") {
+      throw {
+        status: 403,
+        toast: "Free plan users cannot toggle team status",
+      }
+    }
     await db
       .update(team)
       .set({ isActive: active })
@@ -147,6 +182,16 @@ export async function deleteTeamMember({
   orgId: string
 }): Promise<MutationData> {
   return handleAction("deleteTeamMember", async () => {
+    await getOrgAuth(orgId)
+    // 🟢 Enforce plan-based restrictions
+    const plan = await getUserPlan()
+
+    if (plan.plan === "FREE") {
+      throw {
+        status: 403,
+        toast: "Free plan users cannot delete teams.",
+      }
+    }
     await db
       .delete(team)
       .where(and(eq(team.id, id), eq(team.organizationId, orgId)))

@@ -7,16 +7,18 @@ import { eq, and } from "drizzle-orm"
 import { OrgAuthResult } from "@/lib/types/orgAuth"
 export async function getTeamAuthAction(orgId: string): Promise<OrgAuthResult> {
   const cookieStore = await cookies()
+  const cookieName = `teamToken-${orgId}`
   const token = cookieStore.get(`teamToken-${orgId}`)?.value
   if (!token) throw { status: 401, toast: "Unauthorized" }
 
   const { id: teamId } = jwt.decode(token) as { id: string }
 
-  // 🔹 Find team and its linked organization
+  // 🔹 Check if the team exists and is active
   const teamData = await db
     .select({
       id: team.id,
       orgId: team.organizationId,
+      isActive: team.isActive,
       name: team.name,
       email: team.email,
     })
@@ -24,7 +26,15 @@ export async function getTeamAuthAction(orgId: string): Promise<OrgAuthResult> {
     .where(and(eq(team.id, teamId), eq(team.organizationId, orgId)))
     .then((r) => r[0])
 
-  if (!teamData) throw { status: 404, toast: "Team not found or unauthorized" }
+  if (!teamData) {
+    cookieStore.delete(cookieName)
+    throw { status: 404, toast: "Team not found or unauthorized" }
+  }
+
+  if (!teamData.isActive) {
+    cookieStore.delete(cookieName)
+    throw { status: 403, toast: "Team deactivated by owner" }
+  }
 
   // 🔹 Fetch minimal org info for downstream context
   const org = await db
