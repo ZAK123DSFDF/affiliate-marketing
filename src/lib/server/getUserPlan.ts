@@ -4,11 +4,7 @@ import { db } from "@/db/drizzle"
 import { subscription, purchase } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { getOrgAuthForPlan } from "@/lib/server/getOrgAuthForPlan"
-
-export type UserPlanResult = {
-  plan: "FREE" | "PRO" | "ULTIMATE"
-  type: "SUBSCRIPTION" | "PURCHASE" | "FREE"
-}
+import { PlanInfo } from "@/lib/types/planInfo"
 
 function isSubscriptionValid(
   sub: typeof subscription.$inferSelect | null | undefined
@@ -19,7 +15,7 @@ function isSubscriptionValid(
   return sub.expiresAt.getTime() >= Date.now()
 }
 
-export async function getUserPlan(): Promise<UserPlanResult> {
+export async function getUserPlan(): Promise<PlanInfo> {
   const { userId } = await getOrgAuthForPlan()
 
   const [userSub, userPurchase] = await Promise.all([
