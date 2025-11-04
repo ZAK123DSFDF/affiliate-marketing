@@ -4,6 +4,7 @@ import React, { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import StripeIntegration from "@/components/pages/Dashboard/Integration/StripeIntegration"
 import PaddleIntegration from "@/components/pages/Dashboard/Integration/PaddleIntegration"
+import { useVerifyTeamSession } from "@/hooks/useVerifyTeamSession"
 
 const IntegrationClientPage = ({
   orgId,
@@ -13,7 +14,7 @@ const IntegrationClientPage = ({
   isTeam?: boolean
 }) => {
   const [activeTab, setActiveTab] = useState("stripe")
-
+  useVerifyTeamSession(orgId, isTeam)
   return (
     <div className="p-8 flex justify-start">
       {" "}

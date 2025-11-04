@@ -30,6 +30,7 @@ import {
 import { useAppQuery } from "@/hooks/useAppQuery"
 import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
 import { getTeamOrganizationKpiStats } from "@/app/(organization)/organization/[orgId]/teams/dashboard/action"
+import { useVerifyTeamSession } from "@/hooks/useVerifyTeamSession"
 
 interface CardsProps {
   orgId: string
@@ -60,6 +61,7 @@ const Cards = ({
   const { cardHeaderPrimaryTextColor } = useAtomValue(
     dashboardThemeCustomizationAtom
   )
+  useVerifyTeamSession(orgId, isTeam)
   const previewSimulation = useAtomValue(previewSimulationAtom)
   const dashboardCardStyle = useDashboardCard(affiliate)
   const kpiCard = useAtomValue(kpiCardCustomizationAtom)

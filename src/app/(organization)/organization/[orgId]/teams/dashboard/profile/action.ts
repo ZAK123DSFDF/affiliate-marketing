@@ -16,6 +16,7 @@ export const getTeamData = async (
   orgId: string
 ): Promise<ResponseData<SafeTeamWithCapabilities>> => {
   return handleAction("get Team Data", async () => {
+    await getTeamAuthAction(orgId)
     const { userId, canChangePassword, canChangeEmail } =
       await getTeamAuthCapabilities(orgId)
 
@@ -46,6 +47,7 @@ export async function updateTeamProfile(
   data: { name?: string }
 ): Promise<MutationData> {
   return handleAction("update Team Profile", async () => {
+    await getTeamAuthAction(orgId)
     const { id } = await getCurrentTeam(orgId)
     if (!id) throw { status: 401, toast: "Unauthorized" }
     if (!data.name) return { ok: true }
@@ -61,6 +63,7 @@ export async function validateCurrentTeamPassword(
   currentPassword: string
 ): Promise<MutationData> {
   return handleAction("validating current Team Password", async () => {
+    await getTeamAuthAction(orgId)
     const { id } = await getCurrentTeam(orgId)
     if (!id) throw { status: 401, toast: "Unauthorized" }
 
@@ -89,6 +92,7 @@ export async function updateTeamPassword(
   newPassword: string
 ): Promise<MutationData> {
   return handleAction("updating User Password", async () => {
+    await getTeamAuthAction(orgId)
     const { userId, canChangePassword } = await getTeamAuthCapabilities(orgId)
 
     if (!canChangePassword) {

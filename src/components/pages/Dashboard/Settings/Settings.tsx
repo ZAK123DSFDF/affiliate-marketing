@@ -50,6 +50,7 @@ import {
   verifyTeamARecord,
   verifyTeamCNAME,
 } from "@/app/(organization)/organization/[orgId]/teams/dashboard/settings/action"
+import { useVerifyTeamSession } from "@/hooks/useVerifyTeamSession"
 
 type OrgFormData = z.infer<typeof orgSettingsSchema>
 type Props = { orgData: OrgData }
@@ -58,6 +59,7 @@ export default function Settings({
   orgData,
   isTeam = false,
 }: Props & { isTeam?: boolean }) {
+  useVerifyTeamSession(orgData.id, isTeam)
   const { showCustomToast } = useCustomToast()
   const safeDefaults: OrgFormData = {
     id: orgData?.id ?? "",

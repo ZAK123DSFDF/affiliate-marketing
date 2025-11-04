@@ -49,6 +49,7 @@ import {
   updateTeamProfile,
   validateCurrentTeamPassword,
 } from "@/app/(organization)/organization/[orgId]/teams/dashboard/profile/action"
+import { useVerifyTeamSession } from "@/hooks/useVerifyTeamSession"
 
 export default function Profile({
   AffiliateData,
@@ -118,7 +119,7 @@ export default function Profile({
   }, [initialName, initialEmail, initialPaypalEmail])
 
   const currentValues = profileForm.watch()
-
+  useVerifyTeamSession(orgId, isTeam)
   const isFormUnchanged = useMemo(() => {
     return deepEqual(currentValues, safeDefaults)
   }, [currentValues, safeDefaults])

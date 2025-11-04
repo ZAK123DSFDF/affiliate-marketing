@@ -20,6 +20,7 @@ import { AppResponse, useAppMutation } from "@/hooks/useAppMutation"
 import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
 import { cn } from "@/lib/utils"
 import { saveTeamCustomizationsAction } from "@/app/(organization)/organization/[orgId]/teams/dashboard/customization/action"
+import { useVerifyTeamSession } from "@/hooks/useVerifyTeamSession"
 
 export default function CustomizationPage({
   orgId,
@@ -30,6 +31,7 @@ export default function CustomizationPage({
 }) {
   const [mainTab, setMainTab] = useState("sidebar")
   const { domain } = useActiveDomain(orgId)
+  useVerifyTeamSession(orgId, isTeam)
   const authHasChanges = useAtomValue(authHasChangesAtom)
   const dashboardHasChanges = useAtomValue(dashboardHasChangesAtom)
   const [showMissingPaypal, setShowMissingPaypal] = useAtom(

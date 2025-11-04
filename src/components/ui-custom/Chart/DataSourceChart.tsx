@@ -36,6 +36,7 @@ import {
 import { useAppQuery } from "@/hooks/useAppQuery"
 import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
 import { getTeamOrganizationReferrer } from "@/app/(organization)/organization/[orgId]/teams/dashboard/action"
+import { useVerifyTeamSession } from "@/hooks/useVerifyTeamSession"
 
 const chartConfig: ChartConfig = {
   visitors: { label: "Visitors" },
@@ -60,6 +61,7 @@ export default function SocialTrafficPieChart({
     separatorColor,
   } = useAtomValue(dashboardThemeCustomizationAtom)
   const dashboardCardStyle = useDashboardCard(affiliate)
+  useVerifyTeamSession(orgId, isTeam)
   const {
     pieFallbackColor,
     pieColor2,

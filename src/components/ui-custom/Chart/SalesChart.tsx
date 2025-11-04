@@ -40,6 +40,7 @@ import {
 import { useAppQuery } from "@/hooks/useAppQuery"
 import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
 import { getTeamOrganizationKpiTimeSeries } from "@/app/(organization)/organization/[orgId]/teams/dashboard/action"
+import { useVerifyTeamSession } from "@/hooks/useVerifyTeamSession"
 
 interface ChartDailyMetricsProps {
   orgId: string
@@ -55,6 +56,7 @@ export function ChartDailyMetrics({
   isTeam = false,
 }: ChartDailyMetricsProps) {
   const previewSimulation = useAtomValue(previewSimulationAtom)
+  useVerifyTeamSession(orgId, isTeam)
   const { filters, setFilters } = useQueryFilter({
     yearKey: "chartYear",
     monthKey: "chartMonth",

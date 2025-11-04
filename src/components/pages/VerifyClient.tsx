@@ -32,17 +32,24 @@ export default function VerifyClient({
     retry: false,
     refetchOnWindowFocus: false,
   })
+  const isTeam = data?.tokenRole === "team"
   const customMessages = affiliate
     ? {
         signup: "Your email has been verified. You can now start promoting.",
         login: "Email verified successfully. Go to your dashboard.",
         changeEmail: "Email updated successfully. Go to your dashboard.",
       }
-    : {
-        signup: "Email verified. You can now create your company.",
-        login: "Email verified. Go to your dashboard.",
-        changeEmail: "Email changed successfully. Go to your dashboard.",
-      }
+    : isTeam
+      ? {
+          signup: "Your email has been verified. Go to your team dashboard.",
+          login: "Email verified. Go to your team dashboard.",
+          changeEmail: "Email changed successfully. Go to your team dashboard.",
+        }
+      : {
+          signup: "Email verified. You can now create your company.",
+          login: "Email verified. Go to your dashboard.",
+          changeEmail: "Email changed successfully. Go to your dashboard.",
+        }
 
   // Redirect if VerifyServer gives redirectUrl
   useEffect(() => {

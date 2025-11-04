@@ -39,6 +39,7 @@ import {
   getTeamAffiliatePayoutsBulk,
   getTeamUnpaidMonths,
 } from "@/app/(organization)/organization/[orgId]/teams/dashboard/payout/action"
+import { useVerifyTeamSession } from "@/hooks/useVerifyTeamSession"
 
 interface AffiliatesTablePayoutProps {
   orgId: string
@@ -50,6 +51,7 @@ export default function PayoutTable({
   affiliate = false,
   isTeam = false,
 }: AffiliatesTablePayoutProps) {
+  useVerifyTeamSession(orgId, isTeam)
   const [, setMonthYear] = useState<{
     month?: number
     year?: number

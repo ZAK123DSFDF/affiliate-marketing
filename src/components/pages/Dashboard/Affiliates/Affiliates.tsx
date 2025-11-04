@@ -19,6 +19,7 @@ import PaginationControls from "@/components/ui-custom/PaginationControls"
 import { useAppQuery } from "@/hooks/useAppQuery"
 import { TableView } from "@/components/ui-custom/TableView"
 import { getTeamAffiliatesWithStats } from "@/app/(organization)/organization/[orgId]/teams/dashboard/affiliates/action"
+import { useVerifyTeamSession } from "@/hooks/useVerifyTeamSession"
 
 interface AffiliatesTableProps {
   orgId: string
@@ -40,6 +41,7 @@ export default function AffiliatesTable({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+  useVerifyTeamSession(orgId, isTeam)
   const columns = AffiliatesColumns()
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})

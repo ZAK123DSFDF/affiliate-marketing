@@ -27,12 +27,10 @@ export async function getTeamAuthAction(orgId: string): Promise<OrgAuthResult> {
     .then((r) => r[0])
 
   if (!teamData) {
-    cookieStore.delete(cookieName)
     throw { status: 404, toast: "Team not found or unauthorized" }
   }
 
   if (!teamData.isActive) {
-    cookieStore.delete(cookieName)
     throw { status: 403, toast: "Team deactivated by owner" }
   }
 
