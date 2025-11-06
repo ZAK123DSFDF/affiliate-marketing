@@ -28,6 +28,7 @@ export function useAppQuery<Args extends unknown[], TData>(
     },
     enabled: options?.enabled ?? true,
     refetchOnWindowFocus: false,
+    staleTime: 2 * 60 * 1000,
   })
 
   return {
