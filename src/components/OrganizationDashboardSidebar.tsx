@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import {
   BarChart3,
   Link as LinkIcon,
@@ -109,6 +109,7 @@ const OrganizationDashboardSidebar = ({
   const currentOrg = orgs?.find((o) => o.id === orgId)
   const canCreate =
     plan.plan === "ULTIMATE" || (plan.plan === "PRO" && orgs.length < 1)
+  const router = useRouter()
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center justify-center py-4">
@@ -152,11 +153,10 @@ const OrganizationDashboardSidebar = ({
             onConfirm={
               dialogMode === "upgrade"
                 ? () => {
-                    if (plan.type === "PURCHASE") {
-                      console.log("Redirect to purchase flow 🛒")
-                    } else {
-                      console.log("Redirect to subscription upgrade flow 🚀")
-                    }
+                    setDialogOpen(false)
+                    setTimeout(() => {
+                      router.push(`/organization/${orgId}/dashboard/pricing`)
+                    }, 150)
                   }
                 : undefined
             }
@@ -192,6 +192,23 @@ const OrganizationDashboardSidebar = ({
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      {plan.plan !== "ULTIMATE" && (
+        <div className="px-4 mb-4">
+          <Link
+            href={`/organization/${orgId}/dashboard/pricing`}
+            scroll={false}
+            className="block w-full"
+          >
+            <button className="w-full bg-primary text-white font-medium py-2 rounded-md hover:bg-primary/90 transition-colors">
+              {plan.plan === "FREE"
+                ? "Upgrade or Purchase"
+                : plan.type === "PURCHASE"
+                  ? "Purchase Ultimate Bundle"
+                  : "Upgrade to Ultimate"}
+            </button>
+          </Link>
+        </div>
+      )}
       <SidebarFooter className="p-4">
         <Link href={`/organization/${orgId}/dashboard/profile`}>
           <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
