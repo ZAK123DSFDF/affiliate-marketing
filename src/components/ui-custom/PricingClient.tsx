@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
 import type { PlanInfo } from "@/lib/types/planInfo"
 
 type BillingType = "SUBSCRIPTION" | "PURCHASE"
-
+type SubscriptionCycle = "MONTHLY" | "YEARLY"
 type PricingClientProps = {
   dashboard?: boolean
   plan?: PlanInfo | null
@@ -44,8 +44,6 @@ const featuresList: Feature[] = [
     pro: true,
     ultimate: true,
   },
-
-  // ✅ Differentiators moved to bottom
   { name: "1 organization", pro: true, ultimate: false },
   { name: "Unlimited organizations", pro: false, ultimate: true },
   { name: "Up to 3 team member invitations", pro: true, ultimate: false },
@@ -57,6 +55,8 @@ export default function PricingClient({
   plan,
 }: PricingClientProps) {
   const [activeTab, setActiveTab] = useState<BillingType>("PURCHASE")
+  const [subscriptionCycle, setSubscriptionCycle] =
+    useState<SubscriptionCycle>("MONTHLY")
 
   const isCurrentPlan = (targetPlan: PlanInfo["plan"]) =>
     plan?.plan === targetPlan
@@ -81,36 +81,100 @@ export default function PricingClient({
     <main className="min-h-screen flex flex-col items-center px-6 py-12">
       <h1 className="text-4xl font-bold mb-8 text-center">Choose Your Plan</h1>
 
+      {/* 🌟 Top-level Tabs (One-Time / Subscription) */}
       <Tabs
         value={activeTab}
         onValueChange={(v) => setActiveTab(v as BillingType)}
-        className="w-full flex flex-col items-center"
+        className="w-full flex flex-col items-center "
       >
-        <TabsList className="flex justify-center gap-x-3 px-4 mb-8 py-6 bg-gray-200 rounded-xl">
+        <TabsList className="flex justify-center gap-4 px-4 mb-8 py-10 bg-gray-100 rounded-xl">
           <TabsTrigger
             value="PURCHASE"
-            className="px-4 py-2 text-sm flex items-center gap-2"
+            className={cn(
+              "min-w-[140px] px-6 py-3 text-base font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2",
+              activeTab === "PURCHASE"
+                ? "bg-primary text-white shadow-md scale-[1.02]"
+                : "text-gray-700 hover:bg-gray-200/60 hover:scale-[1.03]"
+            )}
           >
             One-Time{" "}
             <span className="text-xs bg-yellow-400 text-black px-2 py-0.5 rounded-md">
               Special Offer
             </span>
           </TabsTrigger>
-          <TabsTrigger value="SUBSCRIPTION" className="px-4 py-2 text-sm">
+
+          <TabsTrigger
+            value="SUBSCRIPTION"
+            className={cn(
+              "min-w-[140px] px-6 py-3 text-base font-medium rounded-lg transition-all duration-200",
+              activeTab === "SUBSCRIPTION"
+                ? "bg-primary text-white shadow-md scale-[1.02]"
+                : "text-gray-700 hover:bg-gray-200/60 hover:scale-[1.03]"
+            )}
+          >
             Subscription
           </TabsTrigger>
         </TabsList>
 
+        {/* 🧾 Subscription content */}
         <TabsContent value="SUBSCRIPTION" className="w-full">
+          {/* Monthly / Yearly Switch */}
+          <div className="flex justify-center mb-6">
+            <Tabs
+              value={subscriptionCycle}
+              onValueChange={(v) =>
+                setSubscriptionCycle(v as SubscriptionCycle)
+              }
+              className="bg-gray-100 rounded-xl px-4 py-3"
+            >
+              <TabsList className="flex gap-4">
+                <TabsTrigger
+                  value="MONTHLY"
+                  className={cn(
+                    "min-w-[130px] px-6 py-3 rounded-lg text-base font-medium transition-all duration-200",
+                    subscriptionCycle === "MONTHLY"
+                      ? "bg-primary text-white shadow-md scale-[1.02]"
+                      : "text-gray-700 hover:text-black hover:bg-gray-200/50"
+                  )}
+                >
+                  Monthly
+                </TabsTrigger>
+
+                <TabsTrigger
+                  value="YEARLY"
+                  className={cn(
+                    "flex items-center justify-center gap-2 min-w-[130px] px-6 py-3 rounded-lg text-base font-medium transition-all duration-200",
+                    subscriptionCycle === "YEARLY"
+                      ? "bg-primary text-white shadow-md scale-[1.02]"
+                      : "text-gray-700 hover:text-black hover:bg-gray-200/50"
+                  )}
+                >
+                  Yearly
+                  {subscriptionCycle === "YEARLY" ? (
+                    <span className="text-xs bg-green-400 text-black font-semibold px-2 py-0.5 rounded-md">
+                      Save 16%
+                    </span>
+                  ) : (
+                    <span className="text-xs text-green-600 font-semibold">
+                      Save 16%
+                    </span>
+                  )}
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
           <PricingGrid
             billingType="SUBSCRIPTION"
             dashboard={dashboard}
             plan={plan}
+            subscriptionCycle={subscriptionCycle}
             featuresList={featuresList}
             getButtonText={getButtonText}
           />
         </TabsContent>
 
+        {/* 💰 One-Time content */}
         <TabsContent value="PURCHASE" className="w-full">
           <PricingGrid
             billingType="PURCHASE"
@@ -125,25 +189,39 @@ export default function PricingClient({
   )
 }
 
+/* -------------------------------------------------------------------------- */
+/*                             Pricing Grid + Card                            */
+/* -------------------------------------------------------------------------- */
+
 function PricingGrid({
   billingType,
   dashboard,
   plan,
+  subscriptionCycle,
   featuresList,
   getButtonText,
 }: {
   billingType: BillingType
   dashboard: boolean
   plan?: PlanInfo | null
+  subscriptionCycle?: SubscriptionCycle
   featuresList: Feature[]
   getButtonText: (p: PlanInfo["plan"]) => string
 }) {
   const getPrice = (tier: PlanInfo["plan"]) => {
     if (tier === "FREE") return "$0"
-    if (tier === "PRO")
-      return billingType === "SUBSCRIPTION" ? "$25 / month" : "$85 one-time"
-    if (tier === "ULTIMATE")
-      return billingType === "SUBSCRIPTION" ? "$40 / month" : "$125 one-time"
+
+    if (billingType === "SUBSCRIPTION") {
+      const monthlyPrice = tier === "PRO" ? 25 : 40
+      if (subscriptionCycle === "MONTHLY") return `$${monthlyPrice} / month`
+      if (subscriptionCycle === "YEARLY") {
+        const yearlyPrice = Math.round(monthlyPrice * 12 * 0.84)
+        return `$${yearlyPrice} / year`
+      }
+    } else {
+      if (tier === "PRO") return "$85 one-time"
+      if (tier === "ULTIMATE") return "$125 one-time"
+    }
     return "-"
   }
 
@@ -151,8 +229,15 @@ function PricingGrid({
     if (tier === "FREE") return null
 
     if (billingType === "SUBSCRIPTION") {
-      if (tier === "PRO") return "$35 / month"
-      if (tier === "ULTIMATE") return "$55 / month"
+      const monthlyPrice = tier === "PRO" ? 35 : 55
+
+      if (subscriptionCycle === "MONTHLY") return `$${monthlyPrice} / month`
+
+      if (subscriptionCycle === "YEARLY") {
+        // ✅ Apply 16% discount to old price comparison too
+        const yearlyPrice = Math.round(monthlyPrice * 12 * 0.84)
+        return `$${yearlyPrice} / year`
+      }
     } else {
       if (tier === "PRO") return "$100 one-time"
       if (tier === "ULTIMATE") return "$150 one-time"
@@ -175,13 +260,11 @@ function PricingGrid({
         <PricingCard
           title="Free"
           price={getPrice("FREE")}
-          oldPrice={getOldPrice("FREE")}
           features={[
             "Basic features",
             "1 organization",
             "No team member invitations",
           ]}
-          current={plan?.plan === "FREE"}
           buttonText="Start Free"
           disabled={plan?.plan === "FREE"}
         />
@@ -193,7 +276,6 @@ function PricingGrid({
         oldPrice={getOldPrice("PRO")}
         discount={getDiscountPercent(getOldPrice("PRO"), getPrice("PRO"))}
         features={featuresList.filter((f) => f.pro).map((f) => f.name)}
-        current={plan?.plan === "PRO"}
         buttonText={getButtonText("PRO")}
         disabled={plan?.plan === "PRO" || plan?.plan === "ULTIMATE"}
       />
@@ -207,7 +289,6 @@ function PricingGrid({
           getPrice("ULTIMATE")
         )}
         features={featuresList.filter((f) => f.ultimate).map((f) => f.name)}
-        current={plan?.plan === "ULTIMATE"}
         buttonText={getButtonText("ULTIMATE")}
         disabled={plan?.plan === "ULTIMATE"}
         highlight
@@ -222,7 +303,6 @@ function PricingCard({
   oldPrice,
   discount,
   features,
-  current,
   buttonText,
   disabled,
   highlight,
@@ -232,7 +312,6 @@ function PricingCard({
   oldPrice?: string | null
   discount?: number | null
   features: string[]
-  current?: boolean
   buttonText: string
   disabled?: boolean
   highlight?: boolean
@@ -240,9 +319,9 @@ function PricingCard({
   return (
     <Card
       className={cn(
-        "w-[300px] rounded-2xl transition-all duration-200",
+        "w-[300px] rounded-2xl transition-all duration-200 hover:scale-[1.02]",
         highlight
-          ? "bg-zinc-900 text-white border border-primary scale-105 shadow-xl"
+          ? "bg-zinc-900 text-white border border-primary shadow-xl"
           : "bg-background"
       )}
     >
@@ -253,7 +332,6 @@ function PricingCard({
           {title}
         </CardTitle>
 
-        {/* 💸 Price Section */}
         <div className="flex flex-col items-center justify-center relative">
           {oldPrice && (
             <span
@@ -277,7 +355,6 @@ function PricingCard({
           {discount && (
             <span
               className={cn(
-                // ✅ moved closer to the center
                 "absolute top-0 right-[-2] bg-green-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full shadow-md",
                 highlight && "bg-green-400 text-black"
               )}
@@ -293,28 +370,32 @@ function PricingCard({
       <CardContent>
         <ul className="text-sm space-y-2 text-left mx-auto max-w-xs">
           {features.map((f) => {
-            const isDiffFeature =
-              f.includes("organization") ||
-              f.includes("team member invitations")
+            // Define which features should show ❌ for Pro plan
+            const featuresToShowCrossForPro = [
+              "1 organization",
+              "Up to 3 team member invitations",
+            ]
+
+            // Check if this feature should show ❌ for Pro plan
+            const shouldShowCross =
+              title === "Pro" &&
+              featuresToShowCrossForPro.some((crossFeature) =>
+                f.includes(crossFeature)
+              )
 
             return (
               <li
                 key={f}
                 className={cn(
                   "flex items-center gap-2",
-                  highlight ? "text-gray-100" : "text-muted-foreground",
-                  isDiffFeature && "font-semibold mt-3 pt-2"
+                  highlight
+                    ? "text-gray-100"
+                    : shouldShowCross
+                      ? "text-red-500"
+                      : "text-muted-foreground"
                 )}
               >
-                {isDiffFeature ? (
-                  highlight ? (
-                    <span className="text-green-400">✔️</span>
-                  ) : (
-                    <span className="text-red-500">❌</span>
-                  )
-                ) : (
-                  <span>✔️</span>
-                )}
+                <span>{shouldShowCross ? "❌" : "✔️"}</span>
                 <span>{f}</span>
               </li>
             )
