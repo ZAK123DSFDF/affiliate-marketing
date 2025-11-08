@@ -19,6 +19,8 @@ type SubscriptionCycle = "MONTHLY" | "YEARLY"
 type PricingClientProps = {
   dashboard?: boolean
   plan?: PlanInfo | null
+  showSubscription?: boolean
+  showPurchase?: boolean
 }
 
 type Feature = {
@@ -53,6 +55,8 @@ const featuresList: Feature[] = [
 export default function PricingClient({
   dashboard = false,
   plan,
+  showSubscription = true,
+  showPurchase = true,
 }: PricingClientProps) {
   const [activeTab, setActiveTab] = useState<BillingType>("PURCHASE")
   const [subscriptionCycle, setSubscriptionCycle] =
@@ -77,115 +81,163 @@ export default function PricingClient({
     return "Select Plan"
   }
 
+  const showBothTabs = showSubscription && showPurchase
+
   return (
     <main className="min-h-screen flex flex-col items-center px-6 py-12">
       <h1 className="text-4xl font-bold mb-8 text-center">Choose Your Plan</h1>
 
-      {/* 🌟 Top-level Tabs (One-Time / Subscription) */}
-      <Tabs
-        value={activeTab}
-        onValueChange={(v) => setActiveTab(v as BillingType)}
-        className="w-full flex flex-col items-center "
-      >
-        <TabsList className="flex justify-center gap-4 px-4 mb-8 py-10 bg-gray-100 rounded-xl">
-          <TabsTrigger
-            value="PURCHASE"
-            className={cn(
-              "min-w-[140px] px-6 py-3 text-base font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2",
-              activeTab === "PURCHASE"
-                ? "bg-primary text-white shadow-md scale-[1.02]"
-                : "text-gray-700 hover:bg-gray-200/60 hover:scale-[1.03]"
-            )}
-          >
-            One-Time{" "}
-            <span className="text-xs bg-yellow-400 text-black px-2 py-0.5 rounded-md">
-              Special Offer
-            </span>
-          </TabsTrigger>
-
-          <TabsTrigger
-            value="SUBSCRIPTION"
-            className={cn(
-              "min-w-[140px] px-6 py-3 text-base font-medium rounded-lg transition-all duration-200",
-              activeTab === "SUBSCRIPTION"
-                ? "bg-primary text-white shadow-md scale-[1.02]"
-                : "text-gray-700 hover:bg-gray-200/60 hover:scale-[1.03]"
-            )}
-          >
-            Subscription
-          </TabsTrigger>
-        </TabsList>
-
-        {/* 🧾 Subscription content */}
-        <TabsContent value="SUBSCRIPTION" className="w-full">
-          {/* Monthly / Yearly Switch */}
-          <div className="flex justify-center mb-6">
-            <Tabs
-              value={subscriptionCycle}
-              onValueChange={(v) =>
-                setSubscriptionCycle(v as SubscriptionCycle)
-              }
-              className="bg-gray-100 rounded-xl px-4 py-3"
+      {showBothTabs ? (
+        // 🌟 Show Top Tabs (One-Time / Subscription)
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => setActiveTab(v as BillingType)}
+          className="w-full flex flex-col items-center"
+        >
+          <TabsList className="flex justify-center gap-4 px-4 mb-8 py-10 bg-gray-100 rounded-xl">
+            <TabsTrigger
+              value="PURCHASE"
+              className={cn(
+                "min-w-[140px] px-6 py-3 text-base font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2",
+                activeTab === "PURCHASE"
+                  ? "bg-primary text-white shadow-md scale-[1.02]"
+                  : "text-gray-700 hover:bg-gray-200/60 hover:scale-[1.03]"
+              )}
             >
-              <TabsList className="flex gap-4">
-                <TabsTrigger
-                  value="MONTHLY"
-                  className={cn(
-                    "min-w-[130px] px-6 py-3 rounded-lg text-base font-medium transition-all duration-200",
-                    subscriptionCycle === "MONTHLY"
-                      ? "bg-primary text-white shadow-md scale-[1.02]"
-                      : "text-gray-700 hover:text-black hover:bg-gray-200/50"
-                  )}
-                >
-                  Monthly
-                </TabsTrigger>
+              One-Time{" "}
+              <span className="text-xs bg-yellow-400 text-black px-2 py-0.5 rounded-md">
+                Special Offer
+              </span>
+            </TabsTrigger>
 
-                <TabsTrigger
-                  value="YEARLY"
-                  className={cn(
-                    "flex items-center justify-center gap-2 min-w-[130px] px-6 py-3 rounded-lg text-base font-medium transition-all duration-200",
-                    subscriptionCycle === "YEARLY"
-                      ? "bg-primary text-white shadow-md scale-[1.02]"
-                      : "text-gray-700 hover:text-black hover:bg-gray-200/50"
-                  )}
-                >
-                  Yearly
-                  {subscriptionCycle === "YEARLY" ? (
-                    <span className="text-xs bg-green-400 text-black font-semibold px-2 py-0.5 rounded-md">
-                      Save 16%
-                    </span>
-                  ) : (
-                    <span className="text-xs text-green-600 font-semibold">
-                      Save 16%
-                    </span>
-                  )}
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
+            <TabsTrigger
+              value="SUBSCRIPTION"
+              className={cn(
+                "min-w-[140px] px-6 py-3 text-base font-medium rounded-lg transition-all duration-200",
+                activeTab === "SUBSCRIPTION"
+                  ? "bg-primary text-white shadow-md scale-[1.02]"
+                  : "text-gray-700 hover:bg-gray-200/60 hover:scale-[1.03]"
+              )}
+            >
+              Subscription
+            </TabsTrigger>
+          </TabsList>
 
-          <PricingGrid
-            billingType="SUBSCRIPTION"
-            dashboard={dashboard}
-            plan={plan}
-            subscriptionCycle={subscriptionCycle}
-            featuresList={featuresList}
-            getButtonText={getButtonText}
-          />
-        </TabsContent>
+          <TabsContent value="PURCHASE" className="w-full">
+            <PricingGrid
+              billingType="PURCHASE"
+              dashboard={dashboard}
+              plan={plan}
+              featuresList={featuresList}
+              getButtonText={getButtonText}
+            />
+          </TabsContent>
 
-        {/* 💰 One-Time content */}
-        <TabsContent value="PURCHASE" className="w-full">
-          <PricingGrid
-            billingType="PURCHASE"
-            dashboard={dashboard}
-            plan={plan}
-            featuresList={featuresList}
-            getButtonText={getButtonText}
-          />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="SUBSCRIPTION" className="w-full">
+            <SubscriptionSection
+              dashboard={dashboard}
+              plan={plan}
+              featuresList={featuresList}
+              getButtonText={getButtonText}
+              subscriptionCycle={subscriptionCycle}
+              setSubscriptionCycle={setSubscriptionCycle}
+            />
+          </TabsContent>
+        </Tabs>
+      ) : showSubscription ? (
+        // 💳 Only Subscription (no tabs)
+        <SubscriptionSection
+          dashboard={dashboard}
+          plan={plan}
+          featuresList={featuresList}
+          getButtonText={getButtonText}
+          subscriptionCycle={subscriptionCycle}
+          setSubscriptionCycle={setSubscriptionCycle}
+        />
+      ) : (
+        // 💰 Only One-Time (no tabs)
+        <PricingGrid
+          billingType="PURCHASE"
+          dashboard={dashboard}
+          plan={plan}
+          featuresList={featuresList}
+          getButtonText={getButtonText}
+        />
+      )}
     </main>
+  )
+}
+
+function SubscriptionSection({
+  dashboard,
+  plan,
+  featuresList,
+  getButtonText,
+  subscriptionCycle,
+  setSubscriptionCycle,
+}: {
+  dashboard: boolean
+  plan?: PlanInfo | null
+  featuresList: Feature[]
+  getButtonText: (p: PlanInfo["plan"]) => string
+  subscriptionCycle: SubscriptionCycle
+  setSubscriptionCycle: (v: SubscriptionCycle) => void
+}) {
+  return (
+    <>
+      {/* Monthly / Yearly Switch (always visible) */}
+      <div className="flex justify-center mb-6">
+        <Tabs
+          value={subscriptionCycle}
+          onValueChange={(v) => setSubscriptionCycle(v as SubscriptionCycle)}
+          className="bg-gray-100 rounded-xl px-4 py-3"
+        >
+          <TabsList className="flex gap-4">
+            <TabsTrigger
+              value="MONTHLY"
+              className={cn(
+                "min-w-[130px] px-6 py-3 rounded-lg text-base font-medium transition-all duration-200",
+                subscriptionCycle === "MONTHLY"
+                  ? "bg-primary text-white shadow-md scale-[1.02]"
+                  : "text-gray-700 hover:text-black hover:bg-gray-200/50"
+              )}
+            >
+              Monthly
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="YEARLY"
+              className={cn(
+                "flex items-center justify-center gap-2 min-w-[130px] px-6 py-3 rounded-lg text-base font-medium transition-all duration-200",
+                subscriptionCycle === "YEARLY"
+                  ? "bg-primary text-white shadow-md scale-[1.02]"
+                  : "text-gray-700 hover:text-black hover:bg-gray-200/50"
+              )}
+            >
+              Yearly
+              {subscriptionCycle === "YEARLY" ? (
+                <span className="text-xs bg-green-400 text-black font-semibold px-2 py-0.5 rounded-md">
+                  Save 16%
+                </span>
+              ) : (
+                <span className="text-xs text-green-600 font-semibold">
+                  Save 16%
+                </span>
+              )}
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
+      <PricingGrid
+        billingType="SUBSCRIPTION"
+        dashboard={dashboard}
+        plan={plan}
+        subscriptionCycle={subscriptionCycle}
+        featuresList={featuresList}
+        getButtonText={getButtonText}
+      />
+    </>
   )
 }
 
