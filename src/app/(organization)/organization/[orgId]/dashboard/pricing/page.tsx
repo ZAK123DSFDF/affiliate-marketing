@@ -1,5 +1,5 @@
 import { getUserPlan } from "@/lib/server/getUserPlan"
-import PricingClient from "@/components/ui-custom/PricingClient"
+import PricingClient from "@/components/ui-custom/Pricing/PricingClient"
 
 export default async function PricingPage() {
   const plan = await getUserPlan()

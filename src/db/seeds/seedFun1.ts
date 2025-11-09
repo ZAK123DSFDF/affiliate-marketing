@@ -11,6 +11,7 @@ import {
   account,
   affiliateAccount,
   websiteDomain,
+  subscription,
 } from "@/db/schema"
 import {
   account_seed,
@@ -22,6 +23,7 @@ import {
   organization_auth_customization_seed,
   organization_dashboard_customization_seed,
   organization_seed,
+  subscription_seed,
   user_seed,
   websiteDomain_seed,
 } from "@/db/seeds/databaseSeed"
@@ -36,6 +38,7 @@ async function seedFun() {
   await db.insert(affiliateLink).values(affiliate_link_seed)
   await db.insert(affiliateClick).values(affiliate_click_seed)
   await db.insert(affiliateInvoice).values(affiliate_invoice_seed)
+  await db.insert(subscription).values(subscription_seed)
   await db
     .insert(organizationAuthCustomization)
     .values(organization_auth_customization_seed)

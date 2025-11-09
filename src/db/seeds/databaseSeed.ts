@@ -211,7 +211,7 @@ export const organization_auth_customization_seed = [
       useThemeCustomization: {
         headerColor: "",
         linkTextColor: "",
-        backgroundColor: "#7dc04b",
+        backgroundColor: "",
         tertiaryTextColor: "",
         primaryCustomization: "",
         emailVerifiedIconColor: "",
@@ -321,7 +321,7 @@ export const organization_dashboard_customization_seed = [
         kpiEmptyTextColor: "",
       },
       useSidebarCustomization: {
-        sideBarBackgroundColor: "#256490",
+        sideBarBackgroundColor: "",
         sideBarProfileBackgroundColor: "",
         sideBarProfileTextPrimaryColor: "",
         sideBarHoverNavigationTextColor: "",
@@ -369,10 +369,10 @@ export const organization_dashboard_customization_seed = [
       useDashboardThemeCustomization: {
         separatorColor: "",
         dialogHeaderColor: "",
-        mainBackgroundColor: "#a9f584",
+        mainBackgroundColor: "",
         dashboardHeaderDescColor: "",
         dashboardHeaderNameColor: "",
-        cardHeaderPrimaryTextColor: "#98caa8",
+        cardHeaderPrimaryTextColor: "",
         cardHeaderSecondaryTextColor: "",
         cardHeaderDescriptionTextColor: "",
         missingPaypalHeaderColor: "",
@@ -402,6 +402,19 @@ export const user_seed = [
     email: "zak@gmail.com",
     role: "OWNER" as const,
     type: "ORGANIZATION" as const,
+    createdAt: parseDate("2025-07-16 11:43:21.288497"),
+    updatedAt: parseDate("2025-07-16 11:43:21.288497"),
+  },
+]
+export const subscription_seed = [
+  {
+    id: "9d1b52c3-11a8-48b9-812a-142d5bb9c9cf",
+    userId: "29022934-eb52-49af-aca4-b6ed553c89dd",
+    plan: "FREE" as const,
+    billingInterval: "MONTHLY" as const,
+    currency: "USD",
+    price: "0.00",
+    expiresAt: parseDate("2099-12-31 23:59:59"),
     createdAt: parseDate("2025-07-16 11:43:21.288497"),
     updatedAt: parseDate("2025-07-16 11:43:21.288497"),
   },

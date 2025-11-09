@@ -40,7 +40,7 @@ export const payoutProviderEnum = pgEnum("payout_provider", [
   "wise",
   "payoneer",
 ])
-export const planEnum = pgEnum("plan", ["PRO", "ULTIMATE"])
+export const planEnum = pgEnum("plan", ["FREE", "PRO", "ULTIMATE"])
 
 export const billingIntervalEnum = pgEnum("billing_interval", [
   "MONTHLY",
@@ -127,11 +127,10 @@ export const subscription = pgTable("subscription", {
   userId: uuid("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  plan: planEnum("plan").notNull().default("PRO"),
+  plan: planEnum("plan").notNull().default("FREE"),
   billingInterval: billingIntervalEnum("billing_interval"),
   currency: text("currency").default("USD"),
   price: numeric("price", { precision: 10, scale: 2 }),
-  isActive: boolean("is_active").notNull().default(true),
   expiresAt: timestamp("expires_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),

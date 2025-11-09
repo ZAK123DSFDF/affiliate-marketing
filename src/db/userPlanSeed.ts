@@ -9,43 +9,43 @@ export async function devSetUserPlan({
   type,
 }: {
   userId: string
-  plan: "PRO" | "ULTIMATE" | "ONE_TIME_100" | "ONE_TIME_200"
-  type: "SUBSCRIPTION" | "PURCHASE"
+  plan: "FREE" | "PRO" | "ULTIMATE" | "ONE_TIME_100" | "ONE_TIME_200"
+  type: "FREE" | "SUBSCRIPTION" | "PURCHASE"
 }) {
   try {
-    if (type === "SUBSCRIPTION") {
-      await db.delete(purchase).where(eq(purchase.userId, userId))
-      await db.delete(subscription).where(eq(subscription.userId, userId))
+    // 🧹 Clean previous state first (always)
+    await db.delete(subscription).where(eq(subscription.userId, userId))
+    await db.delete(purchase).where(eq(purchase.userId, userId))
 
+    if (type === "SUBSCRIPTION") {
       await db.insert(subscription).values({
         userId,
-        plan: plan as "PRO" | "ULTIMATE",
+        plan: plan === "ULTIMATE" ? "ULTIMATE" : "PRO", // just to be safe
         billingInterval: "MONTHLY",
         currency: "USD",
-        price: "1000",
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        price: plan === "ULTIMATE" ? "2000" : "1000",
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
       })
-    }
-
-    if (type === "PURCHASE") {
-      await db.delete(subscription).where(eq(subscription.userId, userId))
-      await db.delete(purchase).where(eq(purchase.userId, userId))
-
+    } else if (type === "PURCHASE") {
       await db.insert(purchase).values({
         userId,
         tier: plan as "ONE_TIME_100" | "ONE_TIME_200",
         price: plan === "ONE_TIME_100" ? "100" : "200",
         currency: "USD",
       })
+    } else {
+      // If it's a free plan, we just leave the user with no paid records
+      console.info(`🆓 User ${userId} set to FREE plan.`)
+      return true
     }
 
-    console.log(
-      `✅ Successfully seeded ${type} plan "${plan}" for user ${userId}`
+    console.info(
+      `✅ Successfully set ${type} plan "${plan}" for user ${userId}`
     )
     return true
   } catch (error) {
     console.error(
-      `❌ Failed to seed ${type} plan "${plan}" for user ${userId}`,
+      `❌ Failed to set ${type} plan "${plan}" for user ${userId}`,
       error
     )
     return false
@@ -59,9 +59,7 @@ const DEV_USER_ID = "29022934-eb52-49af-aca4-b6ed553c89dd"
 const [, , plan, type, userIdArg] = process.argv
 
 if (!plan || !type) {
-  console.error(
-    "Usage: bun run scripts/devSetUserPlan.ts <plan> <type> [userId]"
-  )
+  console.error("Usage: bun run src/db/userPlanSeed.ts <plan> <type> [userId]")
   process.exit(1)
 }
 
@@ -73,6 +71,4 @@ const success = await devSetUserPlan({
   type: type as any,
 })
 
-if (!success) {
-  process.exit(1)
-}
+if (!success) process.exit(1)

@@ -1,16 +1,11 @@
-// server/getUserPlan.ts
-import "server-only"
 import { db } from "@/db/drizzle"
 import { subscription, purchase } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { getOrgAuthForPlan } from "@/lib/server/getOrgAuthForPlan"
-import { PlanInfo } from "@/lib/types/planInfo"
+import type { PlanInfo } from "@/lib/types/planInfo"
 
-function isSubscriptionValid(
-  sub: typeof subscription.$inferSelect | null | undefined
-) {
+function isSubscriptionValid(sub: typeof subscription.$inferSelect | null) {
   if (!sub) return false
-  if (!sub.isActive) return false
   if (!sub.expiresAt) return false
   return sub.expiresAt.getTime() >= Date.now()
 }
@@ -19,29 +14,33 @@ export async function getUserPlan(): Promise<PlanInfo> {
   const { userId } = await getOrgAuthForPlan()
 
   const [userSub, userPurchase] = await Promise.all([
-    db.query.subscription.findFirst({
-      where: eq(subscription.userId, userId),
-    }),
-    db.query.purchase.findFirst({
-      where: eq(purchase.userId, userId),
-    }),
+    db.query.subscription.findFirst({ where: eq(subscription.userId, userId) }),
+    db.query.purchase.findFirst({ where: eq(purchase.userId, userId) }),
   ])
 
-  // ✅ If user has valid subscription
-  if (userSub && isSubscriptionValid(userSub)) {
-    return { plan: userSub.plan as "PRO" | "ULTIMATE", type: "SUBSCRIPTION" }
+  // ✅ Check subscription first
+  if (userSub) {
+    if (isSubscriptionValid(userSub)) {
+      return {
+        plan: userSub.plan as PlanInfo["plan"],
+        type: "SUBSCRIPTION",
+      }
+    }
+    return {
+      plan: userSub.plan as PlanInfo["plan"], // keep the original plan (e.g. PRO or ULTIMATE)
+      type: "EXPIRED",
+    }
   }
 
-  // ✅ If user has one-time purchase
+  // ✅ If user made one-time purchase
   if (userPurchase) {
-    let mappedPlan: "PRO" | "ULTIMATE" = "PRO"
-
+    let mappedPlan: PlanInfo["plan"] = "PRO"
     if (userPurchase.tier === "ONE_TIME_200") mappedPlan = "ULTIMATE"
     if (userPurchase.tier === "ONE_TIME_100") mappedPlan = "PRO"
 
     return { plan: mappedPlan, type: "PURCHASE" }
   }
 
-  // ✅ Default free
+  // ✅ Default fallback (free plan)
   return { plan: "FREE", type: "FREE" }
 }
