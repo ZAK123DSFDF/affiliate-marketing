@@ -28,13 +28,14 @@ export function useAppQuery<Args extends unknown[], TData>(
     },
     enabled: options?.enabled ?? true,
     refetchOnWindowFocus: false,
-    staleTime: 2 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
   })
 
   return {
     data: queryResult.data?.data,
     error: queryResult.data?.toast,
-    isPending: queryResult.isFetching,
+    isPending: queryResult.isPending,
     queryResult,
   }
 }

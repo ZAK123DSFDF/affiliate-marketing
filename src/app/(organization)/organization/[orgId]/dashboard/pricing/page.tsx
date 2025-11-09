@@ -3,5 +3,16 @@ import PricingClient from "@/components/ui-custom/Pricing/PricingClient"
 
 export default async function PricingPage() {
   const plan = await getUserPlan()
-  return <PricingClient plan={plan} dashboard={true} />
+  const showSubscription = !(
+    (plan?.type === "PURCHASE" || plan?.type === "SUBSCRIPTION") &&
+    (plan?.plan === "PRO" || plan?.plan === "ULTIMATE")
+  )
+
+  return (
+    <PricingClient
+      plan={plan}
+      dashboard={true}
+      showSubscription={showSubscription}
+    />
+  )
 }

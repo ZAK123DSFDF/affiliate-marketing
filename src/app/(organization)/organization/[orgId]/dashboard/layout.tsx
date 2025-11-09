@@ -32,7 +32,7 @@ export default async function DashboardLayout({
       />
       <SidebarInset className="bg-background">
         <div className="py-6 px-6 w-full max-w-7xl mx-auto">
-          <SubscriptionStatusBanner plan={plan} />
+          <SubscriptionStatusBanner plan={plan} orgId={orgId} />
           {children}
         </div>
       </SidebarInset>

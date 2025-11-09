@@ -9,10 +9,12 @@ import type { PlanInfo } from "@/lib/types/planInfo"
 
 interface SubscriptionStatusBannerProps {
   plan: PlanInfo
+  orgId: string
 }
 
 export function SubscriptionStatusBanner({
   plan,
+  orgId,
 }: SubscriptionStatusBannerProps) {
   const pathname = usePathname()
   const { plan: planName, type: planType } = plan
@@ -37,7 +39,10 @@ export function SubscriptionStatusBanner({
               variant="default"
               className="bg-blue-600 hover:bg-blue-700"
             >
-              <Link href="/dashboard/pricing" scroll={false}>
+              <Link
+                href={`/organization/${orgId}/dashboard/pricing`}
+                scroll={false}
+              >
                 Renew Now
               </Link>
             </Button>

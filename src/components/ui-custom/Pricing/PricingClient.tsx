@@ -30,19 +30,49 @@ export default function PricingClient({
   const isCurrentPlan = (targetPlan: PlanInfo["plan"]) =>
     plan?.plan === targetPlan
 
-  const getButtonText = (targetPlan: PlanInfo["plan"]) => {
+  const getButtonText = (
+    targetPlan: PlanInfo["plan"],
+    billingType: BillingType
+  ) => {
     if (!plan) return "Select Plan"
-    if (isCurrentPlan(targetPlan)) return "Current Plan"
-    if (targetPlan === "PRO") {
-      return plan?.type === "PURCHASE"
-        ? "Purchase Ultimate Bundle"
-        : "Upgrade to Pro"
+
+    const currentPlan = plan.plan
+    const currentType = plan.type
+
+    // 🟢 If already on this plan and same billing type
+    if (
+      currentPlan === targetPlan &&
+      ((currentType === "SUBSCRIPTION" && billingType === "SUBSCRIPTION") ||
+        (currentType === "PURCHASE" && billingType === "PURCHASE"))
+    ) {
+      return "Current Plan"
     }
-    if (targetPlan === "ULTIMATE") {
-      return plan?.type === "PURCHASE"
-        ? "Purchase Ultimate Bundle"
-        : "Upgrade to Ultimate"
+
+    // 🟡 Subscription logic
+    if (billingType === "SUBSCRIPTION") {
+      if (currentType === "PURCHASE") return "Switch to Subscription"
+
+      if (targetPlan === "PRO" && currentPlan === "FREE")
+        return "Upgrade to Pro"
+      if (targetPlan === "ULTIMATE" && currentPlan !== "ULTIMATE")
+        return "Upgrade to Ultimate"
+
+      return "Select Plan"
     }
+
+    // 💰 One-time purchase logic
+    if (billingType === "PURCHASE") {
+      // ✅ User currently on a subscription → show “Buy Bundle” instead of “Switch”
+      if (currentType === "SUBSCRIPTION") {
+        if (targetPlan === "PRO") return "Buy Pro Bundle"
+        if (targetPlan === "ULTIMATE") return "Buy Ultimate Bundle"
+      }
+
+      if (targetPlan === "PRO" && currentPlan !== "PRO") return "Buy Pro Bundle"
+      if (targetPlan === "ULTIMATE" && currentPlan !== "ULTIMATE")
+        return "Buy Ultimate Bundle"
+    }
+
     return "Select Plan"
   }
 
@@ -94,7 +124,7 @@ export default function PricingClient({
               dashboard={dashboard}
               plan={plan}
               featuresList={featuresList}
-              getButtonText={getButtonText}
+              getButtonText={(plan) => getButtonText(plan, "PURCHASE")}
             />
           </TabsContent>
 
@@ -103,7 +133,7 @@ export default function PricingClient({
               dashboard={dashboard}
               plan={plan}
               featuresList={featuresList}
-              getButtonText={getButtonText}
+              getButtonText={(plan) => getButtonText(plan, "SUBSCRIPTION")}
               subscriptionCycle={subscriptionCycle}
               setSubscriptionCycle={setSubscriptionCycle}
             />
@@ -115,7 +145,7 @@ export default function PricingClient({
           dashboard={dashboard}
           plan={plan}
           featuresList={featuresList}
-          getButtonText={getButtonText}
+          getButtonText={(plan) => getButtonText(plan, "SUBSCRIPTION")}
           subscriptionCycle={subscriptionCycle}
           setSubscriptionCycle={setSubscriptionCycle}
         />
@@ -126,7 +156,7 @@ export default function PricingClient({
           dashboard={dashboard}
           plan={plan}
           featuresList={featuresList}
-          getButtonText={getButtonText}
+          getButtonText={(plan) => getButtonText(plan, "PURCHASE")}
         />
       )}
     </main>

@@ -1,9 +1,11 @@
-// scripts/devSetUserPlan.ts
+import prompts from "prompts"
 import { db } from "@/db/drizzle"
 import { subscription, purchase } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
-export async function devSetUserPlan({
+const DEV_USER_ID = "29022934-eb52-49af-aca4-b6ed553c89dd"
+
+async function devSetUserPlan({
   userId,
   plan,
   type,
@@ -13,62 +15,86 @@ export async function devSetUserPlan({
   type: "FREE" | "SUBSCRIPTION" | "PURCHASE"
 }) {
   try {
-    // 🧹 Clean previous state first (always)
+    // 🧹 Clear existing records
     await db.delete(subscription).where(eq(subscription.userId, userId))
     await db.delete(purchase).where(eq(purchase.userId, userId))
 
+    // 🪙 SUBSCRIPTION PLAN
     if (type === "SUBSCRIPTION") {
       await db.insert(subscription).values({
         userId,
-        plan: plan === "ULTIMATE" ? "ULTIMATE" : "PRO", // just to be safe
+        plan: plan === "ULTIMATE" ? "ULTIMATE" : "PRO",
         billingInterval: "MONTHLY",
         currency: "USD",
         price: plan === "ULTIMATE" ? "2000" : "1000",
         expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
       })
-    } else if (type === "PURCHASE") {
+    }
+
+    // 💳 ONE-TIME PURCHASE
+    else if (type === "PURCHASE") {
       await db.insert(purchase).values({
         userId,
         tier: plan as "ONE_TIME_100" | "ONE_TIME_200",
         price: plan === "ONE_TIME_100" ? "100" : "200",
         currency: "USD",
       })
-    } else {
-      // If it's a free plan, we just leave the user with no paid records
-      console.info(`🆓 User ${userId} set to FREE plan.`)
-      return true
+    }
+
+    // 🆓 FREE PLAN (insert minimal data for consistency)
+    else {
+      await db.insert(subscription).values({
+        userId,
+        plan: "FREE",
+        billingInterval: "MONTHLY",
+        currency: "USD",
+        price: "0",
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // still expire after 30 days for testing
+      })
     }
 
     console.info(
       `✅ Successfully set ${type} plan "${plan}" for user ${userId}`
     )
-    return true
   } catch (error) {
-    console.error(
-      `❌ Failed to set ${type} plan "${plan}" for user ${userId}`,
-      error
-    )
-    return false
+    console.error(`❌ Failed to set plan`, error)
   }
 }
 
-// --- CLI support ---
-const DEV_USER_ID = "29022934-eb52-49af-aca4-b6ed553c89dd"
+async function main() {
+  const { action } = await prompts({
+    type: "select",
+    name: "action",
+    message: "Select plan to apply:",
+    choices: [
+      { title: "Free Plan", value: { plan: "FREE", type: "FREE" } },
+      {
+        title: "Pro Subscription",
+        value: { plan: "PRO", type: "SUBSCRIPTION" },
+      },
+      {
+        title: "Ultimate Subscription",
+        value: { plan: "ULTIMATE", type: "SUBSCRIPTION" },
+      },
+      {
+        title: "Pro One-Time Purchase",
+        value: { plan: "ONE_TIME_100", type: "PURCHASE" },
+      },
+      {
+        title: "Ultimate One-Time Purchase",
+        value: { plan: "ONE_TIME_200", type: "PURCHASE" },
+      },
+    ],
+  })
 
-// args: plan type [userId?]
-const [, , plan, type, userIdArg] = process.argv
+  if (!action) {
+    console.log("❌ No plan selected. Exiting.")
+    process.exit(0)
+  }
 
-if (!plan || !type) {
-  console.error("Usage: bun run src/db/userPlanSeed.ts <plan> <type> [userId]")
-  process.exit(1)
+  await devSetUserPlan({ userId: DEV_USER_ID, ...action })
 }
 
-const userId = userIdArg || DEV_USER_ID
-
-const success = await devSetUserPlan({
-  userId,
-  plan: plan as any,
-  type: type as any,
-})
-
-if (!success) process.exit(1)
+main()
+  .then(() => console.log("Done"))
+  .catch((err) => console.error(err))

@@ -193,10 +193,9 @@ const OrganizationDashboardSidebar = ({
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      {/* ---- Plan Buttons Section ---- */}
       <div className="px-4 mb-4 space-y-2">
-        {/* FREE USERS → Upgrade or Purchase */}
-        {plan.type === "FREE" && (
+        {/* 🆓 FREE USERS → Upgrade or Purchase */}
+        {plan.plan === "FREE" && (
           <Link
             href={`/organization/${orgId}/dashboard/pricing`}
             scroll={false}
@@ -206,7 +205,7 @@ const OrganizationDashboardSidebar = ({
           </Link>
         )}
 
-        {/* PRO PURCHASE USERS → Purchase Ultimate Bundle */}
+        {/* 💼 PRO PURCHASE USERS → Offer Ultimate purchase */}
         {plan.type === "PURCHASE" && plan.plan === "PRO" && (
           <Link
             href={`/organization/${orgId}/dashboard/pricing`}
@@ -217,39 +216,28 @@ const OrganizationDashboardSidebar = ({
           </Link>
         )}
 
-        {/* PRO/ULTIMATE SUBSCRIBERS → Manage Subscription + Optional Purchase */}
-        {plan.type === "SUBSCRIPTION" && (
-          <>
-            <Button
-              className="w-full"
-              onClick={() => console.log("🧾 Redirect to Paddle portal")}
-            >
-              Manage Subscription
-            </Button>
-
-            {/* Optional purchase button */}
-            <Link
-              href={`/organization/${orgId}/dashboard/pricing`}
-              scroll={false}
-              className="block w-full"
-            >
-              <Button variant="outline" className="w-full">
-                Purchase One-Time Plan
+        {/* 🔁 SUBSCRIPTION or EXPIRED → Manage + Purchase */}
+        {(plan.type === "SUBSCRIPTION" || plan.type === "EXPIRED") &&
+          (plan.plan === "PRO" || plan.plan === "ULTIMATE") && (
+            <>
+              <Button
+                className="w-full"
+                onClick={() => console.log("🧾 Redirect to Paddle portal")}
+              >
+                Manage Subscription
               </Button>
-            </Link>
-          </>
-        )}
 
-        {/* EXPIRED SUBSCRIPTIONS → show upgrade again */}
-        {plan.type === "EXPIRED" && (
-          <Link
-            href={`/organization/${orgId}/dashboard/pricing`}
-            scroll={false}
-            className="block w-full"
-          >
-            <Button className="w-full">Upgrade or Purchase</Button>
-          </Link>
-        )}
+              <Link
+                href={`/organization/${orgId}/dashboard/pricing`}
+                scroll={false}
+                className="block w-full"
+              >
+                <Button variant="outline" className="w-full">
+                  Purchase One-Time Plan
+                </Button>
+              </Link>
+            </>
+          )}
       </div>
       <SidebarFooter className="p-4">
         <Link href={`/organization/${orgId}/dashboard/profile`}>

@@ -19,7 +19,7 @@ export function PricingGrid({
   plan?: PlanInfo | null
   subscriptionCycle?: SubscriptionCycle
   featuresList: FeatureList[]
-  getButtonText: (p: PlanInfo["plan"]) => string
+  getButtonText: (p: PlanInfo["plan"], t: PlanInfo["type"]) => string
 }) {
   const getPrice = (tier: PlanInfo["plan"]) => {
     if (tier === "FREE") return "$0"
@@ -40,14 +40,10 @@ export function PricingGrid({
 
   const getOldPrice = (tier: PlanInfo["plan"]) => {
     if (tier === "FREE") return null
-
     if (billingType === "SUBSCRIPTION") {
       const monthlyPrice = tier === "PRO" ? 35 : 55
-
       if (subscriptionCycle === "MONTHLY") return `$${monthlyPrice} / month`
-
       if (subscriptionCycle === "YEARLY") {
-        // ✅ Apply 16% discount to old price comparison too
         const yearlyPrice = Math.round(monthlyPrice * 12 * 0.84)
         return `$${yearlyPrice} / year`
       }
@@ -65,6 +61,22 @@ export function PricingGrid({
     if (!oldNum || !newNum) return null
     const percent = Math.round(((oldNum - newNum) / oldNum) * 100)
     return percent > 0 ? percent : null
+  }
+
+  const isDisabled = (targetPlan: PlanInfo["plan"]) => {
+    if (!plan) return false
+
+    // same billing type → only disable within the same category
+    if (plan.type === billingType) {
+      // Ultimate disables all same-type plans (subscription or purchase)
+      if (plan.plan === "ULTIMATE") return true
+
+      // Pro disables only Pro in same type
+      if (plan.plan === "PRO" && targetPlan === "PRO") return true
+    }
+
+    // different billing type → never disable
+    return false
   }
 
   return (
@@ -89,8 +101,8 @@ export function PricingGrid({
         oldPrice={getOldPrice("PRO")}
         discount={getDiscountPercent(getOldPrice("PRO"), getPrice("PRO"))}
         features={featuresList.filter((f) => f.pro).map((f) => f.name)}
-        buttonText={getButtonText("PRO")}
-        disabled={plan?.plan === "PRO" || plan?.plan === "ULTIMATE"}
+        buttonText={getButtonText("PRO", billingType)}
+        disabled={isDisabled("PRO")}
       />
 
       <PricingCard
@@ -102,8 +114,8 @@ export function PricingGrid({
           getPrice("ULTIMATE")
         )}
         features={featuresList.filter((f) => f.ultimate).map((f) => f.name)}
-        buttonText={getButtonText("ULTIMATE")}
-        disabled={plan?.plan === "ULTIMATE"}
+        buttonText={getButtonText("ULTIMATE", billingType)}
+        disabled={isDisabled("ULTIMATE")}
         highlight
       />
     </div>
