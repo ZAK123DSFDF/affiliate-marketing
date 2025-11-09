@@ -29,6 +29,7 @@ import { useSwitchOrg } from "@/hooks/useSwitchOrg"
 import { OrganizationData } from "@/lib/types/profileTypes"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
 import { PlanInfo } from "@/lib/types/planInfo"
+import { Button } from "@/components/ui/button"
 
 // Menu items for the sidebar
 
@@ -192,23 +193,64 @@ const OrganizationDashboardSidebar = ({
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      {plan.plan !== "ULTIMATE" && (
-        <div className="px-4 mb-4">
+      {/* ---- Plan Buttons Section ---- */}
+      <div className="px-4 mb-4 space-y-2">
+        {/* FREE USERS → Upgrade or Purchase */}
+        {plan.type === "FREE" && (
           <Link
             href={`/organization/${orgId}/dashboard/pricing`}
             scroll={false}
             className="block w-full"
           >
-            <button className="w-full bg-primary text-white font-medium py-2 rounded-md hover:bg-primary/90 transition-colors">
-              {plan.plan === "FREE"
-                ? "Upgrade or Purchase"
-                : plan.type === "PURCHASE"
-                  ? "Purchase Ultimate Bundle"
-                  : "Upgrade to Ultimate"}
-            </button>
+            <Button className="w-full">Upgrade or Purchase</Button>
           </Link>
-        </div>
-      )}
+        )}
+
+        {/* PRO PURCHASE USERS → Purchase Ultimate Bundle */}
+        {plan.type === "PURCHASE" && plan.plan === "PRO" && (
+          <Link
+            href={`/organization/${orgId}/dashboard/pricing`}
+            scroll={false}
+            className="block w-full"
+          >
+            <Button className="w-full">Purchase Ultimate Bundle</Button>
+          </Link>
+        )}
+
+        {/* PRO/ULTIMATE SUBSCRIBERS → Manage Subscription + Optional Purchase */}
+        {plan.type === "SUBSCRIPTION" && (
+          <>
+            <Button
+              className="w-full"
+              onClick={() => console.log("🧾 Redirect to Paddle portal")}
+            >
+              Manage Subscription
+            </Button>
+
+            {/* Optional purchase button */}
+            <Link
+              href={`/organization/${orgId}/dashboard/pricing`}
+              scroll={false}
+              className="block w-full"
+            >
+              <Button variant="outline" className="w-full">
+                Purchase One-Time Plan
+              </Button>
+            </Link>
+          </>
+        )}
+
+        {/* EXPIRED SUBSCRIPTIONS → show upgrade again */}
+        {plan.type === "EXPIRED" && (
+          <Link
+            href={`/organization/${orgId}/dashboard/pricing`}
+            scroll={false}
+            className="block w-full"
+          >
+            <Button className="w-full">Upgrade or Purchase</Button>
+          </Link>
+        )}
+      </div>
       <SidebarFooter className="p-4">
         <Link href={`/organization/${orgId}/dashboard/profile`}>
           <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
