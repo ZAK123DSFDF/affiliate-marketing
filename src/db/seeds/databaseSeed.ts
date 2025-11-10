@@ -444,3 +444,70 @@ export const affiliate_account_seed = [
     updatedAt: parseDate("2025-07-16 11:51:09.338106"),
   },
 ]
+export const team_seed = [
+  {
+    id: "4a2e1a11-bef7-49f9-9333-52123c9e99aa",
+    name: "John Doe",
+    email: "john.doe@acme.com",
+    role: "TEAM" as const,
+    type: "ORGANIZATION" as const,
+    organizationId: "tp7JLBb5",
+    isActive: true,
+    createdAt: parseDate("2025-07-16 11:53:21.288497"),
+    updatedAt: parseDate("2025-07-16 11:53:21.288497"),
+  },
+  {
+    id: "d73a2b1a-27b4-4bda-91e0-82d2a5191c33",
+    name: "Jane Smith",
+    email: "jane.smith@acme.com",
+    role: "TEAM" as const,
+    type: "ORGANIZATION" as const,
+    organizationId: "tp7JLBb5",
+    isActive: true,
+    createdAt: parseDate("2025-07-16 11:53:22.288497"),
+    updatedAt: parseDate("2025-07-16 11:53:22.288497"),
+  },
+  {
+    id: "c9e3b4a4-f1a2-4a7b-bb59-2ad3a3c1e7f1",
+    name: "Michael Green",
+    email: "michael.green@acme.com",
+    role: "TEAM" as const,
+    type: "ORGANIZATION" as const,
+    organizationId: "tp7JLBb5",
+    isActive: true,
+    createdAt: parseDate("2025-07-16 11:53:23.288497"),
+    updatedAt: parseDate("2025-07-16 11:53:23.288497"),
+  },
+]
+export const team_account_seed = [
+  {
+    id: "8e1f223d-4a77-4c99-9450-72f0f6c3b911",
+    teamId: "4a2e1a11-bef7-49f9-9333-52123c9e99aa",
+    provider: "credentials" as const,
+    providerAccountId: "john.doe@acme.com",
+    password: "$2b$10$QAhXwW/GJe0fCC0PrzUM0eShbWhqxeFxGLyplXXm5KjKWhB9kbke6", // bcrypt hash
+    emailVerified: parseDate("2025-07-16 11:53:21.288497"),
+    createdAt: parseDate("2025-07-16 11:53:21.288497"),
+    updatedAt: parseDate("2025-07-16 11:53:21.288497"),
+  },
+  {
+    id: "9f0f8a4d-94df-4fd2-a9b1-6f7a5cf01982",
+    teamId: "d73a2b1a-27b4-4bda-91e0-82d2a5191c33",
+    provider: "credentials" as const,
+    providerAccountId: "jane.smith@acme.com",
+    password: "$2b$10$O5gQs0cTVCaQ8bDmv9qz9uS1Ckp4I5yE9dyM2UWRvRm0I4D6Eoq6i", // bcrypt hash
+    emailVerified: parseDate("2025-07-16 11:53:22.288497"),
+    createdAt: parseDate("2025-07-16 11:53:22.288497"),
+    updatedAt: parseDate("2025-07-16 11:53:22.288497"),
+  },
+  {
+    id: "b37e2a1b-1f25-4f48-b74c-2b6e4fa124af",
+    teamId: "c9e3b4a4-f1a2-4a7b-bb59-2ad3a3c1e7f1",
+    provider: "credentials" as const,
+    providerAccountId: "michael.green@acme.com",
+    password: "$2b$10$TnRsoSfxJ8lbObn1tKTHeuH0l84GBl2wr7jCe3mP2Sv9HkHIkH0iq", // bcrypt hash
+    emailVerified: parseDate("2025-07-16 11:53:23.288497"),
+    createdAt: parseDate("2025-07-16 11:53:23.288497"),
+    updatedAt: parseDate("2025-07-16 11:53:23.288497"),
+  },
+]
