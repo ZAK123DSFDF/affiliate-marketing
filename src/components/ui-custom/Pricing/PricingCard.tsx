@@ -18,6 +18,7 @@ export function PricingCard({
   buttonText,
   disabled,
   highlight,
+  onClick, // 👈 added
 }: {
   title: string
   price: string
@@ -27,6 +28,7 @@ export function PricingCard({
   buttonText: string
   disabled?: boolean
   highlight?: boolean
+  onClick?: () => void // 👈 added
 }) {
   return (
     <Card
@@ -82,13 +84,11 @@ export function PricingCard({
       <CardContent>
         <ul className="text-sm space-y-2 text-left mx-auto max-w-xs">
           {features.map((f) => {
-            // Define which features should show ❌ for Pro plan
             const featuresToShowCrossForPro = [
               "1 organization",
               "Up to 3 team member invitations",
             ]
 
-            // Check if this feature should show ❌ for Pro plan
             const shouldShowCross =
               title === "Pro" &&
               featuresToShowCrossForPro.some((crossFeature) =>
@@ -118,6 +118,7 @@ export function PricingCard({
       <CardFooter className="mt-6">
         <Button
           disabled={disabled}
+          onClick={onClick} // 👈 attach it here
           variant={highlight ? "secondary" : "default"}
           className={cn(
             "w-full font-medium",

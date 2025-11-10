@@ -1,3 +1,6 @@
+"use client"
+
+import React, { useState } from "react"
 import {
   BillingType,
   SubscriptionCycle,
@@ -5,6 +8,7 @@ import {
 import { PlanInfo } from "@/lib/types/planInfo"
 import { FeatureList } from "@/lib/types/FeatureList"
 import { PricingCard } from "@/components/ui-custom/Pricing/PricingCard"
+import { AppDialog } from "@/components/ui-custom/AppDialog"
 
 export function PricingGrid({
   billingType,
@@ -21,9 +25,29 @@ export function PricingGrid({
   featuresList: FeatureList[]
   getButtonText: (p: PlanInfo["plan"], t: PlanInfo["type"]) => string
 }) {
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogText, setDialogText] = useState("")
+
+  const handleBuyClick = (targetPlan: PlanInfo["plan"]) => {
+    // Show dialog for subscribed or expired users
+    if (
+      plan &&
+      (plan.type === "SUBSCRIPTION" || plan.type === "EXPIRED") &&
+      (plan.plan === "PRO" || plan.plan === "ULTIMATE")
+    ) {
+      setDialogText(
+        `You need to cancel your current subscription before purchasing the ${targetPlan} bundle.`
+      )
+      setDialogOpen(true)
+      return
+    }
+
+    // Free users → no dialog
+    console.log(`Buying ${targetPlan} bundle...`)
+  }
+
   const getPrice = (tier: PlanInfo["plan"]) => {
     if (tier === "FREE") return "$0"
-
     if (billingType === "SUBSCRIPTION") {
       const monthlyPrice = tier === "PRO" ? 25 : 40
       if (subscriptionCycle === "MONTHLY") return `$${monthlyPrice} / month`
@@ -32,8 +56,16 @@ export function PricingGrid({
         return `$${yearlyPrice} / year`
       }
     } else {
-      if (tier === "PRO") return "$85 one-time"
-      if (tier === "ULTIMATE") return "$125 one-time"
+      const proPrice = 85
+      const ultimatePrice = 125
+      if (tier === "PRO") return `$${proPrice} one-time`
+      if (tier === "ULTIMATE") {
+        if (plan?.type === "PURCHASE" && plan?.plan === "PRO") {
+          const upgradePrice = ultimatePrice - proPrice
+          return `$${upgradePrice} upgrade`
+        }
+        return `$${ultimatePrice} one-time`
+      }
     }
     return "-"
   }
@@ -48,8 +80,16 @@ export function PricingGrid({
         return `$${yearlyPrice} / year`
       }
     } else {
+      const oldProPrice = 100
+      const oldUltimatePrice = 150
       if (tier === "PRO") return "$100 one-time"
-      if (tier === "ULTIMATE") return "$150 one-time"
+      if (tier === "ULTIMATE") {
+        if (plan?.type === "PURCHASE" && plan?.plan === "PRO") {
+          const discountedOld = oldUltimatePrice - oldProPrice
+          return `$${discountedOld} one-time`
+        }
+        return "$150 one-time"
+      }
     }
     return null
   }
@@ -65,59 +105,71 @@ export function PricingGrid({
 
   const isDisabled = (targetPlan: PlanInfo["plan"]) => {
     if (!plan) return false
-
-    // same billing type → only disable within the same category
     if (plan.type === billingType) {
-      // Ultimate disables all same-type plans (subscription or purchase)
       if (plan.plan === "ULTIMATE") return true
-
-      // Pro disables only Pro in same type
       if (plan.plan === "PRO" && targetPlan === "PRO") return true
     }
-
-    // different billing type → never disable
     return false
   }
 
   return (
-    <div className="flex flex-wrap justify-center w-full gap-6">
-      {!dashboard && (
-        <PricingCard
-          title="Free"
-          price={getPrice("FREE")}
-          features={[
-            "Basic features",
-            "1 organization",
-            "No team member invitations",
-          ]}
-          buttonText="Start Free"
-          disabled={plan?.plan === "FREE"}
-        />
-      )}
-
-      <PricingCard
-        title="Pro"
-        price={getPrice("PRO")}
-        oldPrice={getOldPrice("PRO")}
-        discount={getDiscountPercent(getOldPrice("PRO"), getPrice("PRO"))}
-        features={featuresList.filter((f) => f.pro).map((f) => f.name)}
-        buttonText={getButtonText("PRO", billingType)}
-        disabled={isDisabled("PRO")}
-      />
-
-      <PricingCard
-        title="Ultimate"
-        price={getPrice("ULTIMATE")}
-        oldPrice={getOldPrice("ULTIMATE")}
-        discount={getDiscountPercent(
-          getOldPrice("ULTIMATE"),
-          getPrice("ULTIMATE")
+    <>
+      <div className="flex flex-wrap justify-center w-full gap-6">
+        {!dashboard && (
+          <PricingCard
+            title="Free"
+            price={getPrice("FREE")}
+            features={[
+              "Basic features",
+              "1 organization",
+              "No team member invitations",
+            ]}
+            buttonText="Start Free"
+            disabled={plan?.plan === "FREE"}
+            onClick={() => handleBuyClick("FREE")}
+          />
         )}
-        features={featuresList.filter((f) => f.ultimate).map((f) => f.name)}
-        buttonText={getButtonText("ULTIMATE", billingType)}
-        disabled={isDisabled("ULTIMATE")}
-        highlight
+
+        <PricingCard
+          title="Pro"
+          price={getPrice("PRO")}
+          oldPrice={getOldPrice("PRO")}
+          discount={getDiscountPercent(getOldPrice("PRO"), getPrice("PRO"))}
+          features={featuresList.filter((f) => f.pro).map((f) => f.name)}
+          buttonText={getButtonText("PRO", billingType)}
+          disabled={isDisabled("PRO")}
+          onClick={() => handleBuyClick("PRO")}
+        />
+
+        <PricingCard
+          title="Ultimate"
+          price={getPrice("ULTIMATE")}
+          oldPrice={getOldPrice("ULTIMATE")}
+          discount={getDiscountPercent(
+            getOldPrice("ULTIMATE"),
+            getPrice("ULTIMATE")
+          )}
+          features={featuresList.filter((f) => f.ultimate).map((f) => f.name)}
+          buttonText={getButtonText("ULTIMATE", billingType)}
+          disabled={isDisabled("ULTIMATE")}
+          highlight
+          onClick={() => handleBuyClick("ULTIMATE")}
+        />
+      </div>
+
+      {/* ⚙️ AppDialog Integration */}
+      <AppDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        title="Cancel Subscription First"
+        description={dialogText}
+        confirmText="Cancel"
+        onConfirm={() => {
+          console.log("User acknowledged cancel-subscription warning")
+          setDialogOpen(false)
+        }}
+        affiliate={false}
       />
-    </div>
+    </>
   )
 }

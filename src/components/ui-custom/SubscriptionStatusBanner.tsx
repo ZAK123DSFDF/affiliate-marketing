@@ -1,7 +1,6 @@
 "use client"
 
-import { usePathname } from "next/navigation"
-import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { AlertTriangle } from "lucide-react"
@@ -17,9 +16,24 @@ export function SubscriptionStatusBanner({
   orgId,
 }: SubscriptionStatusBannerProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const { plan: planName, type: planType } = plan
+
   if (pathname.includes("/pricing")) return null
+
   if (planType === "EXPIRED") {
+    const handleRenewClick = () => {
+      if (planName === "FREE") {
+        // ✅ Free + Expired → redirect to pricing page
+        router.push(`/organization/${orgId}/dashboard/pricing`)
+      } else if (planName === "PRO" || planName === "ULTIMATE") {
+        // ✅ PRO or ULTIMATE expired → just log for now
+        console.log(
+          `Renew clicked for ${planName} subscription (expired) — show renewal flow here later.`
+        )
+      }
+    }
+
     return (
       <div className="mb-4">
         <Alert
@@ -35,16 +49,11 @@ export function SubscriptionStatusBanner({
               Please renew your plan to continue accessing premium features.
             </span>
             <Button
-              asChild
+              onClick={handleRenewClick}
               variant="default"
               className="bg-blue-600 hover:bg-blue-700"
             >
-              <Link
-                href={`/organization/${orgId}/dashboard/pricing`}
-                scroll={false}
-              >
-                Renew Now
-              </Link>
+              Renew Now
             </Button>
           </AlertDescription>
         </Alert>

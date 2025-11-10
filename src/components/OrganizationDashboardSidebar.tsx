@@ -88,20 +88,48 @@ const OrganizationDashboardSidebar = ({
   }
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectOpen, setSelectOpen] = useState(false)
-  const [dialogMode, setDialogMode] = useState<"create" | "upgrade">("create")
+  const [dialogMode, setDialogMode] = useState<
+    "create" | "upgrade" | "expired"
+  >("create")
 
   const handleClick = () => {
     setSelectOpen(false)
+
+    // 🧠 Handle FREE users → show upgrade dialog (not redirect)
+    if (plan.plan === "FREE") {
+      setDialogMode("upgrade")
+      setDialogOpen(true)
+      return
+    }
+
+    // 🧠 Handle expired subscription users (PRO or ULTIMATE)
+    if (
+      plan.type === "EXPIRED" &&
+      (plan.plan === "PRO" || plan.plan === "ULTIMATE")
+    ) {
+      setDialogMode("expired")
+      setDialogOpen(true)
+      return
+    }
+
+    // 🧠 Handle users that reached org limit and need upgrade
     if (!canCreate) {
       setDialogMode("upgrade")
       setDialogOpen(true)
       return
     }
+
+    // 🧱 Default: open create company dialog
     setDialogMode("create")
     setDialogOpen(true)
   }
+
   const getUpgradeText = (plan: PlanInfo) => {
     if (plan.plan === "FREE") return "Upgrade or Purchase"
+    if (plan.type === "EXPIRED" && plan.plan === "PRO")
+      return "Renew Subscription"
+    if (plan.type === "EXPIRED" && plan.plan === "ULTIMATE")
+      return "Renew Subscription"
     if (plan.type === "PURCHASE" && plan.plan === "PRO")
       return "Purchase Ultimate Bundle"
     if (plan.type === "SUBSCRIPTION" && plan.plan === "PRO") return "Upgrade"
@@ -142,21 +170,39 @@ const OrganizationDashboardSidebar = ({
             open={dialogOpen}
             onOpenChange={setDialogOpen}
             affiliate={false}
-            title={dialogMode === "upgrade" ? "Upgrade Required" : undefined}
+            title={
+              dialogMode === "upgrade"
+                ? "Upgrade Required"
+                : dialogMode === "expired"
+                  ? "Plan Expired"
+                  : undefined
+            }
             description={
               dialogMode === "upgrade"
-                ? plan.type === "PURCHASE"
-                  ? "You need to purchase the Ultimate bundle to create a new company."
-                  : "You need to upgrade to Ultimate to create a new company."
-                : undefined
+                ? plan.plan === "FREE"
+                  ? "You need to upgrade or purchase a plan to create a new organization."
+                  : plan.type === "PURCHASE"
+                    ? "You need to purchase the Ultimate bundle to create a new company."
+                    : "You need to upgrade to Ultimate to create a new company."
+                : dialogMode === "expired"
+                  ? `Your ${plan.plan} plan has expired. Please renew to continue accessing premium features.`
+                  : undefined
             }
-            confirmText={dialogMode === "upgrade" ? getUpgradeText(plan) : "OK"}
+            confirmText={
+              dialogMode === "upgrade"
+                ? getUpgradeText(plan)
+                : dialogMode === "expired"
+                  ? "Renew Now"
+                  : "OK"
+            }
             onConfirm={
               dialogMode === "upgrade"
                 ? () => {
                     setDialogOpen(false)
                     setTimeout(() => {
-                      if (plan.type === "PURCHASE") {
+                      if (plan.plan === "FREE") {
+                        router.push(`/organization/${orgId}/dashboard/pricing`)
+                      } else if (plan.type === "PURCHASE") {
                         router.push(`/organization/${orgId}/dashboard/pricing`)
                       } else if (plan.type === "SUBSCRIPTION") {
                         console.log(
@@ -165,9 +211,25 @@ const OrganizationDashboardSidebar = ({
                       }
                     }, 150)
                   }
-                : undefined
+                : dialogMode === "expired"
+                  ? () => {
+                      setDialogOpen(false)
+                      setTimeout(() => {
+                        if (plan.plan === "FREE") {
+                          router.push(
+                            `/organization/${orgId}/dashboard/pricing`
+                          )
+                        } else if (
+                          plan.plan === "PRO" ||
+                          plan.plan === "ULTIMATE"
+                        ) {
+                          console.log(`Renew ${plan.plan} subscription clicked`)
+                        }
+                      }, 150)
+                    }
+                  : undefined
             }
-            showFooter={dialogMode === "upgrade"}
+            showFooter={dialogMode === "upgrade" || dialogMode === "expired"}
           >
             {dialogMode === "create" && (
               <div className="h-full overflow-y-auto max-h-[60vh]">

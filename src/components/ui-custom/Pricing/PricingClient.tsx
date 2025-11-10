@@ -39,7 +39,48 @@ export default function PricingClient({
     const currentPlan = plan.plan
     const currentType = plan.type
 
-    // 🟢 If already on this plan and same billing type
+    // 🔒 1. Handle expired subscriptions
+    if (currentType === "EXPIRED") {
+      // 🧩 Free Expired — always show upgrade options
+      if (currentPlan === "FREE") {
+        if (billingType === "SUBSCRIPTION") {
+          if (targetPlan === "PRO") return "Upgrade to Pro"
+          if (targetPlan === "ULTIMATE") return "Upgrade to Ultimate"
+        }
+        if (billingType === "PURCHASE") {
+          if (targetPlan === "PRO") return "Buy Pro Bundle"
+          if (targetPlan === "ULTIMATE") return "Buy Ultimate Bundle"
+        }
+        return "Upgrade Plan"
+      }
+
+      // 🧩 Pro / Ultimate Expired (subscription expired)
+      if (billingType === "SUBSCRIPTION") {
+        if (currentPlan === "PRO") return "Upgrade to Pro"
+        if (currentPlan === "ULTIMATE") return "Upgrade to Ultimate"
+        return "Upgrade Plan"
+      }
+
+      // 🧩 Expired, but viewing purchase tab
+      if (billingType === "PURCHASE") {
+        if (targetPlan === "PRO") return "Buy Pro Bundle"
+        if (targetPlan === "ULTIMATE") return "Buy Ultimate Bundle"
+      }
+    }
+
+    // 🆓 2. Completely FREE plan (active)
+    if (currentType === "FREE" || currentPlan === "FREE") {
+      if (billingType === "SUBSCRIPTION") {
+        if (targetPlan === "PRO") return "Upgrade to Pro"
+        if (targetPlan === "ULTIMATE") return "Upgrade to Ultimate"
+      }
+      if (billingType === "PURCHASE") {
+        if (targetPlan === "PRO") return "Buy Pro Bundle"
+        if (targetPlan === "ULTIMATE") return "Buy Ultimate Bundle"
+      }
+    }
+
+    // 🟢 3. Active matching plans
     if (
       currentPlan === targetPlan &&
       ((currentType === "SUBSCRIPTION" && billingType === "SUBSCRIPTION") ||
@@ -48,7 +89,7 @@ export default function PricingClient({
       return "Current Plan"
     }
 
-    // 🟡 Subscription logic
+    // 💳 4. Subscription logic (user viewing subscription tab)
     if (billingType === "SUBSCRIPTION") {
       if (currentType === "PURCHASE") return "Switch to Subscription"
 
@@ -57,13 +98,17 @@ export default function PricingClient({
       if (targetPlan === "ULTIMATE" && currentPlan !== "ULTIMATE")
         return "Upgrade to Ultimate"
 
-      return "Select Plan"
+      return "Upgrade Plan"
     }
 
-    // 💰 One-time purchase logic
+    // 💰 5. One-time purchase logic (user viewing bundles tab)
     if (billingType === "PURCHASE") {
-      // ✅ User currently on a subscription → show “Buy Bundle” instead of “Switch”
-      if (currentType === "SUBSCRIPTION") {
+      if (currentType === "PURCHASE") {
+        if (currentPlan === "PRO" && targetPlan === "ULTIMATE")
+          return "Upgrade to Ultimate ($40)"
+      }
+
+      if (currentType === "SUBSCRIPTION" || currentType === "EXPIRED") {
         if (targetPlan === "PRO") return "Buy Pro Bundle"
         if (targetPlan === "ULTIMATE") return "Buy Ultimate Bundle"
       }
@@ -73,7 +118,7 @@ export default function PricingClient({
         return "Buy Ultimate Bundle"
     }
 
-    return "Select Plan"
+    return "Upgrade Plan"
   }
 
   const showBothTabs = showSubscription && showPurchase

@@ -158,12 +158,28 @@ export default function Teams({
     },
   })
   const handleInviteClick = () => {
+    // 🧠 Block FREE plan users completely
+    if (plan.plan === "FREE") {
+      setUpgradeDialog(true)
+      return
+    }
+
+    // 🧠 Block EXPIRED plans (PRO or ULTIMATE)
+    if (plan.type === "EXPIRED") {
+      setUpgradeDialog(true)
+      return
+    }
+
+    // 🧠 PRO plan: limit team members
     if (plan.plan === "PRO" && teamCount >= 3) {
       setUpgradeDialog(true)
-    } else {
-      setOpenInvite(true)
+      return
     }
+
+    // ✅ Otherwise open the invite dialog
+    setOpenInvite(true)
   }
+
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
@@ -254,33 +270,59 @@ export default function Teams({
         open={upgradeDialog}
         onOpenChange={setUpgradeDialog}
         title={
-          plan.type === "PURCHASE"
-            ? "Purchase Ultimate Bundle"
-            : "Upgrade Required"
+          plan.type === "EXPIRED"
+            ? "Plan Expired"
+            : plan.type === "PURCHASE"
+              ? "Purchase Ultimate Bundle"
+              : plan.plan === "FREE"
+                ? "Upgrade Required"
+                : "Upgrade Required"
         }
         description={
-          plan.type === "PURCHASE"
-            ? "Your Pro bundle allows up to 3 team members. Purchase the Ultimate bundle to add more."
-            : "Your Pro plan allows up to 3 team members. Upgrade to Ultimate to add more."
+          plan.type === "EXPIRED"
+            ? `Your ${plan.plan} plan has expired. Please renew to continue accessing team management features.`
+            : plan.type === "PURCHASE"
+              ? "Your Pro bundle allows up to 3 team members. Purchase the Ultimate bundle to add more."
+              : plan.plan === "FREE"
+                ? "You need to upgrade or purchase a plan to access team management."
+                : "Your Pro plan allows up to 3 team members. Upgrade to Ultimate to add more."
         }
         confirmText={
-          plan.type === "PURCHASE" ? "Purchase Ultimate Bundle" : "Upgrade Now"
+          plan.type === "EXPIRED"
+            ? "Renew Now"
+            : plan.type === "PURCHASE"
+              ? "Purchase Ultimate Bundle"
+              : plan.plan === "FREE"
+                ? "View Pricing"
+                : "Upgrade Now"
         }
         onConfirm={() => {
-          if (plan.type === "PURCHASE") {
-            router.push(`/organization/${orgId}/dashboard/pricing`)
-          } else {
-            console.log("Redirect to subscription upgrade flow 🚀")
-          }
+          setUpgradeDialog(false)
+          setTimeout(() => {
+            if (
+              (plan.type === "EXPIRED" && plan.plan === "FREE") ||
+              plan.plan === "FREE" ||
+              plan.type === "PURCHASE"
+            ) {
+              router.push(`/organization/${orgId}/dashboard/pricing`)
+            } else if (plan.type === "SUBSCRIPTION") {
+              console.log("Redirect to subscription upgrade flow 🚀")
+            }
+          }, 150)
         }}
         affiliate={affiliate}
       >
         <p className="text-sm text-muted-foreground">
-          {plan.type === "PURCHASE"
-            ? "Unlock unlimited team members and advanced features by purchasing the Ultimate bundle."
-            : "Unlock unlimited team members and advanced features by upgrading your subscription."}
+          {plan.type === "EXPIRED"
+            ? `Your ${plan.plan} plan has expired. Renew to continue managing your teams.`
+            : plan.type === "PURCHASE"
+              ? "Unlock unlimited team members and advanced features by purchasing the Ultimate bundle."
+              : plan.plan === "FREE"
+                ? "Upgrade your plan to access Teams and invite members to your organization."
+                : "Upgrade to Ultimate to unlock unlimited team members and advanced tools."}
         </p>
       </AppDialog>
+
       {/* Delete Confirmation Dialog */}
       <AppDialog
         open={deleteDialog.open}
