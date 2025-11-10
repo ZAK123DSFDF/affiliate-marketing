@@ -30,6 +30,7 @@ import { TableTop } from "@/components/ui-custom/TableTop"
 import PaginationControls from "@/components/ui-custom/PaginationControls"
 import { useQueryClient } from "@tanstack/react-query"
 import { PlanInfo } from "@/lib/types/planInfo"
+import { useRouter } from "next/navigation"
 
 const inviteSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -65,7 +66,7 @@ export default function Teams({
   const [rowSelection, setRowSelection] = useState({})
   const queryClient = useQueryClient()
   const { filters, setFilters } = useQueryFilter()
-
+  const router = useRouter()
   // Fetch teams
   const {
     data: searchData,
@@ -267,7 +268,7 @@ export default function Teams({
         }
         onConfirm={() => {
           if (plan.type === "PURCHASE") {
-            console.log("Redirect to bundle purchase flow 🛒")
+            router.push(`/organization/${orgId}/dashboard/pricing`)
           } else {
             console.log("Redirect to subscription upgrade flow 🚀")
           }

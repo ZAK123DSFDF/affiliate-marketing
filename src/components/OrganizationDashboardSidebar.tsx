@@ -156,7 +156,13 @@ const OrganizationDashboardSidebar = ({
                 ? () => {
                     setDialogOpen(false)
                     setTimeout(() => {
-                      router.push(`/organization/${orgId}/dashboard/pricing`)
+                      if (plan.type === "PURCHASE") {
+                        router.push(`/organization/${orgId}/dashboard/pricing`)
+                      } else if (plan.type === "SUBSCRIPTION") {
+                        console.log(
+                          "User has a subscription plan — show Paddle upgrade flow"
+                        )
+                      }
                     }, 150)
                   }
                 : undefined
