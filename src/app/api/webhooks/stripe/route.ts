@@ -16,7 +16,7 @@ import { getAffiliateLinkRecord } from "@/services/getAffiliateLinkRecord"
 import { getOrganizationById } from "@/services/getOrganizationById"
 import { getSubscriptionExpiration } from "@/services/getSubscriptionExpiration"
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-04-30.basil",
+  apiVersion: "2025-08-27.basil",
 })
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!

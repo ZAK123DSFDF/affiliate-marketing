@@ -9,6 +9,7 @@ import { PlanInfo } from "@/lib/types/planInfo"
 import { FeatureList } from "@/lib/types/FeatureList"
 import { PricingCard } from "@/components/ui-custom/Pricing/PricingCard"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
+import { usePaddleCheckout } from "@/hooks/usePaddleCheckout"
 
 export function PricingGrid({
   billingType,
@@ -27,23 +28,73 @@ export function PricingGrid({
 }) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [dialogText, setDialogText] = useState("")
-
+  const { openCheckout } = usePaddleCheckout()
   const handleBuyClick = (targetPlan: PlanInfo["plan"]) => {
-    // Show dialog for subscribed or expired users
-    if (
-      plan &&
-      (plan.type === "SUBSCRIPTION" || plan.type === "EXPIRED") &&
-      (plan.plan === "PRO" || plan.plan === "ULTIMATE")
-    ) {
-      setDialogText(
-        `You need to cancel your current subscription before purchasing the ${targetPlan} bundle.`
-      )
-      setDialogOpen(true)
+    if (targetPlan === "FREE") {
+      // No checkout needed for Free tier
       return
     }
 
-    // Free users → no dialog
-    console.log(`Buying ${targetPlan} bundle...`)
+    const isSubscriptionMode = billingType === "SUBSCRIPTION"
+    const isPurchaseMode = billingType === "PURCHASE"
+
+    // 🧠 0. Free users or no active plan
+    if (!plan) {
+      if (isSubscriptionMode) {
+        openCheckout({
+          type: "SUBSCRIPTION",
+          plan: targetPlan,
+          cycle: subscriptionCycle || "MONTHLY",
+        })
+      } else {
+        openCheckout({ type: "PURCHASE", plan: targetPlan })
+      }
+      return
+    }
+
+    // 🧠 1. Handle when current plan is a SUBSCRIPTION
+    if (plan.type === "SUBSCRIPTION") {
+      if (isSubscriptionMode) {
+        // Already subscribed → show dialog to manage instead of repurchase
+        setDialogText(
+          `You're already subscribed. To upgrade or change your ${targetPlan} plan, please use the customer portal.`
+        )
+        setDialogOpen(true)
+        return
+      } else if (isPurchaseMode) {
+        // Trying to buy a one-time bundle while already subscribed
+        setDialogText(
+          `You need to cancel your current subscription before purchasing the ${targetPlan} bundle.`
+        )
+        setDialogOpen(true)
+        return
+      }
+    }
+
+    // 🧠 2. Handle EXPIRED plans
+    if (plan.type === "EXPIRED") {
+      if (isSubscriptionMode) {
+        openCheckout({
+          type: "SUBSCRIPTION",
+          plan: targetPlan,
+          cycle: subscriptionCycle || "MONTHLY",
+        })
+      } else {
+        openCheckout({ type: "PURCHASE", plan: targetPlan })
+      }
+      return
+    }
+
+    // 🧠 3. Free users upgrading
+    if (isSubscriptionMode) {
+      openCheckout({
+        type: "SUBSCRIPTION",
+        plan: targetPlan,
+        cycle: subscriptionCycle || "MONTHLY",
+      })
+    } else {
+      openCheckout({ type: "PURCHASE", plan: targetPlan })
+    }
   }
 
   const getPrice = (tier: PlanInfo["plan"]) => {

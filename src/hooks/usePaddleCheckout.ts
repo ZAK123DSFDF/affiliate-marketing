@@ -2,13 +2,22 @@
 
 import { useEffect, useState } from "react"
 import { initializePaddle, Paddle } from "@paddle/paddle-js"
-import { paddlePriceIds } from "@/util/PaddlePriceIds"
+import { paddleConfig } from "@/util/PaddleConfig"
 
-type CheckoutParams = {
-  type: "SUBSCRIPTION" | "PURCHASE"
-  plan: "PRO" | "ULTIMATE"
-  quantity?: number
-}
+type SubscriptionCycle = "MONTHLY" | "YEARLY"
+
+type CheckoutParams =
+  | {
+      type: "PURCHASE"
+      plan: "PRO" | "ULTIMATE"
+      quantity?: number
+    }
+  | {
+      type: "SUBSCRIPTION"
+      plan: "PRO" | "ULTIMATE"
+      cycle: SubscriptionCycle
+      quantity?: number
+    }
 
 export function usePaddleCheckout() {
   const [paddle, setPaddle] = useState<Paddle>()
@@ -17,42 +26,44 @@ export function usePaddleCheckout() {
     initializePaddle({
       environment:
         process.env.NODE_ENV === "production" ? "production" : "sandbox",
-      token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN!,
+      token: paddleConfig.token,
     }).then((instance) => setPaddle(instance))
   }, [])
 
-  // 🧠 Listen globally for checkout completion events
   useEffect(() => {
     if (!paddle) return
-
     const handleCheckoutComplete = (event: any) => {
       if (event.name === "checkout.completed") {
         console.log("✅ Checkout completed:", event.data)
         paddle.Checkout.close()
       }
     }
-
     window.addEventListener("paddle-event", handleCheckoutComplete)
-
-    return () => {
+    return () =>
       window.removeEventListener("paddle-event", handleCheckoutComplete)
-    }
   }, [paddle])
 
-  const openCheckout = ({ type, plan, quantity = 1 }: CheckoutParams) => {
+  const openCheckout = (params: CheckoutParams) => {
     if (!paddle) {
       alert("Paddle not initialized yet.")
       return
     }
 
-    const priceId = paddlePriceIds[type][plan]
+    let priceId: string | undefined
+
+    if (params.type === "SUBSCRIPTION") {
+      priceId = paddleConfig.priceIds.SUBSCRIPTION[params.cycle][params.plan]
+    } else {
+      priceId = paddleConfig.priceIds.PURCHASE[params.plan]
+    }
+
     if (!priceId) {
-      console.error(`Missing price ID for ${type} → ${plan}`)
+      console.error(`❌ Missing price ID for ${params.type} → ${params.plan}`)
       return
     }
 
     paddle.Checkout.open({
-      items: [{ priceId, quantity }],
+      items: [{ priceId, quantity: params.quantity ?? 1 }],
       settings: {
         displayMode: "overlay",
         theme: "light",
