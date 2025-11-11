@@ -1,0 +1,10 @@
+export const paddlePriceIds = {
+  SUBSCRIPTION: {
+    PRO: process.env.NEXT_PUBLIC_PADDLE_PRICE_SUB_PRO!,
+    ULTIMATE: process.env.NEXT_PUBLIC_PADDLE_PRICE_SUB_ULTIMATE!,
+  },
+  PURCHASE: {
+    PRO: process.env.NEXT_PUBLIC_PADDLE_PRICE_BUY_PRO!,
+    ULTIMATE: process.env.NEXT_PUBLIC_PADDLE_PRICE_BUY_ULTIMATE!,
+  },
+}

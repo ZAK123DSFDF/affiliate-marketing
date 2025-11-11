@@ -20,6 +20,9 @@ importers:
       '@neondatabase/serverless':
         specifier: ^1.0.2
         version: 1.0.2
+      '@paddle/paddle-js':
+        specifier: ^1.5.0
+        version: 1.5.0
       '@paddle/paddle-node-sdk':
         specifier: ^2.8.0
         version: 2.8.0
@@ -1193,6 +1196,9 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
+
+  '@paddle/paddle-js@1.5.0':
+    resolution: {integrity: sha512-/RfqlOFS5jllsHlDuvH5ub7QH9sTVi0+bV9wqQaSF/+JyqxdqiTUIqTUquCC+pAieUchhTocAWwCDUwisOn5qg==}
 
   '@paddle/paddle-node-sdk@2.8.0':
     resolution: {integrity: sha512-7SeFdE1k8j4Lme0A4SvPh3ak2e4HLtmTwsxEcQeWWSwy3vcwMSoE8hpHKGkqgHWdLV71FKFCMn9RYJFtbUb4Zg==}
@@ -6050,6 +6056,8 @@ snapshots:
       fastq: 1.19.1
 
   '@nolyfill/is-core-module@1.0.39': {}
+
+  '@paddle/paddle-js@1.5.0': {}
 
   '@paddle/paddle-node-sdk@2.8.0': {}
 
