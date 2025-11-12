@@ -45,23 +45,26 @@ export const CreateOrganization = async (
       iat: number
       orgIds?: string[]
     }
-    const plan = await getUserPlan()
-    const orgCount = await db.query.organization.findMany({
-      where: eq(organization.userId, decoded.id),
-    })
-    if (plan.plan === "FREE" && orgCount.length >= 1) {
-      throw {
-        status: 403,
-        toast:
-          "Free plan allows only one organization. Upgrade to Pro or Ultimate.",
-      }
-    }
+    if (input.mode === "add") {
+      const plan = await getUserPlan()
+      const orgCount = await db.query.organization.findMany({
+        where: eq(organization.userId, decoded.id),
+      })
 
-    if (plan.plan === "PRO" && orgCount.length >= 1) {
-      throw {
-        status: 403,
-        toast:
-          "Pro plan allows only one organization. Upgrade to Ultimate for more.",
+      if (plan.plan === "FREE" && orgCount.length >= 1) {
+        throw {
+          status: 403,
+          toast:
+            "Free plan allows only one organization. Upgrade to Pro or Ultimate.",
+        }
+      }
+
+      if (plan.plan === "PRO" && orgCount.length >= 1) {
+        throw {
+          status: 403,
+          toast:
+            "Pro plan allows only one organization. Upgrade to Ultimate for more.",
+        }
       }
     }
 
@@ -75,7 +78,6 @@ export const CreateOrganization = async (
     const existingDomain = await db.query.websiteDomain.findFirst({
       where: eq(websiteDomain.domainName, normalizedDomain),
     })
-
     if (existingDomain) {
       throw {
         status: 409,
@@ -95,6 +97,7 @@ export const CreateOrganization = async (
       .returning()
 
     if (!newOrg) throw { status: 500, toast: "Failed to create org" }
+
     await db.insert(websiteDomain).values({
       orgId: newOrg.id,
       domainName: normalizedDomain,
