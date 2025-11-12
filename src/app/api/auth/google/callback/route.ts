@@ -13,6 +13,7 @@ import {
   team,
 } from "@/db/schema"
 import { buildAffiliateUrl } from "@/util/Url"
+import { assignFreeTrialSubscription } from "@/lib/server/assignFreeTrial"
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID!
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!
@@ -169,6 +170,7 @@ export async function GET(req: Request) {
             providerAccountId: googleSub,
             emailVerified: new Date(),
           })
+          await assignFreeTrialSubscription(createdUser.id)
         }
       }
 
@@ -234,7 +236,7 @@ export async function GET(req: Request) {
           and(eq(aa.provider, "google"), eq(aa.providerAccountId, googleSub)),
       })
 
-      let aff: any = null
+      let aff: any
 
       if (linkedAffAcc) {
         aff = await db.query.affiliate.findFirst({

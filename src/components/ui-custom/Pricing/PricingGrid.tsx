@@ -38,8 +38,8 @@ export function PricingGrid({
     const isSubscriptionMode = billingType === "SUBSCRIPTION"
     const isPurchaseMode = billingType === "PURCHASE"
 
-    // 🧠 0. Free users or no active plan
-    if (!plan) {
+    // 🧠 0. No active plan → directly open checkout
+    if (!plan || plan.plan === "FREE") {
       if (isSubscriptionMode) {
         openCheckout({
           type: "SUBSCRIPTION",
@@ -52,17 +52,18 @@ export function PricingGrid({
       return
     }
 
-    // 🧠 1. Handle when current plan is a SUBSCRIPTION
-    if (plan.type === "SUBSCRIPTION") {
+    // 🧠 1. Handle active paid SUBSCRIPTION users (PRO or ULTIMATE)
+    if (
+      plan.type === "SUBSCRIPTION" &&
+      (plan.plan === "PRO" || plan.plan === "ULTIMATE")
+    ) {
       if (isSubscriptionMode) {
-        // Already subscribed → show dialog to manage instead of repurchase
         setDialogText(
           `You're already subscribed. To upgrade or change your ${targetPlan} plan, please use the customer portal.`
         )
         setDialogOpen(true)
         return
       } else if (isPurchaseMode) {
-        // Trying to buy a one-time bundle while already subscribed
         setDialogText(
           `You need to cancel your current subscription before purchasing the ${targetPlan} bundle.`
         )
@@ -85,7 +86,7 @@ export function PricingGrid({
       return
     }
 
-    // 🧠 3. Free users upgrading
+    // 🧠 3. Fallback: open checkout normally
     if (isSubscriptionMode) {
       openCheckout({
         type: "SUBSCRIPTION",

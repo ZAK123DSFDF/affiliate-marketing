@@ -1,8 +1,8 @@
 import { db } from "@/db/drizzle"
 import { affiliateClick, affiliateLink, organization } from "@/db/schema"
 import { NextRequest, NextResponse } from "next/server"
-import { shouldTrackTransaction } from "@/lib/server/tracking"
 import { eq } from "drizzle-orm"
+import { shouldTrackUser } from "@/lib/server/shouldTrackUser"
 
 // CORS headers for all origins
 const corsHeaders = {
@@ -38,18 +38,14 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const track = await shouldTrackTransaction(
-      affiliateLinkRecord.orgId,
-      affiliateLinkRecord.linkId
-    )
-
-    if (!track) {
+    const shouldTrack = await shouldTrackUser(affiliateLinkRecord.orgId)
+    if (!shouldTrack) {
       return new NextResponse(
-        JSON.stringify({ success: false, reason: "Free plan limit exceeded" }),
-        {
-          status: 200,
-          headers: corsHeaders,
-        }
+        JSON.stringify({
+          success: false,
+          reason: "Tracking disabled for expired or unknown plan",
+        }),
+        { status: 200, headers: corsHeaders }
       )
     }
     await db.insert(affiliateClick).values({

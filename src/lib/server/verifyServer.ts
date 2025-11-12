@@ -14,6 +14,7 @@ import { eq } from "drizzle-orm"
 import { db } from "@/db/drizzle"
 import { getBaseUrl } from "@/lib/server/getBaseUrl"
 import { buildAffiliateUrl } from "@/util/Url"
+import { assignFreeTrialSubscription } from "@/lib/server/assignFreeTrial"
 
 type VerifyServerProps = {
   token: string
@@ -97,6 +98,7 @@ export const VerifyServer = async ({
             .set({ emailVerified: new Date() })
             .where(eq(account.id, userAccount.id))
         }
+        await assignFreeTrialSubscription(sessionPayload.id)
       } else {
         const affiliateAcc = await db.query.affiliateAccount.findFirst({
           where: (aa, { and, eq }) =>
