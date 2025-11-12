@@ -31,6 +31,9 @@ export const paddleConfig = {
       ULTIMATE: isProd
         ? process.env.NEXT_PUBLIC_PADDLE_PRICE_BUY_ULTIMATE_PRODUCTION!
         : process.env.NEXT_PUBLIC_PADDLE_PRICE_BUY_ULTIMATE_SANDBOX!,
+      ULTIMATE_UPGRADE_FROM_PRO: isProd
+        ? process.env.NEXT_PUBLIC_PADDLE_PRICE_BUY_ULTIMATE_UPGRADE_PRODUCTION!
+        : process.env.NEXT_PUBLIC_PADDLE_PRICE_BUY_ULTIMATE_UPGRADE_SANDBOX!,
     },
   },
   portal: isProd

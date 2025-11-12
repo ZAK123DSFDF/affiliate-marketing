@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { initializePaddle, Paddle } from "@paddle/paddle-js"
 import { paddleConfig } from "@/util/PaddleConfig"
+import { PlanInfo } from "@/lib/types/planInfo" // 👈 assuming you already have this type
 
 type SubscriptionCycle = "MONTHLY" | "YEARLY"
 
@@ -10,6 +11,7 @@ type CheckoutParams =
   | {
       type: "PURCHASE"
       plan: "PRO" | "ULTIMATE"
+      currentPlan?: PlanInfo | null // 👈 add current plan info
       quantity?: number
     }
   | {
@@ -51,7 +53,15 @@ export function usePaddleCheckout() {
 
     let priceId: string | undefined
 
-    if (params.type === "SUBSCRIPTION") {
+    // 🧩 Special case: Upgrade from PRO → ULTIMATE one-time
+    if (
+      params.type === "PURCHASE" &&
+      params.plan === "ULTIMATE" &&
+      params.currentPlan?.type === "PURCHASE" &&
+      params.currentPlan?.plan === "PRO"
+    ) {
+      priceId = paddleConfig.priceIds.PURCHASE.ULTIMATE_UPGRADE_FROM_PRO
+    } else if (params.type === "SUBSCRIPTION") {
       priceId = paddleConfig.priceIds.SUBSCRIPTION[params.cycle][params.plan]
     } else {
       priceId = paddleConfig.priceIds.PURCHASE[params.plan]

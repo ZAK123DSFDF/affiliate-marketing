@@ -93,7 +93,7 @@ export function PricingGrid({
           cycle: subscriptionCycle || "MONTHLY",
         })
       } else {
-        openCheckout({ type: "PURCHASE", plan: targetPlan })
+        openCheckout({ type: "PURCHASE", plan: targetPlan, currentPlan: plan })
       }
       return
     }
@@ -106,7 +106,7 @@ export function PricingGrid({
         cycle: subscriptionCycle || "MONTHLY",
       })
     } else {
-      openCheckout({ type: "PURCHASE", plan: targetPlan })
+      openCheckout({ type: "PURCHASE", plan: targetPlan, currentPlan: plan })
     }
   }
 
