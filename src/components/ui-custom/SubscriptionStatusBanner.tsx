@@ -5,6 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { AlertTriangle } from "lucide-react"
 import type { PlanInfo } from "@/lib/types/planInfo"
+import { usePaddlePortal } from "@/hooks/usePaddlePortal"
 
 interface SubscriptionStatusBannerProps {
   plan: PlanInfo
@@ -17,6 +18,7 @@ export function SubscriptionStatusBanner({
 }: SubscriptionStatusBannerProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const { openPortal } = usePaddlePortal(orgId)
   const { plan: planName, type: planType } = plan
 
   if (pathname.includes("/pricing")) return null
@@ -28,9 +30,7 @@ export function SubscriptionStatusBanner({
         router.push(`/organization/${orgId}/dashboard/pricing`)
       } else if (planName === "PRO" || planName === "ULTIMATE") {
         // ✅ PRO or ULTIMATE expired → just log for now
-        console.log(
-          `Renew clicked for ${planName} subscription (expired) — show renewal flow here later.`
-        )
+        openPortal()
       }
     }
 

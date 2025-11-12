@@ -30,6 +30,8 @@ import { OrganizationData } from "@/lib/types/profileTypes"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
 import { PlanInfo } from "@/lib/types/planInfo"
 import { Button } from "@/components/ui/button"
+import { paddleConfig } from "@/util/PaddleConfig"
+import { usePaddlePortal } from "@/hooks/usePaddlePortal"
 
 // Menu items for the sidebar
 
@@ -91,6 +93,7 @@ const OrganizationDashboardSidebar = ({
   const [dialogMode, setDialogMode] = useState<
     "create" | "upgrade" | "expired"
   >("create")
+  const { openPortal } = usePaddlePortal(orgId)
 
   const handleClick = () => {
     setSelectOpen(false)
@@ -205,9 +208,7 @@ const OrganizationDashboardSidebar = ({
                       } else if (plan.type === "PURCHASE") {
                         router.push(`/organization/${orgId}/dashboard/pricing`)
                       } else if (plan.type === "SUBSCRIPTION") {
-                        console.log(
-                          "User has a subscription plan — show Paddle upgrade flow"
-                        )
+                        openPortal()
                       }
                     }, 150)
                   }
@@ -223,7 +224,7 @@ const OrganizationDashboardSidebar = ({
                           plan.plan === "PRO" ||
                           plan.plan === "ULTIMATE"
                         ) {
-                          console.log(`Renew ${plan.plan} subscription clicked`)
+                          openPortal()
                         }
                       }, 150)
                     }
@@ -288,10 +289,7 @@ const OrganizationDashboardSidebar = ({
         {(plan.type === "SUBSCRIPTION" || plan.type === "EXPIRED") &&
           (plan.plan === "PRO" || plan.plan === "ULTIMATE") && (
             <>
-              <Button
-                className="w-full"
-                onClick={() => console.log("🧾 Redirect to Paddle portal")}
-              >
+              <Button className="w-full" onClick={openPortal}>
                 Manage Subscription
               </Button>
 

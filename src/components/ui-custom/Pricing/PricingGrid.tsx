@@ -10,6 +10,7 @@ import { FeatureList } from "@/lib/types/FeatureList"
 import { PricingCard } from "@/components/ui-custom/Pricing/PricingCard"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
 import { usePaddleCheckout } from "@/hooks/usePaddleCheckout"
+import { usePaddlePortal } from "@/hooks/usePaddlePortal"
 
 export function PricingGrid({
   billingType,
@@ -28,6 +29,7 @@ export function PricingGrid({
 }) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [dialogText, setDialogText] = useState("")
+  const { openPortal } = usePaddlePortal()
   const { openCheckout } = usePaddleCheckout()
   const handleBuyClick = (targetPlan: PlanInfo["plan"]) => {
     if (targetPlan === "FREE") {
@@ -215,9 +217,9 @@ export function PricingGrid({
         onOpenChange={setDialogOpen}
         title="Cancel Subscription First"
         description={dialogText}
-        confirmText="Cancel"
+        confirmText="Cancel Subscription"
         onConfirm={() => {
-          console.log("User acknowledged cancel-subscription warning")
+          openPortal()
           setDialogOpen(false)
         }}
         affiliate={false}
