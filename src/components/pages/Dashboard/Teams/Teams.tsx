@@ -31,6 +31,8 @@ import PaginationControls from "@/components/ui-custom/PaginationControls"
 import { useQueryClient } from "@tanstack/react-query"
 import { PlanInfo } from "@/lib/types/planInfo"
 import { useRouter } from "next/navigation"
+import { usePaddlePortal } from "@/hooks/usePaddlePortal"
+import { handlePlanRedirect } from "@/util/HandlePlanRedirect"
 
 const inviteSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -67,6 +69,7 @@ export default function Teams({
   const queryClient = useQueryClient()
   const { filters, setFilters } = useQueryFilter()
   const router = useRouter()
+  const { openPortal } = usePaddlePortal(orgId)
   // Fetch teams
   const {
     data: searchData,
@@ -298,17 +301,10 @@ export default function Teams({
         }
         onConfirm={() => {
           setUpgradeDialog(false)
-          setTimeout(() => {
-            if (
-              (plan.type === "EXPIRED" && plan.plan === "FREE") ||
-              plan.plan === "FREE" ||
-              plan.type === "PURCHASE"
-            ) {
-              router.push(`/organization/${orgId}/dashboard/pricing`)
-            } else if (plan.type === "SUBSCRIPTION") {
-              console.log("Redirect to subscription upgrade flow 🚀")
-            }
-          }, 150)
+          setTimeout(
+            () => handlePlanRedirect(plan, orgId, openPortal, router),
+            150
+          )
         }}
         affiliate={affiliate}
       >

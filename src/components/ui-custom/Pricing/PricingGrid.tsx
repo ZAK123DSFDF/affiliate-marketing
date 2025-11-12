@@ -76,6 +76,16 @@ export function PricingGrid({
 
     // 🧠 2. Handle EXPIRED plans
     if (plan.type === "EXPIRED") {
+      // ⚠️ If plan is PRO/ULTIMATE and user tries to buy one-time → show dialog to cancel first
+      if ((plan.plan === "PRO" || plan.plan === "ULTIMATE") && isPurchaseMode) {
+        setDialogText(
+          `Your ${plan.plan} subscription has expired, but you still need to cancel it from your portal before purchasing a one-time ${targetPlan} bundle.`
+        )
+        setDialogOpen(true)
+        return
+      }
+
+      // Otherwise (if subscription mode or lower plan), proceed as usual
       if (isSubscriptionMode) {
         openCheckout({
           type: "SUBSCRIPTION",

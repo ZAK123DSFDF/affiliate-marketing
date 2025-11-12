@@ -32,6 +32,7 @@ import { PlanInfo } from "@/lib/types/planInfo"
 import { Button } from "@/components/ui/button"
 import { paddleConfig } from "@/util/PaddleConfig"
 import { usePaddlePortal } from "@/hooks/usePaddlePortal"
+import { handlePlanRedirect } from "@/util/HandlePlanRedirect"
 
 // Menu items for the sidebar
 
@@ -93,6 +94,7 @@ const OrganizationDashboardSidebar = ({
   const [dialogMode, setDialogMode] = useState<
     "create" | "upgrade" | "expired"
   >("create")
+  const router = useRouter()
   const { openPortal } = usePaddlePortal(orgId)
 
   const handleClick = () => {
@@ -141,7 +143,6 @@ const OrganizationDashboardSidebar = ({
   const currentOrg = orgs?.find((o) => o.id === orgId)
   const canCreate =
     plan.plan === "ULTIMATE" || (plan.plan === "PRO" && orgs.length < 1)
-  const router = useRouter()
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center justify-center py-4">
@@ -199,36 +200,16 @@ const OrganizationDashboardSidebar = ({
                   : "OK"
             }
             onConfirm={
-              dialogMode === "upgrade"
+              dialogMode === "upgrade" || dialogMode === "expired"
                 ? () => {
                     setDialogOpen(false)
-                    setTimeout(() => {
-                      if (plan.plan === "FREE") {
-                        router.push(`/organization/${orgId}/dashboard/pricing`)
-                      } else if (plan.type === "PURCHASE") {
-                        router.push(`/organization/${orgId}/dashboard/pricing`)
-                      } else if (plan.type === "SUBSCRIPTION") {
-                        openPortal()
-                      }
-                    }, 150)
+                    setTimeout(
+                      () =>
+                        handlePlanRedirect(plan, orgId!, openPortal, router),
+                      150
+                    )
                   }
-                : dialogMode === "expired"
-                  ? () => {
-                      setDialogOpen(false)
-                      setTimeout(() => {
-                        if (plan.plan === "FREE") {
-                          router.push(
-                            `/organization/${orgId}/dashboard/pricing`
-                          )
-                        } else if (
-                          plan.plan === "PRO" ||
-                          plan.plan === "ULTIMATE"
-                        ) {
-                          openPortal()
-                        }
-                      }, 150)
-                    }
-                  : undefined
+                : undefined
             }
             showFooter={dialogMode === "upgrade" || dialogMode === "expired"}
           >
