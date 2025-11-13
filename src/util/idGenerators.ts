@@ -10,3 +10,7 @@ export const generateAffiliatePaymentLinkId = () => {
   return `pay_${nanoid()}`
 }
 export const generateExpirationDateId = customAlphabet(alphabet, 8)
+export function generatePaddleId(prefix: "sub" | "pur") {
+  const random = Math.random().toString(36).substring(2, 10)
+  return `${prefix}_${random}`
+}

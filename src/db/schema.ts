@@ -20,6 +20,7 @@ import {
   generateDomainId,
   generateInviteLinkId,
   generateOrganizationId,
+  generatePaddleId,
 } from "@/util/idGenerators"
 export const roleEnum = pgEnum("role", ["OWNER", "ADMIN", "TEAM"])
 export const accountTypeEnum = pgEnum("account_type", [
@@ -46,10 +47,7 @@ export const billingIntervalEnum = pgEnum("billing_interval", [
   "MONTHLY",
   "YEARLY",
 ])
-export const purchaseTierEnum = pgEnum("purchase_tier", [
-  "ONE_TIME_100",
-  "ONE_TIME_200",
-])
+export const purchaseTierEnum = pgEnum("purchase_tier", ["PRO", "ULTIMATE"])
 export const attributionModelEnum = pgEnum("attribution_model", [
   "FIRST_CLICK",
   "LAST_CLICK",
@@ -123,7 +121,9 @@ export const account = pgTable("account", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
 export const subscription = pgTable("subscription", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => generatePaddleId("sub")),
   userId: uuid("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
@@ -136,7 +136,9 @@ export const subscription = pgTable("subscription", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 })
 export const purchase = pgTable("purchase", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => generatePaddleId("pur")),
   userId: uuid("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),

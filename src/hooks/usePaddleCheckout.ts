@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react"
 import { initializePaddle, Paddle } from "@paddle/paddle-js"
 import { paddleConfig } from "@/util/PaddleConfig"
-import { PlanInfo } from "@/lib/types/planInfo" // 👈 assuming you already have this type
+import { PlanInfo } from "@/lib/types/planInfo"
+import { getOrganizationToken } from "@/lib/server/getOrganizationToken" // 👈 assuming you already have this type
 
 type SubscriptionCycle = "MONTHLY" | "YEARLY"
 
@@ -45,7 +46,7 @@ export function usePaddleCheckout() {
       window.removeEventListener("paddle-event", handleCheckoutComplete)
   }, [paddle])
 
-  const openCheckout = (params: CheckoutParams) => {
+  const openCheckout = async (params: CheckoutParams) => {
     if (!paddle) {
       alert("Paddle not initialized yet.")
       return
@@ -71,9 +72,12 @@ export function usePaddleCheckout() {
       console.error(`❌ Missing price ID for ${params.type} → ${params.plan}`)
       return
     }
-
+    const organizationToken = await getOrganizationToken()
     paddle.Checkout.open({
       items: [{ priceId, quantity: params.quantity ?? 1 }],
+      customData: {
+        organizationToken,
+      },
       settings: {
         displayMode: "overlay",
         theme: "light",

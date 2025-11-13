@@ -408,7 +408,7 @@ export const user_seed = [
 ]
 export const subscription_seed = [
   {
-    id: "9d1b52c3-11a8-48b9-812a-142d5bb9c9cf",
+    id: "sub_01k9xy70e1jds4mmtzr5qex4ak",
     userId: "29022934-eb52-49af-aca4-b6ed553c89dd",
     plan: "FREE" as const,
     billingInterval: "MONTHLY" as const,
