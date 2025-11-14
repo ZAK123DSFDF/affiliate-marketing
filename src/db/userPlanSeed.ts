@@ -78,11 +78,11 @@ async function main() {
       },
       {
         title: "Pro One-Time Purchase",
-        value: { plan: "ONE_TIME_100", type: "PURCHASE" },
+        value: { plan: "PRO", type: "PURCHASE" },
       },
       {
         title: "Ultimate One-Time Purchase",
-        value: { plan: "ONE_TIME_200", type: "PURCHASE" },
+        value: { plan: "ULTIMATE", type: "PURCHASE" },
       },
     ],
   })
