@@ -35,8 +35,8 @@ export async function getUserPlan(): Promise<PlanInfo> {
   // ✅ If user made one-time purchase
   if (userPurchase) {
     let mappedPlan: PlanInfo["plan"] = "PRO"
-    if (userPurchase.tier === "ONE_TIME_200") mappedPlan = "ULTIMATE"
-    if (userPurchase.tier === "ONE_TIME_100") mappedPlan = "PRO"
+    if (userPurchase.tier === "ULTIMATE") mappedPlan = "ULTIMATE"
+    if (userPurchase.tier === "PRO") mappedPlan = "PRO"
 
     return { plan: mappedPlan, type: "PURCHASE" }
   }

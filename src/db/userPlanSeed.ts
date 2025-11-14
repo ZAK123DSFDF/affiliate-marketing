@@ -35,8 +35,8 @@ async function devSetUserPlan({
     else if (type === "PURCHASE") {
       await db.insert(purchase).values({
         userId,
-        tier: plan as "ONE_TIME_100" | "ONE_TIME_200",
-        price: plan === "ONE_TIME_100" ? "100" : "200",
+        tier: plan as "PRO" | "ULTIMATE",
+        price: plan === "PRO" ? "85" : "125",
         currency: "USD",
       })
     }
