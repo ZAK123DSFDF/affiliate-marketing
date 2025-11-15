@@ -24,16 +24,18 @@ export async function getUserPlan(): Promise<PlanInfo> {
       return {
         plan: userSub.plan as PlanInfo["plan"],
         type: "SUBSCRIPTION",
+        cycle: userSub.billingInterval as PlanInfo["cycle"],
       }
     }
     return {
       plan: userSub.plan as PlanInfo["plan"], // keep the original plan (e.g. PRO or ULTIMATE)
       type: "EXPIRED",
+      cycle: userSub.billingInterval as PlanInfo["cycle"],
     }
   }
 
   // ✅ If user made one-time purchase
-  if (userPurchase) {
+  if (userPurchase && userPurchase.isActive) {
     let mappedPlan: PlanInfo["plan"] = "PRO"
     if (userPurchase.tier === "ULTIMATE") mappedPlan = "ULTIMATE"
     if (userPurchase.tier === "PRO") mappedPlan = "PRO"

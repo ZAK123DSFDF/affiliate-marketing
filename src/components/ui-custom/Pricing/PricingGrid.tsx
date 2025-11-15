@@ -169,10 +169,24 @@ export function PricingGrid({
 
   const isDisabled = (targetPlan: PlanInfo["plan"]) => {
     if (!plan) return false
-    if (plan.type === billingType) {
-      if (plan.plan === "ULTIMATE") return true
-      if (plan.plan === "PRO" && targetPlan === "PRO") return true
+
+    // Different billing type → always enabled
+    if (plan.type !== billingType) return false
+
+    // Ultimate is the max — but allow cycle upgrade
+    if (plan.plan === "ULTIMATE") {
+      return !(
+        billingType === "SUBSCRIPTION" && plan.cycle !== subscriptionCycle
+      )
     }
+
+    // PRO plan → disable ONLY if cycle is the same
+    if (plan.plan === "PRO" && targetPlan === "PRO") {
+      return !(
+        billingType === "SUBSCRIPTION" && plan.cycle !== subscriptionCycle
+      )
+    }
+
     return false
   }
 

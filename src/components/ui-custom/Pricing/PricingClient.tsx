@@ -86,6 +86,9 @@ export default function PricingClient({
       ((currentType === "SUBSCRIPTION" && billingType === "SUBSCRIPTION") ||
         (currentType === "PURCHASE" && billingType === "PURCHASE"))
     ) {
+      if (plan.cycle !== subscriptionCycle) {
+        return `Upgrade to ${currentPlan === "PRO" ? "Pro" : "Ultimate"}`
+      }
       return "Current Plan"
     }
 

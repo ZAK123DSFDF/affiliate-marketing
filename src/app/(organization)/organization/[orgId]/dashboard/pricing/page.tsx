@@ -4,9 +4,7 @@ import PricingClient from "@/components/ui-custom/Pricing/PricingClient"
 export default async function PricingPage() {
   const plan = await getUserPlan()
   const showSubscription = !(
-    (plan?.type === "PURCHASE" ||
-      plan?.type === "SUBSCRIPTION" ||
-      (plan?.type !== "FREE" && plan?.type === "EXPIRED")) &&
+    plan?.type === "PURCHASE" &&
     (plan?.plan === "PRO" || plan?.plan === "ULTIMATE")
   )
 

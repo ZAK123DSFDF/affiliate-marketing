@@ -41,6 +41,21 @@ export const payoutProviderEnum = pgEnum("payout_provider", [
   "wise",
   "payoneer",
 ])
+export const changeTypeEnum = pgEnum("change_type", [
+  "SUBSCRIPTION",
+  "ONE_TIME",
+])
+export const applyChangeAtEnum = pgEnum("apply_change_at", [
+  "RENEWAL",
+  "IMMEDIATE",
+])
+export const purchaseReasonEnum = pgEnum("purchase_reason", [
+  "UPGRADE_NO_BILL",
+  "UPGRADE_PRORATED",
+  "DOWNGRADE_NO_BILL",
+  "DOWNGRADE_IMMEDIATE",
+  "CONVERT_TO_ONE_TIME",
+])
 export const planEnum = pgEnum("plan", ["FREE", "PRO", "ULTIMATE"])
 
 export const billingIntervalEnum = pgEnum("billing_interval", [
@@ -131,6 +146,10 @@ export const subscription = pgTable("subscription", {
   billingInterval: billingIntervalEnum("billing_interval"),
   currency: text("currency").default("USD"),
   price: numeric("price", { precision: 10, scale: 2 }),
+  pendingPlan: planEnum("pending_plan"),
+  pendingBillingInterval: billingIntervalEnum("pending_billing_interval"),
+  pendingType: changeTypeEnum("pending_type"),
+  applyChangeAt: applyChangeAtEnum("apply_change_at"),
   expiresAt: timestamp("expires_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
@@ -145,7 +164,22 @@ export const purchase = pgTable("purchase", {
   tier: purchaseTierEnum("tier").notNull(),
   price: numeric("price", { precision: 10, scale: 2 }).notNull(),
   currency: text("currency").default("USD"),
+  isActive: boolean("is_active").default(true),
+  reason: purchaseReasonEnum("reason"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+})
+export const paddleCustomer = pgTable("paddle_customer", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+
+  // Paddle's own customerId
+  customerId: text("customer_id").notNull(),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
 // ORGANIZATION SCHEMA
 export const organization = pgTable("organization", {
@@ -220,9 +254,7 @@ export const payoutReference = pgTable("payout_reference", {
   affiliateId: uuid("affiliate_id")
     .notNull()
     .references(() => affiliate.id, { onDelete: "cascade" }),
-
   isUnpaid: boolean("is_unpaid").notNull().default(false),
-
   createdAt: timestamp("created_at").notNull().defaultNow(),
 })
 export const payoutReferencePeriods = pgTable(
