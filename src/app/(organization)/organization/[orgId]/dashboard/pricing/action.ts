@@ -12,7 +12,7 @@ export async function updateSubscriptionAction({
 }: {
   subscriptionId: string
   targetPlan: "PRO" | "ULTIMATE"
-  targetCycle: "MONTHLY" | "YEARLY"
+  targetCycle?: "MONTHLY" | "YEARLY"
   mode: "PRORATE" | "DO_NOT_BILL"
   modeType: "SUB_TO_SUB" | "SUB_TO_ONE_TIME"
 }): Promise<MutationData> {

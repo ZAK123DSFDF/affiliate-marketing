@@ -146,11 +146,10 @@ export const subscription = pgTable("subscription", {
   billingInterval: billingIntervalEnum("billing_interval"),
   currency: text("currency").default("USD"),
   price: numeric("price", { precision: 10, scale: 2 }),
-  pendingPlan: planEnum("pending_plan"),
-  pendingBillingInterval: billingIntervalEnum("pending_billing_interval"),
-  pendingType: changeTypeEnum("pending_type"),
-  applyChangeAt: applyChangeAtEnum("apply_change_at"),
   expiresAt: timestamp("expires_at", { withTimezone: true }),
+  subscriptionChangeAt: timestamp("subscription_change_at", {
+    withTimezone: true,
+  }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 })
@@ -167,19 +166,6 @@ export const purchase = pgTable("purchase", {
   isActive: boolean("is_active").default(true),
   reason: purchaseReasonEnum("reason"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-})
-export const paddleCustomer = pgTable("paddle_customer", {
-  id: uuid("id").primaryKey().defaultRandom(),
-
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-
-  // Paddle's own customerId
-  customerId: text("customer_id").notNull(),
-
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
 // ORGANIZATION SCHEMA
 export const organization = pgTable("organization", {

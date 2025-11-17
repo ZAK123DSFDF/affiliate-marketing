@@ -100,7 +100,17 @@ export default function PricingClient({
         return "Upgrade to Pro"
       if (targetPlan === "ULTIMATE" && currentPlan !== "ULTIMATE")
         return "Upgrade to Ultimate"
-
+      if (
+        currentPlan === "ULTIMATE" &&
+        targetPlan === "PRO" &&
+        billingType === "SUBSCRIPTION"
+      ) {
+        // Same cycle → switching plan only
+        if (plan.cycle === subscriptionCycle) {
+          return "Switch to Pro"
+        }
+        return "Upgrade to Pro"
+      }
       return "Upgrade Plan"
     }
 

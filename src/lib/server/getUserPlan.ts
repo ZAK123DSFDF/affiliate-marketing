@@ -25,12 +25,14 @@ export async function getUserPlan(): Promise<PlanInfo> {
         plan: userSub.plan as PlanInfo["plan"],
         type: "SUBSCRIPTION",
         cycle: userSub.billingInterval as PlanInfo["cycle"],
+        subscriptionId: userSub.id,
       }
     }
     return {
       plan: userSub.plan as PlanInfo["plan"], // keep the original plan (e.g. PRO or ULTIMATE)
       type: "EXPIRED",
       cycle: userSub.billingInterval as PlanInfo["cycle"],
+      subscriptionId: userSub.id,
     }
   }
 

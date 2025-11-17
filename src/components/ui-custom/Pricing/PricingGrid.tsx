@@ -10,7 +10,8 @@ import { FeatureList } from "@/lib/types/FeatureList"
 import { PricingCard } from "@/components/ui-custom/Pricing/PricingCard"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
 import { usePaddleCheckout } from "@/hooks/usePaddleCheckout"
-import { usePaddlePortal } from "@/hooks/usePaddlePortal"
+import { useAppMutation } from "@/hooks/useAppMutation"
+import { updateSubscriptionAction } from "@/app/(organization)/organization/[orgId]/dashboard/pricing/action"
 
 export function PricingGrid({
   billingType,
@@ -28,9 +29,24 @@ export function PricingGrid({
   getButtonText: (p: PlanInfo["plan"], t: PlanInfo["type"]) => string
 }) {
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [dialogText, setDialogText] = useState("")
-  const { openPortal } = usePaddlePortal()
+  const [pendingUpgrade, setPendingUpgrade] = useState<null | {
+    subscriptionId: string
+    targetPlan: Exclude<PlanInfo["plan"], "FREE">
+    targetCycle?: SubscriptionCycle
+    mode: "PRORATE" | "DO_NOT_BILL"
+    modeType: "SUB_TO_SUB" | "SUB_TO_ONE_TIME"
+  }>(null)
   const { openCheckout } = usePaddleCheckout()
+  const mutation = useAppMutation(updateSubscriptionAction, {
+    onSuccess: () => {
+      if (pendingUpgrade?.modeType === "SUB_TO_ONE_TIME") {
+        openCheckout({
+          type: "PURCHASE",
+          plan: pendingUpgrade.targetPlan,
+        }).then(() => console.log("Checkout closed"))
+      }
+    },
+  })
   const handleBuyClick = (targetPlan: PlanInfo["plan"]) => {
     if (targetPlan === "FREE") {
       // No checkout needed for Free tier
@@ -47,9 +63,11 @@ export function PricingGrid({
           type: "SUBSCRIPTION",
           plan: targetPlan,
           cycle: subscriptionCycle || "MONTHLY",
-        })
+        }).then(() => console.log("Checkout closed"))
       } else {
-        openCheckout({ type: "PURCHASE", plan: targetPlan })
+        openCheckout({ type: "PURCHASE", plan: targetPlan }).then(() =>
+          console.log("Checkout closed")
+        )
       }
       return
     }
@@ -59,16 +77,32 @@ export function PricingGrid({
       plan.type === "SUBSCRIPTION" &&
       (plan.plan === "PRO" || plan.plan === "ULTIMATE")
     ) {
+      if (!plan.subscriptionId) {
+        return
+      }
       if (isSubscriptionMode) {
-        setDialogText(
-          `You're already subscribed. To upgrade or change your ${targetPlan} plan, please use the customer portal.`
-        )
+        setPendingUpgrade({
+          subscriptionId: plan.subscriptionId,
+          targetPlan,
+          targetCycle: subscriptionCycle || "MONTHLY",
+          mode: "PRORATE",
+          modeType: "SUB_TO_SUB",
+        })
         setDialogOpen(true)
         return
-      } else if (isPurchaseMode) {
-        setDialogText(
-          `You need to cancel your current subscription before purchasing the ${targetPlan} bundle.`
-        )
+      }
+
+      if (isPurchaseMode) {
+        let mode: "PRORATE" | "DO_NOT_BILL" = "PRORATE"
+        if (plan.plan === "ULTIMATE" && targetPlan === "PRO") {
+          mode = "DO_NOT_BILL"
+        }
+        setPendingUpgrade({
+          subscriptionId: plan.subscriptionId,
+          targetPlan,
+          mode,
+          modeType: "SUB_TO_ONE_TIME",
+        })
         setDialogOpen(true)
         return
       }
@@ -76,26 +110,32 @@ export function PricingGrid({
 
     // 🧠 2. Handle EXPIRED plans
     if (plan.type === "EXPIRED") {
-      // ⚠️ If plan is PRO/ULTIMATE and user tries to buy one-time → show dialog to cancel first
-      if ((plan.plan === "PRO" || plan.plan === "ULTIMATE") && isPurchaseMode) {
-        setDialogText(
-          `Your ${plan.plan} subscription has expired, but you still need to cancel it from your portal before purchasing a one-time ${targetPlan} bundle.`
-        )
+      if (!plan.subscriptionId) {
+        return
+      }
+
+      if (isSubscriptionMode) {
+        setPendingUpgrade({
+          subscriptionId: plan.subscriptionId,
+          targetPlan,
+          targetCycle: subscriptionCycle || "MONTHLY",
+          mode: "PRORATE",
+          modeType: "SUB_TO_SUB",
+        })
         setDialogOpen(true)
         return
       }
 
-      // Otherwise (if subscription mode or lower plan), proceed as usual
-      if (isSubscriptionMode) {
-        openCheckout({
-          type: "SUBSCRIPTION",
-          plan: targetPlan,
-          cycle: subscriptionCycle || "MONTHLY",
+      if (isPurchaseMode) {
+        setPendingUpgrade({
+          subscriptionId: plan.subscriptionId,
+          targetPlan,
+          mode: "PRORATE",
+          modeType: "SUB_TO_ONE_TIME",
         })
-      } else {
-        openCheckout({ type: "PURCHASE", plan: targetPlan, currentPlan: plan })
+        setDialogOpen(true)
+        return
       }
-      return
     }
 
     // 🧠 3. Fallback: open checkout normally
@@ -104,9 +144,13 @@ export function PricingGrid({
         type: "SUBSCRIPTION",
         plan: targetPlan,
         cycle: subscriptionCycle || "MONTHLY",
-      })
+      }).then(() => console.log("Checkout closed"))
     } else {
-      openCheckout({ type: "PURCHASE", plan: targetPlan, currentPlan: plan })
+      openCheckout({
+        type: "PURCHASE",
+        plan: targetPlan,
+        currentPlan: plan,
+      }).then(() => console.log("Checkout closed"))
     }
   }
 
@@ -166,25 +210,69 @@ export function PricingGrid({
     const percent = Math.round(((oldNum - newNum) / oldNum) * 100)
     return percent > 0 ? percent : null
   }
+  function getDialogMessage(
+    plan: PlanInfo | null,
+    pending: NonNullable<typeof pendingUpgrade>
+  ) {
+    // Only care about SUB → PURCHASE transitions
+    if (pending.modeType !== "SUB_TO_ONE_TIME") return ""
 
-  const isDisabled = (targetPlan: PlanInfo["plan"]) => {
-    if (!plan) return false
-
-    // Different billing type → always enabled
-    if (plan.type !== billingType) return false
-
-    // Ultimate is the max — but allow cycle upgrade
-    if (plan.plan === "ULTIMATE") {
-      return !(
-        billingType === "SUBSCRIPTION" && plan.cycle !== subscriptionCycle
-      )
+    // If expired → fallback to generic dialog text
+    if (!plan || plan.type === "EXPIRED") {
+      return `Upgrade to ${pending.targetPlan} one-time?`
     }
 
-    // PRO plan → disable ONLY if cycle is the same
+    const isUltimateToPro =
+      plan.plan === "ULTIMATE" && pending.targetPlan === "PRO"
+
+    const isProToUltimate =
+      plan.plan === "PRO" && pending.targetPlan === "ULTIMATE"
+
+    const isSameTier = plan.plan === pending.targetPlan
+
+    // 1️⃣ ULTIMATE → PRO downgrade
+    if (isUltimateToPro) {
+      return `Your current ULTIMATE subscription will stay active until the end of your billing period.
+Are you sure you want to buy the PRO one-time plan now?
+It will only be applied when your subscription ends.`
+    }
+
+    // 2️⃣ PRO → ULTIMATE upgrade
+    if (isProToUltimate) {
+      return `Your current PRO subscription will be cancelled immediately.
+Are you sure you want to buy the ULTIMATE one-time plan?`
+    }
+
+    // 3️⃣ Same tier (PRO → PRO or ULTIMATE → ULTIMATE)
+    if (isSameTier) {
+      return `Your current subscription will be cancelled immediately.
+Are you sure you want to switch to the one-time plan?`
+    }
+
+    // Fallback: generic
+    return `Upgrade to ${pending.targetPlan} one-time?`
+  }
+
+  const isDisabled = (targetPlan: PlanInfo["plan"]) => {
+    // No plan → always enabled
+    if (!plan) return false
+
+    // Different billing type → enable (e.g. switching sub <-> purchase)
+    if (plan.type !== billingType) return false
+
+    // If target is lower (downgrade) → never disable
+    if (targetPlan === "PRO" && plan.plan === "ULTIMATE") {
+      return false
+    }
+
+    // If Ultimate: disable only if SAME cycle and target is Ultimate
+    if (plan.plan === "ULTIMATE") {
+      return targetPlan === "ULTIMATE" && plan.cycle === subscriptionCycle
+    }
+
+    // If PRO: disable only if same plan AND same cycle
     if (plan.plan === "PRO" && targetPlan === "PRO") {
-      return !(
-        billingType === "SUBSCRIPTION" && plan.cycle !== subscriptionCycle
-      )
+      return plan.cycle === subscriptionCycle
     }
 
     return false
@@ -239,12 +327,16 @@ export function PricingGrid({
       <AppDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        title="Cancel Subscription First"
-        description={dialogText}
-        confirmText="Cancel Subscription"
+        title="Confirm Upgrade"
+        description={
+          pendingUpgrade ? getDialogMessage(plan ?? null, pendingUpgrade) : ""
+        }
+        confirmText="Upgrade Now"
+        confirmLoading={mutation.isPending}
         onConfirm={() => {
-          openPortal()
+          if (pendingUpgrade) mutation.mutate(pendingUpgrade)
           setDialogOpen(false)
+          setPendingUpgrade(null)
         }}
         affiliate={false}
       />

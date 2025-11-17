@@ -2,7 +2,7 @@
 import { paddleConfig } from "@/util/PaddleConfig"
 import { Paddle, Environment } from "@paddle/paddle-node-sdk"
 import { db } from "@/db/drizzle"
-import { paddleCustomer, subscription } from "@/db/schema"
+import { subscription } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
 const paddle = new Paddle(process.env.PADDLE_SECRET_TOKEN!, {
@@ -29,16 +29,17 @@ export async function updatePlan({
   modeType: "SUB_TO_SUB" | "SUB_TO_ONE_TIME"
 }) {
   if (modeType === "SUB_TO_SUB") {
-    return handleSubscriptionToSubscription({
+    await handleSubscriptionToSubscription({
       subscriptionId,
       targetPlan,
       targetCycle: targetCycle!,
       mode: mode!,
     })
+    return null
   }
 
   if (modeType === "SUB_TO_ONE_TIME") {
-    return handleSubscriptionToOneTime({
+    return await handleCancelSubscription({
       subscriptionId,
       targetPlan,
       mode,
@@ -90,7 +91,7 @@ async function handleSubscriptionToSubscription({
 /*   2) SUB → ONE TIME (cancel subscription, then create new transaction)     */
 /* -------------------------------------------------------------------------- */
 
-export async function handleSubscriptionToOneTime({
+export async function handleCancelSubscription({
   subscriptionId,
   targetPlan,
   mode,
@@ -109,30 +110,12 @@ export async function handleSubscriptionToOneTime({
     where: eq(subscription.id, subscriptionId),
   })
   if (!sub) {
-    throw { status: 400, message: "Subscription not found" }
+    throw { status: 400, toast: "Subscription not found" }
   }
   const effectiveFrom =
     mode === "PRORATE" ? "immediately" : "next_billing_period"
   // 2️⃣ Cancel subscription immediately (Paddle requirement)
   await paddle.subscriptions.cancel(subscriptionId, {
     effectiveFrom,
-  })
-
-  // 3️⃣ Ensure Paddle customer exists
-  let customerRow = await db.query.paddleCustomer.findFirst({
-    where: eq(paddleCustomer.userId, sub.userId),
-  })
-  if (!customerRow) {
-    throw { status: 400, message: "Paddle customer not found" }
-  }
-  // 4️⃣ Create Paddle transaction
-  await paddle.transactions.create({
-    customerId: customerRow.customerId,
-    items: [
-      {
-        priceId,
-        quantity: 1,
-      },
-    ],
   })
 }
