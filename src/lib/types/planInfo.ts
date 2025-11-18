@@ -3,4 +3,6 @@ export interface PlanInfo {
   type: "FREE" | "SUBSCRIPTION" | "PURCHASE" | "EXPIRED"
   cycle?: "MONTHLY" | "YEARLY"
   subscriptionId?: string
+  hasPendingPurchase?: boolean
+  pendingPurchaseTier?: "PRO" | "ULTIMATE"
 }

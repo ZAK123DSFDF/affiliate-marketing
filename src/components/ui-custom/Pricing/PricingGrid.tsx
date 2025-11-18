@@ -38,11 +38,18 @@ export function PricingGrid({
   }>(null)
   const { openCheckout } = usePaddleCheckout()
   const mutation = useAppMutation(updateSubscriptionAction, {
-    onSuccess: () => {
-      if (pendingUpgrade?.modeType === "SUB_TO_ONE_TIME") {
+    onSuccess: (_, variables) => {
+      console.log("Mutation done:", variables)
+      if (variables.modeType === "SUB_TO_ONE_TIME") {
         openCheckout({
           type: "PURCHASE",
-          plan: pendingUpgrade.targetPlan,
+          plan: variables.targetPlan,
+          currentPlan: plan?.hasPendingPurchase
+            ? ({
+                type: "PURCHASE",
+                plan: plan.pendingPurchaseTier!,
+              } satisfies Pick<PlanInfo, "plan" | "type">)
+            : plan,
         }).then(() => console.log("Checkout closed"))
       }
     },
@@ -168,10 +175,15 @@ export function PricingGrid({
       const ultimatePrice = 125
       if (tier === "PRO") return `$${proPrice} one-time`
       if (tier === "ULTIMATE") {
-        if (plan?.type === "PURCHASE" && plan?.plan === "PRO") {
+        const proOwned =
+          (plan?.type === "PURCHASE" && plan.plan === "PRO") ||
+          (plan?.hasPendingPurchase && plan.pendingPurchaseTier === "PRO")
+
+        if (proOwned) {
           const upgradePrice = ultimatePrice - proPrice
           return `$${upgradePrice} upgrade`
         }
+
         return `$${ultimatePrice} one-time`
       }
     }
@@ -192,10 +204,15 @@ export function PricingGrid({
       const oldUltimatePrice = 150
       if (tier === "PRO") return "$100 one-time"
       if (tier === "ULTIMATE") {
-        if (plan?.type === "PURCHASE" && plan?.plan === "PRO") {
+        const proOwned =
+          (plan?.type === "PURCHASE" && plan.plan === "PRO") ||
+          (plan?.hasPendingPurchase && plan.pendingPurchaseTier === "PRO")
+
+        if (proOwned) {
           const discountedOld = oldUltimatePrice - oldProPrice
           return `$${discountedOld} one-time`
         }
+
         return "$150 one-time"
       }
     }
@@ -256,6 +273,22 @@ Are you sure you want to switch to the one-time plan?`
   const isDisabled = (targetPlan: PlanInfo["plan"]) => {
     // No plan → always enabled
     if (!plan) return false
+    if (
+      billingType === "PURCHASE" &&
+      ((plan?.type === "PURCHASE" && plan.plan === "ULTIMATE") ||
+        (plan?.hasPendingPurchase &&
+          plan.pendingPurchaseTier === "ULTIMATE")) &&
+      targetPlan === "PRO"
+    ) {
+      return true
+    }
+    if (
+      plan.hasPendingPurchase &&
+      billingType === "PURCHASE" &&
+      plan.pendingPurchaseTier === targetPlan
+    ) {
+      return true
+    }
 
     // Different billing type → enable (e.g. switching sub <-> purchase)
     if (plan.type !== billingType) return false
@@ -291,6 +324,11 @@ Are you sure you want to switch to the one-time plan?`
               "No team member invitations",
             ]}
             buttonText="Start Free"
+            pendingMessage={
+              plan?.hasPendingPurchase
+                ? "This one-time payment will be applied when your subscription ends."
+                : undefined
+            }
             disabled={plan?.plan === "FREE"}
             onClick={() => handleBuyClick("FREE")}
           />
@@ -304,6 +342,11 @@ Are you sure you want to switch to the one-time plan?`
           features={featuresList.filter((f) => f.pro).map((f) => f.name)}
           buttonText={getButtonText("PRO", billingType)}
           disabled={isDisabled("PRO")}
+          pendingMessage={
+            plan?.hasPendingPurchase && plan.pendingPurchaseTier === "PRO"
+              ? "This one-time payment will be applied when your subscription ends."
+              : undefined
+          }
           onClick={() => handleBuyClick("PRO")}
         />
 
@@ -315,6 +358,11 @@ Are you sure you want to switch to the one-time plan?`
             getOldPrice("ULTIMATE"),
             getPrice("ULTIMATE")
           )}
+          pendingMessage={
+            plan?.hasPendingPurchase && plan.pendingPurchaseTier === "ULTIMATE"
+              ? "This one-time payment will be applied when your subscription ends."
+              : undefined
+          }
           features={featuresList.filter((f) => f.ultimate).map((f) => f.name)}
           buttonText={getButtonText("ULTIMATE", billingType)}
           disabled={isDisabled("ULTIMATE")}
@@ -334,7 +382,9 @@ Are you sure you want to switch to the one-time plan?`
         confirmText="Upgrade Now"
         confirmLoading={mutation.isPending}
         onConfirm={() => {
-          if (pendingUpgrade) mutation.mutate(pendingUpgrade)
+          const upgrade = pendingUpgrade
+          if (!upgrade) return
+          mutation.mutate(upgrade)
           setDialogOpen(false)
           setPendingUpgrade(null)
         }}

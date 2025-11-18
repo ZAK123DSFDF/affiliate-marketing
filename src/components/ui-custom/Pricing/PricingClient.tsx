@@ -116,6 +116,13 @@ export default function PricingClient({
 
     // 💰 5. One-time purchase logic (user viewing bundles tab)
     if (billingType === "PURCHASE") {
+      if (
+        plan.hasPendingPurchase &&
+        plan.pendingPurchaseTier === "PRO" &&
+        targetPlan === "ULTIMATE"
+      ) {
+        return "Upgrade to Ultimate ($40)"
+      }
       if (currentType === "PURCHASE") {
         if (currentPlan === "PRO" && targetPlan === "ULTIMATE")
           return "Upgrade to Ultimate ($40)"

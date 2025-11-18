@@ -19,6 +19,7 @@ export function PricingCard({
   disabled,
   highlight,
   onClick, // 👈 added
+  pendingMessage,
 }: {
   title: string
   price: string
@@ -29,6 +30,7 @@ export function PricingCard({
   disabled?: boolean
   highlight?: boolean
   onClick?: () => void // 👈 added
+  pendingMessage?: string | null
 }) {
   return (
     <Card
@@ -115,7 +117,7 @@ export function PricingCard({
         </ul>
       </CardContent>
 
-      <CardFooter className="mt-6">
+      <CardFooter className="mt-6 flex flex-col">
         <Button
           disabled={disabled}
           onClick={onClick} // 👈 attach it here
@@ -127,6 +129,11 @@ export function PricingCard({
         >
           {buttonText}
         </Button>
+        {pendingMessage && (
+          <p className="text-sm text-yellow-600 mt-2 text-center">
+            {pendingMessage}
+          </p>
+        )}
       </CardFooter>
     </Card>
   )

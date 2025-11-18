@@ -213,6 +213,9 @@ export async function POST(req: Request) {
           .update(purchase)
           .set({ isActive: true })
           .where(eq(purchase.userId, decodedOrg.id))
+        await db
+          .delete(subscription)
+          .where(eq(subscription.userId, decodedOrg.id))
       } else {
         console.log("ℹ️ No pending one-time purchase — user becomes FREE")
       }

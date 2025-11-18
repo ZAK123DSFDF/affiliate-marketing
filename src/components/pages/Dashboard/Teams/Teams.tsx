@@ -31,7 +31,6 @@ import PaginationControls from "@/components/ui-custom/PaginationControls"
 import { useQueryClient } from "@tanstack/react-query"
 import { PlanInfo } from "@/lib/types/planInfo"
 import { useRouter } from "next/navigation"
-import { usePaddlePortal } from "@/hooks/usePaddlePortal"
 import { handlePlanRedirect } from "@/util/HandlePlanRedirect"
 
 const inviteSchema = z.object({
@@ -69,7 +68,6 @@ export default function Teams({
   const queryClient = useQueryClient()
   const { filters, setFilters } = useQueryFilter()
   const router = useRouter()
-  const { openPortal } = usePaddlePortal(orgId)
   // Fetch teams
   const {
     data: searchData,
@@ -301,10 +299,7 @@ export default function Teams({
         }
         onConfirm={() => {
           setUpgradeDialog(false)
-          setTimeout(
-            () => handlePlanRedirect(plan, orgId, openPortal, router),
-            150
-          )
+          setTimeout(() => handlePlanRedirect(orgId, router), 150)
         }}
         affiliate={affiliate}
       >

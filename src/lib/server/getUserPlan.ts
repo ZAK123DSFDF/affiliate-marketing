@@ -21,6 +21,16 @@ export async function getUserPlan(): Promise<PlanInfo> {
   // ✅ Check subscription first
   if (userSub) {
     if (isSubscriptionValid(userSub)) {
+      if (userPurchase && !userPurchase.isActive) {
+        return {
+          plan: userSub.plan as PlanInfo["plan"],
+          type: "SUBSCRIPTION",
+          cycle: userSub.billingInterval as PlanInfo["cycle"],
+          subscriptionId: userSub.id,
+          hasPendingPurchase: true,
+          pendingPurchaseTier: userPurchase.tier,
+        }
+      }
       return {
         plan: userSub.plan as PlanInfo["plan"],
         type: "SUBSCRIPTION",
@@ -44,7 +54,6 @@ export async function getUserPlan(): Promise<PlanInfo> {
 
     return { plan: mappedPlan, type: "PURCHASE" }
   }
-
   // ✅ Default fallback (free plan)
   return { plan: "FREE", type: "FREE" }
 }

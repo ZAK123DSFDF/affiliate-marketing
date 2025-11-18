@@ -30,7 +30,6 @@ import { OrganizationData } from "@/lib/types/profileTypes"
 import { AppDialog } from "@/components/ui-custom/AppDialog"
 import { PlanInfo } from "@/lib/types/planInfo"
 import { Button } from "@/components/ui/button"
-import { paddleConfig } from "@/util/PaddleConfig"
 import { usePaddlePortal } from "@/hooks/usePaddlePortal"
 import { handlePlanRedirect } from "@/util/HandlePlanRedirect"
 
@@ -203,11 +202,7 @@ const OrganizationDashboardSidebar = ({
               dialogMode === "upgrade" || dialogMode === "expired"
                 ? () => {
                     setDialogOpen(false)
-                    setTimeout(
-                      () =>
-                        handlePlanRedirect(plan, orgId!, openPortal, router),
-                      150
-                    )
+                    setTimeout(() => handlePlanRedirect(orgId!, router), 150)
                   }
                 : undefined
             }
@@ -270,9 +265,11 @@ const OrganizationDashboardSidebar = ({
         {(plan.type === "SUBSCRIPTION" || plan.type === "EXPIRED") &&
           (plan.plan === "PRO" || plan.plan === "ULTIMATE") && (
             <>
-              <Button className="w-full" onClick={openPortal}>
-                Manage Subscription
-              </Button>
+              {!plan.hasPendingPurchase && (
+                <Button className="w-full" onClick={openPortal}>
+                  Manage Subscription
+                </Button>
+              )}
 
               <Link
                 href={`/organization/${orgId}/dashboard/pricing`}
@@ -280,7 +277,9 @@ const OrganizationDashboardSidebar = ({
                 className="block w-full"
               >
                 <Button variant="outline" className="w-full">
-                  Purchase One-Time Plan
+                  {plan.hasPendingPurchase
+                    ? "Purchase One-Time Plan"
+                    : "Change Plan"}
                 </Button>
               </Link>
             </>
