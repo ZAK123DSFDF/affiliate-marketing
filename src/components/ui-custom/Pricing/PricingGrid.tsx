@@ -66,7 +66,24 @@ export function PricingGrid({
 
     const isSubscriptionMode = billingType === "SUBSCRIPTION"
     const isPurchaseMode = billingType === "PURCHASE"
+    if (plan?.type === "EXPIRED") {
+      const isSubscriptionMode = billingType === "SUBSCRIPTION"
 
+      if (isSubscriptionMode) {
+        openCheckout({
+          type: "SUBSCRIPTION",
+          plan: targetPlan,
+          cycle: subscriptionCycle || "MONTHLY",
+        }).then(() => console.log("Checkout closed"))
+      } else {
+        openCheckout({
+          type: "PURCHASE",
+          plan: targetPlan,
+        }).then(() => console.log("Checkout closed"))
+      }
+
+      return
+    }
     // 🧠 0. No active plan → directly open checkout
     if (!plan || plan.plan === "FREE") {
       if (isSubscriptionMode) {
@@ -121,36 +138,6 @@ export function PricingGrid({
           subscriptionId: plan.subscriptionId,
           targetPlan,
           mode,
-          modeType: "SUB_TO_ONE_TIME",
-        })
-        setDialogOpen(true)
-        return
-      }
-    }
-
-    // 🧠 2. Handle EXPIRED plans
-    if (plan.type === "EXPIRED") {
-      if (!plan.subscriptionId) {
-        return
-      }
-
-      if (isSubscriptionMode) {
-        setPendingUpgrade({
-          subscriptionId: plan.subscriptionId,
-          targetPlan,
-          targetCycle: subscriptionCycle || "MONTHLY",
-          mode: "PRORATE",
-          modeType: "SUB_TO_SUB",
-        })
-        setDialogOpen(true)
-        return
-      }
-
-      if (isPurchaseMode) {
-        setPendingUpgrade({
-          subscriptionId: plan.subscriptionId,
-          targetPlan,
-          mode: "PRORATE",
           modeType: "SUB_TO_ONE_TIME",
         })
         setDialogOpen(true)

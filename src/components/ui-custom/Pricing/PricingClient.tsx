@@ -56,8 +56,8 @@ export default function PricingClient({
 
       // 🧩 Pro / Ultimate Expired (subscription expired)
       if (billingType === "SUBSCRIPTION") {
-        if (currentPlan === "PRO") return "Upgrade to Pro"
-        if (currentPlan === "ULTIMATE") return "Upgrade to Ultimate"
+        if (targetPlan === "PRO") return "Upgrade to Pro"
+        if (targetPlan === "ULTIMATE") return "Upgrade to Ultimate"
         return "Upgrade Plan"
       }
 
