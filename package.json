@@ -13,6 +13,8 @@
     "maildev": "maildev --smtp 1025 --web 1080",
     "simulate": "bun src/db/subscriptionCycle.ts",
     "simulate:cancel": "bun src/db/subscriptionCancel.ts",
+    "simulate:create:expire": "bun src/db/subscriptionCreateAndExpire.ts",
+    "simulate:expire": "bun src/db/subscriptionExpire.ts",
     "generate:seeds": "bun src/db/seeds/generateSeeds.ts && bun src/db/reset.ts && npx drizzle-kit generate && npx drizzle-kit migrate && bun src/db/currencySeed.ts && bun src/db/seeds/seedFun.ts"
   },
   "dependencies": {
