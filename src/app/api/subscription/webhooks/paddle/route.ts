@@ -1,6 +1,5 @@
 import { Environment, EventName, Paddle } from "@paddle/paddle-node-sdk"
 import { NextResponse } from "next/server"
-import jwt from "jsonwebtoken"
 import { purchase, subscription } from "@/db/schema"
 import { db } from "@/db/drizzle"
 import { eq } from "drizzle-orm"
@@ -37,6 +36,7 @@ export async function POST(req: Request) {
 
       // 🎯 Extract shared info
       const item = data.items?.[0]
+      const priceId = item?.price?.id
       const priceInfo = item?.price
       const priceDesc = priceInfo?.description || ""
       const priceAmount = Number(priceInfo?.unitPrice?.amount || 0)
@@ -92,6 +92,7 @@ export async function POST(req: Request) {
               tier: planType,
               price: priceAmount.toString(),
               currency,
+              priceId,
               isActive: false,
             })
 
@@ -110,6 +111,7 @@ export async function POST(req: Request) {
           userId: decodedOrg.id,
           tier: planType,
           price: priceAmount.toString(),
+          priceId,
           currency,
         })
 
@@ -138,6 +140,7 @@ export async function POST(req: Request) {
             plan: planType,
             billingInterval,
             price: priceAmount.toString(),
+            priceId,
             updatedAt: new Date(),
             expiresAt: data.billingPeriod?.endsAt
               ? new Date(data.billingPeriod.endsAt)
@@ -165,7 +168,17 @@ export async function POST(req: Request) {
       const userId = decodedOrg.id
 
       const scheduled = data.scheduledChange
+      const existing = await db.query.subscription.findFirst({
+        where: eq(subscription.userId, userId),
+      })
 
+      if (!existing) {
+        console.log("⚠️ Subscription not found — cannot update")
+        return NextResponse.json({ ok: true })
+      }
+      const nextBillRaw = data.currentBillingPeriod?.endsAt ?? null
+      const nextBill = nextBillRaw ? new Date(nextBillRaw) : null
+      const priceId = data.items?.[0]?.price?.id ?? null
       // 🎯 CASE: User scheduled a cancellation
       if (scheduled?.action === "cancel") {
         const effectiveAt = scheduled.effectiveAt
@@ -173,25 +186,46 @@ export async function POST(req: Request) {
           : null
 
         console.log(
-          `📅 User scheduled cancel — will end at ${effectiveAt?.toISOString()}`
+          `📅 Scheduled cancel — ending at ${effectiveAt?.toISOString()}`
         )
 
         await db
           .update(subscription)
           .set({
-            // do NOT instantly change plan — still active until end of cycle
             subscriptionChangeAt: effectiveAt,
             updatedAt: new Date(),
-            expiresAt: data.currentBillingPeriod?.endsAt
-              ? new Date(data.currentBillingPeriod.endsAt)
-              : null,
+            expiresAt: nextBill,
           })
           .where(eq(subscription.userId, userId))
 
-        console.log("💾 Saved schedule cancellation date")
+        return NextResponse.json({ ok: true })
       }
+      // 🎯 CASE: Undo cancel OR subscription cycle
+      if (
+        !scheduled &&
+        priceId === existing.priceId &&
+        existing.expiresAt &&
+        nextBill
+      ) {
+        const isSamePeriod = existing.expiresAt.getTime() === nextBill.getTime()
 
-      return NextResponse.json({ ok: true })
+        console.log(
+          isSamePeriod
+            ? "🔁 User resumed subscription — cancellation undone"
+            : "🔄 Subscription cycle completed — cancel cleared"
+        )
+
+        await db
+          .update(subscription)
+          .set({
+            subscriptionChangeAt: null,
+            updatedAt: new Date(),
+            ...(isSamePeriod ? {} : { expiresAt: nextBill }),
+          })
+          .where(eq(subscription.userId, userId))
+
+        return NextResponse.json({ ok: true })
+      }
     }
     if (eventType === EventName.SubscriptionCanceled) {
       console.log(`❌ Subscription canceled: ${data.id}`)
@@ -226,6 +260,7 @@ export async function POST(req: Request) {
           plan: "FREE",
           billingInterval: "MONTHLY",
           price: null,
+          priceId: null,
           expiresAt: new Date(), // or keep null if you prefer
           subscriptionChangeAt: null,
           updatedAt: new Date(),

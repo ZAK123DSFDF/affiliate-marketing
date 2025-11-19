@@ -29,6 +29,7 @@ export async function getUserPlan(): Promise<PlanInfo> {
           subscriptionId: userSub.id,
           hasPendingPurchase: true,
           pendingPurchaseTier: userPurchase.tier,
+          subscriptionChangeAt: userSub.subscriptionChangeAt,
         }
       }
       return {
@@ -36,6 +37,7 @@ export async function getUserPlan(): Promise<PlanInfo> {
         type: "SUBSCRIPTION",
         cycle: userSub.billingInterval as PlanInfo["cycle"],
         subscriptionId: userSub.id,
+        subscriptionChangeAt: userSub.subscriptionChangeAt,
       }
     }
     return {
@@ -43,6 +45,7 @@ export async function getUserPlan(): Promise<PlanInfo> {
       type: "EXPIRED",
       cycle: userSub.billingInterval as PlanInfo["cycle"],
       subscriptionId: userSub.id,
+      subscriptionChangeAt: userSub.subscriptionChangeAt,
     }
   }
 

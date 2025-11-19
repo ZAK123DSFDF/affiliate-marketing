@@ -14,37 +14,54 @@ type CheckoutParams =
       plan: "PRO" | "ULTIMATE"
       currentPlan?: PlanInfo | null // 👈 add current plan info
       quantity?: number
+      initial?: boolean
     }
   | {
       type: "SUBSCRIPTION"
       plan: "PRO" | "ULTIMATE"
       cycle: SubscriptionCycle
       quantity?: number
+      initial?: boolean
     }
-
+type ApplyingReason = "PURCHASE" | "CANCEL" | "UPGRADE"
 export function usePaddleCheckout() {
   const [paddle, setPaddle] = useState<Paddle>()
-
+  const [showApplyingDialog, setShowApplyingDialog] =
+    useState<null | ApplyingReason>(null)
+  const [checkoutClosed, setCheckoutClosed] = useState(false)
+  const [initialCheckout, setInitialCheckout] = useState(false)
   useEffect(() => {
     initializePaddle({
       environment:
         process.env.NODE_ENV === "production" ? "production" : "sandbox",
       token: paddleConfig.token,
+      eventCallback: (data) => {
+        if (data.name === "checkout.completed") {
+          console.log("Paddle: payment completed", data)
+          if (!checkoutClosed) {
+            setCheckoutClosed(true)
+            setTimeout(() => {
+              paddle?.Checkout.close()
+            }, 1000)
+          }
+          setShowApplyingDialog("PURCHASE")
+          setTimeout(() => {
+            window.location.reload()
+          }, 5000)
+        }
+        if (data.name === "checkout.closed") {
+          console.log("Paddle: checkout closed")
+          if (!checkoutClosed) {
+            setCheckoutClosed(true)
+          }
+          if (initialCheckout) {
+            setShowApplyingDialog("CANCEL")
+            setTimeout(() => window.location.reload(), 5000)
+          }
+        }
+      },
     }).then((instance) => setPaddle(instance))
-  }, [])
-
-  useEffect(() => {
-    if (!paddle) return
-    const handleCheckoutComplete = (event: any) => {
-      if (event.name === "checkout.completed") {
-        console.log("✅ Checkout completed:", event.data)
-        paddle.Checkout.close()
-      }
-    }
-    window.addEventListener("paddle-event", handleCheckoutComplete)
-    return () =>
-      window.removeEventListener("paddle-event", handleCheckoutComplete)
-  }, [paddle])
+  }, [checkoutClosed, paddle, initialCheckout])
 
   const openCheckout = async (params: CheckoutParams) => {
     if (!paddle) {
@@ -73,6 +90,8 @@ export function usePaddleCheckout() {
       return
     }
     const organizationToken = await getOrganizationToken()
+    setInitialCheckout(!!params.initial)
+    setCheckoutClosed(false)
     paddle.Checkout.open({
       items: [{ priceId, quantity: params.quantity ?? 1 }],
       customData: {
@@ -85,5 +104,5 @@ export function usePaddleCheckout() {
     })
   }
 
-  return { openCheckout }
+  return { openCheckout, showApplyingDialog, setShowApplyingDialog }
 }

@@ -5,4 +5,5 @@ export interface PlanInfo {
   subscriptionId?: string
   hasPendingPurchase?: boolean
   pendingPurchaseTier?: "PRO" | "ULTIMATE"
+  subscriptionChangeAt?: Date | null
 }

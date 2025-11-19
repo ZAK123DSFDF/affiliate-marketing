@@ -146,6 +146,7 @@ export const subscription = pgTable("subscription", {
   billingInterval: billingIntervalEnum("billing_interval"),
   currency: text("currency").default("USD"),
   price: numeric("price", { precision: 10, scale: 2 }),
+  priceId: text("price_id"),
   expiresAt: timestamp("expires_at", { withTimezone: true }),
   subscriptionChangeAt: timestamp("subscription_change_at", {
     withTimezone: true,
@@ -163,6 +164,7 @@ export const purchase = pgTable("purchase", {
   tier: purchaseTierEnum("tier").notNull(),
   price: numeric("price", { precision: 10, scale: 2 }).notNull(),
   currency: text("currency").default("USD"),
+  priceId: text("price_id"),
   isActive: boolean("is_active").default(true),
   reason: purchaseReasonEnum("reason"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),

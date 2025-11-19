@@ -12,6 +12,7 @@ import { AppDialog } from "@/components/ui-custom/AppDialog"
 import { usePaddleCheckout } from "@/hooks/usePaddleCheckout"
 import { useAppMutation } from "@/hooks/useAppMutation"
 import { updateSubscriptionAction } from "@/app/(organization)/organization/[orgId]/dashboard/pricing/action"
+import { Loader2 } from "lucide-react"
 
 export function PricingGrid({
   billingType,
@@ -29,6 +30,7 @@ export function PricingGrid({
   getButtonText: (p: PlanInfo["plan"], t: PlanInfo["type"]) => string
 }) {
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [_, setIsUpgrading] = useState(false)
   const [pendingUpgrade, setPendingUpgrade] = useState<null | {
     subscriptionId: string
     targetPlan: Exclude<PlanInfo["plan"], "FREE">
@@ -36,7 +38,8 @@ export function PricingGrid({
     mode: "PRORATE" | "DO_NOT_BILL"
     modeType: "SUB_TO_SUB" | "SUB_TO_ONE_TIME"
   }>(null)
-  const { openCheckout } = usePaddleCheckout()
+  const { openCheckout, showApplyingDialog, setShowApplyingDialog } =
+    usePaddleCheckout()
   const mutation = useAppMutation(updateSubscriptionAction, {
     onSuccess: (_, variables) => {
       console.log("Mutation done:", variables)
@@ -50,6 +53,7 @@ export function PricingGrid({
                 plan: plan.pendingPurchaseTier!,
               } satisfies Pick<PlanInfo, "plan" | "type">)
             : plan,
+          initial: true,
         }).then(() => console.log("Checkout closed"))
       }
     },
@@ -85,6 +89,15 @@ export function PricingGrid({
       (plan.plan === "PRO" || plan.plan === "ULTIMATE")
     ) {
       if (!plan.subscriptionId) {
+        return
+      }
+      if (plan.subscriptionChangeAt && isPurchaseMode && targetPlan === "PRO") {
+        openCheckout({
+          type: "PURCHASE",
+          plan: "PRO",
+          currentPlan: plan,
+        }).then(() => console.log("Checkout closed"))
+
         return
       }
       if (isSubscriptionMode) {
@@ -231,43 +244,52 @@ export function PricingGrid({
     plan: PlanInfo | null,
     pending: NonNullable<typeof pendingUpgrade>
   ) {
-    // Only care about SUB → PURCHASE transitions
-    if (pending.modeType !== "SUB_TO_ONE_TIME") return ""
+    // 1️⃣ SUBSCRIPTION → SUBSCRIPTION
+    if (pending.modeType === "SUB_TO_SUB") {
+      if (!plan) return ""
 
-    // If expired → fallback to generic dialog text
-    if (!plan || plan.type === "EXPIRED") {
+      const upgrade = pending.targetPlan !== plan.plan
+
+      if (upgrade) {
+        return `You are upgrading from ${plan.plan} (${plan.cycle?.toLowerCase()}) to ${pending.targetPlan} (${pending.targetCycle?.toLowerCase()}).
+
+Your subscription will be updated immediately and proration will be applied.`
+      }
+
+      // Same tier but switching cycles (e.g. monthly → yearly)
+      return `You are switching your ${plan.plan} subscription from ${plan.cycle?.toLowerCase()} to ${pending.targetCycle?.toLowerCase()}.
+
+Your billing will be adjusted accordingly.`
+    }
+
+    // 2️⃣ SUB → ONE-TIME (your previous logic)
+    if (pending.modeType === "SUB_TO_ONE_TIME") {
+      const isUltimateToPro =
+        plan?.plan === "ULTIMATE" && pending.targetPlan === "PRO"
+      const isProToUltimate =
+        plan?.plan === "PRO" && pending.targetPlan === "ULTIMATE"
+      const isSameTier = plan?.plan === pending.targetPlan
+
+      if (isUltimateToPro) {
+        return `Your current ULTIMATE subscription will remain active until the end of the billing period.
+Are you sure you want to buy the PRO one-time plan?`
+      }
+
+      if (isProToUltimate) {
+        return `Your PRO subscription will be cancelled immediately.
+Are you sure you want to buy the ULTIMATE one-time plan?`
+      }
+
+      if (isSameTier) {
+        return `Your subscription will be cancelled immediately and replaced with the one-time plan.
+
+Proceed?`
+      }
+
       return `Upgrade to ${pending.targetPlan} one-time?`
     }
 
-    const isUltimateToPro =
-      plan.plan === "ULTIMATE" && pending.targetPlan === "PRO"
-
-    const isProToUltimate =
-      plan.plan === "PRO" && pending.targetPlan === "ULTIMATE"
-
-    const isSameTier = plan.plan === pending.targetPlan
-
-    // 1️⃣ ULTIMATE → PRO downgrade
-    if (isUltimateToPro) {
-      return `Your current ULTIMATE subscription will stay active until the end of your billing period.
-Are you sure you want to buy the PRO one-time plan now?
-It will only be applied when your subscription ends.`
-    }
-
-    // 2️⃣ PRO → ULTIMATE upgrade
-    if (isProToUltimate) {
-      return `Your current PRO subscription will be cancelled immediately.
-Are you sure you want to buy the ULTIMATE one-time plan?`
-    }
-
-    // 3️⃣ Same tier (PRO → PRO or ULTIMATE → ULTIMATE)
-    if (isSameTier) {
-      return `Your current subscription will be cancelled immediately.
-Are you sure you want to switch to the one-time plan?`
-    }
-
-    // Fallback: generic
-    return `Upgrade to ${pending.targetPlan} one-time?`
+    return ""
   }
 
   const isDisabled = (targetPlan: PlanInfo["plan"]) => {
@@ -384,12 +406,50 @@ Are you sure you want to switch to the one-time plan?`
         onConfirm={() => {
           const upgrade = pendingUpgrade
           if (!upgrade) return
-          mutation.mutate(upgrade)
-          setDialogOpen(false)
-          setPendingUpgrade(null)
+
+          setIsUpgrading(true)
+
+          mutation.mutate(upgrade, {
+            onSuccess: () => {
+              setDialogOpen(false)
+              setPendingUpgrade(null)
+              if (upgrade.modeType === "SUB_TO_SUB") {
+                setShowApplyingDialog("PURCHASE")
+                setTimeout(() => {
+                  window.location.reload()
+                }, 5000)
+              }
+            },
+          })
         }}
         affiliate={false}
       />
+      <AppDialog
+        open={!!showApplyingDialog}
+        onOpenChange={() => {}}
+        title="Applying changes..."
+        description={
+          showApplyingDialog === "PURCHASE"
+            ? "Your purchase was successful. Updating your account..."
+            : showApplyingDialog === "CANCEL"
+              ? "Cancelling your subscription. Updating your account..."
+              : "Applying changes..."
+        }
+        hideCloseIcon={true}
+        showFooter={false}
+        affiliate={false}
+      >
+        <div className="flex items-center gap-3 py-4">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span>
+            {showApplyingDialog === "PURCHASE"
+              ? "Updating your plan..."
+              : showApplyingDialog === "CANCEL"
+                ? "Processing cancellation..."
+                : "Updating your account..."}
+          </span>
+        </div>
+      </AppDialog>
     </>
   )
 }
