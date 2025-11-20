@@ -8,6 +8,8 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select"
+import { getResponsiveSelectWidth } from "@/util/GetResponsiveSelectWidth"
+import { cn } from "@/lib/utils"
 
 interface Props {
   value: { year?: number; month?: number }
@@ -30,7 +32,7 @@ export default function MonthSelect({
     { length: now.getUTCFullYear() - START_YEAR + 1 },
     (_, i) => now.getUTCFullYear() - i
   )
-
+  const widthClasses = getResponsiveSelectWidth(isPreview)
   return (
     <div className={`flex gap-2 ${isPreview ? "text-xs" : ""}`}>
       {/* Year Select */}
@@ -46,7 +48,7 @@ export default function MonthSelect({
       >
         <SelectTrigger
           affiliate={affiliate}
-          className={`${isPreview ? "w-[72px] h-8 px-2 text-xs" : "w-[100px]"}`}
+          className={cn(widthClasses)}
           aria-disabled={disabled}
         >
           <SelectValue placeholder="Year" />
@@ -76,7 +78,7 @@ export default function MonthSelect({
       >
         <SelectTrigger
           affiliate={affiliate}
-          className={`${isPreview ? "w-[72px] h-8 px-2 text-xs" : "w-[100px]"}`}
+          className={cn(widthClasses)}
           aria-disabled={!value.year || disabled}
         >
           <SelectValue placeholder="Month" />

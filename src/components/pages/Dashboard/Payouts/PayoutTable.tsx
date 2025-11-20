@@ -312,51 +312,10 @@ export default function PayoutTable({
       {/* Header */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <SidebarTrigger className="md:hidden" />
           <div>
             <h1 className="text-3xl font-bold">Payments</h1>
             <p className="text-muted-foreground">Manage your payment records</p>
           </div>
-        </div>
-      </div>
-      <div className="flex justify-between items-center">
-        <div className="flex gap-2 items-center">
-          <MonthSelect
-            value={{ year: filters.year, month: filters.month }}
-            onChange={(year, month) => setFilters({ year, month })}
-            disabled={isUnpaidMode && selectedMonths.length > 0}
-            affiliate={false}
-          />
-          {isUnpaidMode && selectedMonths.length > 0 && (
-            <div className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-              <span>Unpaid Months Selected</span>
-              <button
-                onClick={clearUnpaidMonths}
-                className="text-blue-600 hover:text-blue-800"
-              >
-                ×
-              </button>
-            </div>
-          )}
-        </div>
-        <UnpaidSelect
-          months={unpaidMonths}
-          selection={selectedMonths}
-          setSelection={setSelectedMonths}
-          loading={pendingMonth}
-          error={pendingMonthError}
-          onApply={applyUnpaidMonths}
-          disabled={isUnpaidMode}
-          open={unpaidOpen}
-          setOpen={setUnpaidOpen}
-        />
-        <div className="flex gap-2">
-          <CsvUploadPopover orgId={orgId} />
-          <Button variant="outline" onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" />
-            Export CSV
-          </Button>
-          <Button onClick={handleMassPayout}>Mass Payout</Button>
         </div>
       </div>
       <AppDialog
@@ -369,8 +328,14 @@ export default function PayoutTable({
       />
       {/* Table Card */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Payment Records</CardTitle>
+          <MonthSelect
+            value={{ year: filters.year, month: filters.month }}
+            onChange={(year, month) => setFilters({ year, month })}
+            disabled={isUnpaidMode && selectedMonths.length > 0}
+            affiliate={false}
+          />
         </CardHeader>
         <CardContent>
           <TableTop
@@ -386,6 +351,50 @@ export default function PayoutTable({
             affiliate={false}
             table={table}
           />
+          <div className="flex flex-col gap-4 mb-4 lg:flex-row lg:justify-between lg:items-center">
+            {/* LEFT SIDE → badge + unpaid select */}
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+              {isUnpaidMode && selectedMonths.length > 0 && (
+                <div className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm w-fit">
+                  <span>Unpaid Months Selected</span>
+                  <button
+                    onClick={clearUnpaidMonths}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+
+              <UnpaidSelect
+                months={unpaidMonths}
+                selection={selectedMonths}
+                setSelection={setSelectedMonths}
+                loading={pendingMonth}
+                error={pendingMonthError}
+                onApply={applyUnpaidMonths}
+                disabled={isUnpaidMode}
+                open={unpaidOpen}
+                setOpen={setUnpaidOpen}
+              />
+            </div>
+
+            {/* RIGHT SIDE → Upload + Export + Mass payout */}
+            <div className="flex flex-col gap-3 lg:flex-row lg:gap-2 lg:items-center">
+              <CsvUploadPopover orgId={orgId} />
+              <Button
+                variant="outline"
+                onClick={handleExport}
+                className="w-full sm:w-auto"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export CSV
+              </Button>
+              <Button onClick={handleMassPayout} className="w-full sm:w-auto">
+                Mass Payout
+              </Button>
+            </div>
+          </div>
           {isUnpaidMode ? (
             <TableView
               table={table}

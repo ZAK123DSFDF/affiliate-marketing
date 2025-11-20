@@ -8,6 +8,15 @@ import {
   SelectItem,
 } from "@/components/ui/select"
 import { OrderDir, OrderBy } from "@/lib/types/orderTypes"
+import { cn } from "@/lib/utils"
+import {
+  ArrowDown,
+  ArrowDownUp,
+  ArrowUp,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 interface Props {
   value: { orderBy?: OrderBy; orderDir?: OrderDir }
@@ -23,6 +32,7 @@ export default function OrderSelect({
   mode = "default",
 }: Props) {
   const isNone = !value.orderBy || value.orderBy === "none"
+  const activeDir = value.orderDir ?? undefined
 
   // Define all options
   const allOptions: { value: OrderBy | "none"; label: string }[] = [
@@ -43,7 +53,15 @@ export default function OrderSelect({
           ["none", "visits", "sales", "conversionRate"].includes(o.value)
         )
       : allOptions
-
+  const cycleDirection = () => {
+    if (!activeDir) {
+      onChange(value.orderBy, "asc")
+    } else if (activeDir === "asc") {
+      onChange(value.orderBy, "desc")
+    } else {
+      onChange(value.orderBy, undefined)
+    }
+  }
   return (
     <div className="flex gap-2">
       {/* Order By Select */}
@@ -53,7 +71,7 @@ export default function OrderSelect({
           if (orderBy === "none") {
             onChange(undefined, undefined)
           } else {
-            onChange(orderBy as OrderBy, value.orderDir ?? "desc")
+            onChange(orderBy as OrderBy, undefined)
           }
         }}
       >
@@ -69,26 +87,24 @@ export default function OrderSelect({
         </SelectContent>
       </Select>
 
-      {/* Order Direction Select */}
-      <Select
-        value={value.orderDir ?? "desc"}
-        onValueChange={(dir) =>
-          onChange(value.orderBy ?? "sales", dir as OrderDir)
-        }
+      <Button
+        variant={activeDir ? "default" : "outline"}
+        size="icon"
         disabled={isNone}
+        onClick={cycleDirection}
+        className={cn(
+          "p-0 h-9 w-9 flex items-center justify-center",
+          isNone && "opacity-50 cursor-not-allowed"
+        )}
       >
-        <SelectTrigger affiliate={affiliate} className="w-[100px]">
-          <SelectValue placeholder="Direction" />
-        </SelectTrigger>
-        <SelectContent affiliate={affiliate}>
-          <SelectItem affiliate={affiliate} value="asc">
-            Ascending
-          </SelectItem>
-          <SelectItem affiliate={affiliate} value="desc">
-            Descending
-          </SelectItem>
-        </SelectContent>
-      </Select>
+        {!activeDir && (
+          <div className="flex flex-col items-center justify-center -space-y-1.5 text-muted-foreground">
+            <ArrowDownUp className="h-3.5 w-3.5" />
+          </div>
+        )}
+        {activeDir === "asc" && <ArrowUp className="h-3.5 w-3.5" />}
+        {activeDir === "desc" && <ArrowDown className="h-3.5 w-3.5" />}
+      </Button>
     </div>
   )
 }
