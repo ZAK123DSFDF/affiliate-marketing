@@ -21,6 +21,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import CreateCompany from "@/components/pages/Create-Company"
@@ -95,7 +96,7 @@ const OrganizationDashboardSidebar = ({
   >("create")
   const router = useRouter()
   const { openPortal } = usePaddlePortal(orgId)
-
+  const { setOpenMobile, isMobile } = useSidebar()
   const handleClick = () => {
     setSelectOpen(false)
 
@@ -227,7 +228,12 @@ const OrganizationDashboardSidebar = ({
                     isActive={pathname === item.url}
                     tooltip={item.title}
                   >
-                    <Link href={item.url}>
+                    <Link
+                      href={item.url}
+                      onClick={() => {
+                        if (isMobile) setOpenMobile(false)
+                      }}
+                    >
                       <item.icon className="w-5 h-5" />
                       <span>{item.title}</span>
                     </Link>
@@ -238,7 +244,8 @@ const OrganizationDashboardSidebar = ({
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <div className="px-4 mb-4 space-y-2">
+
+      <SidebarFooter className="p-4 space-y-2">
         {/* 🆓 FREE USERS → Upgrade or Purchase */}
         {plan.plan === "FREE" && (
           <Link
@@ -284,8 +291,7 @@ const OrganizationDashboardSidebar = ({
               </Link>
             </>
           )}
-      </div>
-      <SidebarFooter className="p-4">
+
         <Link href={`/organization/${orgId}/dashboard/profile`}>
           <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
             <div className="flex-1 min-w-0">

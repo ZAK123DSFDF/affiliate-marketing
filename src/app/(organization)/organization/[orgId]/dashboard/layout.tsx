@@ -34,7 +34,7 @@ export default async function DashboardLayout({
         orgs={orgs}
         UserData={user}
       />
-      <SidebarInset className="bg-background">
+      <SidebarInset className="relative flex w-full flex-1 flex-col bg-background overflow-auto">
         <div className="md:hidden px-6 pt-4">
           <SidebarTrigger />
         </div>

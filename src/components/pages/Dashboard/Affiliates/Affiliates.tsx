@@ -103,7 +103,6 @@ export default function AffiliatesTable({
       {showHeader && (
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <SidebarTrigger className="md:hidden" />
             <div>
               <h1 className="text-3xl font-bold">Affiliates</h1>
               <p className="text-muted-foreground">

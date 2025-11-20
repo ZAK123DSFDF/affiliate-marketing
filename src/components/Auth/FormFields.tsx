@@ -101,7 +101,7 @@ export const InputField = ({
                 disabled={disabled}
                 className={`auth-input-placeholder border ${
                   leading ? "pl-[70px]" : icon ? "pl-10" : "pl-3"
-                } ${profile ? "w-[280px]" : "w-full"} ${
+                } ${profile ? "w-full sm:w-[280px]" : "w-full"} ${
                   fieldState.error
                     ? "border-destructive focus-visible:ring-destructive"
                     : ""

@@ -15,7 +15,6 @@ export default function ProfileHeader({
   return (
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-2">
-        <SidebarTrigger className="md:hidden" />
         <div>
           <div className="flex flex-row gap-2 items-center">
             <h1

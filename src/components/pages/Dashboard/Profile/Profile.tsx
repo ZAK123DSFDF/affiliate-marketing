@@ -352,10 +352,10 @@ export default function Profile({
     emailChangeMutation.mutate(values)
   }
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 ">
       <ProfileHeader affiliate={affiliate} isPreview={isPreview} />
 
-      <Card className="relative" style={dashboardCardStyle}>
+      <Card className="relative " style={dashboardCardStyle}>
         {isPreview && (
           <div className="absolute bottom-0 left-0 p-2">
             <DashboardCardCustomizationOptions
