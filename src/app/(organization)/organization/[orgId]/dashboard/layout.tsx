@@ -1,5 +1,9 @@
 // app/dashboard/layout.tsx
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
 import OrganizationDashboardSidebar from "@/components/OrganizationDashboardSidebar"
 import { OrgIdProps } from "@/lib/types/orgId"
 import { getValidatedOrgFromParams } from "@/util/getValidatedOrgFromParams"
@@ -31,6 +35,9 @@ export default async function DashboardLayout({
         UserData={user}
       />
       <SidebarInset className="bg-background">
+        <div className="md:hidden px-6 pt-4">
+          <SidebarTrigger />
+        </div>
         <div className="py-6 px-6 w-full max-w-7xl mx-auto">
           <SubscriptionStatusBanner plan={plan} orgId={orgId} />
           {children}
