@@ -41,6 +41,8 @@ import { useAppQuery } from "@/hooks/useAppQuery"
 import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
 import { getTeamOrganizationKpiTimeSeries } from "@/app/(organization)/organization/[orgId]/teams/dashboard/action"
 import { useVerifyTeamSession } from "@/hooks/useVerifyTeamSession"
+import { cn } from "@/lib/utils"
+import { getResponsiveCardHeight } from "@/util/GetResponsiveSelectWidth"
 
 interface ChartDailyMetricsProps {
   orgId: string
@@ -146,16 +148,23 @@ export function ChartDailyMetrics({
   const isError = (isPreview && previewSimulation === "error") || searchError
   return (
     <Card
-      className={`${isPreview ? "h-[340px]" : "h-[480px]"} flex flex-col relative`}
+      className={cn(
+        getResponsiveCardHeight(isPreview),
+        "flex flex-col relative"
+      )}
       style={dashboardCardStyle}
     >
       <CardHeader
-        className={`flex items-center gap-2 space-y-0 ${isPreview ? "py-2" : "py-5"} sm:flex-row`}
+        className={cn(
+          "flex flex-col items-start gap-2 space-y-0",
+          isPreview ? "py-2" : "py-5",
+          "sm:flex-row sm:items-center sm:justify-between"
+        )}
       >
         <div className="grid flex-1 gap-1">
           <div className="flex flex-row gap-1 items-center">
             <CardTitle
-              className={isPreview ? "text-sm" : "text-lg"}
+              className={cn(isPreview ? "text-sm" : "text-lg")}
               style={{
                 color: (affiliate && cardHeaderPrimaryTextColor) || undefined,
               }}

@@ -115,8 +115,8 @@ export default function AffiliatesTable({
 
       {/* Table Card */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg">{cardTitle}</CardTitle>
+        <CardHeader className="flex flex-row items-center gap-4 md:justify-between">
+          <CardTitle className="min-[320px]:text-lg">{cardTitle}</CardTitle>
           <MonthSelect
             value={{ year: filters.year, month: filters.month }}
             onChange={(year, month) => setFilters({ year, month })}

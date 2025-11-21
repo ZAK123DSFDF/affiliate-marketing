@@ -24,6 +24,11 @@ import { useDashboardCard } from "@/hooks/useDashboardCard"
 import { formatValue } from "@/util/FormatValue"
 import { useAtomValue } from "jotai"
 import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover"
+import {
   dashboardThemeCustomizationAtom,
   kpiCardCustomizationAtom,
 } from "@/store/DashboardCustomizationAtom"
@@ -263,20 +268,37 @@ const Cards = ({
                           )}
                         />
                       </div>
-                      <div className="space-y-1 overflow-hidden">
-                        <div className="text-muted-foreground font-medium truncate">
-                          {label}
-                        </div>
-                        <div className="font-bold leading-tight truncate">
-                          {formatValue(
-                            label,
-                            value as number,
-                            (
-                              organizationSearchData?.[0] as OrganizationKpiStats
-                            )?.currency
-                          )}
-                        </div>
-                      </div>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <div className="space-y-1 overflow-hidden cursor-pointer">
+                            <div className="text-muted-foreground font-medium truncate">
+                              {label}
+                            </div>
+                            <div className="font-bold leading-tight truncate">
+                              {formatValue(
+                                label,
+                                value as number,
+                                (
+                                  organizationSearchData?.[0] as OrganizationKpiStats
+                                )?.currency
+                              )}
+                            </div>
+                          </div>
+                        </PopoverTrigger>
+
+                        <PopoverContent className="w-fit p-3 rounded-md shadow-lg border bg-white">
+                          <div className="text-sm font-semibold">{label}</div>
+                          <div className="text-base font-bold mt-1">
+                            {formatValue(
+                              label,
+                              value as number,
+                              (
+                                organizationSearchData?.[0] as OrganizationKpiStats
+                              )?.currency
+                            )}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
                     </div>
                   )
                 }

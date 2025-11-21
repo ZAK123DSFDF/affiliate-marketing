@@ -23,7 +23,7 @@ export default async function AnalyticsLayout({
     <div className="space-y-8">
       {children}
       {cards}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div className="h-full">{charts}</div>
         <div className="h-full">{referrers}</div>
       </div>

@@ -32,7 +32,7 @@ export default function MonthSelect({
     { length: now.getUTCFullYear() - START_YEAR + 1 },
     (_, i) => now.getUTCFullYear() - i
   )
-  const widthClasses = getResponsiveSelectWidth(isPreview)
+
   return (
     <div className={`flex gap-2 ${isPreview ? "text-xs" : ""}`}>
       {/* Year Select */}
@@ -48,7 +48,7 @@ export default function MonthSelect({
       >
         <SelectTrigger
           affiliate={affiliate}
-          className={cn(widthClasses)}
+          className={cn(getResponsiveSelectWidth(isPreview))}
           aria-disabled={disabled}
         >
           <SelectValue placeholder="Year" />
@@ -78,7 +78,7 @@ export default function MonthSelect({
       >
         <SelectTrigger
           affiliate={affiliate}
-          className={cn(widthClasses)}
+          className={cn(getResponsiveSelectWidth(isPreview))}
           aria-disabled={!value.year || disabled}
         >
           <SelectValue placeholder="Month" />

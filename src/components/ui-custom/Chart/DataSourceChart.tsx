@@ -37,6 +37,9 @@ import { useAppQuery } from "@/hooks/useAppQuery"
 import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
 import { getTeamOrganizationReferrer } from "@/app/(organization)/organization/[orgId]/teams/dashboard/action"
 import { useVerifyTeamSession } from "@/hooks/useVerifyTeamSession"
+import { cn } from "@/lib/utils"
+import { getResponsiveCardHeight } from "@/util/GetResponsiveSelectWidth"
+import { useUltraSmall } from "@/hooks/useUltraSmall"
 
 const chartConfig: ChartConfig = {
   visitors: { label: "Visitors" },
@@ -53,8 +56,10 @@ export default function SocialTrafficPieChart({
   affiliate: boolean
   isTeam?: boolean
 }) {
-  const innerRadius = isPreview ? 60 : 100
-  const outerRadius = isPreview ? 90 : 140
+  const isUltraSmall = useUltraSmall()
+  const innerRadius = isPreview ? 60 : isUltraSmall ? 75 : 100
+
+  const outerRadius = isPreview ? 90 : isUltraSmall ? 110 : 140
   const {
     cardHeaderDescriptionTextColor,
     cardHeaderPrimaryTextColor,
@@ -159,7 +164,10 @@ export default function SocialTrafficPieChart({
   }, [chartData])
   return (
     <Card
-      className={`${isPreview ? "h-[340px]" : "h-[480px]"} flex flex-col relative`}
+      className={cn(
+        getResponsiveCardHeight(isPreview),
+        "flex flex-col relative"
+      )}
       style={dashboardCardStyle}
     >
       <CardHeader

@@ -328,7 +328,7 @@ export default function PayoutTable({
       />
       {/* Table Card */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-row items-center gap-2 md:justify-between">
           <CardTitle>Payment Records</CardTitle>
           <MonthSelect
             value={{ year: filters.year, month: filters.month }}
