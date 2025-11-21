@@ -1,10 +1,18 @@
+"use client"
+
 import React from "react"
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CopyButton } from "@/components/ui/copy-button"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism"
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select"
 
 const EmbedStripeCheckout = () => {
   const snippets = {
@@ -20,18 +28,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function createCheckoutSession() {
-  const cookieStore =await cookies();
+  const cookieStore = await cookies();
   const affiliateCookie = cookieStore.get("refearnapp_affiliate_cookie");
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     mode: "payment",
-    line_items: [
-      {
-        price: "price_xxx",
-        quantity: 1,
-      },
-    ],
+    line_items: [{ price: "price_xxx", quantity: 1 }],
     success_url: "https://your-site.com/success",
     cancel_url: "https://your-site.com/cancel",
     metadata: {
@@ -61,8 +64,8 @@ export async function POST() {
     success_url: "https://your-site.com/success",
     cancel_url: "https://your-site.com/cancel",
     metadata: {
-      refearnapp_affiliate_code: affiliateCookie
-        ? decodeURIComponent(affiliateCookie.value)
+      refearnapp_affiliate_code: affiliate
+        ? decodeURIComponent(affiliate.value)
         : null,
     },
   });
@@ -81,8 +84,8 @@ app.post("/api/checkout", async (req, res) => {
     success_url: "https://your-site.com/success",
     cancel_url: "https://your-site.com/cancel",
     metadata: {
-      refearnapp_affiliate_code: affiliateCookie
-        ? decodeURIComponent(affiliateCookie.value)
+      refearnapp_affiliate_code: affiliate
+        ? decodeURIComponent(affiliate)
         : null,
     },
   });
@@ -105,8 +108,8 @@ export async function POST({ cookies }) {
     success_url: "https://your-site.com/success",
     cancel_url: "https://your-site.com/cancel",
     metadata: {
-      refearnapp_affiliate_code: affiliateCookie
-        ? decodeURIComponent(affiliateCookie.value)
+      refearnapp_affiliate_code: affiliate
+        ? decodeURIComponent(affiliate)
         : null,
     },
   });
@@ -131,8 +134,8 @@ export default defineEventHandler(async (event) => {
     success_url: "https://your-site.com/success",
     cancel_url: "https://your-site.com/cancel",
     metadata: {
-      refearnapp_affiliate_code: affiliateCookie
-        ? decodeURIComponent(affiliateCookie.value)
+      refearnapp_affiliate_code: affiliate
+        ? decodeURIComponent(affiliate)
         : null,
     },
   });
@@ -148,49 +151,75 @@ export default defineEventHandler(async (event) => {
     sveltekit: "SvelteKit",
     nuxt: "Nuxt",
   }
+
+  const snippetKeys = Object.keys(snippets) as Array<keyof typeof snippets>
+  const [value, setValue] = React.useState(snippetKeys[0])
+
   return (
     <Card className="p-6 space-y-4">
       <h4 className="text-lg font-semibold">
         Embed Affiliate Code in Checkout
       </h4>
       <p className="text-muted-foreground">
-        When redirecting users to Stripe Checkout, pass the affiliate code via
-        metadata to track commissions.
+        Pass the affiliate code in metadata when redirecting users to Stripe
+        Checkout.
       </p>
-      <Tabs defaultValue="Nextjs_serverAction" className="w-full">
-        <TabsList className="grid grid-cols-5 w-full">
-          {Object.keys(snippets).map((key) => (
+
+      <Tabs
+        value={value}
+        onValueChange={(val) => setValue(val as keyof typeof snippets)}
+        className="w-full"
+      >
+        {/* 📱 MOBILE SELECT (shadcn) */}
+        <div className="xl:hidden mb-4">
+          <Select
+            value={value}
+            onValueChange={(val) => setValue(val as keyof typeof snippets)}
+          >
+            <SelectTrigger affiliate={false} className="w-full">
+              <SelectValue placeholder="Select framework" />
+            </SelectTrigger>
+
+            <SelectContent affiliate={false}>
+              {snippetKeys.map((key) => (
+                <SelectItem affiliate={false} key={key} value={key}>
+                  {labels[key]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* 💻 DESKTOP TABS */}
+        <TabsList className="hidden xl:grid xl:grid-cols-5 w-full gap-3 p-2">
+          {snippetKeys.map((key) => (
             <TabsTrigger key={key} value={key}>
-              {labels[key as keyof typeof labels] ?? key}
+              {labels[key]}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        {Object.entries(snippets).map(([key, code]) => (
+        {snippetKeys.map((key) => (
           <TabsContent key={key} value={key}>
             <Card className="relative overflow-hidden">
               <CopyButton
-                value={code}
+                value={snippets[key]}
                 className="absolute top-2 right-2 z-10 text-white"
               />
-              <ScrollArea className="max-h-[500px] overflow-y-auto">
-                <SyntaxHighlighter
-                  language="ts"
-                  style={vscDarkPlus}
-                  wrapLongLines
-                  customStyle={{
-                    margin: 0,
-                    padding: "1rem",
-                    fontSize: "0.875rem",
-                    backgroundColor: "#1e1e1e",
-                    borderRadius: "0.75rem",
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
-                  }}
-                >
-                  {code}
-                </SyntaxHighlighter>
-              </ScrollArea>
+              <SyntaxHighlighter
+                language="ts"
+                style={vscDarkPlus}
+                customStyle={{
+                  margin: 0,
+                  padding: "1rem",
+                  fontSize: "0.875rem",
+                  backgroundColor: "#1e1e1e",
+                  borderRadius: "0.75rem",
+                  whiteSpace: "pre",
+                }}
+              >
+                {snippets[key]}
+              </SyntaxHighlighter>
             </Card>
           </TabsContent>
         ))}
@@ -198,4 +227,5 @@ export default defineEventHandler(async (event) => {
     </Card>
   )
 }
+
 export default EmbedStripeCheckout

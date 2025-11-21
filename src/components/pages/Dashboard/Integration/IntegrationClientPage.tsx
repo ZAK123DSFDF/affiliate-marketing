@@ -26,7 +26,7 @@ const IntegrationClientPage = ({
         className="w-full"
       >
         {/* Tabs header */}
-        <TabsList className="flex gap-6 mb-10 bg-slate-300 py-10 px-8 rounded-2xl">
+        <TabsList className="flex flex-col lg:flex-row gap-6 mb-10 bg-slate-300 py-10 px-8 rounded-2xl h-auto ">
           {/* Stripe */}
           <TabsTrigger
             value="stripe"

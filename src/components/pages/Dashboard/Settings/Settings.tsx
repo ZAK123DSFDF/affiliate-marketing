@@ -51,6 +51,7 @@ import {
   verifyTeamCNAME,
 } from "@/app/(organization)/organization/[orgId]/teams/dashboard/settings/action"
 import { useVerifyTeamSession } from "@/hooks/useVerifyTeamSession"
+import { FormSection } from "@/components/ui-custom/FormSection"
 
 type OrgFormData = z.infer<typeof orgSettingsSchema>
 type Props = { orgData: OrgData }
@@ -335,101 +336,114 @@ export default function Settings({
               <CardTitle>Tracking and Commission</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <InputField
-                  control={form.control}
-                  name="cookieLifetimeValue"
-                  label="Cookie Lifetime"
-                  placeholder="Cookie Lifetime"
-                  type="number"
-                  icon={Clock}
-                  affiliate={false}
-                />
-                <SelectField
-                  control={form.control}
-                  name="cookieLifetimeUnit"
-                  label="Cookie Lifetime Unit"
-                  placeholder="Cookie Lifetime Unit"
-                  options={[
-                    { value: "day", label: "Day" },
-                    { value: "week", label: "Week" },
-                    { value: "month", label: "Month" },
-                    { value: "year", label: "Year" },
-                  ]}
-                  icon={Calendar}
-                  affiliate={false}
-                />
-                <SelectField
-                  control={form.control}
-                  name="commissionType"
-                  label="Commission Type"
-                  placeholder="Commission Type"
-                  options={[
-                    { value: "percentage", label: "Percentage" },
-                    { value: "fixed", label: "Fixed" },
-                  ]}
-                  icon={Coins}
-                  affiliate={false}
-                />
-                <InputField
-                  control={form.control}
-                  name="commissionValue"
-                  label="Commission Value"
-                  placeholder="Commission Value"
-                  type="number"
-                  icon={
-                    form.watch("commissionType") === "percentage"
-                      ? Percent
-                      : BadgeDollarSign
-                  }
-                  affiliate={false}
-                />
-                <InputField
-                  control={form.control}
-                  name="commissionDurationValue"
-                  label="Commission Duration"
-                  placeholder="Commission Duration"
-                  type="number"
-                  icon={Calendar}
-                  affiliate={false}
-                />
-                <SelectField
-                  control={form.control}
-                  name="commissionDurationUnit"
-                  label="Duration Unit"
-                  placeholder="Duration Unit"
-                  options={[
-                    { value: "day", label: "Day" },
-                    { value: "week", label: "Week" },
-                    { value: "month", label: "Month" },
-                    { value: "year", label: "Year" },
-                  ]}
-                  icon={Calendar}
-                  affiliate={false}
-                />
-                <SelectField
-                  control={form.control}
-                  name="currency"
-                  label="Currency"
-                  placeholder="Currency"
-                  options={[
-                    { value: "USD", label: "USD" },
-                    { value: "EUR", label: "EUR" },
-                    { value: "GBP", label: "GBP" },
-                    { value: "CAD", label: "CAD" },
-                    { value: "AUD", label: "AUD" },
-                  ]}
-                  icon={BadgeDollarSign}
-                  affiliate={false}
-                />
-              </div>
-              <div className="grid grid-cols-2 items-center gap-4">
+              <FormSection title="Cookie Lifetime Settings" borderTop>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <InputField
+                    control={form.control}
+                    name="cookieLifetimeValue"
+                    label="Cookie Lifetime"
+                    placeholder="Cookie Lifetime"
+                    type="number"
+                    icon={Clock}
+                    affiliate={false}
+                  />
+                  <SelectField
+                    control={form.control}
+                    name="cookieLifetimeUnit"
+                    label="Cookie Lifetime Unit"
+                    placeholder="Cookie Lifetime Unit"
+                    options={[
+                      { value: "day", label: "Day" },
+                      { value: "week", label: "Week" },
+                      { value: "month", label: "Month" },
+                      { value: "year", label: "Year" },
+                    ]}
+                    icon={Calendar}
+                    affiliate={false}
+                  />
+                </div>
+              </FormSection>
+              <FormSection title="Commission Settings" borderTop>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <SelectField
+                    control={form.control}
+                    name="commissionType"
+                    label="Commission Type"
+                    placeholder="Commission Type"
+                    options={[
+                      { value: "percentage", label: "Percentage" },
+                      { value: "fixed", label: "Fixed" },
+                    ]}
+                    icon={Coins}
+                    affiliate={false}
+                  />
+                  <InputField
+                    control={form.control}
+                    name="commissionValue"
+                    label="Commission Value"
+                    placeholder="Commission Value"
+                    type="number"
+                    icon={
+                      form.watch("commissionType") === "percentage"
+                        ? Percent
+                        : BadgeDollarSign
+                    }
+                    affiliate={false}
+                  />
+                </div>
+              </FormSection>
+              <FormSection title="Commission Duration" borderTop borderBottom>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <InputField
+                    control={form.control}
+                    name="commissionDurationValue"
+                    label="Commission Duration"
+                    placeholder="Commission Duration"
+                    type="number"
+                    icon={Calendar}
+                    affiliate={false}
+                  />
+                  <SelectField
+                    control={form.control}
+                    name="commissionDurationUnit"
+                    label="Duration Unit"
+                    placeholder="Duration Unit"
+                    options={[
+                      { value: "day", label: "Day" },
+                      { value: "week", label: "Week" },
+                      { value: "month", label: "Month" },
+                      { value: "year", label: "Year" },
+                    ]}
+                    icon={Calendar}
+                    affiliate={false}
+                  />
+                </div>
+              </FormSection>
+
+              <SelectField
+                control={form.control}
+                name="currency"
+                label="Currency"
+                placeholder="Currency"
+                options={[
+                  { value: "USD", label: "USD" },
+                  { value: "EUR", label: "EUR" },
+                  { value: "GBP", label: "GBP" },
+                  { value: "CAD", label: "CAD" },
+                  { value: "AUD", label: "AUD" },
+                ]}
+                icon={BadgeDollarSign}
+                affiliate={false}
+              />
+
+              <div className="flex flex-col xl:grid xl:grid-cols-2 gap-4 xl:items-center">
                 <DomainInputField
                   control={form.control}
                   form={form}
                   onDomainTypeChange={setDomainType}
                 />
-                <div className="flex justify-start items-start">
+
+                <div className="flex w-full xl:w-auto">
                   <Button
                     type="button"
                     disabled={
@@ -438,14 +452,14 @@ export default function Settings({
                       !domainChanged ||
                       isVerified
                     }
-                    className="px-4 py-2 w-auto whitespace-nowrap"
+                    className="w-full xl:w-auto"
                     onClick={() => setOpen(true)}
                   >
                     {checkLabel}
                   </Button>
                 </div>
               </div>
-              <CardFooter className="flex justify-end">
+              <CardFooter className="flex justify-end px-0">
                 <Button
                   type="submit"
                   disabled={
@@ -457,7 +471,7 @@ export default function Settings({
                   }
                 >
                   {mut.isPending && (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                   )}
                   Save Changes
                 </Button>

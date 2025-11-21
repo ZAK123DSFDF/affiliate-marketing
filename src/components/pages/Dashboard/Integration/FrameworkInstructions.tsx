@@ -6,7 +6,13 @@ import { CopyButton } from "@/components/ui/copy-button"
 import { Card } from "@/components/ui/card"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select"
 
 const scriptUrl =
   "https://affiliate-marketing-ten.vercel.app/affiliateTrackingJavascript.js"
@@ -43,6 +49,8 @@ const frameworks = [
 ]
 
 export default function FrameworkInstructions() {
+  const [value, setValue] = React.useState("Next.js")
+
   return (
     <div className="mt-8 space-y-6 text-left">
       <p className="text-muted-foreground">
@@ -50,8 +58,26 @@ export default function FrameworkInstructions() {
         in your project depending on your framework:
       </p>
 
-      <Tabs defaultValue="Next.js" className="w-full">
-        <TabsList className="grid grid-cols-4 w-full">
+      <Tabs value={value} onValueChange={setValue} className="w-full">
+        {/* 📱 MOBILE SELECT */}
+        <div className="lg:hidden mb-4">
+          <Select value={value} onValueChange={setValue}>
+            <SelectTrigger affiliate={false} className="w-full">
+              <SelectValue placeholder="Select framework" />
+            </SelectTrigger>
+
+            <SelectContent affiliate={false}>
+              {frameworks.map((fw) => (
+                <SelectItem affiliate={false} key={fw.name} value={fw.name}>
+                  {fw.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* 💻 DESKTOP TABS */}
+        <TabsList className="hidden lg:grid lg:grid-cols-4 w-full h-auto gap-3 p-2">
           {frameworks.map((fw) => (
             <TabsTrigger key={fw.name} value={fw.name}>
               {fw.name}
@@ -59,36 +85,36 @@ export default function FrameworkInstructions() {
           ))}
         </TabsList>
 
+        {/* CONTENT */}
         {frameworks.map((fw) => (
           <TabsContent key={fw.name} value={fw.name} className="pt-4">
             <p className="mb-2 text-sm text-muted-foreground">
               {fw.description}
             </p>
+
             <Card className="relative w-full p-0 overflow-hidden rounded-xl">
               <CopyButton
                 className="absolute top-2 right-2 z-10 text-white"
                 value={fw.code}
               />
-              <ScrollArea className="p-0">
-                <SyntaxHighlighter
-                  language={fw.language}
-                  style={vscDarkPlus}
-                  wrapLongLines={true}
-                  customStyle={{
-                    margin: 0,
-                    padding: "1rem",
-                    fontSize: "0.875rem",
-                    backgroundColor: "#1e1e1e",
-                    borderRadius: "0.75rem",
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
-                    maxWidth: "100%", // Ensure it doesn't overflow its container
-                    overflowX: "auto", // Add horizontal scroll if needed
-                  }}
-                >
-                  {fw.code}
-                </SyntaxHighlighter>
-              </ScrollArea>
+              <SyntaxHighlighter
+                language={fw.language}
+                style={vscDarkPlus}
+                wrapLongLines={true}
+                customStyle={{
+                  margin: 0,
+                  padding: "1rem",
+                  fontSize: "0.875rem",
+                  backgroundColor: "#1e1e1e",
+                  borderRadius: "0.75rem",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                  maxWidth: "100%",
+                  overflowX: "auto",
+                }}
+              >
+                {fw.code}
+              </SyntaxHighlighter>
             </Card>
           </TabsContent>
         ))}

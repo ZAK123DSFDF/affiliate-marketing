@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect } from "react"
+import React from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -15,7 +15,7 @@ export default function StripeIntegration({ orgId }: { orgId: string }) {
   const queryClient = useQueryClient()
   const { showCustomToast } = useCustomToast()
   // ✅ Fetch connection status
-  const { data, error, isPending } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ["stripeStatus", orgId],
     queryFn: async () => {
       const res = await fetch("/api/stripe/status", {
@@ -108,7 +108,7 @@ export default function StripeIntegration({ orgId }: { orgId: string }) {
     <div className="space-y-6">
       <h3 className="text-xl font-semibold">Stripe Integration</h3>
       <Tabs defaultValue="connect" className="w-full">
-        <TabsList className="grid grid-cols-4 w-full">
+        <TabsList className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full h-auto gap-3 p-2">
           <TabsTrigger value="connect">Connect</TabsTrigger>
           <TabsTrigger value="disconnect">Disconnect</TabsTrigger>
           <TabsTrigger value="embed-script">Embed Script</TabsTrigger>
