@@ -191,9 +191,9 @@ export default defineEventHandler(async (event) => {
         </div>
 
         {/* 💻 DESKTOP TABS */}
-        <TabsList className="hidden xl:grid xl:grid-cols-5 w-full gap-3 p-2">
+        <TabsList className="hidden xl:flex w-full gap-3 p-2">
           {snippetKeys.map((key) => (
-            <TabsTrigger key={key} value={key}>
+            <TabsTrigger key={key} value={key} className="flex-1 text-center">
               {labels[key]}
             </TabsTrigger>
           ))}
