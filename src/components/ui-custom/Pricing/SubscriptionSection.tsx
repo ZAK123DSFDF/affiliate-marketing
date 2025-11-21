@@ -4,6 +4,7 @@ import { SubscriptionCycle } from "@/components/ui-custom/Pricing/PricingClient"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import { PricingGrid } from "@/components/ui-custom/Pricing/PricingGrid"
+import { getResponsiveTabSize } from "@/util/GetResponsiveTabSize"
 
 export function SubscriptionSection({
   dashboard,
@@ -33,7 +34,8 @@ export function SubscriptionSection({
             <TabsTrigger
               value="MONTHLY"
               className={cn(
-                "min-w-[130px] px-6 py-3 rounded-lg text-base font-medium transition-all duration-200",
+                getResponsiveTabSize(0.85),
+                "font-medium transition-all duration-200 rounded-lg",
                 subscriptionCycle === "MONTHLY"
                   ? "bg-primary text-white shadow-md scale-[1.02]"
                   : "text-gray-700 hover:text-black hover:bg-gray-200/50"
@@ -45,7 +47,8 @@ export function SubscriptionSection({
             <TabsTrigger
               value="YEARLY"
               className={cn(
-                "flex items-center justify-center gap-2 min-w-[130px] px-6 py-3 rounded-lg text-base font-medium transition-all duration-200",
+                getResponsiveTabSize(0.85),
+                "font-medium transition-all duration-200 rounded-lg flex items-center justify-center gap-2",
                 subscriptionCycle === "YEARLY"
                   ? "bg-primary text-white shadow-md scale-[1.02]"
                   : "text-gray-700 hover:text-black hover:bg-gray-200/50"

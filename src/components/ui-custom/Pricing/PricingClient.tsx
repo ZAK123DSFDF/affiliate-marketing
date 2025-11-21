@@ -7,6 +7,7 @@ import type { PlanInfo } from "@/lib/types/planInfo"
 import { featuresList } from "@/util/FeatureList"
 import { SubscriptionSection } from "@/components/ui-custom/Pricing/SubscriptionSection"
 import { PricingGrid } from "@/components/ui-custom/Pricing/PricingGrid"
+import { getResponsiveTabSize } from "@/util/GetResponsiveTabSize"
 
 export type BillingType = "SUBSCRIPTION" | "PURCHASE"
 export type SubscriptionCycle = "MONTHLY" | "YEARLY"
@@ -158,7 +159,8 @@ export default function PricingClient({
             <TabsTrigger
               value="PURCHASE"
               className={cn(
-                "min-w-[140px] px-6 py-3 text-base font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2",
+                getResponsiveTabSize(1),
+                "font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2",
                 activeTab === "PURCHASE"
                   ? "bg-primary text-white shadow-md scale-[1.02]"
                   : "text-gray-700 hover:bg-gray-200/60 hover:scale-[1.03]"
@@ -173,7 +175,8 @@ export default function PricingClient({
             <TabsTrigger
               value="SUBSCRIPTION"
               className={cn(
-                "min-w-[140px] px-6 py-3 text-base font-medium rounded-lg transition-all duration-200",
+                getResponsiveTabSize(1),
+                "font-medium rounded-lg transition-all duration-200",
                 activeTab === "SUBSCRIPTION"
                   ? "bg-primary text-white shadow-md scale-[1.02]"
                   : "text-gray-700 hover:bg-gray-200/60 hover:scale-[1.03]"
