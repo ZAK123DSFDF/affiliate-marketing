@@ -29,6 +29,7 @@ import { CompanyFormValues, companySchema } from "@/lib/schema/companySchema"
 import { useCustomToast } from "@/components/ui-custom/ShowCustomToast"
 import { useCachedValidation } from "@/hooks/useCachedValidation"
 import { useAppMutation } from "@/hooks/useAppMutation"
+import { FormSection } from "@/components/ui-custom/FormSection"
 
 type CreateCompanyProps = {
   mode: "create" | "add"
@@ -144,90 +145,102 @@ const CreateCompany = ({ mode, embed }: CreateCompanyProps) => {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <InputField
-            control={form.control}
-            name="cookieLifetimeValue"
-            label="Cookie Lifetime"
-            type="number"
-            placeholder="30"
-            icon={Clock}
-            affiliate={false}
-          />
-          <SelectField
-            control={form.control}
-            name="cookieLifetimeUnit"
-            label="Unit"
-            placeholder="Select unit"
-            options={[
-              { value: "day", label: "Day" },
-              { value: "week", label: "Week" },
-              { value: "month", label: "Month" },
-              { value: "year", label: "Year" },
-            ]}
-            icon={Calendar}
-            affiliate={false}
-          />
-          <SelectField
-            control={form.control}
-            name="commissionType"
-            label="Commission Type"
-            placeholder="Select type"
-            options={[
-              { value: "percentage", label: "Percentage" },
-              { value: "fixed", label: "Fixed" },
-            ]}
-            icon={Coins}
-            affiliate={false}
-          />
-          <InputField
-            control={form.control}
-            name="commissionValue"
-            label="Commission Value"
-            type="number"
-            placeholder="10"
-            icon={commissionType === "percentage" ? Percent : BadgeDollarSign}
-            affiliate={false}
-          />
-          <InputField
-            control={form.control}
-            name="commissionDurationValue"
-            label="Commission Duration"
-            type="number"
-            placeholder="30"
-            icon={Calendar}
-            affiliate={false}
-          />
-          <SelectField
-            control={form.control}
-            name="commissionDurationUnit"
-            label="Duration Unit"
-            placeholder="Select unit"
-            options={[
-              { value: "day", label: "Day" },
-              { value: "week", label: "Week" },
-              { value: "month", label: "Month" },
-              { value: "year", label: "Year" },
-            ]}
-            icon={Calendar}
-            affiliate={false}
-          />
-          <SelectField
-            control={form.control}
-            name="currency"
-            label="Currency"
-            placeholder="Select currency"
-            options={[
-              { value: "USD", label: "USD" },
-              { value: "EUR", label: "EUR" },
-              { value: "GBP", label: "GBP" },
-              { value: "CAD", label: "CAD" },
-              { value: "AUD", label: "AUD" },
-            ]}
-            icon={BadgeDollarSign}
-            affiliate={false}
-          />
-        </div>
+        <FormSection title="Cookie Lifetime Settings" borderTop>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <InputField
+              control={form.control}
+              name="cookieLifetimeValue"
+              label="Cookie Lifetime"
+              type="number"
+              placeholder="30"
+              icon={Clock}
+              affiliate={false}
+            />
+            <SelectField
+              control={form.control}
+              name="cookieLifetimeUnit"
+              label="Unit"
+              placeholder="Select unit"
+              options={[
+                { value: "day", label: "Day" },
+                { value: "week", label: "Week" },
+                { value: "month", label: "Month" },
+                { value: "year", label: "Year" },
+              ]}
+              icon={Calendar}
+              affiliate={false}
+            />
+          </div>
+        </FormSection>
+
+        <FormSection title="Commission Settings" borderTop>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <SelectField
+              control={form.control}
+              name="commissionType"
+              label="Commission Type"
+              placeholder="Select type"
+              options={[
+                { value: "percentage", label: "Percentage" },
+                { value: "fixed", label: "Fixed" },
+              ]}
+              icon={Coins}
+              affiliate={false}
+            />
+            <InputField
+              control={form.control}
+              name="commissionValue"
+              label="Commission Value"
+              type="number"
+              placeholder="10"
+              icon={commissionType === "percentage" ? Percent : BadgeDollarSign}
+              affiliate={false}
+            />
+          </div>
+        </FormSection>
+        <FormSection title="Commission Duration" borderTop borderBottom>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <InputField
+              control={form.control}
+              name="commissionDurationValue"
+              label="Commission Duration Value"
+              type="number"
+              placeholder="30"
+              icon={Calendar}
+              affiliate={false}
+            />
+            <SelectField
+              control={form.control}
+              name="commissionDurationUnit"
+              label="Duration Unit"
+              placeholder="Select unit"
+              options={[
+                { value: "day", label: "Day" },
+                { value: "week", label: "Week" },
+                { value: "month", label: "Month" },
+                { value: "year", label: "Year" },
+              ]}
+              icon={Calendar}
+              affiliate={false}
+            />
+          </div>
+        </FormSection>
+        <SelectField
+          control={form.control}
+          name="currency"
+          label="Currency"
+          placeholder="Select currency"
+          options={[
+            { value: "USD", label: "USD" },
+            { value: "EUR", label: "EUR" },
+            { value: "GBP", label: "GBP" },
+            { value: "CAD", label: "CAD" },
+            { value: "AUD", label: "AUD" },
+          ]}
+          icon={BadgeDollarSign}
+          affiliate={false}
+        />
+
         <DomainInputField
           control={form.control}
           form={form}
