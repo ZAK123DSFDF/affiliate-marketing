@@ -139,6 +139,7 @@ const ForgotPassword = ({
             orgId={orgId}
             affiliate={affiliate}
             isPreview={isPreview}
+            noRedirect
           />
         </div>
 

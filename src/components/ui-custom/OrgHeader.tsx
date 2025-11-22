@@ -14,6 +14,7 @@ interface OrgHeaderProps {
   affiliate: boolean
   isPreview: boolean
   sidebar?: boolean
+  noRedirect?: boolean
 }
 
 export function OrgHeader({
@@ -21,6 +22,7 @@ export function OrgHeader({
   affiliate,
   isPreview,
   sidebar,
+  noRedirect,
 }: OrgHeaderProps) {
   const { org, isLoading: orgLoading } = useOrg(orgId, affiliate)
   const { logoUrl, setLogoUrl } = useOrgLogo(org?.logoUrl)
@@ -86,9 +88,20 @@ export function OrgHeader({
     )
   }
 
-  // Default (non-affiliate)
+  if (noRedirect) {
+    return (
+      <div className="inline-block">
+        <div className="flex items-center justify-center space-x-2">
+          <div className="w-8 h-8 rounded-md bg-primary/90 flex items-center justify-center text-white font-bold">
+            A
+          </div>
+          <h1 className="text-2xl font-bold">AffiliateX</h1>
+        </div>
+      </div>
+    )
+  }
   return (
-    <Link href="/" className="inline-block">
+    <Link href="/" className="inline-block cursor-pointer">
       <div className="flex items-center justify-center space-x-2">
         <div className="w-8 h-8 rounded-md bg-primary/90 flex items-center justify-center text-white font-bold">
           A

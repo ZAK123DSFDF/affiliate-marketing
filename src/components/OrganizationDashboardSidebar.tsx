@@ -33,6 +33,7 @@ import { PlanInfo } from "@/lib/types/planInfo"
 import { Button } from "@/components/ui/button"
 import { usePaddlePortal } from "@/hooks/usePaddlePortal"
 import { handlePlanRedirect } from "@/util/HandlePlanRedirect"
+import { OrgHeader } from "@/components/ui-custom/OrgHeader"
 
 // Menu items for the sidebar
 
@@ -146,12 +147,7 @@ const OrganizationDashboardSidebar = ({
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center justify-center py-4">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-md bg-primary/90 flex items-center justify-center text-white font-bold">
-            A
-          </div>
-          <h1 className="text-xl font-bold">AffiliateX</h1>
-        </div>
+        <OrgHeader affiliate={false} isPreview={false} noRedirect />
         <div className="flex items-center space-x-2">
           {/* Org dropdown */}
           <DropdownInput

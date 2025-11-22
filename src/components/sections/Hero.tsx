@@ -12,54 +12,23 @@ const Hero = () => {
 
       <div className="container mx-auto max-w-5xl">
         <div className="text-center space-y-6 animate-fade-in">
-          <div className="inline-block rounded-full bg-secondary px-4 py-1.5 text-sm font-medium text-secondary-foreground mb-4">
-            Introducing AffiliateSaaS Platform
-          </div>
-
+          {/* NEW HEADLINE */}
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-balance">
-            The <span className="text-gradient">Simplest</span> Way to Grow Your
-            SaaS With Affiliate Marketing
+            Launch Your <span className="text-gradient">Affiliate Program</span>{" "}
+            in Minutes
           </h1>
 
+          {/* NEW DESCRIPTION */}
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-balance">
-            Create, track, and scale your affiliate program with an elegant
-            platform designed specifically for SaaS businesses.
+            A simple, powerful platform to track referrals, monitor performance,
+            and grow your SaaS without any complexity.
           </p>
 
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
-            <AnimatedButton href="#" size="lg" className="w-full sm:w-auto">
+          {/* Only ONE main CTA */}
+          <div className="flex justify-center items-center pt-4">
+            <AnimatedButton href="/signup" size="lg" className="w-auto">
               Start for Free
             </AnimatedButton>
-            <AnimatedButton
-              href="#how-it-works"
-              variant="outline"
-              size="lg"
-              className="w-full sm:w-auto"
-            >
-              See How It Works
-            </AnimatedButton>
-          </div>
-
-          <div className="pt-12 opacity-90">
-            <p className="text-sm text-muted-foreground mb-4">
-              Trusted by innovative SaaS companies
-            </p>
-            <div className="flex flex-wrap justify-center items-center gap-8">
-              {[
-                "Company 1",
-                "Company 2",
-                "Company 3",
-                "Company 4",
-                "Company 5",
-              ].map((company, index) => (
-                <div
-                  key={index}
-                  className="text-lg font-medium text-foreground/80"
-                >
-                  {company}
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>

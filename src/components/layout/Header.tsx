@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from "react"
-import { cn } from "@/lib/utils"
+"use client"
+
+import React, { useEffect, useState } from "react"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
+import { OrgHeader } from "@/components/ui-custom/OrgHeader"
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -17,14 +20,16 @@ const Header = () => {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 py-4 px-6 transition-all duration-300 ease-in-out",
+        "fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 ease-in-out",
         isScrolled ? "bg-white/80 backdrop-blur-md shadow-sm" : "bg-transparent"
       )}
     >
-      <div className="container mx-auto flex items-center justify-between">
-        <Link href="/" className="text-2xl font-semibold text-foreground">
-          Affiliate<span className="text-primary">SaaS</span>
-        </Link>
+      {/* narrowed container so header content is not edge-to-edge */}
+      <div className="max-w-5xl mx-auto px-4 flex items-center justify-between">
+        {/* OrgHeader replaces AffiliateSaaS title */}
+        <div className="flex items-center">
+          <OrgHeader affiliate={false} isPreview={false} />
+        </div>
 
         <nav className="hidden md:flex space-x-8">
           <a
@@ -55,13 +60,14 @@ const Header = () => {
 
         <div className="flex items-center space-x-4">
           <Link
-            href="/src/components/pages/Login"
+            href="/login"
             className="text-foreground/80 hover:text-foreground transition-colors hidden md:inline-block"
           >
             Log in
           </Link>
+
           <Link
-            href="/src/components/pages/Signup"
+            href="/signup"
             className="bg-primary text-primary-foreground px-4 py-2 rounded-full hover:bg-primary/90 transition-colors shadow-sm"
           >
             Get Started

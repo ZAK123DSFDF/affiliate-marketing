@@ -161,6 +161,7 @@ const ResetPassword = ({
             orgId={orgId}
             affiliate={affiliate}
             isPreview={isPreview}
+            noRedirect
           />
         </div>
 
