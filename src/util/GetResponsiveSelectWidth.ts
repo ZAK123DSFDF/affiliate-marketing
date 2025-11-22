@@ -4,5 +4,5 @@ export const getResponsiveSelectWidth = (isPreview: boolean) => {
     : "w-[70px] xs:w-[80px] m:w-[100px] h-9 px-2 text-sm"
 }
 export const getResponsiveCardHeight = (isPreview: boolean) => {
-  return isPreview ? "h-[380px] xs:h-[340px]" : "h-[520px] xs:h-[480px]"
+  return isPreview ? "h-[380px] xs:h-[340px]" : "h-[520px] m:h-[480px]"
 }

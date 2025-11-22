@@ -25,7 +25,7 @@ export default async function AnalyticsLayout({
       {children}
       <MissingPaypalEmailCard affiliate orgId={orgId} />
       {cards}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div className="h-full">{charts}</div>
         <div className="h-full">{referrers}</div>
       </div>

@@ -3,7 +3,7 @@
 import { useCustomizationSync } from "@/hooks/useCustomizationSync"
 import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
-
+import React from "react"
 export function GlobalCustomizationProvider({
   orgId,
   children,

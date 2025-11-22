@@ -29,12 +29,12 @@ export function DashboardCustomization({
   }
   return (
     <div className="space-y-6">
-      <div className="border rounded-lg p-4 transition-all duration-300 mt-6 shadow-md">
+      <div className="border rounded-lg p-4 transition-all  duration-300 mt-6 shadow-md">
         {domain && (
           <DomainHeader
             domain={domain}
             route={`/${selectedPage}`}
-            className="mx-auto mb-4 max-w-5xl"
+            className="mb-4"
           />
         )}
         <div className="border rounded-xl overflow-hidden shadow-lg ring ring-muted bg-background max-w-5xl h-[500px] mx-auto relative">

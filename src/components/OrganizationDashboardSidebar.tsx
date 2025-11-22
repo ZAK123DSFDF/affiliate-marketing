@@ -252,6 +252,9 @@ const OrganizationDashboardSidebar = ({
             href={`/organization/${orgId}/dashboard/pricing`}
             scroll={false}
             className="block w-full"
+            onClick={() => {
+              if (isMobile) setOpenMobile(false)
+            }}
           >
             <Button className="w-full">Upgrade or Purchase</Button>
           </Link>
@@ -263,6 +266,9 @@ const OrganizationDashboardSidebar = ({
             href={`/organization/${orgId}/dashboard/pricing`}
             scroll={false}
             className="block w-full"
+            onClick={() => {
+              if (isMobile) setOpenMobile(false)
+            }}
           >
             <Button className="w-full">Purchase Ultimate Bundle</Button>
           </Link>
@@ -273,7 +279,13 @@ const OrganizationDashboardSidebar = ({
           (plan.plan === "PRO" || plan.plan === "ULTIMATE") && (
             <>
               {!plan.hasPendingPurchase && (
-                <Button className="w-full" onClick={openPortal}>
+                <Button
+                  className="w-full"
+                  onClick={() => {
+                    if (isMobile) setOpenMobile(false)
+                    openPortal()
+                  }}
+                >
                   Manage Subscription
                 </Button>
               )}
@@ -282,6 +294,9 @@ const OrganizationDashboardSidebar = ({
                 href={`/organization/${orgId}/dashboard/pricing`}
                 scroll={false}
                 className="block w-full"
+                onClick={() => {
+                  if (isMobile) setOpenMobile(false)
+                }}
               >
                 <Button variant="outline" className="w-full">
                   {plan.hasPendingPurchase
@@ -292,7 +307,12 @@ const OrganizationDashboardSidebar = ({
             </>
           )}
 
-        <Link href={`/organization/${orgId}/dashboard/profile`}>
+        <Link
+          href={`/organization/${orgId}/dashboard/profile`}
+          onClick={() => {
+            if (isMobile) setOpenMobile(false)
+          }}
+        >
           <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{UserData?.name}</p>

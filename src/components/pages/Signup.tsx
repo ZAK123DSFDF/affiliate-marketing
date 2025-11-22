@@ -405,7 +405,11 @@ const Signup = ({
       </div>
       {isPreview && (
         <div className="absolute bottom-0 left-0 z-50">
-          <ThemeCustomizationOptions name="backgroundColor" showLabel={false} />
+          <ThemeCustomizationOptions
+            buttonSize="w-4 h-4 lg:w-8 lg:h-8"
+            name="backgroundColor"
+            showLabel={false}
+          />
         </div>
       )}
     </div>

@@ -16,7 +16,7 @@ const AffiliateOverview = ({
   return (
     <div className="space-y-8">
       <Cards orgId={orgId} affiliate={affiliate} isPreview={isPreview} />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div className="h-full">
           <ChartDailyMetrics
             orgId={orgId}

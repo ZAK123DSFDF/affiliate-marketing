@@ -21,6 +21,7 @@ import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
 import { cn } from "@/lib/utils"
 import { saveTeamCustomizationsAction } from "@/app/(organization)/organization/[orgId]/teams/dashboard/customization/action"
 import { useVerifyTeamSession } from "@/hooks/useVerifyTeamSession"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 
 export default function CustomizationPage({
   orgId,
@@ -96,13 +97,13 @@ export default function CustomizationPage({
         </div>
 
         <Tabs value={mainTab} onValueChange={setMainTab} className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
             <TabsList>
-              <TabsTrigger value="sidebar">Sidebar</TabsTrigger>
+              <TabsTrigger value="sidebar">Dashboard</TabsTrigger>
               <TabsTrigger value="auth">Auth Pages</TabsTrigger>
             </TabsList>
             {mainTab === "sidebar" && (
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col xl:flex-row xl:items-center gap-4">
                 <div className="flex items-center gap-2">
                   <Switch
                     id="toggle-missing-paypal"
@@ -201,14 +202,34 @@ export default function CustomizationPage({
           </div>
 
           <TabsContent value="sidebar">
-            <DashboardCustomization orgId={orgId} domain={domain} />
+            <SidebarProvider affiliate orgId={orgId}>
+              <div className="relative">
+                {mainTab === "sidebar" && (
+                  <div className="md:hidden p-2">
+                    <SidebarTrigger />
+                  </div>
+                )}
+
+                <DashboardCustomization orgId={orgId} domain={domain} />
+              </div>
+            </SidebarProvider>
           </TabsContent>
           <TabsContent value="auth">
-            <AuthCustomization
-              orgId={orgId}
-              setMainTab={setMainTab}
-              domain={domain}
-            />
+            <SidebarProvider affiliate orgId={orgId}>
+              <div className="relative">
+                {mainTab === "sidebar" && (
+                  <div className="md:hidden p-2">
+                    <SidebarTrigger />
+                  </div>
+                )}
+
+                <AuthCustomization
+                  orgId={orgId}
+                  setMainTab={setMainTab}
+                  domain={domain}
+                />
+              </div>
+            </SidebarProvider>
           </TabsContent>
         </Tabs>
 

@@ -16,13 +16,12 @@ export const createAffiliateLink = async (
     const decoded = await getAffiliateOrganization(orgId)
     const { org, fullUrl } = await createFullUrl(decoded)
     const baseUrl = await getBaseUrl()
-    const revalidationPath = buildAffiliateUrl({
+    buildAffiliateUrl({
       path: "dashboard/links",
       organizationId: org.id,
       baseUrl,
       partial: true,
     })
-    revalidatePath(revalidationPath)
     return { ok: true, toast: `Affiliate link created: ${fullUrl}` }
   })
 }

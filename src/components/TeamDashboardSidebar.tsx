@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React from "react"
 import { usePathname } from "next/navigation"
 import {
   BarChart3,
@@ -21,13 +21,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
-import CreateCompany from "@/components/pages/Create-Company"
-import { DropdownInput } from "@/components/ui-custom/DropDownInput"
-import { useSwitchOrg } from "@/hooks/useSwitchOrg"
 import { OrganizationData, TeamData } from "@/lib/types/profileTypes"
-import { AppDialog } from "@/components/ui-custom/AppDialog"
 
 // Menu items for the sidebar
 
@@ -38,6 +35,7 @@ type Props = {
 }
 const TeamDashboardSidebar = ({ orgId, TeamData, orgName }: Props) => {
   const pathname = usePathname()
+  const { setOpenMobile, isMobile } = useSidebar()
   const items = [
     {
       title: "Dashboard",
@@ -95,7 +93,12 @@ const TeamDashboardSidebar = ({ orgId, TeamData, orgName }: Props) => {
                     isActive={pathname === item.url}
                     tooltip={item.title}
                   >
-                    <Link href={item.url}>
+                    <Link
+                      href={item.url}
+                      onClick={() => {
+                        if (isMobile) setOpenMobile(false)
+                      }}
+                    >
                       <item.icon className="w-5 h-5" />
                       <span>{item.title}</span>
                     </Link>
@@ -107,7 +110,12 @@ const TeamDashboardSidebar = ({ orgId, TeamData, orgName }: Props) => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="p-4">
-        <Link href={`/organization/${orgId}/teams/dashboard/profile`}>
+        <Link
+          href={`/organization/${orgId}/teams/dashboard/profile`}
+          onClick={() => {
+            if (isMobile) setOpenMobile(false)
+          }}
+        >
           <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{TeamData?.name}</p>

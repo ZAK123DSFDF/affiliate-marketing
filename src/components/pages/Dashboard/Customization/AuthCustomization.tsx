@@ -13,7 +13,6 @@ import EmailVerified from "@/components/pages/Email-verified"
 import CheckEmail from "@/components/pages/CheckEmail"
 import PendingState from "@/components/ui-custom/PendingState"
 import ErrorState from "@/components/ui-custom/ErrorState"
-import { useActiveDomain } from "@/hooks/useActiveDomain"
 import { DomainHeader } from "@/components/ui-custom/DomainHeader"
 interface AuthCustomizationProps {
   setMainTab?: (tab: string) => void

@@ -35,6 +35,7 @@ import {
 import { useAppMutation } from "@/hooks/useAppMutation"
 import { TableView } from "@/components/ui-custom/TableView"
 import { previewSimulationAtom } from "@/store/PreviewSimulationAtom"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface AffiliateLinkProps {
   orgId: string
@@ -63,6 +64,7 @@ export default function Links({
   const [isFakeLoading, setIsFakeLoading] = useState(false)
   const [isFakeLoadingPreview, setIsFakeLoadingPreview] = useState(false)
   const { filters, setFilters } = useQueryFilter()
+  const queryClient = useQueryClient()
   useEffect(() => {
     if (!isPreview) return
 
@@ -137,6 +139,13 @@ export default function Links({
 
   const mutation = useAppMutation(createAffiliateLink, {
     affiliate,
+    onSuccess: () => {
+      queryClient
+        .invalidateQueries({
+          queryKey: ["affiliate-links", orgId, filters.year, filters.month],
+        })
+        .then(() => console.log("invalidated"))
+    },
   })
 
   const handleCreate = () => {

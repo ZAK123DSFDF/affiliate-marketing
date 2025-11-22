@@ -321,6 +321,7 @@ export default function PayoutTable({
       <AppDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
+        onConfirm={() => setDialogOpen(false)}
         title="Action not available"
         description="At least one affiliate must have unpaid commission and a PayPal email."
         affiliate={false}

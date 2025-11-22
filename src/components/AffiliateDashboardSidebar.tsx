@@ -13,6 +13,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -78,8 +79,10 @@ const AffiliateDashboardSidebar = ({
     sideBarActiveNavigationTextColor,
   } = useAtomValue(sidebarCustomizationAtom)
   const baseSidebarClass = isPreview ? "relative h-full" : "" // you can add full-screen layout styles here
+  const { setOpenMobile, isMobile } = useSidebar()
   const setProfile = () => {
     onSelectPage && onSelectPage("profile")
+    if (isMobile) setOpenMobile(false)
   }
   return (
     <Sidebar className={baseSidebarClass}>
@@ -141,7 +144,10 @@ const AffiliateDashboardSidebar = ({
                       {isPreview ? (
                         <button
                           type="button"
-                          onClick={() => onSelectPage && onSelectPage(item.key)}
+                          onClick={() => {
+                            onSelectPage && onSelectPage(item.key)
+                            if (isMobile) setOpenMobile(false)
+                          }}
                           onMouseEnter={() => setHoveredKey(item.key)}
                           onMouseLeave={() => setHoveredKey(null)}
                           className={cn(
@@ -166,7 +172,12 @@ const AffiliateDashboardSidebar = ({
                           </span>
                         </button>
                       ) : (
-                        <Link href={item.url}>
+                        <Link
+                          href={item.url}
+                          onClick={() => {
+                            if (isMobile) setOpenMobile(false)
+                          }}
+                        >
                           <item.icon className="w-5 h-5" />
                           <span className={isPreview ? "text-sm" : ""}>
                             {item.title}
@@ -229,7 +240,12 @@ const AffiliateDashboardSidebar = ({
             />
           </div>
         ) : (
-          <Link href={getPath("dashboard/profile")}>
+          <Link
+            href={getPath("dashboard/profile")}
+            onClick={() => {
+              if (isMobile) setOpenMobile(false)
+            }}
+          >
             <div className="flex items-center space-x-3 p-2 rounded-md bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">

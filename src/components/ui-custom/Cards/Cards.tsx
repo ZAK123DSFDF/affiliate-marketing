@@ -400,25 +400,41 @@ const Cards = ({
                       />
                     </div>
 
-                    <div className="space-y-1 overflow-hidden">
-                      <div
-                        className="truncate font-medium"
-                        style={{ color: affiliate && secondaryTextColor }}
-                      >
-                        {label}
-                      </div>
-                      <div
-                        className="font-bold leading-tight truncate"
-                        style={{ color: affiliate && primaryTextColor }}
-                      >
-                        {formatValue(
-                          label,
-                          value as number,
-                          (affiliateSearchData?.[0] as AffiliateKpiStats)
-                            ?.currency
-                        )}
-                      </div>
-                    </div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <div className="space-y-1 overflow-hidden cursor-pointer">
+                          <div
+                            className="truncate font-medium"
+                            style={{ color: affiliate && secondaryTextColor }}
+                          >
+                            {label}
+                          </div>
+                          <div
+                            className="font-bold leading-tight truncate"
+                            style={{ color: affiliate && primaryTextColor }}
+                          >
+                            {formatValue(
+                              label,
+                              value as number,
+                              (affiliateSearchData?.[0] as AffiliateKpiStats)
+                                ?.currency
+                            )}
+                          </div>
+                        </div>
+                      </PopoverTrigger>
+
+                      <PopoverContent className="w-fit p-3 rounded-md shadow-lg border bg-white">
+                        <div className="text-sm font-semibold">{label}</div>
+                        <div className="text-base font-bold mt-1">
+                          {formatValue(
+                            label,
+                            value as number,
+                            (affiliateSearchData?.[0] as AffiliateKpiStats)
+                              ?.currency
+                          )}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 )
               })

@@ -8,8 +8,8 @@ export default async function CustomizationServerPage({ params }: OrgIdProps) {
   const orgId = await getValidatedOrgFromParams({ params })
   await requireTeamWithOrg(orgId)
   return (
-    <>
+    <div className="overflow-auto">
       <CustomizationPage orgId={orgId} isTeam />
-    </>
+    </div>
   )
 }
